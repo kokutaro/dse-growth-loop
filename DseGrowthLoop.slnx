@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/Dse.Api/Dse.Api.csproj" />
+  <Project Path="src/Dse.AppHost/Dse.AppHost.csproj" />
+  <Project Path="src/Dse.Domain/Dse.Domain.csproj" />
+  <Project Path="src/Dse.Infrastructure/Dse.Infrastructure.csproj" />
+  <Project Path="src/Dse.Worker/Dse.Worker.csproj" />
+  <Project Path="tests/Dse.Tests/Dse.Tests.csproj" />
+</Solution>

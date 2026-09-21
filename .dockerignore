@@ -1,0 +1,15 @@
+**/bin
+**/obj
+**/node_modules
+**/dist
+.git
+.env*
+**/.env*
+**/*.local.bicepparam
+.azure
+**/__pycache__
+.artifacts
+docs
+**/TestResults
+**/test-results
+**/playwright-report

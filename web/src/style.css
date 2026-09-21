@@ -1,0 +1,280 @@
+:root {
+  font-family: Inter, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  color: #183b38;
+  background: #f4f6f2;
+  font-synthesis: none;
+  line-height: 1.7;
+  font-weight: 400;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  height: 90px;
+  border-bottom: 1px solid #dce3dc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6vw;
+  background: #fbfcf8;
+}
+.brand {
+  color: #194c43;
+  font-weight: 800;
+  text-decoration: none;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+}
+.brand span {
+  font-weight: 400;
+  margin-left: 10px;
+}
+.mode {
+  font-size: 12px;
+  padding: 5px 12px;
+  border: 1px solid #b8cfc3;
+  border-radius: 20px;
+}
+main {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 52px 40px;
+}
+.intro {
+  margin-bottom: 44px;
+}
+.eyebrow {
+  color: #4e7966;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+h1 {
+  font-size: clamp(32px, 4vw, 48px);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  margin: 16px 0;
+}
+h2 {
+  font-size: 20px;
+  margin: 0 0 24px;
+}
+h3 {
+  font-size: 21px;
+  margin: 10px 0;
+}
+.intro > p:last-child {
+  color: #65756d;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 36px;
+  align-items: start;
+}
+.panel {
+  background: #fff;
+  border: 1px solid #dce4dc;
+  border-radius: 14px;
+  padding: 28px;
+}
+.search-panel {
+  position: sticky;
+  top: 24px;
+}
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 18px 0 8px;
+}
+select,
+input:not([type="checkbox"]) {
+  display: block;
+  width: 100%;
+  font: inherit;
+  background: #fafbf8;
+  color: #24483e;
+  border: 1px solid #b9c9bd;
+  border-radius: 7px;
+  padding: 11px;
+}
+small,
+.note {
+  color: #727e75;
+  font-size: 12px;
+}
+.checkbox {
+  display: flex;
+  gap: 9px;
+  align-items: start;
+  font-weight: 400;
+  font-size: 12px;
+  margin: 24px 0;
+}
+.checkbox input {
+  margin-top: 5px;
+  accent-color: #245b46;
+}
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 7px;
+  background: #235e48;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  padding: 13px;
+  cursor: pointer;
+}
+button:hover {
+  background: #174634;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #81ab8c;
+  outline-offset: 3px;
+}
+.note {
+  margin-top: 22px;
+}
+.results-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.results-heading h2 {
+  margin-bottom: 18px;
+}
+.results-heading > span {
+  font-size: 13px;
+}
+.empty {
+  text-align: center;
+  padding: 72px 20px;
+  color: #748478;
+  border: 1px dashed #c8d5c9;
+  border-radius: 14px;
+}
+.empty h3 {
+  color: #365c4c;
+  font-size: 19px;
+}
+.empty p {
+  font-size: 14px;
+}
+.loop {
+  display: block;
+  font-size: 48px;
+  color: #8aab87;
+}
+.notice {
+  border-left: 3px solid #b5a26b;
+  background: #f0eee3;
+  padding: 12px 16px;
+  font-size: 12px;
+  margin: 0 0 18px;
+}
+.candidate {
+  margin-bottom: 16px;
+}
+.candidate-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+.kind {
+  color: #43765d;
+  font-weight: 700;
+}
+.fixture {
+  color: #818981;
+}
+.candidate > p {
+  font-size: 14px;
+  color: #65736a;
+}
+.routes {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.routes span {
+  font-size: 11px;
+  border-radius: 4px;
+  background: #edf3ec;
+  padding: 3px 8px;
+  color: #4f7359;
+}
+details {
+  border-top: 1px solid #ecf0e9;
+  margin-top: 20px;
+  padding-top: 12px;
+  font-size: 12px;
+}
+summary {
+  cursor: pointer;
+  color: #3e7154;
+}
+blockquote {
+  margin: 14px 0;
+  border-left: 2px solid #c5d4c2;
+  padding-left: 14px;
+}
+cite {
+  font-style: normal;
+  color: #71826e;
+}
+.error {
+  padding: 15px;
+  background: #fbe8e4;
+  color: #8c3626;
+  border-radius: 8px;
+}
+footer {
+  border-top: 1px solid #dce3dc;
+  padding: 24px;
+  text-align: center;
+  font-size: 11px;
+  color: #7b8b7d;
+}
+@media (max-width: 800px) {
+  header {
+    height: 74px;
+    padding: 0 20px;
+  }
+  .brand {
+    font-size: 18px;
+  }
+  .mode {
+    font-size: 10px;
+  }
+  main {
+    padding: 32px 20px;
+  }
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .search-panel {
+    position: static;
+  }
+  .intro {
+    margin-bottom: 28px;
+  }
+  .panel {
+    padding: 22px;
+  }
+  .empty {
+    padding: 35px 15px;
+  }
+}

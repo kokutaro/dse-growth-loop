@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {"title": "DSE Growth Loop｜分類索引＋再順位付け", "quality_profile": "showcase", "viewBox": [1370, 760]},
+  "components": [
+    {"id": "demo-ui", "type": "frontend", "label": "専用Web UI", "sublabel": "React / TypeScript", "pos": [40, 350], "size": [220, 80]},
+    {"id": "demo-core", "type": "backend", "label": "業務API・非同期処理", "sublabel": ".NET 10 / Container Apps", "pos": [570, 350], "size": [250, 80]},
+    {"id": "demo-search", "type": "database", "label": "Azure Cosmos DB", "sublabel": "NoSQL Serverless / 正本・分類索引", "pos": [1100, 350], "size": [240, 80]},
+    {"id": "demo-auth", "type": "security", "label": "Microsoft Entra ID", "sublabel": "デモ参加者の認証", "pos": [570, 70], "size": [250, 80]},
+    {"id": "demo-foundry", "type": "cloud", "label": "Microsoft Foundry", "sublabel": "根拠を読んで再順位付け・生成", "pos": [1100, 70], "size": [240, 80]},
+    {"id": "demo-blob", "type": "cloud", "label": "Azure Blob Storage", "sublabel": "ダミー原本・抽出成果物", "pos": [40, 630], "size": [220, 80]},
+    {"id": "demo-queue", "type": "messagebus", "label": "Azure Queue Storage", "sublabel": "処理通知・重複を許容する配送", "pos": [570, 630], "size": [250, 80]},
+    {"id": "demo-jev", "type": "external", "label": "Jev / TypeSafe AI", "sublabel": "Azure外：probabilities＋補助Noul", "pos": [1100, 630], "size": [240, 80]}
+  ],
+  "connections": [
+    {"id": "ui-request", "from": "demo-ui", "to": "demo-core", "label": "HTTPS・チャット更新", "variant": "emphasis"},
+    {"id": "core-search", "from": "demo-core", "to": "demo-search", "label": "検索・索引更新", "variant": "emphasis", "labelAt": [1040, 377]},
+    {"id": "core-auth", "from": "demo-core", "to": "demo-auth", "label": "認証検証", "variant": "security"},
+    {"id": "core-foundry", "from": "demo-core", "to": "demo-foundry", "label": "再順位付け・生成"},
+    {"id": "core-blob", "from": "demo-core", "to": "demo-blob", "label": "原本読書き"},
+    {"id": "core-queue", "from": "demo-core", "to": "demo-queue", "label": "非同期処理の通知", "labelDy": 110},
+    {"id": "core-jev", "from": "demo-core", "to": "demo-jev", "label": "型付き判断", "variant": "dashed"}
+  ]
+}

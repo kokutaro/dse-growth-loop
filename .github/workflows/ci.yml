@@ -1,0 +1,30 @@
+name: verify
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.13.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: dotnet restore --locked-mode
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet test tests/Dse.Tests --no-build -c Release --collect:"XPlat Code Coverage"
+      - run: npm ci && npm run build
+        working-directory: web
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - run: npm run test:e2e
+        working-directory: web
+      - run: az bicep install --version v0.47.16
+      - run: python3 scripts/deploy.py validate
+      - run: python3 -m unittest discover -s tests/scripts
+      - run: git diff --check

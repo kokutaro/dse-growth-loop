@@ -1,0 +1,12 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- CLI専用機能は未使用。Dashboard/DCPは固定版NuGetから取得する。 -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
+    <NuGetLockFilePath>packages.$(NETCoreSdkRuntimeIdentifier).lock.json</NuGetLockFilePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Dse.Api/Dse.Api.csproj" />
+    <ProjectReference Include="../Dse.Worker/Dse.Worker.csproj" />
+  </ItemGroup>
+</Project>
