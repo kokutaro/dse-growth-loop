@@ -37,8 +37,8 @@ class DeploymentTests(unittest.TestCase):
         self.assertNotIn("dummy-secret-not-to-deploy", json.dumps(seen))
 
     def test_apps_without_auth_fail_before_any_azure_operation(self):
-        with patch.object(sys, "argv", ["deploy.py", "apps"]), \
-                patch.object(deploy, "load_env", return_value={"AZURE_SUBSCRIPTION_ID": "test-subscription"}), \
+        with patch.object(sys, "argv", ["deploy.py", "apps", "--confirm-cost"]), \
+                patch.object(deploy, "load_env", return_value={"AZURE_SUBSCRIPTION_ID": "test-subscription", "APPROVED_MONTHLY_BUDGET_JPY": "10000", "AZURE_BUDGET_EMAILS": "dummy@example.com", "AZURE_BUDGET_START_DATE": "2026-09-01"}), \
                 patch.object(deploy.subprocess, "run") as run, patch("sys.stderr"), self.assertRaises(SystemExit):
             deploy.main()
         run.assert_not_called()

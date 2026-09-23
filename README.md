@@ -22,7 +22,7 @@ npm --prefix web ci
 dotnet run --project src/Dse.AppHost
 ```
 
-UIは `http://localhost:5173`。AppHostはAPI、Worker基盤、Viteを開発用Demoモードで起動する。DockerやCosmosエミュレーターは不要。
+UIは `http://localhost:5173`。AppHostはAPIとViteを開発用Demoモードで起動する。DockerやCosmosエミュレーターは不要。
 
 個別起動や接続先設定には `.env` を使える。既存の環境変数が優先される。
 
@@ -35,7 +35,7 @@ npm --prefix web run dev
 
 ## Azure配置
 
-RGは **`dse-growth-loop-rg`** 固定。[Azure展開手順](docs/deployment.md)を参照。実際のAzure展開・有料API呼出しはまだ実施していない。
+RGは **`dse-growth-loop-rg`** 固定。[Azure展開手順](docs/deployment.md)を参照。APIはHTTP起動の最小0／最大1、Workerは手動seedのみ。ビルドはローカル既定で、有料操作には承認予算と明示フラグが必要。[費用ガードとAI上限契約](docs/development-cost-controls.md)を参照。実際のAzure展開・有料API呼出しはまだ実施していない。
 
 ## 検証
 

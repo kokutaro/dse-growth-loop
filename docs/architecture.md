@@ -43,7 +43,7 @@
 | 確認事項 | 現在の扱い | 決定が影響する部分 |
 |---|---|---|
 | 事例公開は確認後か自動か | 質問中。確認後で設計 | 承認画面、公開イベント |
-| 費用上限・希望納期 | 質問中。未確定 | Azure SKU、常時起動時間、実装範囲 |
+| 費用上限・希望納期 | 月1万円税別は申請案。承認額・納期は未確定 | Azure SKU、常時起動時間、実装範囲 |
 | ログイン用テナント・招待方法 | 未確定 | Entra設定、デモ参加者登録 |
 | 既存ダミー資料の有無 | 未確定。なければ作成 | 入力形式、抽出評価セット |
 | デモの最重要シナリオ | 第1候補は部署横断の課題解決 | データ作成と評価の優先順位 |
@@ -96,7 +96,7 @@
 
 Azure AI Search、PostgreSQL、埋め込みモデル、ベクトル検索は初期構成に含めない。コンセプトは変えず、固定費と検証規模に合わせて実現手段を変更する。一次検索は同じ検索条件・データ版・ルールに対して決定論的に実行し、Jevによる条件生成とLLMによる再順位付けはAI処理として区別する。
 
-最初からマイクロサービス群や自律的なマルチエージェントにしない。業務機能をモジュールに分け、Web/APIとWorkerの2プロセスを同じコードベースから動かす。事業化候補抽出は同じ業務ロジックを定時ジョブでも呼べるようにする。
+最初からマイクロサービス群や自律的なマルチエージェントにしない。業務機能をモジュールに分け、Web/APIとWorkerの2プロセスを同じコードベースから動かす。事業化候補抽出は手動を既定とし、定期実行は初期配置しない。
 
 [構成図を開く](diagrams/architecture.html)。図は依存関係の概要であり、全通信・ネットワーク境界を網羅した本番配置図ではない。JevはAzure外のサービス。ブラウザからAI・検索・DBへ直接接続しない。
 
@@ -109,12 +109,12 @@ Azure AI Search、PostgreSQL、埋め込みモデル、ベクトル検索は初�
 | チャット配送 | ASP.NET Core SignalR | 初期はAPI 1レプリカ。永続メッセージはDB。接続切断時は連番で再取得 |
 | 非同期Worker | C# / .NET 10 | 文書取込、AI判定、検索索引更新、チャット支援。APIと業務ルールを共用 |
 | 文書抽出 | Open XML SDK | `.docx` / `.xlsx`の文字・構造・出典位置を抽出。画像OCR・旧Office形式は初期対象外 |
-| 実行基盤 | Azure Container Apps | APIとWorkerを別プロセスで配置。実演時は各1レプリカを維持 |
-| 定時実行 | Azure Container Apps Jobs | 事業化分析を日次で実行する仮案。デモでは「今すぐ分析」も同じ処理を呼ぶ |
+| 実行基盤 | Azure Container Apps | APIはHTTP起動の最小0／最大1。取込Workerは実装後にQueue＋MIで起動 |
+| 手動実行 | Azure Container Apps Jobs | 現在はseedのみ。事業分析・通知漏れ回復は後続実装でも手動を既定とする |
 | 正本・検索用データ | Azure Cosmos DB for NoSQL Serverless | 個人/部署/職歴/事例/会話/評価/確率分布/ジョブをJSON文書で管理。正本と検索用投影は論理的に区別するが同じサービスに置く |
 | 原本・抽出成果物 | Azure Blob Storage | バージョン付き原本、抽出テキスト、処理結果を保存。公開URLにしない |
 | 検索 | Cosmos DBの属性索引 + アプリ内計算 | 分類ID、Probability、正規化語、経験期間等で検索。質問依存の複合スコアは候補取得後に計算 |
-| 非同期通知 | Azure Queue Storage | ジョブID・対象版を通知。完了状態はCosmos DB。低頻度の回復処理を併用し、DBを常時ポーリングしない |
+| 非同期通知 | Azure Queue Storage | ジョブID・対象版を通知。完了状態はCosmos DB。手動の回復処理を併用し、DBを常時ポーリングしない |
 | AI | Microsoft Foundry + Jev公式API | 各役割をアダプターで分離。モデル交換で業務データ形式を変えない |
 | 認証・秘密情報 | Entra ID / Managed Identity / Key Vault | Azure接続は可能な限りManaged Identity。Jev APIキーはKey Vault。UIへ渡さない |
 | 運用 | Azure Monitor / Application Insights / OpenTelemetry | 時間、エラー、処理段階、モデル版、トークン量、費用を追跡。本文は通常ログに出さない |
@@ -292,19 +292,19 @@ Open XML SDKを抽出の基礎とする。初期デモでは暗号化ファイ�
 
 仮の抽出条件は「独立した課題が3件以上、かつ複数部署」。デモデータ向けの説明用条件であり市場性の閾値ではない。小集団は特定につながるため、実データへ移る際は集計公開の最小集団サイズを別途定める。市場規模・売上・ROIを社内の件数だけから生成しない。
 
-定時処理は日次を仮置きする。Container Apps JobsのスケジュールはUTC評価なので、表示上の日本時間と明示的に変換する。今すぐ分析と定時処理は同じ`runId`/対象版管理・重複抑制を使用する。[Jobsの公式仕様](https://learn.microsoft.com/ja-jp/azure/container-apps/jobs)
+初期検証では「今すぐ分析」の手動実行だけを実装する。日次スケジュールは配置しない。`runId`/対象版管理・重複抑制を使用する。[Jobsの公式仕様](https://learn.microsoft.com/ja-jp/azure/container-apps/jobs)
 
 ### 15. 非同期処理と整合性
 
 初期はCosmos DBに永続ジョブを置き、Azure Queue StorageをWorkerへの通知に用いる。検索・会話の正本とジョブは可能な範囲で同じコンテナ・論理パーティションに配置する。DBの常時巡回は避ける。更新競合はETag、同一パーティションの複数更新はTransactional Batch等で保護する。コンテナ横断の一括更新は前提にしない。[整合性・競合制御](https://learn.microsoft.com/en-us/azure/cosmos-db/database-transactions-optimistic-concurrency)、[Queue Storage](https://learn.microsoft.com/en-us/azure/storage/queues/storage-queues-introduction)
 
 - ジョブ：`jobId`, `type`, `aggregateId`, `aggregateVersion`, `payloadVersion`, `dedupKey`, `status`, `attempt`, `availableAt`, `leaseUntil`, `lastErrorCode`。
-- DB保存後にQueue通知する。通知失敗・保存後のプロセス停止は、デモ時の明示的再実行と低頻度の未完了ジョブ照合で回復する。照合間隔は試験設定とし、その間の通知遅延を許容する。常時即時配送のSLAは設けない。
+- DB保存後にQueue通知する。通知失敗・保存後のプロセス停止は、明示的再実行と手動の未完了ジョブ照合で回復する。開発時は自動巡回せず、手動回復までの通知遅延を許容する。常時即時配送のSLAは設けない。
 - 処理：at-least-once。WorkerはETagによるリース獲得と期限更新を実装し、Queueの不可視期間も処理時間に合わせて延長する。完了済みの再通知は読み捨てる。
 - AIの重複呼出し課金まで完全に防げるとは保証しない。保存・投稿には一意キーを使い、重複表示を防ぐ。
 - 初期再試行案：最大3回、指数バックオフと揺らぎ、APIのRetry-Afterを尊重。認証・スキーマエラーは無条件で再試行しない。
 - 上限超過は`failed`にして管理画面から再実行。旧版イベントは最新の業務状態と比較して破棄する。
-- 複数のSearchUnitは途中で部分更新になり得る。親の有効版・投影完了状態との照合で混在を除外し、低頻度の照合で未反映を回復する。
+- 複数のSearchUnitは途中で部分更新になり得る。親の有効版・投影完了状態との照合で混在を除外し、手動の照合で未反映を回復する。
 - 原本アップロードとDB確定も同一トランザクションではない。中断された一時Blobを識別し、期限後に回収できるようにする。
 
 Service Bus、Redis、Azure SignalR Serviceは見送る。Queueの取得・スケール監視にも費用があるため、空キュー時の間隔を延ばし、デモ時間外のWorker稼働を制御する。QueueとDBを跨ぐexactly-onceは主張しない。複数APIレプリカが必要になった際はSignalRの配送構成を見直す。
@@ -374,7 +374,7 @@ Top-1のみ、Probability複数候補、職歴単位、補助Noul追加、正規
 
 総費用は「Cosmos DBのRU・保存量 + Container Apps稼働 + Blob/Queue/通信/ログ + Foundryの構造化・再順位付け・生成 + Jevの分類・補助Noul + 開発運用時間」で見積もる。AI Search、PostgreSQL、埋め込み処理の費用は含めない。予算・稼働時間が未確定のため、月額や納期を確約しない。
 
-- APIとWorkerはデモ時間帯にウォーム起動。時間外に縮退する場合、Worker停止中は非同期処理が進まないことを明示する。
+- APIは最小0／最大1のHTTP起動。待機Workerは配置せず、取込実装後はQueue＋MIで0台から起動する。定期ウォームアップは行わない。[ADR-11と費用ガード](development-cost-controls.md)を参照。
 - Cosmos DB Serverlessは予約RU/sの固定費を持たないが、保存量・索引・読み書きの課金があり、基盤全体が無料になるわけではない。広すぎる検索、不要な索引、クロスパーティション読取り、背景照合を測る。
 - 取込は原本ハッシュと処理版で再利用し、チャットは差分と短い論点に限定する。
 - LLM入力件数、最大トークン、同時実行数、再試行、投稿回数に上限を設定する。
@@ -398,15 +398,16 @@ AI Search、PostgreSQL、埋め込み・ベクトル検索も今回の初期構�
 | ADR-03 | Jevの全Probability＋補助Noulで候補収集、Foundryが根拠から再順位付け。埋め込みなし | 一次Recall、最終順位、費用、モデル更新 |
 | ADR-04 | AI抽出直後に利用、未確認を表示 | 本人訂正運用や実データ利用の要件変更 |
 | ADR-05 | AI自動投稿。ただし有限回・根拠付き・停止可能 | 誤投稿率、利用者の負担、コスト |
-| ADR-06 | API + Worker、Cosmos DBジョブ＋Queue通知＋低頻度回復。DB常時巡回なし | 高並列処理、複数レプリカ、配送の運用要件 |
+| ADR-06 | API + Worker、Cosmos DBジョブ＋Queue通知＋手動回復。DB常時巡回なし | 高並列処理、複数レプリカ、配送の運用要件 |
 | ADR-07 | 公開知識と生チャットを分離 | 公開確認へのユーザー回答 |
 | ADR-08 | 事業仮説は根拠と集計から、人が判断 | 顧客検証や事業部門の評価プロセスが決まった時 |
 | ADR-09 | 職歴・案件・事例単位で分類。ConfidenceとProbabilityと経験期間を分離 | 分類体系や文書構造の変更 |
+| ADR-11 | [HTTPゼロスケール・Queue＋MI・手動実行・費用ガード](development-cost-controls.md) | 取込の実装、同時利用、承認予算の変更 |
 | ADR-10 | 一次検索とLLM再順位付けを別の指標で評価 | 正解集合、候補上限、デモ目標の変更 |
 
 ## 付録：調査と検証の状態
 
 - 既存のレビュー反映版設計書を読み、コンセプト・人の意思決定・人事評価にしない原則を継承した。
-- 保存先は初期化済みでアプリ未作成。起動確認ではAppHostがなく、実装の動作検証は行えていない。
+- 初期調査時点ではアプリ未作成だったが、現在はAPI・手動seed Worker・AppHost・UI・Bicepを実装済み。ローカル検証記録と未実装範囲は[実装状況](implementation-status.md)を参照。Azure実環境の検証は未実施。
 - Jevの日本語分類精度はユーザー試験で目標達成済み（ユーザー申告。試験資料・数値は未受領）。本リポジトリのAzure接続、一次検索Recall、再順位付け、性能、費用は未実測。
 - 技術仕様の出典と保留理由は[技術調査記録](technology-research-2026-09-21.md)を参照。

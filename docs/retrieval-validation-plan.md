@@ -130,3 +130,7 @@ Noulは別に`signalId`, `yesProbability`, `evidenceState`, `sourceRefs`, `quest
 - 指標一覧、失敗例、Noulの増分効果、費用対品質の比較、次の採用設定。
 
 結果の保存先例は`docs/validation-results/<run-id>/`。まだ結果ファイルは作成しない。接続情報・APIキー・実際のログイン情報は含めない。
+
+## オンデマンド実行時の測定条件
+
+APIは最小0／最大1。コールド起動の待ち時間とウォーム状態の検索p50/p95を別記する。評価のための定期ウォームアップは行わない。AI評価前には[日次上限・停止契約](development-cost-controls.md)に従い対象と有料実行の承認を確認する。固定fixtureの成功を実AI品質やAzureの0→1→0の実測として報告しない。

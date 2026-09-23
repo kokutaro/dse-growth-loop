@@ -5,6 +5,33 @@ param modelVersion string
 param modelDeploymentName string
 param modelSku string
 param modelCapacity int
+param approvedMonthlyBudgetJpy int
+param budgetEmails array
+param budgetStartDate string
+param logsDailyQuotaGb string
+param logsRetentionDays int
+param telemetrySamplingPercentage int
+param blobSoftDeleteDays int
+param blobVersioningEnabled bool
+param blobHistoryReviewDays int
+param acrKeepLatestTags int
+param acrMinimumImageAgeDays int
+
+// 通知だけ。停止・削除アクションは登録しない。請求通貨JPYの契約で使用する。
+resource budget 'Microsoft.Consumption/budgets@2024-08-01' = if (approvedMonthlyBudgetJpy > 0) {
+  name: 'dse-development-monthly'
+  properties: {
+    amount: approvedMonthlyBudgetJpy
+    category: 'Cost'
+    timeGrain: 'Monthly'
+    timePeriod: { startDate: budgetStartDate }
+    notifications: {
+      actual80: { enabled: true, operator: 'GreaterThanOrEqualTo', threshold: 80, thresholdType: 'Actual', contactEmails: budgetEmails }
+      actual100: { enabled: true, operator: 'GreaterThanOrEqualTo', threshold: 100, thresholdType: 'Actual', contactEmails: budgetEmails }
+    }
+  }
+}
+
 var suffix = uniqueString(resourceGroup().id)
 var tags = { project: 'dse-growth-loop', purpose: 'dummy-data-demo' }
 
@@ -12,14 +39,14 @@ resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: 'dse-logs-${suffix}'
   location: location
   tags: tags
-  properties: { sku: { name: 'PerGB2018' }, retentionInDays: 30, workspaceCapping: { dailyQuotaGb: 1 } }
+  properties: { sku: { name: 'PerGB2018' }, retentionInDays: logsRetentionDays, workspaceCapping: { dailyQuotaGb: json(logsDailyQuotaGb) } }
 }
 resource insights 'Microsoft.Insights/components@2020-02-02' = {
   name: 'dse-insights-${suffix}'
   location: location
   kind: 'web'
   tags: tags
-  properties: { Application_Type: 'web', WorkspaceResourceId: logs.id, IngestionMode: 'LogAnalytics' }
+  properties: { Application_Type: 'web', WorkspaceResourceId: logs.id, IngestionMode: 'LogAnalytics', SamplingPercentage: telemetrySamplingPercentage }
 }
 resource environment 'Microsoft.App/managedEnvironments@2025-07-01' = {
   name: 'dse-environment'
@@ -36,14 +63,15 @@ resource environment 'Microsoft.App/managedEnvironments@2025-07-01' = {
 resource registry 'Microsoft.ContainerRegistry/registries@2025-04-01' = {
   name: 'dseacr${suffix}'
   location: location
-  tags: tags
+  tags: union(tags, { keepLatestTags: string(acrKeepLatestTags), minimumImageAgeDays: string(acrMinimumImageAgeDays), cleanupMode: 'Manual' })
+  // 手動レビュー用の保持方針。自動purgeは作成しない。
   sku: { name: 'Basic' }
   properties: { adminUserEnabled: false, anonymousPullEnabled: false }
 }
 resource storage 'Microsoft.Storage/storageAccounts@2025-01-01' = {
   name: 'dsest${suffix}'
   location: location
-  tags: tags
+  tags: union(tags, { historyReviewDays: string(blobHistoryReviewDays), cleanupMode: 'Manual' })
   kind: 'StorageV2'
   sku: { name: 'Standard_LRS' }
   properties: { minimumTlsVersion: 'TLS1_2', supportsHttpsTrafficOnly: true, allowBlobPublicAccess: false, allowSharedKeyAccess: false, defaultToOAuthAuthentication: true }
@@ -51,7 +79,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2025-01-01' = {
 resource blobs 'Microsoft.Storage/storageAccounts/blobServices@2025-01-01' = {
   parent: storage
   name: 'default'
-  properties: { isVersioningEnabled: true, deleteRetentionPolicy: { enabled: true, days: 7 } }
+  properties: { isVersioningEnabled: blobVersioningEnabled, deleteRetentionPolicy: { enabled: true, days: blobSoftDeleteDays } }
 }
 resource containers 'Microsoft.Storage/storageAccounts/blobServices/containers@2025-01-01' = [for name in ['originals', 'extracted']: {
   parent: blobs

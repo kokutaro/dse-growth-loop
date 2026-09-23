@@ -1,6 +1,6 @@
 # ローカル開発とAzure展開
 
-更新日：2026-09-21。対象は全件ダミーデータの初期実装。[実装状況](implementation-status.md)も参照。
+更新日：2026-09-23。対象は全件ダミーデータの初期実装。[実装状況](implementation-status.md)も参照。
 
 ## 設定の注入
 
@@ -33,17 +33,17 @@ AspireのDashboard/DCP依存はOS別のため、AppHostのみ `packages.<RID>.lo
 
 `infra/main.bicep` はサブスクリプションスコープでRGと次のリソースを作成／更新する。
 
-- Container Apps環境、API、Worker（各1レプリカ）。APIのみHTTPS ingress。
+- Container Apps環境、API（最小0／最大1、Single revision＋HTTPS起動）。未実装Workerは配置しない。
 - 手動Container Apps Job `dse-seed-demo`（ダミー初期データ投入）。
 - ACR Basic。管理者パスワードを無効化し、Managed Identityでpull。
 - Cosmos DB for NoSQL Serverless、DB `dse-growth-loop`、`catalog`（`/tenantId`）、`conversations`（`/sessionId`）。予約RUなし。
 - StorageV2 LRS。非公開Blob `originals` / `extracted`、Queue `ingestion` / `ingestion-poison`。Blob版管理、7日ソフト削除。共有キー無効。
 - Key Vault（RBAC、ソフト削除、purge protection）。秘密そのものはテンプレートに含めない。
 - Foundry AI Servicesアカウント、プロジェクト、任意のモデル配置。
-- Log Analytics（30日保持、1GB/日収集上限）、Application Insights。
+- Log Analytics（既定30日保持、0.05 GB/日収集cap）、Application Insights（サンプリング設定10%）。設定と制限は[費用ガード](development-cost-controls.md)を参照。
 - API/WorkerごとのManaged Identity。APIはcatalog読取、Workerはcatalog書込。Blob/Queue書込はWorkerのみ。
 
-公開サービスエンドポイント＋Entra認証の初期構成で、Private Endpoint/VNet閉域化は未実装。全件ダミーの小規模デモが対象。ACR・常駐レプリカ・ログ等に費用が発生し、ログ上限は請求全体の上限ではない。GlobalStandardモデル配置は国内完結を保証しない。
+公開サービスエンドポイント＋Entra認証の初期構成で、Private Endpoint/VNet閉域化は未実装。全件ダミーの小規模デモが対象。ACR・保存データ・実行中レプリカ・ログ等に費用が発生し、ログ上限は請求全体の上限ではない。GlobalStandardモデル配置は国内完結を保証しない。
 
 ## 展開前の準備
 
@@ -67,6 +67,8 @@ MSALがアクセストークンを取得してメモリに保持する。APIは�
 
 ## 展開順序
 
+承認額 `APPROVED_MONTHLY_BUDGET_JPY`、通知先 `AZURE_BUDGET_EMAILS`、月初の `AZURE_BUDGET_START_DATE` を設定する。月1万円は申請案で、未承認の既定値は0。詳細は[オンデマンド実行と費用ガード](development-cost-controls.md)。ローカルbuildはDockerとベースイメージ／依存パッケージ取得の通信が必要。pushする実行者には対象ACRへのAcrPush権限が必要。
+
 以下は利用者がAzureへ展開する際の手順。本実装作業ではクラウドへの操作を実行していない。
 
 ```sh
@@ -75,17 +77,22 @@ python3 scripts/deploy.py validate
 
 # 基盤の変更確認、作成
 python3 scripts/deploy.py what-if
-python3 scripts/deploy.py foundation
+python3 scripts/deploy.py foundation --confirm-cost
 
-# ACR Tasksでビルド（料金発生）。ローカルDockerは不要
+# 手元のDockerでlinux/amd64イメージをビルド（Azure操作・pushなし）
 python3 scripts/deploy.py build
+# 明示push。ACRストレージ等の費用が発生
+python3 scripts/deploy.py push --confirm-cost
+
+# 代替：ACR Tasks（有料）。この経路を選ぶ場合、上のbuild/pushは不要
+# python3 scripts/deploy.py build --build-method acr --confirm-cost
 
 # Entra設定後、アプリを含めて確認、作成
 python3 scripts/deploy.py what-if --include-apps
-python3 scripts/deploy.py apps
+python3 scripts/deploy.py apps --confirm-cost
 
 # 必要なときだけ初期データ投入
-python3 scripts/deploy.py seed
+python3 scripts/deploy.py seed --confirm-cost
 ```
 
 `apps` 出力の `apiUrl` をEntraのリダイレクトURIへ反映する。`seed` は開始要求であり完了保証ではない。次のコマンドとログで完了を確認する。
@@ -94,17 +101,17 @@ python3 scripts/deploy.py seed
 az containerapp job execution list --name dse-seed-demo --resource-group dse-growth-loop-rg
 ```
 
-同じダミーIDが存在すればCreateのConflictを無視し、既存状態を上書きしない。API/Workerの毎起動では投入しない。RBAC直後の403やACR pull失敗は権限伝播を確認して再実行する。更新は新しい `IMAGE_TAG` で `build` → `what-if --include-apps` → `apps`。
+同じダミーIDが存在すればCreateのConflictを無視し、既存状態を上書きしない。API/Workerの毎起動では投入しない。RBAC直後の403やACR pull失敗は権限伝播を確認して再実行する。更新は新しい `IMAGE_TAG` で `build` → `push --confirm-cost` → `what-if --include-apps` → `apps --confirm-cost`。
 
-スクリプトは同じ名前 `dse-growth-loop` のサブスクリプション展開を使う。最初の展開メタデータのリージョンを途中で変更するとAzureが拒否する場合がある。`apps` でも基盤テンプレートを同時に適用する。Incremental展開のため、基盤のみ実行し直しても既存アプリは削除しない。モデル設定は再展開時も維持する。空欄へ戻しても既存モデルの削除にはならない。
+スクリプトは同じ名前 `dse-growth-loop` のサブスクリプション展開を使う。最初の展開メタデータのリージョンを途中で変更するとAzureが拒否する場合がある。`apps` でも基盤テンプレートを同時に適用する。Incremental展開のため、基盤のみ実行し直しても既存アプリは削除しない。旧定義で配置済みの待機Workerも自動停止・削除されない。[移行確認手順](development-cost-controls.md)に従う。モデル設定は再展開時も維持する。空欄へ戻しても既存モデルの削除にはならない。
 
 ## 稼働確認と制限
 
-- `/health/live` はプロセス稼働、`/health/ready` はcatalog読取可否。
+- `/health/live` はプロセス稼働、`/health/ready` は手動のcatalog読取可否。配置プローブは `/health/live` を使いDB定期照会をしない。
 - `/api/config` はブラウザ用の公開認証設定のみ。
 - `/api/search` はJWT必須（Development＋Demoのみ省略）。30回/分、JSON最大32KiB。
 - コンパイルではSKU利用可否、クォータ、権限伝播、モデル利用権限を保証できない。Azureでのwhat-if・展開・動作確認は未実施。
-- Jev秘密値のKey Vault格納、実AI接続、Queue処理、日次事業分析Jobは次工程。Workerは待機基盤とダミー投入のみ。
+- Jev秘密値のKey Vault格納、実AI接続、Queue処理、手動の事業分析・通知漏れ回復は次工程。Workerは手動ダミー投入専用。定期ジョブは配置しない。
 
 ## 確認した公式仕様
 

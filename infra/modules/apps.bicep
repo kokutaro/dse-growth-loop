@@ -18,6 +18,10 @@ param entraClientId string
 @minLength(1)
 param allowedObjectIds array
 param modelDeploymentName string
+// 後続の取込ハンドラー実装後にだけ有効化する。初期配置は手動seedのみ。
+param deployIngestionWorker bool = false
+param runtimeSettings array = []
+param telemetrySamplingPercentage int = 10
 var commonEnv = [
   { name: 'DOTNET_ENVIRONMENT', value: 'Production' }
   { name: 'Data__Mode', value: 'Azure' }
@@ -31,10 +35,12 @@ var commonEnv = [
   { name: 'Jev__Endpoint', value: 'https://api.typesafe.ai/v1/systemone' }
   { name: 'Jev__SecretName', value: 'jev-api-key' }
   { name: 'Auth__TenantId', value: entraTenantId }
+  { name: 'Telemetry__SamplingPercentage', value: string(telemetrySamplingPercentage) }
   { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: applicationInsightsConnectionString }
 ]
 var allowedEnv = [for (id, i) in allowedObjectIds: { name: 'Auth__AllowedObjectIds__${i}', value: id }]
-var workerEnv = concat(commonEnv, [{ name: 'AZURE_CLIENT_ID', value: workerClientId }])
+var appEnv = concat(commonEnv, runtimeSettings)
+var workerEnv = concat(appEnv, [{ name: 'AZURE_CLIENT_ID', value: workerClientId }])
 resource api 'Microsoft.App/containerApps@2025-07-01' = {
   name: 'dse-api'
   location: location
@@ -52,20 +58,26 @@ resource api 'Microsoft.App/containerApps@2025-07-01' = {
         name: 'api'
         image: '${registryName}.azurecr.io/dse-api:${imageTag}'
         resources: { cpu: json('0.5'), memory: '1Gi' }
-        env: concat(commonEnv, [
+        env: concat(appEnv, [
           { name: 'AZURE_CLIENT_ID', value: apiClientId }
           { name: 'Auth__ClientId', value: entraClientId }
         ], allowedEnv)
         probes: [
+          { type: 'Startup', httpGet: { path: '/health/live', port: 8080 }, periodSeconds: 5, failureThreshold: 60 }
           { type: 'Liveness', httpGet: { path: '/health/live', port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
-          { type: 'Readiness', httpGet: { path: '/health/ready', port: 8080 }, initialDelaySeconds: 5, periodSeconds: 15 }
+          { type: 'Readiness', httpGet: { path: '/health/live', port: 8080 }, initialDelaySeconds: 5, periodSeconds: 30 }
         ]
       }]
-      scale: { minReplicas: 1, maxReplicas: 1 }
+      scale: {
+        minReplicas: 0
+        maxReplicas: 1
+        cooldownPeriod: 300
+        rules: [{ name: 'http', http: { metadata: { concurrentRequests: '1' } } }]
+      }
     }
   }
 }
-resource worker 'Microsoft.App/containerApps@2025-07-01' = {
+resource worker 'Microsoft.App/containerApps@2025-07-01' = if (deployIngestionWorker) {
   name: 'dse-worker'
   location: location
   identity: { type: 'UserAssigned', userAssignedIdentities: { '${workerIdentityId}': {} } }
@@ -75,7 +87,20 @@ resource worker 'Microsoft.App/containerApps@2025-07-01' = {
     configuration: { activeRevisionsMode: 'Single', registries: [{ server: '${registryName}.azurecr.io', identity: workerIdentityId }] }
     template: {
       containers: [{ name: 'worker', image: '${registryName}.azurecr.io/dse-worker:${imageTag}', resources: { cpu: json('0.25'), memory: '0.5Gi' }, env: workerEnv }]
-      scale: { minReplicas: 1, maxReplicas: 1 }
+      scale: {
+        minReplicas: 0
+        maxReplicas: 1
+        pollingInterval: 60
+        cooldownPeriod: 300
+        rules: [{
+          name: 'ingestion-queue'
+          custom: {
+            type: 'azure-queue'
+            identity: workerIdentityId
+            metadata: { accountName: storageName, queueName: 'ingestion', queueLength: '1', activationQueueLength: '0' }
+          }
+        }]
+      }
     }
   }
 }

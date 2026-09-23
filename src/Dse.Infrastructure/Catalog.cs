@@ -107,7 +107,15 @@ public static class InfrastructureRegistration
         }
         else throw new InvalidOperationException("Data__Mode は Demo または Azure を指定してください。");
         if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
-            services.AddOpenTelemetry().UseAzureMonitor();
+        {
+            if (!int.TryParse(configuration["Telemetry:SamplingPercentage"] ?? "10", out var percentage) || percentage is < 1 or > 100)
+                throw new InvalidOperationException("Telemetry__SamplingPercentage は1〜100で指定してください。");
+            services.AddOpenTelemetry().UseAzureMonitor(options =>
+            {
+                options.SamplingRatio = percentage / 100f;
+                options.TracesPerSecond = null;
+            });
+        }
         return services;
     }
 }
