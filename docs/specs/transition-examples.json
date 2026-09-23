@@ -1,0 +1,646 @@
+[
+  {
+    "machine": "ingestion",
+    "from": "queued",
+    "to": "processing",
+    "guards": [
+      "lease_acquired",
+      "budget_allowed"
+    ],
+    "actor": "worker",
+    "allowed": true
+  },
+  {
+    "machine": "ingestion",
+    "from": "queued",
+    "to": "processing",
+    "guards": [
+      "lease_acquired",
+      "budget_allowed"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "queued",
+    "to": "processing",
+    "guards": [
+      "budget_allowed"
+    ],
+    "actor": "worker",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "ready",
+    "guards": [
+      "lease_owned",
+      "version_current",
+      "evidence_valid"
+    ],
+    "actor": "worker",
+    "allowed": true
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "ready",
+    "guards": [
+      "lease_owned",
+      "version_current",
+      "evidence_valid"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "ready",
+    "guards": [
+      "version_current",
+      "evidence_valid"
+    ],
+    "actor": "worker",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "needs_review",
+    "guards": [
+      "lease_owned",
+      "version_current"
+    ],
+    "actor": "worker",
+    "allowed": true
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "needs_review",
+    "guards": [
+      "lease_owned",
+      "version_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "needs_review",
+    "guards": [
+      "version_current"
+    ],
+    "actor": "worker",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "failed",
+    "guards": [
+      "lease_owned",
+      "version_current"
+    ],
+    "actor": "worker",
+    "allowed": true
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "failed",
+    "guards": [
+      "lease_owned",
+      "version_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "processing",
+    "to": "failed",
+    "guards": [
+      "version_current"
+    ],
+    "actor": "worker",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "failed",
+    "to": "queued",
+    "guards": [
+      "retry_authorized",
+      "new_job",
+      "budget_allowed"
+    ],
+    "actor": "owner",
+    "allowed": true
+  },
+  {
+    "machine": "ingestion",
+    "from": "failed",
+    "to": "queued",
+    "guards": [
+      "retry_authorized",
+      "new_job",
+      "budget_allowed"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "failed",
+    "to": "queued",
+    "guards": [
+      "new_job",
+      "budget_allowed"
+    ],
+    "actor": "owner",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "needs_review",
+    "to": "queued",
+    "guards": [
+      "retry_authorized",
+      "new_job",
+      "budget_allowed"
+    ],
+    "actor": "owner",
+    "allowed": true
+  },
+  {
+    "machine": "ingestion",
+    "from": "needs_review",
+    "to": "queued",
+    "guards": [
+      "retry_authorized",
+      "new_job",
+      "budget_allowed"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "needs_review",
+    "to": "queued",
+    "guards": [
+      "new_job",
+      "budget_allowed"
+    ],
+    "actor": "owner",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "ai_unconfirmed",
+    "to": "self_corrected",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "self",
+    "allowed": true
+  },
+  {
+    "machine": "confirmation",
+    "from": "ai_unconfirmed",
+    "to": "self_corrected",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "ai_unconfirmed",
+    "to": "self_corrected",
+    "guards": [],
+    "actor": "self",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "ai_unconfirmed",
+    "to": "self_confirmed",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "self",
+    "allowed": true
+  },
+  {
+    "machine": "confirmation",
+    "from": "ai_unconfirmed",
+    "to": "self_confirmed",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "ai_unconfirmed",
+    "to": "self_confirmed",
+    "guards": [],
+    "actor": "self",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_corrected",
+    "to": "self_confirmed",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "self",
+    "allowed": true
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_corrected",
+    "to": "self_confirmed",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_corrected",
+    "to": "self_confirmed",
+    "guards": [],
+    "actor": "self",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_confirmed",
+    "to": "self_corrected",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "self",
+    "allowed": true
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_confirmed",
+    "to": "self_corrected",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_confirmed",
+    "to": "self_corrected",
+    "guards": [],
+    "actor": "self",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_corrected",
+    "to": "self_corrected",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "self",
+    "allowed": true
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_corrected",
+    "to": "self_corrected",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_corrected",
+    "to": "self_corrected",
+    "guards": [],
+    "actor": "self",
+    "allowed": false
+  },
+  {
+    "machine": "participation",
+    "from": "requested",
+    "to": "accepted",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "invitee",
+    "allowed": true
+  },
+  {
+    "machine": "participation",
+    "from": "requested",
+    "to": "accepted",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "participation",
+    "from": "requested",
+    "to": "accepted",
+    "guards": [],
+    "actor": "invitee",
+    "allowed": false
+  },
+  {
+    "machine": "participation",
+    "from": "requested",
+    "to": "declined",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "invitee",
+    "allowed": true
+  },
+  {
+    "machine": "participation",
+    "from": "requested",
+    "to": "declined",
+    "guards": [
+      "etag_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "participation",
+    "from": "requested",
+    "to": "declined",
+    "guards": [],
+    "actor": "invitee",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "draft",
+    "to": "review_requested",
+    "guards": [
+      "etag_current",
+      "participants_snapshotted"
+    ],
+    "actor": "owner",
+    "allowed": true
+  },
+  {
+    "machine": "knowledge",
+    "from": "draft",
+    "to": "review_requested",
+    "guards": [
+      "etag_current",
+      "participants_snapshotted"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "draft",
+    "to": "review_requested",
+    "guards": [
+      "participants_snapshotted"
+    ],
+    "actor": "owner",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "review_requested",
+    "to": "draft",
+    "guards": [
+      "etag_current",
+      "confirmations_cleared"
+    ],
+    "actor": "owner",
+    "allowed": true
+  },
+  {
+    "machine": "knowledge",
+    "from": "review_requested",
+    "to": "draft",
+    "guards": [
+      "etag_current",
+      "confirmations_cleared"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "review_requested",
+    "to": "draft",
+    "guards": [
+      "confirmations_cleared"
+    ],
+    "actor": "owner",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "review_requested",
+    "to": "published",
+    "guards": [
+      "etag_current",
+      "all_participants_confirmed",
+      "scope_approved",
+      "version_current"
+    ],
+    "actor": "publisher",
+    "allowed": true
+  },
+  {
+    "machine": "knowledge",
+    "from": "review_requested",
+    "to": "published",
+    "guards": [
+      "etag_current",
+      "all_participants_confirmed",
+      "scope_approved",
+      "version_current"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "review_requested",
+    "to": "published",
+    "guards": [
+      "all_participants_confirmed",
+      "scope_approved",
+      "version_current"
+    ],
+    "actor": "publisher",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "published",
+    "to": "withdrawn",
+    "guards": [
+      "etag_current",
+      "access_version_incremented"
+    ],
+    "actor": "owner",
+    "allowed": true
+  },
+  {
+    "machine": "knowledge",
+    "from": "published",
+    "to": "withdrawn",
+    "guards": [
+      "etag_current",
+      "access_version_incremented"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "published",
+    "to": "withdrawn",
+    "guards": [
+      "access_version_incremented"
+    ],
+    "actor": "owner",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "withdrawn",
+    "to": "draft",
+    "guards": [
+      "etag_current",
+      "new_version",
+      "confirmations_cleared"
+    ],
+    "actor": "owner",
+    "allowed": true
+  },
+  {
+    "machine": "knowledge",
+    "from": "withdrawn",
+    "to": "draft",
+    "guards": [
+      "etag_current",
+      "new_version",
+      "confirmations_cleared"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "withdrawn",
+    "to": "draft",
+    "guards": [
+      "new_version",
+      "confirmations_cleared"
+    ],
+    "actor": "owner",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "published",
+    "to": "draft",
+    "guards": [
+      "etag_current",
+      "new_version",
+      "confirmations_cleared",
+      "access_version_incremented"
+    ],
+    "actor": "owner",
+    "allowed": true
+  },
+  {
+    "machine": "knowledge",
+    "from": "published",
+    "to": "draft",
+    "guards": [
+      "etag_current",
+      "new_version",
+      "confirmations_cleared",
+      "access_version_incremented"
+    ],
+    "actor": "unauthorized",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "published",
+    "to": "draft",
+    "guards": [
+      "new_version",
+      "confirmations_cleared",
+      "access_version_incremented"
+    ],
+    "actor": "owner",
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "draft",
+    "to": "published",
+    "actor": "publisher",
+    "guards": [],
+    "allowed": false
+  },
+  {
+    "machine": "knowledge",
+    "from": "withdrawn",
+    "to": "published",
+    "actor": "publisher",
+    "guards": [],
+    "allowed": false
+  },
+  {
+    "machine": "confirmation",
+    "from": "self_corrected",
+    "to": "ai_unconfirmed",
+    "actor": "worker",
+    "guards": [],
+    "allowed": false
+  },
+  {
+    "machine": "participation",
+    "from": "accepted",
+    "to": "requested",
+    "actor": "owner",
+    "guards": [],
+    "allowed": false
+  },
+  {
+    "machine": "ingestion",
+    "from": "queued",
+    "to": "ready",
+    "actor": "worker",
+    "guards": [],
+    "allowed": false
+  }
+]

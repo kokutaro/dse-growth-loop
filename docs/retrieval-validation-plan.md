@@ -134,3 +134,7 @@ Noulは別に`signalId`, `yesProbability`, `evidenceState`, `sourceRefs`, `quest
 ## オンデマンド実行時の測定条件
 
 APIは最小0／最大1。コールド起動の待ち時間とウォーム状態の検索p50/p95を別記する。評価のための定期ウォームアップは行わない。AI評価前には[日次上限・停止契約](development-cost-controls.md)に従い対象と有料実行の承認を確認する。固定fixtureの成功を実AI品質やAzureの0→1→0の実測として報告しない。
+
+## 実装契約との対応
+
+評価用データの型・分類体系・正規化辞書は[実装契約 v1](specs/README.md)を参照する。既存fixtureの疎な分類値はLegacySearchUnitとして維持し、新規分類の全Probability・別Confidence・Noulの未評価/不明と混同しない。契約検証の成功は本計画のRecall・順位品質・実AI費用の実測を代替しない。

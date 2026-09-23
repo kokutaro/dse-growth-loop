@@ -1,0 +1,647 @@
+[
+  {
+    "name": "SearchRequest-query",
+    "schema": "SearchRequest",
+    "field": "query",
+    "value": {
+      "query": "",
+      "limit": 20
+    }
+  },
+  {
+    "name": "SearchRequest-query",
+    "schema": "SearchRequest",
+    "field": "query",
+    "value": {
+      "query": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "limit": 20
+    }
+  },
+  {
+    "name": "SearchRequest-limit",
+    "schema": "SearchRequest",
+    "field": "limit",
+    "value": {
+      "query": "引き継ぎを改善したい",
+      "limit": 101
+    }
+  },
+  {
+    "name": "SearchRequest-tenantId",
+    "schema": "SearchRequest",
+    "field": "$",
+    "value": {
+      "query": "引き継ぎを改善したい",
+      "limit": 20,
+      "tenantId": "forged"
+    }
+  },
+  {
+    "name": "SearchRequest-scopeIds",
+    "schema": "SearchRequest",
+    "field": "$",
+    "value": {
+      "query": "引き継ぎを改善したい",
+      "limit": 20,
+      "scopeIds": [
+        "admin"
+      ]
+    }
+  },
+  {
+    "name": "MessageCreate-body",
+    "schema": "MessageCreate",
+    "field": "body",
+    "value": {
+      "clientMessageId": "client-message-01",
+      "body": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  },
+  {
+    "name": "MessageCreate-authorType",
+    "schema": "MessageCreate",
+    "field": "$",
+    "value": {
+      "clientMessageId": "client-message-01",
+      "body": "架空の投稿",
+      "authorType": "ai"
+    }
+  },
+  {
+    "name": "ProfileUpdate-ownerId",
+    "schema": "ProfileUpdate",
+    "field": "$",
+    "value": {
+      "displayName": "架空 はな",
+      "available": true,
+      "action": "correct",
+      "experienceEdits": [],
+      "ownerId": "forged"
+    }
+  },
+  {
+    "name": "FeedbackCreate-rating",
+    "schema": "FeedbackCreate",
+    "field": "rating",
+    "value": {
+      "targetId": "session-01",
+      "feedbackType": "session",
+      "rating": 0,
+      "reaction": null,
+      "comment": null
+    }
+  },
+  {
+    "name": "FeedbackCreate-rating",
+    "schema": "FeedbackCreate",
+    "field": "rating",
+    "value": {
+      "targetId": "session-01",
+      "feedbackType": "session",
+      "rating": 6,
+      "reaction": null,
+      "comment": null
+    }
+  },
+  {
+    "name": "FeedbackCreate-rating",
+    "schema": "FeedbackCreate",
+    "field": "rating",
+    "value": {
+      "targetId": "session-01",
+      "feedbackType": "session",
+      "rating": 1.5,
+      "reaction": null,
+      "comment": null
+    }
+  },
+  {
+    "name": "ParticipationDecision-decision",
+    "schema": "ParticipationDecision",
+    "field": "decision",
+    "value": {
+      "decision": "published"
+    }
+  },
+  {
+    "name": "Knowledge-status",
+    "schema": "Knowledge",
+    "field": "status",
+    "value": {
+      "id": "knowledge-01",
+      "kind": "knowledge",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "title": "ダミーの知見",
+      "summary": "確認項目を共有した。",
+      "status": "public",
+      "publicationVersion": 1,
+      "participantIds": [
+        "demo-person-01"
+      ],
+      "confirmations": [],
+      "approvedBy": null,
+      "analysisConsent": "not_granted",
+      "consentedVersion": null,
+      "accessVersion": 1,
+      "evidenceMessageIds": [
+        "message-01"
+      ],
+      "analysisConfirmations": []
+    }
+  },
+  {
+    "name": "Document-etag",
+    "schema": "Document",
+    "field": "etag",
+    "value": {
+      "id": "document-01",
+      "kind": "document",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "unquoted",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "title": "ダミー週報",
+      "documentType": "report",
+      "status": "ready",
+      "currentVersionId": "document-version-01",
+      "accessVersion": 1
+    }
+  },
+  {
+    "name": "Document-sourceVersion",
+    "schema": "Document",
+    "field": "sourceVersion",
+    "value": {
+      "id": "document-01",
+      "kind": "document",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 0,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "title": "ダミー週報",
+      "documentType": "report",
+      "status": "ready",
+      "currentVersionId": "document-version-01",
+      "accessVersion": 1
+    }
+  },
+  {
+    "name": "Document-schemaVersion",
+    "schema": "Document",
+    "field": "schemaVersion",
+    "value": {
+      "id": "document-01",
+      "kind": "document",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "2.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "title": "ダミー週報",
+      "documentType": "report",
+      "status": "ready",
+      "currentVersionId": "document-version-01",
+      "accessVersion": 1
+    }
+  },
+  {
+    "name": "Document-scopeIds",
+    "schema": "Document",
+    "field": "scopeIds",
+    "value": {
+      "id": "document-01",
+      "kind": "document",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "title": "ダミー週報",
+      "documentType": "report",
+      "status": "ready",
+      "currentVersionId": "document-version-01",
+      "accessVersion": 1
+    }
+  },
+  {
+    "name": "DocumentVersion-bytes",
+    "schema": "DocumentVersion",
+    "field": "bytes",
+    "value": {
+      "id": "documentVersion-01",
+      "kind": "documentVersion",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "documentId": "document-01",
+      "blobKey": "dummy/document-01/v1.docx",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "bytes": 20971521,
+      "status": "ready",
+      "jobId": "job-01"
+    }
+  },
+  {
+    "name": "IdentityBinding-oid",
+    "schema": "IdentityBinding",
+    "field": "oid",
+    "value": {
+      "tenantId": "demo-tenant",
+      "oid": "not-uuid",
+      "principalId": "principal-demo-01",
+      "personId": "demo-person-01",
+      "roles": [
+        "member"
+      ],
+      "enabled": true
+    }
+  },
+  {
+    "name": "ClassificationResult-confidence",
+    "schema": "ClassificationResult",
+    "field": "confidence",
+    "value": {
+      "id": "classificationResult-01",
+      "kind": "classificationResult",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "axis": "domain",
+      "taxonomyVersion": "taxonomy-v1",
+      "choice": "sales",
+      "probabilities": {
+        "sales": 0.7,
+        "operations": 0.3,
+        "manufacturing": 0,
+        "mechanical": 0,
+        "software": 0,
+        "unknown": 0
+      },
+      "confidence": 1.01,
+      "aiRunId": null,
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "origin": "fixture"
+    }
+  },
+  {
+    "name": "ClassificationResult-probabilities",
+    "schema": "ClassificationResult",
+    "field": "probabilities",
+    "value": {
+      "id": "classificationResult-01",
+      "kind": "classificationResult",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "axis": "domain",
+      "taxonomyVersion": "taxonomy-v1",
+      "choice": "sales",
+      "probabilities": {
+        "sales": 1
+      },
+      "confidence": null,
+      "aiRunId": null,
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "origin": "fixture"
+    }
+  },
+  {
+    "name": "ExperienceSignal-signal",
+    "schema": "ExperienceSignal",
+    "field": "signal",
+    "value": {
+      "id": "experienceSignal-01",
+      "kind": "experienceSignal",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "decisionVersion": "noul-v1",
+      "signal": {
+        "signalId": "handover",
+        "yesProbability": 0,
+        "evidenceState": "unknown"
+      },
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "aiRunId": "ai-run-01"
+    }
+  },
+  {
+    "name": "ExperienceSignal-signal",
+    "schema": "ExperienceSignal",
+    "field": "signal",
+    "value": {
+      "id": "experienceSignal-01",
+      "kind": "experienceSignal",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "decisionVersion": "noul-v1",
+      "signal": {
+        "signalId": "handover",
+        "yesProbability": null,
+        "evidenceState": "supported"
+      },
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "aiRunId": "ai-run-01"
+    }
+  },
+  {
+    "name": "Job-container",
+    "schema": "Job",
+    "field": "container",
+    "value": {
+      "id": "job-01",
+      "kind": "job",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "container": "other",
+      "sessionId": null,
+      "jobType": "ingestion",
+      "aggregateId": "document-01",
+      "aggregateVersion": 1,
+      "payloadVersion": "1.0",
+      "dedupKey": "document-01:1:ingestion",
+      "status": "queued",
+      "attempt": 0,
+      "availableAt": "2026-09-23T00:00:00Z",
+      "leaseUntil": null,
+      "notificationState": "pending",
+      "lastErrorCode": null,
+      "supersedesJobId": null,
+      "resultId": null
+    }
+  },
+  {
+    "name": "Message-sequence",
+    "schema": "Message",
+    "field": "sequence",
+    "value": {
+      "id": "message-01",
+      "kind": "message",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "clientMessageId": "client-message-01",
+      "sequence": 0,
+      "authorType": "human",
+      "body": "ダミーの相談です。",
+      "deliveryState": "saved",
+      "sourceSnapshots": [],
+      "retrievalRunId": null
+    }
+  },
+  {
+    "name": "Message-deliveryState",
+    "schema": "Message",
+    "field": "deliveryState",
+    "value": {
+      "id": "message-01",
+      "kind": "message",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "clientMessageId": "client-message-01",
+      "sequence": 1,
+      "authorType": "human",
+      "body": "ダミーの相談です。",
+      "deliveryState": "unsaved",
+      "sourceSnapshots": [],
+      "retrievalRunId": null
+    }
+  },
+  {
+    "name": "Document-createdAt",
+    "schema": "Document",
+    "field": "createdAt",
+    "value": {
+      "id": "document-01",
+      "kind": "document",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "yesterday",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "title": "ダミー週報",
+      "documentType": "report",
+      "status": "ready",
+      "currentVersionId": "document-version-01",
+      "accessVersion": 1
+    }
+  },
+  {
+    "name": "whitespace-only-query",
+    "schema": "SearchRequest",
+    "field": "query",
+    "value": {
+      "query": "　 \t",
+      "limit": 20
+    }
+  }
+]

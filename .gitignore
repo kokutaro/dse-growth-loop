@@ -16,3 +16,4 @@ infra/*.json
 *.local.bicepparam
 .DS_Store
 **/__pycache__/
+.coverage

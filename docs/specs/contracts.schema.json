@@ -1,0 +1,3228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dse.invalid/specs/contracts.schema.json",
+  "title": "DSE implementation contracts 1.0 (dummy only)",
+  "$defs": {
+    "Actor": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "principal",
+            "service"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "required": [
+        "type",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "Period": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "end": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "precision": {
+          "enum": [
+            "day",
+            "month",
+            "year",
+            "unknown"
+          ]
+        },
+        "months": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "precision",
+        "months"
+      ],
+      "additionalProperties": false
+    },
+    "Signal": {
+      "type": "object",
+      "properties": {
+        "signalId": {
+          "enum": [
+            "handover"
+          ]
+        },
+        "yesProbability": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidenceState": {
+          "enum": [
+            "supported",
+            "unknown",
+            "not_evaluated"
+          ]
+        }
+      },
+      "required": [
+        "signalId",
+        "yesProbability",
+        "evidenceState"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "evidenceState": {
+                "const": "supported"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "yesProbability": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "yesProbability": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "CategoryProbability": {
+      "type": "object",
+      "properties": {
+        "axis": {
+          "enum": [
+            "domain"
+          ]
+        },
+        "categoryId": {
+          "enum": [
+            "sales",
+            "operations",
+            "manufacturing",
+            "mechanical",
+            "software",
+            "unknown"
+          ]
+        },
+        "probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "axis",
+        "categoryId",
+        "probability"
+      ],
+      "additionalProperties": false
+    },
+    "SourceRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "documentTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "id",
+        "documentTitle",
+        "location",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "EvidenceRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "documentVersionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sourceVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "documentVersionId",
+        "sourceVersion"
+      ],
+      "additionalProperties": false
+    },
+    "InputSnapshot": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sourceVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "activeVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "sourceVersion",
+        "activeVersion",
+        "accessVersion"
+      ],
+      "additionalProperties": false
+    },
+    "RunTrace": {
+      "type": "object",
+      "properties": {
+        "modelId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "\\S"
+        },
+        "taxonomyVersion": {
+          "enum": [
+            "taxonomy-v1"
+          ]
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "inputTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outputTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requestUnits": {
+          "type": "number",
+          "minimum": 0
+        },
+        "retryCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimatedCostJpy": {
+          "type": "number",
+          "minimum": 0
+        },
+        "pricingVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "modelId",
+        "promptVersion",
+        "taxonomyVersion",
+        "dataVersion",
+        "inputHash",
+        "evidenceIds",
+        "inputTokens",
+        "outputTokens",
+        "requestUnits",
+        "retryCount",
+        "estimatedCostJpy",
+        "pricingVersion"
+      ],
+      "additionalProperties": false
+    },
+    "Document": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "document"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "documentType": {
+          "enum": [
+            "profile",
+            "report",
+            "case"
+          ]
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "processing",
+            "ready",
+            "needs_review",
+            "failed"
+          ]
+        },
+        "currentVersionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "kind",
+        "title",
+        "documentType",
+        "status",
+        "currentVersionId",
+        "accessVersion"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "DocumentVersion": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "documentVersion"
+        },
+        "documentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "blobKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "mediaType": {
+          "enum": [
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          ]
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20971520
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "processing",
+            "ready",
+            "needs_review",
+            "failed"
+          ]
+        },
+        "jobId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "required": [
+        "kind",
+        "documentId",
+        "blobKey",
+        "sha256",
+        "mediaType",
+        "bytes",
+        "status",
+        "jobId"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "EvidenceSpan": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "evidenceSpan"
+        },
+        "documentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "documentVersionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "enum": [
+                "paragraph",
+                "cells",
+                "slide"
+              ]
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "textHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "validationState": {
+          "enum": [
+            "validated",
+            "rejected"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "documentId",
+        "documentVersionId",
+        "location",
+        "text",
+        "textHash",
+        "validationState"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "person"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "\\S"
+        },
+        "departmentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "experienceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "confirmationState": {
+          "enum": [
+            "ai_unconfirmed",
+            "self_corrected",
+            "self_confirmed"
+          ]
+        },
+        "correctionState": {
+          "enum": [
+            "none",
+            "conflict"
+          ]
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "kind",
+        "displayName",
+        "departmentId",
+        "available",
+        "experienceIds",
+        "confirmationState",
+        "correctionState",
+        "accessVersion"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Experience": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "experience"
+        },
+        "personId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "period": {
+          "$ref": "#/$defs/Period"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "confirmationState": {
+          "enum": [
+            "ai_unconfirmed",
+            "self_corrected",
+            "self_confirmed"
+          ]
+        },
+        "correctionState": {
+          "enum": [
+            "none",
+            "conflict"
+          ]
+        },
+        "pendingAiVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "personId",
+        "title",
+        "description",
+        "period",
+        "evidenceRefs",
+        "confirmationState",
+        "correctionState",
+        "pendingAiVersion"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "DepartmentActivity": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "departmentActivity"
+        },
+        "departmentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "period": {
+          "$ref": "#/$defs/Period"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "departmentId",
+        "summary",
+        "period",
+        "evidenceRefs"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "ClassificationResult": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "classificationResult"
+        },
+        "unitId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "axis": {
+          "enum": [
+            "domain"
+          ]
+        },
+        "taxonomyVersion": {
+          "enum": [
+            "taxonomy-v1"
+          ]
+        },
+        "choice": {
+          "enum": [
+            "sales",
+            "operations",
+            "manufacturing",
+            "mechanical",
+            "software",
+            "unknown"
+          ]
+        },
+        "probabilities": {
+          "type": "object",
+          "properties": {
+            "sales": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "operations": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "manufacturing": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "mechanical": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "software": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "unknown": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "sales",
+            "operations",
+            "manufacturing",
+            "mechanical",
+            "software",
+            "unknown"
+          ],
+          "additionalProperties": false
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "aiRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "origin": {
+          "enum": [
+            "ai",
+            "fixture"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "unitId",
+        "axis",
+        "taxonomyVersion",
+        "choice",
+        "probabilities",
+        "confidence",
+        "aiRunId",
+        "evidenceRefs",
+        "origin"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "ExperienceSignal": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "experienceSignal"
+        },
+        "unitId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "decisionVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "\\S"
+        },
+        "signal": {
+          "$ref": "#/$defs/Signal"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "aiRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "unitId",
+        "decisionVersion",
+        "signal",
+        "evidenceRefs",
+        "aiRunId"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "LegacySearchUnit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "kind": {
+          "const": "searchUnit"
+        },
+        "entityId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "entityType": {
+          "enum": [
+            "person",
+            "knowledge",
+            "departmentActivity"
+          ]
+        },
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "unitId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "scopeIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "status": {
+          "enum": [
+            "active",
+            "inactive"
+          ]
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "taxonomyVersion": {
+          "enum": [
+            "taxonomy-v1"
+          ]
+        },
+        "classifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CategoryProbability"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "experienceSignals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Signal"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "normalizedTerms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "\\S"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "confirmationState": {
+          "enum": [
+            "fixture",
+            "ai_unconfirmed",
+            "self_corrected",
+            "self_confirmed"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "entityId",
+        "entityType",
+        "tenantId",
+        "unitId",
+        "title",
+        "summary",
+        "scopeIds",
+        "status",
+        "available",
+        "taxonomyVersion",
+        "classifications",
+        "experienceSignals",
+        "normalizedTerms",
+        "sourceRefs",
+        "confirmationState"
+      ],
+      "additionalProperties": false
+    },
+    "SearchUnit": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "searchUnit"
+        },
+        "entityId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "entityType": {
+          "enum": [
+            "person",
+            "knowledge",
+            "departmentActivity"
+          ]
+        },
+        "unitId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "inactive"
+          ]
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "taxonomyVersion": {
+          "enum": [
+            "taxonomy-v1"
+          ]
+        },
+        "classifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CategoryProbability"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "experienceSignals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Signal"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "normalizedTerms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "\\S"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "confirmationState": {
+          "enum": [
+            "fixture",
+            "ai_unconfirmed",
+            "self_corrected",
+            "self_confirmed"
+          ]
+        },
+        "projectionVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "projectionState": {
+          "enum": [
+            "building",
+            "ready",
+            "stale"
+          ]
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "classificationResultIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "entityId",
+        "entityType",
+        "unitId",
+        "title",
+        "summary",
+        "status",
+        "available",
+        "taxonomyVersion",
+        "classifications",
+        "experienceSignals",
+        "normalizedTerms",
+        "sourceRefs",
+        "confirmationState",
+        "projectionVersion",
+        "projectionState",
+        "accessVersion",
+        "classificationResultIds",
+        "evidenceRefs"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Job": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "job"
+        },
+        "container": {
+          "enum": [
+            "catalog",
+            "conversations"
+          ]
+        },
+        "sessionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "jobType": {
+          "enum": [
+            "ingestion",
+            "projection",
+            "chat_assist",
+            "knowledge",
+            "opportunity",
+            "notification_recovery"
+          ]
+        },
+        "aggregateId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "payloadVersion": {
+          "const": "1.0"
+        },
+        "dedupKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "processing",
+            "ready",
+            "needs_review",
+            "failed",
+            "budget_stopped",
+            "cancelled"
+          ]
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "availableAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "leaseUntil": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "notificationState": {
+          "enum": [
+            "pending",
+            "sent"
+          ]
+        },
+        "lastErrorCode": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supersedesJobId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resultId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "container",
+        "sessionId",
+        "jobType",
+        "aggregateId",
+        "aggregateVersion",
+        "payloadVersion",
+        "dedupKey",
+        "status",
+        "attempt",
+        "availableAt",
+        "leaseUntil",
+        "notificationState",
+        "lastErrorCode",
+        "supersedesJobId",
+        "resultId"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        },
+        {
+          "if": {
+            "properties": {
+              "container": {
+                "const": "conversations"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sessionId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "sessionId": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "AiRun": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "aiRun"
+        },
+        "jobId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "container": {
+          "enum": [
+            "catalog",
+            "conversations"
+          ]
+        },
+        "sessionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "succeeded",
+            "failed",
+            "budget_stopped",
+            "not_evaluated"
+          ]
+        },
+        "trace": {
+          "$ref": "#/$defs/RunTrace"
+        },
+        "inputSnapshots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InputSnapshot"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "errorCode": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "jobId",
+        "container",
+        "sessionId",
+        "status",
+        "trace",
+        "inputSnapshots",
+        "errorCode"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "RetrievalRun": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "retrievalRun"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "ruleVersion": {
+          "const": "retrieval-v1"
+        },
+        "taxonomyVersion": {
+          "enum": [
+            "taxonomy-v1"
+          ]
+        },
+        "dictionaryVersion": {
+          "const": "normalization-v1"
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "candidateIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "matchedUnits": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requestUnits": {
+          "type": "number",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "no_match",
+            "degraded",
+            "budget_stopped",
+            "failed"
+          ]
+        },
+        "rerankingStatus": {
+          "enum": [
+            "completed",
+            "not_configured",
+            "failed",
+            "budget_stopped"
+          ]
+        },
+        "aiRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "query",
+        "ruleVersion",
+        "taxonomyVersion",
+        "dictionaryVersion",
+        "dataVersion",
+        "candidateIds",
+        "evidenceIds",
+        "matchedUnits",
+        "requestUnits",
+        "status",
+        "rerankingStatus",
+        "aiRunId"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Challenge": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "challenge"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "closed"
+          ]
+        },
+        "sessionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analysisConsent": {
+          "enum": [
+            "not_granted",
+            "granted",
+            "revoked"
+          ]
+        },
+        "consentedVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "kind",
+        "title",
+        "summary",
+        "status",
+        "sessionId",
+        "analysisConsent",
+        "consentedVersion",
+        "accessVersion"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Participation": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "participation"
+        },
+        "challengeId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "personId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "status": {
+          "enum": [
+            "requested",
+            "accepted",
+            "declined"
+          ]
+        },
+        "decidedBy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Actor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "challengeId",
+        "personId",
+        "status",
+        "decidedBy"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "session"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "challengeId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "membershipVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "enum": [
+            "open",
+            "closed"
+          ]
+        },
+        "aiAssistance": {
+          "enum": [
+            "enabled",
+            "stopped"
+          ]
+        },
+        "lastSequence": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "challengeId",
+        "participantIds",
+        "membershipVersion",
+        "status",
+        "aiAssistance",
+        "lastSequence"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "message"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "clientMessageId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "authorType": {
+          "enum": [
+            "human",
+            "ai"
+          ]
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "deliveryState": {
+          "const": "saved"
+        },
+        "sourceSnapshots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InputSnapshot"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "retrievalRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "clientMessageId",
+        "sequence",
+        "authorType",
+        "body",
+        "deliveryState",
+        "sourceSnapshots",
+        "retrievalRunId"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Outcome": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "outcome"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "resolution": {
+          "enum": [
+            "open",
+            "partially_resolved",
+            "resolved",
+            "unresolved_closed"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "evidenceMessageIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "resolution",
+        "summary",
+        "evidenceMessageIds"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Feedback": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "feedback"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "targetId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "feedbackType": {
+          "enum": [
+            "session",
+            "ai_message"
+          ]
+        },
+        "rating": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reaction": {
+          "anyOf": [
+            {
+              "enum": [
+                "helpful",
+                "unnecessary"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "comment": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "targetId",
+        "feedbackType",
+        "rating",
+        "reaction",
+        "comment"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        },
+        {
+          "if": {
+            "properties": {
+              "feedbackType": {
+                "const": "session"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reaction": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "rating": {
+                "type": "null"
+              },
+              "reaction": {
+                "enum": [
+                  "helpful",
+                  "unnecessary"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ParticipantConfirmation": {
+      "type": "object",
+      "properties": {
+        "personId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scopeIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "confirmedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "personId",
+        "version",
+        "scopeIds",
+        "confirmedAt"
+      ],
+      "additionalProperties": false
+    },
+    "Knowledge": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "knowledge"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "review_requested",
+            "published",
+            "withdrawn"
+          ]
+        },
+        "publicationVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "confirmations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParticipantConfirmation"
+          },
+          "minItems": 0,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "approvedBy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Actor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analysisConsent": {
+          "enum": [
+            "not_granted",
+            "granted",
+            "revoked"
+          ]
+        },
+        "consentedVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "evidenceMessageIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "analysisConfirmations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParticipantConfirmation"
+          },
+          "minItems": 0,
+          "maxItems": 20,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "title",
+        "summary",
+        "status",
+        "publicationVersion",
+        "participantIds",
+        "confirmations",
+        "approvedBy",
+        "analysisConsent",
+        "consentedVersion",
+        "accessVersion",
+        "evidenceMessageIds",
+        "analysisConfirmations"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Opportunity": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "opportunity"
+        },
+        "jobId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "asOf": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "inputSnapshots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InputSnapshot"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "independentChallengeCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "departmentCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "candidate",
+            "investigating",
+            "on_hold",
+            "rejected"
+          ]
+        },
+        "aiRunId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "required": [
+        "kind",
+        "jobId",
+        "asOf",
+        "inputSnapshots",
+        "summary",
+        "independentChallengeCount",
+        "departmentCount",
+        "status",
+        "aiRunId"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "IdentityBinding": {
+      "type": "object",
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "oid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "personId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "member",
+              "publisher",
+              "operator",
+              "analyst"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "tenantId",
+        "oid",
+        "principalId",
+        "personId",
+        "roles",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "UnsavedMessage": {
+      "type": "object",
+      "properties": {
+        "clientMessageId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "deliveryState": {
+          "enum": [
+            "unsaved",
+            "sending",
+            "save_failed"
+          ]
+        },
+        "errorCode": {
+          "anyOf": [
+            {
+              "enum": [
+                "NETWORK_ERROR",
+                "SAVE_FAILED"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "clientMessageId",
+        "sessionId",
+        "body",
+        "deliveryState",
+        "errorCode"
+      ],
+      "additionalProperties": false
+    },
+    "Problem": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "format": "uri"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "status": {
+          "enum": [
+            400,
+            401,
+            403,
+            404,
+            409,
+            412,
+            413,
+            429,
+            503
+          ]
+        },
+        "code": {
+          "enum": [
+            "INVALID_INPUT",
+            "UNAUTHENTICATED",
+            "FORBIDDEN",
+            "NOT_FOUND",
+            "INVALID_TRANSITION",
+            "CORRECTION_CONFLICT",
+            "IDEMPOTENCY_CONFLICT",
+            "STALE_VERSION",
+            "PAYLOAD_TOO_LARGE",
+            "RATE_LIMITED",
+            "AI_FAILED",
+            "NO_MATCH",
+            "AI_BUDGET_STOPPED",
+            "SAVE_FAILED",
+            "SOURCE_REVOKED",
+            "DEPENDENCY_UNAVAILABLE"
+          ]
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "\\S"
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "title",
+        "status",
+        "code",
+        "detail",
+        "traceId",
+        "retryable"
+      ],
+      "additionalProperties": false
+    },
+    "Accepted": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "status": {
+          "enum": [
+            "queued"
+          ]
+        },
+        "statusUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "jobId",
+        "status",
+        "statusUrl"
+      ],
+      "additionalProperties": false
+    },
+    "UploadRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "documentType": {
+          "enum": [
+            "profile",
+            "report",
+            "case"
+          ]
+        },
+        "file": {
+          "type": "string",
+          "format": "binary"
+        }
+      },
+      "required": [
+        "title",
+        "documentType",
+        "file"
+      ],
+      "additionalProperties": false
+    },
+    "ProfileUpdate": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "\\S"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "action": {
+          "enum": [
+            "correct",
+            "confirm"
+          ]
+        },
+        "experienceEdits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "experienceId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 8000,
+                "pattern": "\\S"
+              },
+              "period": {
+                "$ref": "#/$defs/Period"
+              }
+            },
+            "required": [
+              "experienceId",
+              "description",
+              "period"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 20,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "displayName",
+        "available",
+        "action",
+        "experienceEdits"
+      ],
+      "additionalProperties": false
+    },
+    "SearchRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "query",
+        "limit"
+      ],
+      "additionalProperties": false
+    },
+    "SearchResponse": {
+      "type": "object",
+      "properties": {
+        "runId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "no_match",
+            "degraded",
+            "budget_stopped"
+          ]
+        },
+        "code": {
+          "anyOf": [
+            {
+              "enum": [
+                "NO_MATCH",
+                "AI_FAILED",
+                "AI_BUDGET_STOPPED"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SearchUnit"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "rerankingStatus": {
+          "enum": [
+            "completed",
+            "not_configured",
+            "failed",
+            "budget_stopped"
+          ]
+        }
+      },
+      "required": [
+        "runId",
+        "status",
+        "code",
+        "candidates",
+        "rerankingStatus"
+      ],
+      "additionalProperties": false
+    },
+    "ChallengeCreate": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "title",
+        "summary"
+      ],
+      "additionalProperties": false
+    },
+    "ParticipationCreate": {
+      "type": "object",
+      "properties": {
+        "personId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "required": [
+        "personId"
+      ],
+      "additionalProperties": false
+    },
+    "ParticipationDecision": {
+      "type": "object",
+      "properties": {
+        "decision": {
+          "enum": [
+            "accepted",
+            "declined"
+          ]
+        }
+      },
+      "required": [
+        "decision"
+      ],
+      "additionalProperties": false
+    },
+    "SessionCreate": {
+      "type": "object",
+      "properties": {
+        "challengeId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "required": [
+        "challengeId"
+      ],
+      "additionalProperties": false
+    },
+    "SessionUpdate": {
+      "type": "object",
+      "properties": {
+        "aiAssistance": {
+          "enum": [
+            "enabled",
+            "stopped"
+          ]
+        },
+        "status": {
+          "enum": [
+            "open",
+            "closed"
+          ]
+        }
+      },
+      "required": [
+        "aiAssistance",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "MessageCreate": {
+      "type": "object",
+      "properties": {
+        "clientMessageId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "clientMessageId",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "OutcomeUpdate": {
+      "type": "object",
+      "properties": {
+        "resolution": {
+          "enum": [
+            "open",
+            "partially_resolved",
+            "resolved",
+            "unresolved_closed"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "evidenceMessageIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "resolution",
+        "summary",
+        "evidenceMessageIds"
+      ],
+      "additionalProperties": false
+    },
+    "FeedbackCreate": {
+      "type": "object",
+      "properties": {
+        "targetId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "feedbackType": {
+          "enum": [
+            "session",
+            "ai_message"
+          ]
+        },
+        "rating": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reaction": {
+          "anyOf": [
+            {
+              "enum": [
+                "helpful",
+                "unnecessary"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "comment": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "targetId",
+        "feedbackType",
+        "rating",
+        "reaction",
+        "comment"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "feedbackType": {
+                "const": "session"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reaction": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "rating": {
+                "type": "null"
+              },
+              "reaction": {
+                "enum": [
+                  "helpful",
+                  "unnecessary"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "KnowledgeCreate": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "evidenceMessageIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "sessionId",
+        "title",
+        "summary",
+        "evidenceMessageIds"
+      ],
+      "additionalProperties": false
+    },
+    "KnowledgeUpdate": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "title",
+        "summary"
+      ],
+      "additionalProperties": false
+    },
+    "KnowledgeAction": {
+      "type": "object",
+      "properties": {
+        "publicationVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "publicationVersion"
+      ],
+      "additionalProperties": false
+    },
+    "AnalysisConsent": {
+      "type": "object",
+      "properties": {
+        "decision": {
+          "enum": [
+            "granted",
+            "revoked"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "decision",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "OpportunityCreate": {
+      "type": "object",
+      "properties": {
+        "summaryIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "summaryIds"
+      ],
+      "additionalProperties": false
+    },
+    "JobRetry": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "EvidencePage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceSpan"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "continuationToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "continuationToken"
+      ],
+      "additionalProperties": false
+    },
+    "MessagePage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Message"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "continuationToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "continuationToken"
+      ],
+      "additionalProperties": false
+    },
+    "OpportunityPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Opportunity"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "continuationToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "continuationToken"
+      ],
+      "additionalProperties": false
+    },
+    "ExperiencePage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Experience"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "continuationToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "continuationToken"
+      ],
+      "additionalProperties": false
+    },
+    "PersistedMetadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "ownerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "scopeIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "sourceVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "activeVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "etag": {
+          "type": "string",
+          "pattern": "^\"[^\"\\r\\n]+\"$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdBy": {
+          "$ref": "#/$defs/Actor"
+        },
+        "correctedBy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Actor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "tenantId",
+        "ownerId",
+        "scopeIds",
+        "schemaVersion",
+        "sourceVersion",
+        "activeVersion",
+        "etag",
+        "createdAt",
+        "updatedAt",
+        "createdBy",
+        "correctedBy"
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/Document"
+    },
+    {
+      "$ref": "#/$defs/DocumentVersion"
+    },
+    {
+      "$ref": "#/$defs/EvidenceSpan"
+    },
+    {
+      "$ref": "#/$defs/Person"
+    },
+    {
+      "$ref": "#/$defs/Experience"
+    },
+    {
+      "$ref": "#/$defs/DepartmentActivity"
+    },
+    {
+      "$ref": "#/$defs/ClassificationResult"
+    },
+    {
+      "$ref": "#/$defs/ExperienceSignal"
+    },
+    {
+      "$ref": "#/$defs/SearchUnit"
+    },
+    {
+      "$ref": "#/$defs/Job"
+    },
+    {
+      "$ref": "#/$defs/AiRun"
+    },
+    {
+      "$ref": "#/$defs/RetrievalRun"
+    },
+    {
+      "$ref": "#/$defs/Challenge"
+    },
+    {
+      "$ref": "#/$defs/Participation"
+    },
+    {
+      "$ref": "#/$defs/Session"
+    },
+    {
+      "$ref": "#/$defs/Message"
+    },
+    {
+      "$ref": "#/$defs/Outcome"
+    },
+    {
+      "$ref": "#/$defs/Feedback"
+    },
+    {
+      "$ref": "#/$defs/Knowledge"
+    },
+    {
+      "$ref": "#/$defs/Opportunity"
+    }
+  ],
+  "x-example-required": [
+    "Document",
+    "DocumentVersion",
+    "EvidenceSpan",
+    "Person",
+    "Experience",
+    "DepartmentActivity",
+    "ClassificationResult",
+    "ExperienceSignal",
+    "SearchUnit",
+    "Job",
+    "AiRun",
+    "RetrievalRun",
+    "Challenge",
+    "Participation",
+    "Session",
+    "Message",
+    "Outcome",
+    "Feedback",
+    "Knowledge",
+    "Opportunity",
+    "IdentityBinding",
+    "UnsavedMessage",
+    "Problem",
+    "Accepted",
+    "UploadRequest",
+    "ProfileUpdate",
+    "SearchRequest",
+    "SearchResponse",
+    "ChallengeCreate",
+    "ParticipationCreate",
+    "ParticipationDecision",
+    "SessionCreate",
+    "SessionUpdate",
+    "MessageCreate",
+    "OutcomeUpdate",
+    "FeedbackCreate",
+    "KnowledgeCreate",
+    "KnowledgeUpdate",
+    "KnowledgeAction",
+    "AnalysisConsent",
+    "OpportunityCreate",
+    "JobRetry",
+    "EvidencePage",
+    "MessagePage",
+    "OpportunityPage",
+    "ExperiencePage"
+  ]
+}
