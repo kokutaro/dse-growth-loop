@@ -5,6 +5,7 @@
 ## 設計資料
 
 - [アーキテクチャ文書](docs/architecture.md)：コンセプト、仕組み、構成、データ、処理、検証計画。
+- [実装契約 v1](docs/specs/README.md)：正本・状態遷移・API・権限・分類体系、JSON Schema/OpenAPIと検証例。後続Issue共通の入口。
 - [技術選定の調査記録](docs/technology-research-2026-09-21.md)：2026年9月21日に確認した一次情報と選定理由。
 - [検索検証計画](docs/retrieval-validation-plan.md)：Probability・補助Noulによる一次検索とLLM再順位付けを段階別に検証。
 - [構成図](docs/diagrams/architecture.html)：ブラウザで開ける単独HTML。図中の文章は日本語。ビューアの固定操作UIとHTMLの言語指定は英語。
@@ -49,6 +50,9 @@ npm run test:e2e
 cd ..
 python3 scripts/deploy.py validate
 python3 -m unittest discover -s tests/scripts
+python3 -m venv /tmp/dse-contracts-venv
+/tmp/dse-contracts-venv/bin/pip install -r tests/contracts/requirements.txt
+/tmp/dse-contracts-venv/bin/python -m unittest discover -s tests/contracts
 git diff --check
 ```
 

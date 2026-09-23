@@ -1,0 +1,224 @@
+{
+  "ingestion": [
+    {
+      "from": "queued",
+      "to": "processing",
+      "actors": [
+        "worker"
+      ],
+      "guards": [
+        "lease_acquired",
+        "budget_allowed"
+      ]
+    },
+    {
+      "from": "processing",
+      "to": "ready",
+      "actors": [
+        "worker"
+      ],
+      "guards": [
+        "lease_owned",
+        "version_current",
+        "evidence_valid"
+      ]
+    },
+    {
+      "from": "processing",
+      "to": "needs_review",
+      "actors": [
+        "worker"
+      ],
+      "guards": [
+        "lease_owned",
+        "version_current"
+      ]
+    },
+    {
+      "from": "processing",
+      "to": "failed",
+      "actors": [
+        "worker"
+      ],
+      "guards": [
+        "lease_owned",
+        "version_current"
+      ]
+    },
+    {
+      "from": "failed",
+      "to": "queued",
+      "actors": [
+        "owner",
+        "operator"
+      ],
+      "guards": [
+        "retry_authorized",
+        "new_job",
+        "budget_allowed"
+      ]
+    },
+    {
+      "from": "needs_review",
+      "to": "queued",
+      "actors": [
+        "owner",
+        "operator"
+      ],
+      "guards": [
+        "retry_authorized",
+        "new_job",
+        "budget_allowed"
+      ]
+    }
+  ],
+  "confirmation": [
+    {
+      "from": "ai_unconfirmed",
+      "to": "self_corrected",
+      "actors": [
+        "self"
+      ],
+      "guards": [
+        "etag_current"
+      ]
+    },
+    {
+      "from": "ai_unconfirmed",
+      "to": "self_confirmed",
+      "actors": [
+        "self"
+      ],
+      "guards": [
+        "etag_current"
+      ]
+    },
+    {
+      "from": "self_corrected",
+      "to": "self_confirmed",
+      "actors": [
+        "self"
+      ],
+      "guards": [
+        "etag_current"
+      ]
+    },
+    {
+      "from": "self_confirmed",
+      "to": "self_corrected",
+      "actors": [
+        "self"
+      ],
+      "guards": [
+        "etag_current"
+      ]
+    },
+    {
+      "from": "self_corrected",
+      "to": "self_corrected",
+      "actors": [
+        "self"
+      ],
+      "guards": [
+        "etag_current"
+      ]
+    }
+  ],
+  "participation": [
+    {
+      "from": "requested",
+      "to": "accepted",
+      "actors": [
+        "invitee"
+      ],
+      "guards": [
+        "etag_current"
+      ]
+    },
+    {
+      "from": "requested",
+      "to": "declined",
+      "actors": [
+        "invitee"
+      ],
+      "guards": [
+        "etag_current"
+      ]
+    }
+  ],
+  "knowledge": [
+    {
+      "from": "draft",
+      "to": "review_requested",
+      "actors": [
+        "owner"
+      ],
+      "guards": [
+        "etag_current",
+        "participants_snapshotted"
+      ]
+    },
+    {
+      "from": "review_requested",
+      "to": "draft",
+      "actors": [
+        "owner"
+      ],
+      "guards": [
+        "etag_current",
+        "confirmations_cleared"
+      ]
+    },
+    {
+      "from": "review_requested",
+      "to": "published",
+      "actors": [
+        "publisher"
+      ],
+      "guards": [
+        "etag_current",
+        "all_participants_confirmed",
+        "scope_approved",
+        "version_current"
+      ]
+    },
+    {
+      "from": "published",
+      "to": "withdrawn",
+      "actors": [
+        "owner",
+        "publisher",
+        "participant"
+      ],
+      "guards": [
+        "etag_current",
+        "access_version_incremented"
+      ]
+    },
+    {
+      "from": "withdrawn",
+      "to": "draft",
+      "actors": [
+        "owner"
+      ],
+      "guards": [
+        "etag_current",
+        "new_version",
+        "confirmations_cleared"
+      ]
+    },
+    {
+      "from": "published",
+      "to": "draft",
+      "actors": [
+        "owner"
+      ],
+      "guards": [
+        "etag_current",
+        "new_version",
+        "confirmations_cleared",
+        "access_version_incremented"
+      ]
+    }
+  ]
+}

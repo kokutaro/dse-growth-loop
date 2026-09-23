@@ -180,6 +180,8 @@ Jev停止時も保存済み分布は利用できる。質問の新規分類が�
 
 ### 9. 原本・正本・検索用データを分ける
 
+Issue #3の[実装契約 v1](specs/README.md)で最小スキーマ、API、権限、状態遷移、未承認事項を定義した。以下の設計上の名称SessionOutcome/KnowledgeItem/OpportunityRunは、契約ではOutcome/Knowledge/Job＋Opportunityに対応する。永続化・認可・業務機能の実装完了を意味しない。
+
 | データ | 主な内容 | 保管先 |
 |---|---|---|
 | Document / DocumentVersion | 所有者種別、文書種別、原本ハッシュ、Blobキー、版、処理状態、閲覧範囲 | Cosmos DB。ファイル本体はBlob |
@@ -205,6 +207,8 @@ Jev停止時も保存済み分布は利用できる。質問の新規分類が�
 構造化できない項目や存在しない根拠を持つ主張は検索に出さない。「本人確認待ちにしない」という要望は、壊れたデータや無根拠の推定も公開するという意味ではない。
 
 #### 9.2 Cosmos DBの検索用文書・索引
+
+この節には将来拡張の属性候補も含む。最初の書込契約の必須フィールド・型は[JSON Schema](specs/contracts.schema.json)を正本とし、`sourceVersion`、`activeVersion`、`projectionVersion`、`accessVersion`で文書・投影・公開版を区別する。現行fixtureは別のLegacySearchUnit契約で互換性を検証する。
 
 検索単位は職歴・案件・事例断片とする。人物全体の分類は補助とし、人物単位の候補集合は各職歴のヒットの和集合から作る。
 

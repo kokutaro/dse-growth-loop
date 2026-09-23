@@ -1,0 +1,33 @@
+{
+  "version": "taxonomy-v1",
+  "axes": [
+    {
+      "id": "domain",
+      "categoryIds": [
+        "sales",
+        "operations",
+        "manufacturing",
+        "mechanical",
+        "software",
+        "unknown"
+      ]
+    }
+  ],
+  "signalIds": [
+    "handover"
+  ],
+  "unknownPolicy": {
+    "unknownText": "map_to_unknown",
+    "unknownId": "reject",
+    "missingProbability": "reject",
+    "sumTolerance": 1e-06,
+    "unassessedSignal": "not_evaluated",
+    "insufficientEvidence": "unknown"
+  },
+  "legacyFixture": {
+    "confirmationState": "fixture",
+    "sparseDistribution": "retain_as_fixture_only",
+    "missingConfidence": null,
+    "noInventedAiRun": true
+  }
+}

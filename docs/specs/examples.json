@@ -1,0 +1,1595 @@
+[
+  {
+    "name": "Document",
+    "schema": "Document",
+    "value": {
+      "id": "document-01",
+      "kind": "document",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "title": "ダミー週報",
+      "documentType": "report",
+      "status": "ready",
+      "currentVersionId": "document-version-01",
+      "accessVersion": 1
+    }
+  },
+  {
+    "name": "DocumentVersion",
+    "schema": "DocumentVersion",
+    "value": {
+      "id": "documentVersion-01",
+      "kind": "documentVersion",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "documentId": "document-01",
+      "blobKey": "dummy/document-01/v1.docx",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "bytes": 1024,
+      "status": "ready",
+      "jobId": "job-01"
+    }
+  },
+  {
+    "name": "EvidenceSpan",
+    "schema": "EvidenceSpan",
+    "value": {
+      "id": "evidenceSpan-01",
+      "kind": "evidenceSpan",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "documentId": "document-01",
+      "documentVersionId": "document-version-01",
+      "location": {
+        "type": "paragraph",
+        "label": "段落1"
+      },
+      "text": "ダミーの引き継ぎ改善。",
+      "textHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "validationState": "validated"
+    }
+  },
+  {
+    "name": "Person",
+    "schema": "Person",
+    "value": {
+      "id": "person-01",
+      "kind": "person",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "displayName": "架空 はな",
+      "departmentId": "department-01",
+      "available": true,
+      "experienceIds": [
+        "experience-01"
+      ],
+      "confirmationState": "ai_unconfirmed",
+      "correctionState": "none",
+      "accessVersion": 1
+    }
+  },
+  {
+    "name": "Experience",
+    "schema": "Experience",
+    "value": {
+      "id": "experience-01",
+      "kind": "experience",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "personId": "demo-person-01",
+      "title": "ダミーの改善経験",
+      "description": "引き継ぎ項目を整理した。",
+      "period": {
+        "start": null,
+        "end": null,
+        "precision": "unknown",
+        "months": null
+      },
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "confirmationState": "self_corrected",
+      "correctionState": "none",
+      "pendingAiVersion": null
+    }
+  },
+  {
+    "name": "DepartmentActivity",
+    "schema": "DepartmentActivity",
+    "value": {
+      "id": "departmentActivity-01",
+      "kind": "departmentActivity",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "departmentId": "department-01",
+      "summary": "架空部署の活動",
+      "period": {
+        "start": null,
+        "end": null,
+        "precision": "unknown",
+        "months": null
+      },
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "ClassificationResult",
+    "schema": "ClassificationResult",
+    "value": {
+      "id": "classificationResult-01",
+      "kind": "classificationResult",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "axis": "domain",
+      "taxonomyVersion": "taxonomy-v1",
+      "choice": "sales",
+      "probabilities": {
+        "sales": 0.7,
+        "operations": 0.3,
+        "manufacturing": 0,
+        "mechanical": 0,
+        "software": 0,
+        "unknown": 0
+      },
+      "confidence": null,
+      "aiRunId": null,
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "origin": "fixture"
+    }
+  },
+  {
+    "name": "ExperienceSignal",
+    "schema": "ExperienceSignal",
+    "value": {
+      "id": "experienceSignal-01",
+      "kind": "experienceSignal",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "decisionVersion": "noul-v1",
+      "signal": {
+        "signalId": "handover",
+        "yesProbability": 0.9,
+        "evidenceState": "supported"
+      },
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "aiRunId": "ai-run-01"
+    }
+  },
+  {
+    "name": "SearchUnit",
+    "schema": "SearchUnit",
+    "value": {
+      "id": "searchUnit-01",
+      "kind": "searchUnit",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "entityId": "demo-person-01",
+      "entityType": "person",
+      "unitId": "experience-01",
+      "title": "架空 はな",
+      "summary": "ダミー経験",
+      "status": "active",
+      "available": true,
+      "taxonomyVersion": "taxonomy-v1",
+      "classifications": [
+        {
+          "axis": "domain",
+          "categoryId": "sales",
+          "probability": 0.7
+        },
+        {
+          "axis": "domain",
+          "categoryId": "operations",
+          "probability": 0.3
+        },
+        {
+          "axis": "domain",
+          "categoryId": "manufacturing",
+          "probability": 0
+        },
+        {
+          "axis": "domain",
+          "categoryId": "mechanical",
+          "probability": 0
+        },
+        {
+          "axis": "domain",
+          "categoryId": "software",
+          "probability": 0
+        },
+        {
+          "axis": "domain",
+          "categoryId": "unknown",
+          "probability": 0
+        }
+      ],
+      "experienceSignals": [
+        {
+          "signalId": "handover",
+          "yesProbability": 0.9,
+          "evidenceState": "supported"
+        }
+      ],
+      "normalizedTerms": [
+        "引き継ぎ"
+      ],
+      "sourceRefs": [
+        {
+          "id": "evidence-01",
+          "documentTitle": "ダミー週報",
+          "location": "段落1",
+          "text": "ダミーの引き継ぎ改善。"
+        }
+      ],
+      "confirmationState": "self_corrected",
+      "projectionVersion": 1,
+      "projectionState": "ready",
+      "accessVersion": 1,
+      "classificationResultIds": [
+        "classification-01"
+      ],
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "Job",
+    "schema": "Job",
+    "value": {
+      "id": "job-01",
+      "kind": "job",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobType": "ingestion",
+      "aggregateId": "document-01",
+      "aggregateVersion": 1,
+      "payloadVersion": "1.0",
+      "dedupKey": "document-01:1:ingestion",
+      "status": "queued",
+      "attempt": 0,
+      "availableAt": "2026-09-23T00:00:00Z",
+      "leaseUntil": null,
+      "notificationState": "pending",
+      "lastErrorCode": null,
+      "supersedesJobId": null,
+      "resultId": null
+    }
+  },
+  {
+    "name": "AiRun",
+    "schema": "AiRun",
+    "value": {
+      "id": "aiRun-01",
+      "kind": "aiRun",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "jobId": "job-01",
+      "container": "catalog",
+      "sessionId": null,
+      "status": "budget_stopped",
+      "trace": {
+        "modelId": null,
+        "promptVersion": "prompt-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "evidenceIds": [
+          "evidence-01"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "unapproved"
+      },
+      "inputSnapshots": [],
+      "errorCode": "AI_BUDGET_STOPPED"
+    }
+  },
+  {
+    "name": "RetrievalRun",
+    "schema": "RetrievalRun",
+    "value": {
+      "id": "retrievalRun-01",
+      "kind": "retrievalRun",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "query": "引き継ぎを改善したい",
+      "ruleVersion": "retrieval-v1",
+      "taxonomyVersion": "taxonomy-v1",
+      "dictionaryVersion": "normalization-v1",
+      "dataVersion": 1,
+      "candidateIds": [],
+      "evidenceIds": [],
+      "matchedUnits": 0,
+      "requestUnits": 0,
+      "status": "no_match",
+      "rerankingStatus": "not_configured",
+      "aiRunId": null
+    }
+  },
+  {
+    "name": "Challenge",
+    "schema": "Challenge",
+    "value": {
+      "id": "challenge-01",
+      "kind": "challenge",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "title": "ダミーの相談",
+      "summary": "引き継ぎ方法を改善したい",
+      "status": "open",
+      "sessionId": "session-01",
+      "analysisConsent": "not_granted",
+      "consentedVersion": null,
+      "accessVersion": 1
+    }
+  },
+  {
+    "name": "Participation",
+    "schema": "Participation",
+    "value": {
+      "id": "participation-01",
+      "kind": "participation",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "challengeId": "challenge-01",
+      "personId": "demo-person-01",
+      "status": "requested",
+      "decidedBy": null
+    }
+  },
+  {
+    "name": "Session",
+    "schema": "Session",
+    "value": {
+      "id": "session-01",
+      "kind": "session",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "challengeId": "challenge-01",
+      "participantIds": [
+        "demo-person-01"
+      ],
+      "membershipVersion": 1,
+      "status": "open",
+      "aiAssistance": "enabled",
+      "lastSequence": 1
+    }
+  },
+  {
+    "name": "Message",
+    "schema": "Message",
+    "value": {
+      "id": "message-01",
+      "kind": "message",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "clientMessageId": "client-message-01",
+      "sequence": 1,
+      "authorType": "human",
+      "body": "ダミーの相談です。",
+      "deliveryState": "saved",
+      "sourceSnapshots": [],
+      "retrievalRunId": null
+    }
+  },
+  {
+    "name": "Outcome",
+    "schema": "Outcome",
+    "value": {
+      "id": "outcome-01",
+      "kind": "outcome",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "resolution": "partially_resolved",
+      "summary": "一部を整理した。",
+      "evidenceMessageIds": [
+        "message-01"
+      ]
+    }
+  },
+  {
+    "name": "Feedback",
+    "schema": "Feedback",
+    "value": {
+      "id": "feedback-01",
+      "kind": "feedback",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "targetId": "session-01",
+      "feedbackType": "session",
+      "rating": null,
+      "reaction": null,
+      "comment": null
+    }
+  },
+  {
+    "name": "Knowledge",
+    "schema": "Knowledge",
+    "value": {
+      "id": "knowledge-01",
+      "kind": "knowledge",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "title": "ダミーの知見",
+      "summary": "確認項目を共有した。",
+      "status": "draft",
+      "publicationVersion": 1,
+      "participantIds": [
+        "demo-person-01"
+      ],
+      "confirmations": [],
+      "approvedBy": null,
+      "analysisConsent": "not_granted",
+      "consentedVersion": null,
+      "accessVersion": 1,
+      "evidenceMessageIds": [
+        "message-01"
+      ],
+      "analysisConfirmations": []
+    }
+  },
+  {
+    "name": "Opportunity",
+    "schema": "Opportunity",
+    "value": {
+      "id": "opportunity-01",
+      "kind": "opportunity",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "jobId": "job-opportunity-01",
+      "asOf": "2026-09-23T00:00:00Z",
+      "inputSnapshots": [
+        {
+          "id": "knowledge-01",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "summary": "ダミーの改善支援仮説",
+      "independentChallengeCount": 3,
+      "departmentCount": 2,
+      "status": "candidate",
+      "aiRunId": "ai-run-01"
+    }
+  },
+  {
+    "name": "IdentityBinding",
+    "schema": "IdentityBinding",
+    "value": {
+      "tenantId": "demo-tenant",
+      "oid": "00000000-0000-4000-8000-000000000001",
+      "principalId": "principal-demo-01",
+      "personId": "demo-person-01",
+      "roles": [
+        "member"
+      ],
+      "enabled": true
+    }
+  },
+  {
+    "name": "unsaved-message",
+    "schema": "UnsavedMessage",
+    "value": {
+      "clientMessageId": "client-message-02",
+      "sessionId": "session-01",
+      "body": "まだ保存されていないダミー投稿",
+      "deliveryState": "save_failed",
+      "errorCode": "SAVE_FAILED"
+    }
+  },
+  {
+    "name": "correction-conflict",
+    "schema": "Problem",
+    "value": {
+      "type": "https://dse.invalid/problems/correction-conflict",
+      "title": "本人訂正と再抽出が競合しています",
+      "status": 409,
+      "code": "CORRECTION_CONFLICT",
+      "detail": "本人訂正を保持し、差分を確認してください。",
+      "traceId": "trace-01",
+      "retryable": false
+    }
+  },
+  {
+    "name": "notification-missed",
+    "schema": "Job",
+    "value": {
+      "id": "job-01",
+      "kind": "job",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobType": "ingestion",
+      "aggregateId": "document-01",
+      "aggregateVersion": 1,
+      "payloadVersion": "1.0",
+      "dedupKey": "document-01:1:ingestion",
+      "status": "queued",
+      "attempt": 0,
+      "availableAt": "2026-09-23T00:00:00Z",
+      "leaseUntil": null,
+      "notificationState": "pending",
+      "lastErrorCode": null,
+      "supersedesJobId": null,
+      "resultId": null
+    }
+  },
+  {
+    "name": "ai-stopped",
+    "schema": "AiRun",
+    "value": {
+      "id": "aiRun-01",
+      "kind": "aiRun",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "jobId": "job-01",
+      "container": "catalog",
+      "sessionId": null,
+      "status": "budget_stopped",
+      "trace": {
+        "modelId": null,
+        "promptVersion": "prompt-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "evidenceIds": [
+          "evidence-01"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "unapproved"
+      },
+      "inputSnapshots": [],
+      "errorCode": "AI_BUDGET_STOPPED"
+    }
+  },
+  {
+    "name": "withdrawn-knowledge",
+    "schema": "Knowledge",
+    "value": {
+      "id": "knowledge-01",
+      "kind": "knowledge",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "title": "ダミーの知見",
+      "summary": "確認項目を共有した。",
+      "status": "withdrawn",
+      "publicationVersion": 1,
+      "participantIds": [
+        "demo-person-01"
+      ],
+      "confirmations": [],
+      "approvedBy": null,
+      "analysisConsent": "revoked",
+      "consentedVersion": null,
+      "accessVersion": 2,
+      "evidenceMessageIds": [
+        "message-01"
+      ],
+      "analysisConfirmations": []
+    }
+  },
+  {
+    "name": "Accepted",
+    "schema": "Accepted",
+    "value": {
+      "jobId": "job-01",
+      "status": "queued",
+      "statusUrl": "/api/v1/jobs/job-01"
+    }
+  },
+  {
+    "name": "UploadRequest",
+    "schema": "UploadRequest",
+    "value": {
+      "title": "ダミー文書",
+      "documentType": "report",
+      "file": "dummy-binary-placeholder"
+    }
+  },
+  {
+    "name": "ProfileUpdate",
+    "schema": "ProfileUpdate",
+    "value": {
+      "displayName": "架空 はな",
+      "available": true,
+      "action": "correct",
+      "experienceEdits": []
+    }
+  },
+  {
+    "name": "SearchRequest",
+    "schema": "SearchRequest",
+    "value": {
+      "query": "引き継ぎを改善したい",
+      "limit": 20
+    }
+  },
+  {
+    "name": "SearchResponse",
+    "schema": "SearchResponse",
+    "value": {
+      "runId": "retrieval-run-01",
+      "status": "no_match",
+      "code": "NO_MATCH",
+      "candidates": [],
+      "rerankingStatus": "not_configured"
+    }
+  },
+  {
+    "name": "ChallengeCreate",
+    "schema": "ChallengeCreate",
+    "value": {
+      "title": "架空の相談",
+      "summary": "引き継ぎ改善"
+    }
+  },
+  {
+    "name": "ParticipationCreate",
+    "schema": "ParticipationCreate",
+    "value": {
+      "personId": "demo-person-01"
+    }
+  },
+  {
+    "name": "ParticipationDecision",
+    "schema": "ParticipationDecision",
+    "value": {
+      "decision": "accepted"
+    }
+  },
+  {
+    "name": "SessionCreate",
+    "schema": "SessionCreate",
+    "value": {
+      "challengeId": "challenge-01"
+    }
+  },
+  {
+    "name": "SessionUpdate",
+    "schema": "SessionUpdate",
+    "value": {
+      "aiAssistance": "stopped",
+      "status": "open"
+    }
+  },
+  {
+    "name": "MessageCreate",
+    "schema": "MessageCreate",
+    "value": {
+      "clientMessageId": "client-message-01",
+      "body": "架空の投稿"
+    }
+  },
+  {
+    "name": "OutcomeUpdate",
+    "schema": "OutcomeUpdate",
+    "value": {
+      "resolution": "resolved",
+      "summary": "確認項目を整理",
+      "evidenceMessageIds": [
+        "message-01"
+      ]
+    }
+  },
+  {
+    "name": "FeedbackCreate",
+    "schema": "FeedbackCreate",
+    "value": {
+      "targetId": "session-01",
+      "feedbackType": "session",
+      "rating": 5,
+      "reaction": null,
+      "comment": null
+    }
+  },
+  {
+    "name": "KnowledgeCreate",
+    "schema": "KnowledgeCreate",
+    "value": {
+      "sessionId": "session-01",
+      "title": "ダミー事例",
+      "summary": "ダミー要約",
+      "evidenceMessageIds": [
+        "message-01"
+      ]
+    }
+  },
+  {
+    "name": "KnowledgeUpdate",
+    "schema": "KnowledgeUpdate",
+    "value": {
+      "title": "訂正版",
+      "summary": "ダミー要約を訂正"
+    }
+  },
+  {
+    "name": "KnowledgeAction",
+    "schema": "KnowledgeAction",
+    "value": {
+      "publicationVersion": 1
+    }
+  },
+  {
+    "name": "AnalysisConsent",
+    "schema": "AnalysisConsent",
+    "value": {
+      "decision": "granted",
+      "version": 1
+    }
+  },
+  {
+    "name": "OpportunityCreate",
+    "schema": "OpportunityCreate",
+    "value": {
+      "summaryIds": [
+        "knowledge-01"
+      ]
+    }
+  },
+  {
+    "name": "JobRetry",
+    "schema": "JobRetry",
+    "value": {
+      "reason": "通知漏れを手動回復"
+    }
+  },
+  {
+    "name": "EvidencePage",
+    "schema": "EvidencePage",
+    "value": {
+      "items": [
+        {
+          "id": "evidenceSpan-01",
+          "kind": "evidenceSpan",
+          "tenantId": "demo-tenant",
+          "ownerId": "principal-demo-01",
+          "scopeIds": [
+            "demo"
+          ],
+          "schemaVersion": "1.0",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "etag": "\"etag-1\"",
+          "createdAt": "2026-09-23T00:00:00Z",
+          "updatedAt": "2026-09-23T00:00:00Z",
+          "createdBy": {
+            "type": "principal",
+            "id": "principal-demo-01"
+          },
+          "correctedBy": null,
+          "documentId": "document-01",
+          "documentVersionId": "document-version-01",
+          "location": {
+            "type": "paragraph",
+            "label": "段落1"
+          },
+          "text": "ダミーの引き継ぎ改善。",
+          "textHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "validationState": "validated"
+        }
+      ],
+      "continuationToken": null
+    }
+  },
+  {
+    "name": "MessagePage",
+    "schema": "MessagePage",
+    "value": {
+      "items": [
+        {
+          "id": "message-01",
+          "kind": "message",
+          "tenantId": "demo-tenant",
+          "ownerId": "principal-demo-01",
+          "scopeIds": [
+            "demo"
+          ],
+          "schemaVersion": "1.0",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "etag": "\"etag-1\"",
+          "createdAt": "2026-09-23T00:00:00Z",
+          "updatedAt": "2026-09-23T00:00:00Z",
+          "createdBy": {
+            "type": "principal",
+            "id": "principal-demo-01"
+          },
+          "correctedBy": null,
+          "sessionId": "session-01",
+          "clientMessageId": "client-message-01",
+          "sequence": 1,
+          "authorType": "human",
+          "body": "ダミーの相談です。",
+          "deliveryState": "saved",
+          "sourceSnapshots": [],
+          "retrievalRunId": null
+        }
+      ],
+      "continuationToken": null
+    }
+  },
+  {
+    "name": "OpportunityPage",
+    "schema": "OpportunityPage",
+    "value": {
+      "items": [
+        {
+          "id": "opportunity-01",
+          "kind": "opportunity",
+          "tenantId": "demo-tenant",
+          "ownerId": "principal-demo-01",
+          "scopeIds": [
+            "demo"
+          ],
+          "schemaVersion": "1.0",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "etag": "\"etag-1\"",
+          "createdAt": "2026-09-23T00:00:00Z",
+          "updatedAt": "2026-09-23T00:00:00Z",
+          "createdBy": {
+            "type": "principal",
+            "id": "principal-demo-01"
+          },
+          "correctedBy": null,
+          "jobId": "job-opportunity-01",
+          "asOf": "2026-09-23T00:00:00Z",
+          "inputSnapshots": [
+            {
+              "id": "knowledge-01",
+              "sourceVersion": 1,
+              "activeVersion": 1,
+              "accessVersion": 1
+            }
+          ],
+          "summary": "ダミーの改善支援仮説",
+          "independentChallengeCount": 3,
+          "departmentCount": 2,
+          "status": "candidate",
+          "aiRunId": "ai-run-01"
+        }
+      ],
+      "continuationToken": null
+    }
+  },
+  {
+    "name": "noul-unknown",
+    "schema": "ExperienceSignal",
+    "value": {
+      "id": "experienceSignal-01",
+      "kind": "experienceSignal",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "decisionVersion": "noul-v1",
+      "signal": {
+        "signalId": "handover",
+        "yesProbability": null,
+        "evidenceState": "unknown"
+      },
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "aiRunId": "ai-run-01"
+    }
+  },
+  {
+    "name": "noul-not_evaluated",
+    "schema": "ExperienceSignal",
+    "value": {
+      "id": "experienceSignal-01",
+      "kind": "experienceSignal",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "decisionVersion": "noul-v1",
+      "signal": {
+        "signalId": "handover",
+        "yesProbability": null,
+        "evidenceState": "not_evaluated"
+      },
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "aiRunId": "ai-run-01"
+    }
+  },
+  {
+    "name": "published-knowledge",
+    "schema": "Knowledge",
+    "value": {
+      "id": "knowledge-01",
+      "kind": "knowledge",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "title": "ダミーの知見",
+      "summary": "確認項目を共有した。",
+      "status": "published",
+      "publicationVersion": 1,
+      "participantIds": [
+        "demo-person-01"
+      ],
+      "confirmations": [
+        {
+          "personId": "demo-person-01",
+          "version": 1,
+          "scopeIds": [
+            "demo"
+          ],
+          "confirmedAt": "2026-09-23T00:00:00Z"
+        }
+      ],
+      "approvedBy": {
+        "type": "principal",
+        "id": "publisher-demo-01"
+      },
+      "analysisConsent": "not_granted",
+      "consentedVersion": null,
+      "accessVersion": 1,
+      "evidenceMessageIds": [
+        "message-01"
+      ],
+      "analysisConfirmations": []
+    }
+  },
+  {
+    "name": "ExperiencePage",
+    "schema": "ExperiencePage",
+    "value": {
+      "items": [
+        {
+          "id": "experience-01",
+          "kind": "experience",
+          "tenantId": "demo-tenant",
+          "ownerId": "principal-demo-01",
+          "scopeIds": [
+            "demo"
+          ],
+          "schemaVersion": "1.0",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "etag": "\"etag-1\"",
+          "createdAt": "2026-09-23T00:00:00Z",
+          "updatedAt": "2026-09-23T00:00:00Z",
+          "createdBy": {
+            "type": "principal",
+            "id": "principal-demo-01"
+          },
+          "correctedBy": {
+            "type": "principal",
+            "id": "principal-demo-01"
+          },
+          "personId": "demo-person-01",
+          "title": "ダミーの改善経験",
+          "description": "引き継ぎ項目を整理した。",
+          "period": {
+            "start": null,
+            "end": null,
+            "precision": "unknown",
+            "months": null
+          },
+          "evidenceRefs": [
+            {
+              "id": "evidence-01",
+              "documentVersionId": "document-version-01",
+              "sourceVersion": 1
+            }
+          ],
+          "confirmationState": "self_corrected",
+          "correctionState": "none",
+          "pendingAiVersion": null
+        }
+      ],
+      "continuationToken": null
+    }
+  },
+  {
+    "name": "analysis-consented-knowledge",
+    "schema": "Knowledge",
+    "value": {
+      "id": "knowledge-01",
+      "kind": "knowledge",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "title": "ダミーの知見",
+      "summary": "確認項目を共有した。",
+      "status": "published",
+      "publicationVersion": 1,
+      "participantIds": [
+        "demo-person-01"
+      ],
+      "confirmations": [
+        {
+          "personId": "demo-person-01",
+          "version": 1,
+          "scopeIds": [
+            "demo"
+          ],
+          "confirmedAt": "2026-09-23T00:00:00Z"
+        }
+      ],
+      "approvedBy": {
+        "type": "principal",
+        "id": "publisher-demo-01"
+      },
+      "analysisConsent": "granted",
+      "consentedVersion": 1,
+      "accessVersion": 1,
+      "evidenceMessageIds": [
+        "message-01"
+      ],
+      "analysisConfirmations": [
+        {
+          "personId": "demo-person-01",
+          "version": 1,
+          "scopeIds": [
+            "demo"
+          ],
+          "confirmedAt": "2026-09-23T00:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "name": "synthetic-ai-classification",
+    "schema": "ClassificationResult",
+    "value": {
+      "id": "classificationResult-01",
+      "kind": "classificationResult",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "axis": "domain",
+      "taxonomyVersion": "taxonomy-v1",
+      "choice": "sales",
+      "probabilities": {
+        "sales": 0.7,
+        "operations": 0.3,
+        "manufacturing": 0,
+        "mechanical": 0,
+        "software": 0,
+        "unknown": 0
+      },
+      "confidence": 0.62,
+      "aiRunId": "synthetic-ai-run-01",
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "origin": "ai"
+    }
+  },
+  {
+    "name": "negative-noul-evidence",
+    "schema": "ExperienceSignal",
+    "value": {
+      "id": "experienceSignal-01",
+      "kind": "experienceSignal",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "unitId": "experience-01",
+      "decisionVersion": "noul-v1",
+      "signal": {
+        "signalId": "handover",
+        "yesProbability": 0,
+        "evidenceState": "supported"
+      },
+      "evidenceRefs": [
+        {
+          "id": "evidence-01",
+          "documentVersionId": "document-version-01",
+          "sourceVersion": 1
+        }
+      ],
+      "aiRunId": "ai-run-01"
+    }
+  },
+  {
+    "name": "ai-saved-message",
+    "schema": "Message",
+    "value": {
+      "id": "message-01",
+      "kind": "message",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "sessionId": "session-01",
+      "clientMessageId": "client-message-01",
+      "sequence": 1,
+      "authorType": "ai",
+      "body": "ダミーの相談です。",
+      "deliveryState": "saved",
+      "sourceSnapshots": [
+        {
+          "id": "knowledge-01",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "retrievalRunId": "retrieval-run-01"
+    }
+  }
+]

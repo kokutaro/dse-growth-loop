@@ -1,0 +1,37 @@
+{
+  "version": "normalization-v1",
+  "operations": [
+    "unicode_nfkc",
+    "trim",
+    "lower_invariant",
+    "exact_alias_lookup",
+    "deduplicate",
+    "ordinal_sort"
+  ],
+  "aliases": {
+    "引継ぎ": "引き継ぎ",
+    "引継": "引き継ぎ",
+    "software": "ソフトウェア",
+    "ソフトウェア": "ソフトウェア"
+  },
+  "unknownTerm": "retain_normalized",
+  "legacyFixturePolicy": "existing_terms_unchanged",
+  "limits": {
+    "termCharacters": 100,
+    "termsPerUnit": 100
+  },
+  "examples": [
+    {
+      "input": " ＳＯＦＴＷＡＲＥ ",
+      "output": "ソフトウェア"
+    },
+    {
+      "input": "引継ぎ",
+      "output": "引き継ぎ"
+    },
+    {
+      "input": "未知語",
+      "output": "未知語"
+    }
+  ]
+}
