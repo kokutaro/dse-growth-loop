@@ -5,4 +5,5 @@
   <Project Path="src/Dse.Infrastructure/Dse.Infrastructure.csproj" />
   <Project Path="src/Dse.Worker/Dse.Worker.csproj" />
   <Project Path="tests/Dse.Tests/Dse.Tests.csproj" />
+  <Project Path="src/Dse.Evaluation/Dse.Evaluation.csproj" />
 </Solution>
