@@ -33,7 +33,11 @@ public class ApiTests
         foreach (var entry in new Dictionary<string, string>
         {
             ["Data:Mode"] = demo ? "Demo" : "Azure", ["Cosmos:Endpoint"] = "https://unit-test.documents.azure.com/",
-            ["Auth:TenantId"] = Tenant, ["Auth:ClientId"] = Client, ["Auth:AllowedObjectIds:0"] = User
+            ["Auth:TenantId"] = Tenant, ["Auth:ClientId"] = Client, ["Auth:AllowedObjectIds:0"] = User,
+            ["Auth:Bindings:0:TenantId"] = Tenant, ["Auth:Bindings:0:Oid"] = User,
+            ["Auth:Bindings:0:PrincipalId"] = "principal-test", ["Auth:Bindings:0:PersonId"] = "demo-person-01",
+            ["Auth:Bindings:0:Roles:0"] = "member", ["Auth:Bindings:0:Enabled"] = "true",
+            ["Auth:Grants:0:PrincipalId"] = "principal-test", ["Auth:Grants:0:ScopeIds:0"] = "demo"
         }) b.UseSetting(entry.Key, entry.Value);
         b.ConfigureServices(s =>
         {
@@ -117,5 +121,22 @@ public class ApiTests
         var config = await client.GetStringAsync("/api/config");
         Assert.Contains("Demo", config);
         Assert.DoesNotContain("Cosmos", config);
+    }
+    [Fact]
+    public async Task Disabled_binding_cannot_use_an_otherwise_valid_JWT()
+    {
+        using var factory = Factory(false).WithWebHostBuilder(b => b.UseSetting("Auth:Bindings:0:Enabled", "false"));
+        using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Operator_role_does_not_imply_member_search_permission()
+    {
+        using var factory = Factory(false).WithWebHostBuilder(b => b.UseSetting("Auth:Bindings:0:Roles:0", "operator"));
+        using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
     }
 }

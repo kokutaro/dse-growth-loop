@@ -5,13 +5,14 @@
 ## 設計資料
 
 - [アーキテクチャ文書](docs/architecture.md)：コンセプト、仕組み、構成、データ、処理、検証計画。
+- [正本永続化・認可・復旧手順](docs/persistence.md)：Issue #5のAPI、RBAC、失効フェンス、検証境界。
 - [実装契約 v1](docs/specs/README.md)：正本・状態遷移・API・権限・分類体系、JSON Schema/OpenAPIと検証例。後続Issue共通の入口。
 - [技術選定の調査記録](docs/technology-research-2026-09-21.md)：2026年9月21日に確認した一次情報と選定理由。
 - [検索検証計画](docs/retrieval-validation-plan.md)：Probability・補助Noulによる一次検索とLLM再順位付けを段階別に検証。
 - [構成図](docs/diagrams/architecture.html)：ブラウザで開ける単独HTML。図中の文章は日本語。ビューアの固定操作UIとHTMLの言語指定は英語。
 - [構成図の編集元](docs/diagrams/architecture.json)。
 
-設計版0.2に沿って初期実装を開始。React UI、.NET 10 API/Worker、Aspire AppHost、Bicepを追加した。現在動くのは手動条件による一次検索と根拠表示。実AI、文書取込、チャット等は次工程。[実装状況](docs/implementation-status.md)に実装済み・未実装・未検証を区別する。
+設計版0.2に沿って初期実装を開始。React UI、.NET 10 API/Worker、Aspire AppHost、Bicepを追加した。現在動くのは手動条件による一次検索と根拠表示、および認可付きの本人訂正・正本照合API。実AI、文書取込、チャット等は次工程。[実装状況](docs/implementation-status.md)に実装済み・未実装・未検証を区別する。
 
 ## ローカル起動
 
@@ -36,7 +37,7 @@ npm --prefix web run dev
 
 ## Azure配置
 
-RGは **`dse-growth-loop-rg`** 固定。[Azure展開手順](docs/deployment.md)を参照。APIはHTTP起動の最小0／最大1、Workerは手動seedのみ。ビルドはローカル既定で、有料操作には承認予算と明示フラグが必要。[費用ガードとAI上限契約](docs/development-cost-controls.md)を参照。実際のAzure展開・有料API呼出しはまだ実施していない。
+RGは **`dse-growth-loop-rg`** 固定。[Azure展開手順](docs/deployment.md)を参照。APIはHTTP起動の最小0／最大1、Workerは手動seed／フェンス回復のみ。ビルドはローカル既定で、有料操作には承認予算と明示フラグが必要。[費用ガードとAI上限契約](docs/development-cost-controls.md)を参照。実際のAzure展開・有料API呼出しはまだ実施していない。
 
 ## 検証
 

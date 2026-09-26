@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Dse.Domain;
 
@@ -12,7 +13,13 @@ public sealed record SearchUnit(string Id, string EntityId, string EntityType, s
     SourceRef[] SourceRefs, string ConfirmationState)
 {
     public string Kind => "searchUnit";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? SourceVersion { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? AccessVersion { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? ProjectionVersion { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ProjectionState { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public EvidenceReference[]? EvidenceRefs { get; init; }
 }
+public sealed record EvidenceReference(string Id, string DocumentVersionId, int SourceVersion);
 public sealed record SearchAccess(string TenantId, string[] ScopeIds);
 public sealed record SearchRequest(CategoryKey[] Categories, string[] SignalIds, string[] Terms,
     double ProbabilityThreshold = 0.2, double NoulThreshold = 0.5, int Limit = 20)

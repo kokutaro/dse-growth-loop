@@ -10,42 +10,55 @@ namespace Dse.Infrastructure;
 
 public interface ICatalog
 {
-    Task<SearchResult> SearchAsync(SearchRequest request, SearchAccess access, CancellationToken cancellationToken);
+    Task<SearchResult> SearchAsync(SearchRequest request, ActorAccess access, CancellationToken cancellationToken);
+    Task SearchAndConsumeAsync(SearchRequest request, ActorAccess actor, Func<SearchResult, CancellationToken, Task> consume, CancellationToken ct);
     Task SeedDemoAsync(string tenantId, CancellationToken cancellationToken);
     Task CheckAsync(CancellationToken cancellationToken);
 }
 
 public sealed class DemoCatalog : ICatalog
 {
-    public Task<SearchResult> SearchAsync(SearchRequest request, SearchAccess access, CancellationToken cancellationToken) =>
-        Task.FromResult(Retriever.Search(DemoData.Create(access.TenantId), request, access));
-    public Task SeedDemoAsync(string tenantId, CancellationToken cancellationToken) => Task.CompletedTask;
-    public Task CheckAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    private readonly ICatalog inner;
+    public DemoCatalog()
+    {
+        var store = new MemoryRecordStore();
+        DemoRecords.SeedAsync(store, "demo", default).GetAwaiter().GetResult();
+        var primary = new PrimaryRepository(store);
+        inner = new ValidatedCatalog(new MemoryProjectionRepository(store), new SourceGuard(primary), new AccessFence(primary), store);
+    }
+    public Task<SearchResult> SearchAsync(SearchRequest request, ActorAccess access, CancellationToken ct) => inner.SearchAsync(request, access, ct);
+    public Task SearchAndConsumeAsync(SearchRequest request, ActorAccess actor, Func<SearchResult, CancellationToken, Task> consume, CancellationToken ct) => inner.SearchAndConsumeAsync(request, actor, consume, ct);
+    public Task SeedDemoAsync(string tenantId, CancellationToken ct) => inner.SeedDemoAsync(tenantId, ct);
+    public Task CheckAsync(CancellationToken ct) => Task.CompletedTask;
 }
 
-public sealed class CosmosCatalog(CosmosClient client, IConfiguration configuration) : ICatalog
+public sealed class ValidatedCatalog(IProjectionRepository projections, SourceGuard guard, AccessFence fence, IRecordStore store) : ICatalog
 {
-    private readonly Container container = client.GetContainer(configuration["Cosmos:Database"] ?? "dse-growth-loop", "catalog");
-
-    public async Task<SearchResult> SearchAsync(SearchRequest request, SearchAccess access, CancellationToken cancellationToken)
+    public async Task<SearchResult> SearchAsync(SearchRequest request, ActorAccess actor, CancellationToken ct)
+    {
+        SearchResult? result = null;
+        await SearchAndConsumeAsync(request, actor, (value, _) => { result = value; return Task.CompletedTask; }, ct);
+        return result!;
+    }
+    public async Task SearchAndConsumeAsync(SearchRequest request, ActorAccess actor, Func<SearchResult, CancellationToken, Task> consume, CancellationToken ct)
     {
         request.Validate();
-        using var iterator = container.GetItemQueryIterator<SearchUnit>(BuildQuery(request, access),
-            requestOptions: new QueryRequestOptions { PartitionKey = new PartitionKey(access.TenantId), MaxItemCount = 100 });
-        List<SearchUnit> units = [];
-        double ru = 0;
-        while (iterator.HasMoreResults)
+        if (!actor.HasRole("member")) throw new DomainException(403, "FORBIDDEN");
+        using var budget = new SearchBudget();
+        var units = await projections.FindAsync(request, actor.Search, ct);
+        await fence.RunAsync(actor.TenantId, async token =>
         {
-            var page = await iterator.ReadNextAsync(cancellationToken);
-            ru += page.RequestCharge;
-            units.AddRange(page);
-            // デモの上限。黙って途中の集合で順位付けしない。
-            if (units.Count > 5000 || ru > 1000)
-                throw new InvalidOperationException("検索のデモ上限を超えました。条件を絞ってください。");
-        }
-        return Retriever.Search(units, request, access);
+            var result = Retriever.Search(await guard.FilterAsync(actor, units, token), request, actor.Search);
+            await consume(result, token);
+            return true;
+        }, ct);
     }
+    public Task SeedDemoAsync(string tenantId, CancellationToken ct) => DemoRecords.SeedAsync(store, tenantId, ct);
+    public async Task CheckAsync(CancellationToken ct) => await store.ReadAsync(RecordPartition.Catalog("health"), "health-probe", ct);
+}
 
+public static class CosmosCatalog
+{
     public static QueryDefinition BuildQuery(SearchRequest request, SearchAccess access)
     {
         request.Validate();
@@ -70,17 +83,6 @@ public sealed class CosmosCatalog(CosmosClient client, IConfiguration configurat
         return query;
     }
 
-    public async Task SeedDemoAsync(string tenantId, CancellationToken cancellationToken)
-    {
-        foreach (var unit in DemoData.Create(tenantId))
-        {
-            try { await container.CreateItemAsync(unit, new PartitionKey(tenantId), cancellationToken: cancellationToken); }
-            catch (CosmosException e) when (e.StatusCode == HttpStatusCode.Conflict) { /* 既存の訂正・状態を上書きしない。 */ }
-        }
-    }
-
-    public async Task CheckAsync(CancellationToken cancellationToken) =>
-        await container.ReadContainerAsync(cancellationToken: cancellationToken);
 }
 
 public static class InfrastructureRegistration
@@ -91,7 +93,13 @@ public static class InfrastructureRegistration
         if (mode == "Demo")
         {
             if (!development) throw new InvalidOperationException("Demo モードは Development 環境専用です。");
-            services.AddSingleton<ICatalog, DemoCatalog>();
+            services.AddSingleton<IRecordStore>(_ =>
+            {
+                var store = new MemoryRecordStore();
+                DemoRecords.SeedAsync(store, "demo", default).GetAwaiter().GetResult();
+                return store;
+            });
+            services.AddSingleton<IProjectionRepository, MemoryProjectionRepository>();
         }
         else if (mode == "Azure")
         {
@@ -103,9 +111,22 @@ public static class InfrastructureRegistration
                 UseSystemTextJsonSerializerWithOptions = new(System.Text.Json.JsonSerializerDefaults.Web),
                 ConnectionMode = ConnectionMode.Gateway
             }));
-            services.AddSingleton<ICatalog, CosmosCatalog>();
+            services.AddSingleton<IRecordStore, CosmosRecordStore>();
+            services.AddSingleton<IProjectionRepository, CosmosProjectionRepository>();
         }
         else throw new InvalidOperationException("Data__Mode は Demo または Azure を指定してください。");
+        services.AddSingleton<IPrimaryRepository, PrimaryRepository>();
+        services.AddSingleton<SourceGuard>();
+        services.AddSingleton<AccessFence>();
+        services.AddSingleton<ValidatedCatalog>();
+        services.AddSingleton<ICatalog>(sp => sp.GetRequiredService<ValidatedCatalog>());
+        services.AddSingleton<IdentityResolver>();
+        services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<IdempotencyExecutor>();
+        services.AddSingleton<ProfileService>();
+        services.AddSingleton<DocumentAcceptance>();
+        services.AddSingleton<ProjectionActivation>();
+        services.AddSingleton<SourceUseService>();
         if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
         {
             if (!int.TryParse(configuration["Telemetry:SamplingPercentage"] ?? "10", out var percentage) || percentage is < 1 or > 100)
