@@ -17,12 +17,14 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: dotnet restore
       - run: dotnet build --no-restore -c Release
-      - run: dotnet test tests/Dse.Tests --no-build -c Release --collect:"XPlat Code Coverage"
+      - run: dotnet test tests/Dse.Tests --filter "Category!=LargeEvaluation" --no-build -c Release --collect:"XPlat Code Coverage"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m pip install -r tests/contracts/requirements.txt
       - run: python -m coverage run --source=tests/contracts -m unittest discover -s tests/contracts
+      - run: python -m unittest discover -s tests/evaluation
+      - run: dotnet run --project src/Dse.Evaluation --no-build -c Release -- --out .artifacts/evaluation-smoke
       - run: python -m coverage report --include="*/contract_rules.py" --fail-under=80
       - run: npm ci && npm run build
         working-directory: web

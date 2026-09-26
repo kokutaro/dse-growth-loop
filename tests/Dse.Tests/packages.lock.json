@@ -688,6 +688,12 @@
       "dse.domain": {
         "type": "Project"
       },
+      "dse.evaluation": {
+        "type": "Project",
+        "dependencies": {
+          "Dse.Domain": "[1.0.0, )"
+        }
+      },
       "dse.infrastructure": {
         "type": "Project",
         "dependencies": {

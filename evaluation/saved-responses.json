@@ -1,0 +1,356 @@
+{
+  "version": "evaluation-v1",
+  "origin": "synthetic-saved-response",
+  "modelVersion": "fixture-no-model",
+  "promptVersion": "fixture-rerank-v1",
+  "responses": [
+    {
+      "questionId": "t-smoke-person-software",
+      "n": 20,
+      "status": "success",
+      "ranking": [
+        "t-person-003",
+        "t-person-004"
+      ]
+    },
+    {
+      "questionId": "t-smoke-person-software",
+      "n": 50,
+      "status": "success",
+      "ranking": [
+        "t-person-003",
+        "t-person-004"
+      ]
+    },
+    {
+      "questionId": "t-smoke-person-software",
+      "n": 100,
+      "status": "success",
+      "ranking": [
+        "t-person-003",
+        "t-person-004"
+      ]
+    },
+    {
+      "questionId": "t-smoke-person-none",
+      "n": 20,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-smoke-person-none",
+      "n": 50,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-smoke-person-none",
+      "n": 100,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-smoke-knowledge-software",
+      "n": 20,
+      "status": "success",
+      "ranking": [
+        "t-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "t-smoke-knowledge-software",
+      "n": 50,
+      "status": "success",
+      "ranking": [
+        "t-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "t-smoke-knowledge-software",
+      "n": 100,
+      "status": "success",
+      "ranking": [
+        "t-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "t-smoke-knowledge-none",
+      "n": 20,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-smoke-knowledge-none",
+      "n": 50,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-smoke-knowledge-none",
+      "n": 100,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-large-person-software",
+      "n": 20,
+      "status": "success",
+      "ranking": [
+        "t-person-003",
+        "t-person-004"
+      ]
+    },
+    {
+      "questionId": "t-large-person-software",
+      "n": 50,
+      "status": "success",
+      "ranking": [
+        "t-person-003",
+        "t-person-004"
+      ]
+    },
+    {
+      "questionId": "t-large-person-software",
+      "n": 100,
+      "status": "success",
+      "ranking": [
+        "t-person-003",
+        "t-person-004"
+      ]
+    },
+    {
+      "questionId": "t-large-person-none",
+      "n": 20,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-large-person-none",
+      "n": 50,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-large-person-none",
+      "n": 100,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-large-knowledge-software",
+      "n": 20,
+      "status": "success",
+      "ranking": [
+        "t-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "t-large-knowledge-software",
+      "n": 50,
+      "status": "success",
+      "ranking": [
+        "t-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "t-large-knowledge-software",
+      "n": 100,
+      "status": "success",
+      "ranking": [
+        "t-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "t-large-knowledge-none",
+      "n": 20,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-large-knowledge-none",
+      "n": 50,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "t-large-knowledge-none",
+      "n": 100,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-smoke-person-software",
+      "n": 20,
+      "status": "success",
+      "ranking": [
+        "f-person-003",
+        "f-person-004"
+      ]
+    },
+    {
+      "questionId": "f-smoke-person-software",
+      "n": 50,
+      "status": "success",
+      "ranking": [
+        "f-person-003",
+        "f-person-004"
+      ]
+    },
+    {
+      "questionId": "f-smoke-person-software",
+      "n": 100,
+      "status": "success",
+      "ranking": [
+        "f-person-003",
+        "f-person-004"
+      ]
+    },
+    {
+      "questionId": "f-smoke-person-none",
+      "n": 20,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-smoke-person-none",
+      "n": 50,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-smoke-person-none",
+      "n": 100,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-smoke-knowledge-software",
+      "n": 20,
+      "status": "success",
+      "ranking": [
+        "f-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "f-smoke-knowledge-software",
+      "n": 50,
+      "status": "success",
+      "ranking": [
+        "f-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "f-smoke-knowledge-software",
+      "n": 100,
+      "status": "success",
+      "ranking": [
+        "f-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "f-smoke-knowledge-none",
+      "n": 20,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-smoke-knowledge-none",
+      "n": 50,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-smoke-knowledge-none",
+      "n": 100,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-large-person-software",
+      "n": 20,
+      "status": "success",
+      "ranking": [
+        "f-person-003",
+        "f-person-004"
+      ]
+    },
+    {
+      "questionId": "f-large-person-software",
+      "n": 50,
+      "status": "success",
+      "ranking": [
+        "f-person-003",
+        "f-person-004"
+      ]
+    },
+    {
+      "questionId": "f-large-person-software",
+      "n": 100,
+      "status": "success",
+      "ranking": [
+        "f-person-003",
+        "f-person-004"
+      ]
+    },
+    {
+      "questionId": "f-large-person-none",
+      "n": 20,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-large-person-none",
+      "n": 50,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-large-person-none",
+      "n": 100,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "n": 20,
+      "status": "success",
+      "ranking": [
+        "f-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "n": 50,
+      "status": "success",
+      "ranking": [
+        "f-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "n": 100,
+      "status": "success",
+      "ranking": [
+        "f-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "n": 20,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "n": 50,
+      "status": "success",
+      "ranking": []
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "n": 100,
+      "status": "success",
+      "ranking": []
+    }
+  ]
+}

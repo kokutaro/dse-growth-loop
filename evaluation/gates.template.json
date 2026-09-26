@@ -1,0 +1,12 @@
+{
+  "status": "pending",
+  "approvedBy": "",
+  "frozenAt": null,
+  "datasetSha256": "",
+  "replaySha256": "",
+  "primaryRecallMinimum": null,
+  "structuredAccuracyMinimum": null,
+  "warmP95MsMaximum": null,
+  "coldP95MsMaximum": null,
+  "aiBudgetYenMaximum": null
+}
