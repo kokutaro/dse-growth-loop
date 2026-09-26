@@ -4,7 +4,8 @@ using Dse.Domain;
 using Dse.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 var demo = builder.Environment.IsDevelopment() && builder.Configuration["Data:Mode"] == "Demo";
@@ -16,6 +17,11 @@ if (!demo && (!Guid.TryParse(tenantId, out _) || !Guid.TryParse(clientId, out _)
 
 builder.Services.AddCatalog(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler(o => o.SuppressDiagnosticsCallback = _ => true);
+builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow);
+builder.Services.AddDataProtection();
+builder.Services.AddSingleton<PageTokens>();
+builder.Services.AddSingleton<CatalogHealthCheck>();
 builder.WebHost.ConfigureKestrel(o => o.Limits.MaxRequestBodySize = 32 * 1024);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
 {
@@ -31,13 +37,34 @@ builder.Services.AddAuthorization(o => o.AddPolicy("DemoUsers", p => p.RequireAu
 builder.Services.AddRateLimiter(o =>
 {
     o.RejectionStatusCode = 429;
+    o.OnRejected = async (context, ct) =>
+    {
+        context.HttpContext.Response.Headers.RetryAfter = "60";
+        await ApiProblem.Result(context.HttpContext, 429).ExecuteAsync(context.HttpContext);
+    };
     o.AddPolicy("search", context => RateLimitPartition.GetFixedWindowLimiter(
         context.User.FindFirstValue("oid") ?? context.Connection.RemoteIpAddress?.ToString() ?? "local",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
 });
+builder.Services.AddRateLimiter(o => o.AddPolicy("records", context => RateLimitPartition.GetFixedWindowLimiter(
+    (context.User.FindFirstValue("oid") ?? "local") + (HttpMethods.IsGet(context.Request.Method) ? ":read" : ":write"),
+    _ => new FixedWindowRateLimiterOptions { PermitLimit = HttpMethods.IsGet(context.Request.Method) ? 120 : 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })));
 builder.Services.AddHealthChecks().AddCheck<CatalogHealthCheck>("catalog", tags: ["ready"]);
 var app = builder.Build();
-app.UseExceptionHandler();
+app.UseExceptionHandler(handler => handler.Run(async context =>
+{
+    var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+    var (status, code) = error switch
+    {
+        DomainException e => (e.Status, e.Code),
+        StoreConflictException e => (e.Stale ? 412 : 409, e.Stale ? "STALE_VERSION" : "INVALID_TRANSITION"),
+        ArgumentException => (400, "INVALID_INPUT"),
+        BadHttpRequestException e => (e.StatusCode, e.StatusCode == 413 ? "PAYLOAD_TOO_LARGE" : "INVALID_INPUT"),
+        _ => (503, "DEPENDENCY_UNAVAILABLE")
+    };
+    await ApiProblem.Result(context, status, code).ExecuteAsync(context);
+}));
+app.UseStatusCodePages(async status => await ApiProblem.Result(status.HttpContext, status.HttpContext.Response.StatusCode).ExecuteAsync(status.HttpContext));
 app.Use(async (context, next) =>
 {
     context.Response.Headers.XContentTypeOptions = "nosniff";
@@ -54,28 +81,23 @@ app.UseRateLimiter();
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = c => c.Tags.Contains("ready") });
 app.MapGet("/api/config", () => new { mode = demo ? "Demo" : "Azure", tenantId, clientId, scope = $"api://{clientId}/access_as_user" });
-var search = app.MapPost("/api/search", async (SearchRequest request, ICatalog catalog, CancellationToken ct) =>
+app.Use(async (context, next) =>
 {
-    try
-    {
-        request.Validate();
-        var access = new SearchAccess(demo ? "demo" : tenantId, ["demo"]);
-        return Results.Ok(await catalog.SearchAsync(request, access, ct));
-    }
-    catch (ArgumentException e) { return Results.BadRequest(new { error = e.Message }); }
-}).RequireRateLimiting("search");
-if (!demo) search.RequireAuthorization("DemoUsers");
+    if (context.Request.Path.StartsWithSegments("/api") && context.Request.Path != "/api/config")
+        context.Items[typeof(ActorAccess)] = demo ? IdentityResolver.Demo : context.RequestServices.GetRequiredService<IdentityResolver>().Resolve(context.User);
+    await next();
+});
+var search = app.MapPost("/api/search", (SearchRequest request, HttpContext context, ICatalog catalog) =>
+    new CatalogResult(catalog, request, RecordEndpoints.Actor(context))).RequireRateLimiting("search");
+var records = app.MapGroup("/api/v1").RequireRateLimiting("records");
+records.MapRecords();
+if (!demo)
+{
+    search.RequireAuthorization("DemoUsers");
+    records.RequireAuthorization("DemoUsers");
+}
 app.MapFallback("/api/{**path}", () => Results.NotFound());
 app.MapFallbackToFile("index.html");
 app.Run();
 
 public partial class Program;
-
-public sealed class CatalogHealthCheck(ICatalog catalog) : IHealthCheck
-{
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-    {
-        try { await catalog.CheckAsync(cancellationToken); return HealthCheckResult.Healthy(); }
-        catch (Exception) { return HealthCheckResult.Unhealthy("Catalog unavailable"); }
-    }
-}

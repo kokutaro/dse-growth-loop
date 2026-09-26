@@ -1,6 +1,6 @@
 # ローカル開発とAzure展開
 
-更新日：2026-09-23。対象は全件ダミーデータの初期実装。[実装状況](implementation-status.md)も参照。
+更新日：2026-09-26。対象は全件ダミーデータの初期実装。[実装状況](implementation-status.md)も参照。
 
 ## 設定の注入
 
@@ -14,6 +14,7 @@
 | `ASPNETCORE_ENVIRONMENT` / `DOTNET_ENVIRONMENT` | ローカルはDevelopment。AzureではBicepがProductionを設定 |
 | `Auth__TenantId` / `Auth__ClientId` | Entraの単一テナント・SPA/APIアプリ登録ID |
 | `Auth__AllowedObjectIds__0` 以降 | 許可するEntraユーザーのオブジェクトID。連続番号で指定 |
+| `Auth__Bindings__N__*` / `Auth__Grants__N__*` | 許可tid/oidから架空人物・role・scopeへのサーバー対応表。未設定なら業務APIは403。`.env.example`と[永続化手順](persistence.md)参照 |
 | `Cosmos__Endpoint` / `Cosmos__Database` | Cosmos接続先。キーは使用しない |
 | `AZURE_CLIENT_ID` | AzureではBicepがManaged IdentityのIDを注入。ローカルは通常未指定 |
 | `AZURE_SUBSCRIPTION_ID` / `AZURE_LOCATION` | 展開先。RGは `dse-growth-loop-rg` 固定 |
@@ -119,3 +120,5 @@ az containerapp job execution list --name dse-seed-demo --resource-group dse-gro
 - [FoundryアカウントBicepリファレンス](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts)
 - [MSALログインとredirect bridge](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/login-user)
 - [Aspire AppHost SDK](https://aspire.dev/get-started/aspire-sdk/)
+
+Issue #5でcatalog／conversationsの書込とコンテナ・Queue単位のRBACを定義した。[API／Workerの操作表と旧付与の扱い](persistence.md#apiworkerのrbac)を参照。実Azureの適用・許可／拒否検証は未実施。

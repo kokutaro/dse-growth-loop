@@ -60,3 +60,16 @@ class InfrastructureTests(unittest.TestCase):
         for notification in budget['properties']['notifications'].values():
             self.assertEqual(notification['thresholdType'], 'Actual')
             self.assertNotIn('contactGroups', notification)
+
+    def test_cosmos_roles_cover_only_two_business_containers_and_storage_roles_are_scoped(self):
+        foundation = self.modules['dse-foundation']['properties']['template']
+        grants = foundation['variables']['cosmosAccess']
+        self.assertEqual({(g['identity'], g['container']) for g in grants},
+                         {(0, 'catalog'), (0, 'conversations'), (1, 'catalog'), (1, 'conversations')})
+        cosmos = next(r for r in foundation['resources'] if r['type'].endswith('/sqlRoleAssignments'))
+        self.assertIn('00000000-0000-0000-0000-000000000002', cosmos['properties']['roleDefinitionId'])
+        storage_roles = [r for r in foundation['resources'] if r['type'] == 'Microsoft.Authorization/roleAssignments'
+                         and ('storageAccounts' in r.get('scope', ''))]
+        self.assertTrue(storage_roles)
+        for role in storage_roles:
+            self.assertTrue('/containers' in role['scope'] or '/queues' in role['scope'], role)

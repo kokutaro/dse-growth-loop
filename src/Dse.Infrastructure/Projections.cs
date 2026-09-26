@@ -1,0 +1,136 @@
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Dse.Domain;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+namespace Dse.Infrastructure;
+
+public interface IProjectionRepository
+{
+    Task<SearchUnit[]> FindAsync(SearchRequest request, SearchAccess access, CancellationToken ct);
+    Task SaveAsync(JsonObject projection, CancellationToken ct);
+}
+public sealed class MemoryProjectionRepository(IRecordStore store) : IProjectionRepository
+{
+    public async Task<SearchUnit[]> FindAsync(SearchRequest request, SearchAccess access, CancellationToken ct)
+    {
+        List<SearchUnit> units = [];
+        string? token = null;
+        do
+        {
+            var page = await store.QueryAsync(RecordPartition.Catalog(access.TenantId), "searchUnit", null, null, 100, token, ct);
+            units.AddRange(page.Items.Select(x => x.Value.Deserialize<SearchUnit>(ProjectionRules.Json)!));
+            token = page.ContinuationToken;
+            ProjectionRules.CheckBudget(units.Count, 0);
+        } while (token is not null);
+        return units.ToArray();
+    }
+    public Task SaveAsync(JsonObject projection, CancellationToken ct) => ProjectionRules.SaveAsync(store, projection, ct);
+}
+public sealed class CosmosProjectionRepository(CosmosClient client, IConfiguration config, IRecordStore store, ILogger<CosmosProjectionRepository> logger) : IProjectionRepository
+{
+    public async Task<SearchUnit[]> FindAsync(SearchRequest request, SearchAccess access, CancellationToken ct)
+    {
+        var container = client.GetContainer(config["Cosmos:Database"] ?? "dse-growth-loop", "catalog");
+        using var iterator = container.GetItemQueryIterator<SearchUnit>(CosmosCatalog.BuildQuery(request, access),
+            requestOptions: new QueryRequestOptions { PartitionKey = new PartitionKey(access.TenantId), MaxItemCount = 100 });
+        List<SearchUnit> units = [];
+        double ru = 0;
+        while (iterator.HasMoreResults)
+        {
+            var start = Stopwatch.GetTimestamp();
+            var page = await iterator.ReadNextAsync(ct);
+            ru += page.RequestCharge;
+            SearchBudget.Charge(page.RequestCharge);
+            units.AddRange(page);
+            logger.LogInformation("Cosmos search RequestCharge={RequestCharge} CorrelationId={CorrelationId} DurationMs={DurationMs}",
+                page.RequestCharge, Activity.Current?.TraceId.ToString() ?? "background", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+            ProjectionRules.CheckBudget(units.Count, ru);
+        }
+        return units.ToArray();
+    }
+    public Task SaveAsync(JsonObject projection, CancellationToken ct) => ProjectionRules.SaveAsync(store, projection, ct);
+}
+public static class ProjectionRules
+{
+    internal static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
+    public static void CheckBudget(int count, double ru)
+    {
+        if (count > 5000 || ru > 1000) throw new DomainException(503, "SEARCH_LIMIT_EXCEEDED");
+    }
+    internal static Task SaveAsync(IRecordStore store, JsonObject projection, CancellationToken ct)
+    {
+        if (projection.Text("kind") != "searchUnit" || projection.Number("projectionVersion") < 1 ||
+            projection.Number("sourceVersion") < 1 || projection.Text("projectionState") is not ("building" or "ready"))
+            throw new ArgumentException("Invalid projection");
+        // Versioned IDs are immutable. Old events may create old rows, but cannot overwrite current rows.
+        return store.CommitAsync(RecordPartition.Catalog(projection.Text("tenantId")), [RecordWrite.Create(projection)], ct);
+    }
+}
+
+public sealed record SourceSnapshot(string Id, int SourceVersion, int ActiveVersion, int AccessVersion);
+public sealed record ValidatedSource(SearchUnit Unit, SourceSnapshot[] Snapshots);
+
+public sealed class SourceGuard(IPrimaryRepository repository)
+{
+    public async Task<SearchUnit[]> FilterAsync(ActorAccess actor, IEnumerable<SearchUnit> units, CancellationToken ct)
+    {
+        List<SearchUnit> result = [];
+        foreach (var unit in units)
+        {
+            var source = await ValidateAsync(actor, unit, ct);
+            if (source is not null) result.Add(source.Unit);
+        }
+        return result.ToArray();
+    }
+    public async Task<ValidatedSource> RequireAsync(ActorAccess actor, SearchUnit unit, CancellationToken ct) =>
+        await ValidateAsync(actor, unit, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
+
+    private async Task<ValidatedSource?> ValidateAsync(ActorAccess actor, SearchUnit unit, CancellationToken ct)
+    {
+        if (unit.TenantId != actor.TenantId || unit.ProjectionState != "ready" || unit.SourceVersion is null ||
+            unit.AccessVersion is null || unit.ProjectionVersion != unit.SourceVersion || unit.EvidenceRefs is not { Length: > 0 } ||
+            !unit.ScopeIds.Intersect(actor.ScopeIds).Any()) return null;
+        var partition = RecordPartition.Catalog(actor.TenantId);
+        var source = (await repository.ReadAsync(partition, unit.EntityId, ct))?.Value;
+        if (source is null || source.Text("kind") != unit.EntityType || !AccessPolicy.CanUse(actor, source) ||
+            source.Number("activeVersion") != unit.SourceVersion || source.Number("accessVersion") != unit.AccessVersion) return null;
+        List<SourceSnapshot> snapshots = [Snapshot(source)];
+        List<SourceRef> refs = [];
+        foreach (var reference in unit.EvidenceRefs)
+        {
+            var evidence = await EvidenceAsync(actor, reference, ct);
+            if (evidence is null) return null;
+            refs.Add(new(reference.Id, evidence.Value.Document.Text("title"), evidence.Value.Span["location"]!["label"]!.GetValue<string>(), evidence.Value.Span.Text("text")));
+            snapshots.Add(Snapshot(evidence.Value.Document));
+        }
+        return new(unit with { SourceRefs = refs.ToArray() }, snapshots.Distinct().ToArray());
+    }
+    public async Task<(JsonObject Span, JsonObject Document)?> EvidenceAsync(ActorAccess actor, EvidenceReference reference, CancellationToken ct)
+    {
+        var partition = RecordPartition.Catalog(actor.TenantId);
+        var span = (await repository.ReadAsync(partition, reference.Id, ct))?.Value;
+        var version = (await repository.ReadAsync(partition, reference.DocumentVersionId, ct))?.Value;
+        if (span is null || version is null || span.Text("kind") != "evidenceSpan" || version.Text("kind") != "documentVersion" ||
+            span.Text("validationState") != "validated" || version.Text("status") != "ready" ||
+            span.Text("documentVersionId") != reference.DocumentVersionId || span.Text("documentId") != version.Text("documentId") ||
+            span.Number("sourceVersion") != reference.SourceVersion || version.Number("sourceVersion") != reference.SourceVersion ||
+            !AccessPolicy.CanRead(actor, span) || !AccessPolicy.CanRead(actor, version)) return null;
+        var document = (await repository.ReadAsync(partition, version.Text("documentId"), ct))?.Value;
+        return document is not null && document.Text("kind") == "document" && AccessPolicy.CanUse(actor, document) &&
+            document.Number("activeVersion") == reference.SourceVersion ? (span, document) : null;
+    }
+    public async Task RequireSnapshotsAsync(ActorAccess actor, IEnumerable<SourceSnapshot> snapshots, CancellationToken ct)
+    {
+        foreach (var snapshot in snapshots)
+        {
+            var current = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), snapshot.Id, ct))?.Value;
+            if (current is null || !AccessPolicy.CanUse(actor, current) || Snapshot(current) != snapshot)
+                throw new DomainException(409, "SOURCE_REVOKED");
+        }
+    }
+    private static SourceSnapshot Snapshot(JsonObject value) => new(value.Text("id"), value.Number("sourceVersion"), value.Number("activeVersion"), value.Number("accessVersion"));
+}

@@ -1,6 +1,6 @@
 # 初期実装の状況
 
-更新日：2026-09-26。設計版0.2の実装着手分＋Issue #2の費用ガード＋Issue #3の仕様・契約検証。Azure展開と有料AI呼出しは未実施。
+更新日：2026-09-26。設計版0.2の実装着手分＋Issue #2〜#5の基盤・契約・評価。Azure展開と有料AI呼出しは未実施。
 
 ## 実装した範囲
 
@@ -15,7 +15,7 @@
 | 設定 | 環境変数／`.env`、Bicepパラメーター変換。秘密ファイルをgit/Dockerから除外 |
 | 配置・監視 | Bicep、Dockerfile、HTTPゼロスケール、手動seed、ローカルbuild／明示push、有料操作の承認フラグ、Budget通知・ログ保持設定 |
 | CI | .NET・UIビルド、単体/API/E2Eテスト、Bicepコンパイル。クラウド展開なし |
-| 実装契約 | [正本・API・権限・状態遷移・分類体系](specs/README.md)のJSON Schema/OpenAPI、正常/不正例、契約テスト。実サービスの書込・認可は後続実装 |
+| 実装契約 | [正本・API・権限・状態遷移・分類体系](specs/README.md)のJSON Schema/OpenAPI、正常/不正例、契約テスト。正本保存・認可基盤はIssue #5、後続業務フローは未実装 |
 
 固定ダミーは架空社員3名＋架空事例1件。分類値・Noul値はfixtureであり、Jev実測値ではない。画面でも固定データと再順位付け未実施を明示する。検索投影には全カテゴリ値を保持するが、AI実行の正本・生応答・Confidence保存処理はまだない。
 
@@ -35,7 +35,7 @@
 4. 依頼・参加承諾、SignalRチャット、事例自動投稿、公開承認、解決評価。
 5. 事業仮説生成と通知漏れ回復の手動実行。日次スケジュールは配置しない。
 
-今回のAPIは読み取り専用で、訂正・撤回・追加を公開していない。Entra実テナント・部署別ACL・実AI・実Cosmosの統合試験は今後実施する。構成図は目標構成であり稼働済み構成図ではない。
+本人訂正と正本読取APIを公開した。撤回・追加の業務APIは後続Issue。Entra実テナント・部署別ACL・実AI・実Cosmosの統合試験は今後実施する。構成図は目標構成であり稼働済み構成図ではない。
 
 ## 検証記録
 
@@ -56,7 +56,7 @@
 ## Issue #2：2026-09-23の変更と検証
 
 - APIはSingle revision、HTTPトリガー、最小0／最大1、cooldown 300秒。定期プローブではCosmosを照会しない。
-- 待機WorkerはAzure／AppHostとも初期配置しない。現在のWorkerは手動seed専用で、引数なし起動は失敗して終了する。Queue＋MIの0台起動構成は条件付き定義として用意し、取込ハンドラー実装まで無効。
+- 待機WorkerはAzure／AppHostとも初期配置しない。Issue #2時点のWorkerは手動seed専用で、引数なし起動は失敗して終了する。Queue＋MIの0台起動構成は条件付き定義として用意し、取込ハンドラー実装まで無効。
 - buildはローカル既定。push／ACR Tasks／展開／seedには正の承認予算と `--confirm-cost` が必要。
 - RG Budget通知、ログレベル・収集cap・保持・サンプリング設定、Blob／ACRの手動保持方針を追加。月1万円税別は申請案で未承認。
 - 後続AIのUTC日次トークン／回数／推定費用上限、停止、単価・為替版の設定契約を追加。実行時の台帳・上限制御は #8。
@@ -75,3 +75,22 @@
 - .NETテスト23件成功。ソリューションビルド成功（既存`AspireUseCliBundle=false`によるASPIRE010警告1件）。React型検査・Vite本番ビルド、Playwright Chromium 3件、既存Pythonスクリプト21件、Bicepコンパイル成功。BicepはCLIのローカル設定通知のみでコンパイラー警告なし。
 - Markdownのローカルリンク、仕様/構成図JSON構文、差分の空白を検査。構成図の描画・画像は変更しておらず、視覚検証の再実行とは扱わない。
 - 最初の.NET/Bicep試行はローカルIPC/CLI設定領域のsandbox制限で失敗し、許可されたローカル実行環境で再検証した。Azure展開、有料呼出し、実認可・実Cosmos・失効競合の統合検証は未実施。
+
+## Issue #5：2026-09-26の正本保存・認可基盤
+
+- 正本／投影repository、版付きJSON、ETagと同一パーティションbatch、業務更新＋Job＋24時間冪等記録を実装。全20kindの往復と既存検索fixture互換を検証。
+- Entra tid/oidからサーバーBinding／Grantを解決。本人以外の訂正、非参加者、未公開知識、別tenant/scope、クライアント権限指定を拒否。プロフィール訂正／正本・有効根拠・Job取得と保護付きページングを公開。
+- 正本有効版／公開状態を検索・AI入力境界・表示・共有確定で照合。tenantフェンスとSessionのETagを併用し、失効と配信／保存の競合を制御。クラッシュ後のreceipt／フェンス手動回復を追加。
+- API／Worker別のCosmos、Blob、Queue権限を必要なコンテナ単位で定義。CosmosのRU・TraceId・処理時間を記録し、readinessを60秒キャッシュ。
+- Office／Blob／Queue処理、実AI、再投影Worker、会話／公開承認APIは後続Issue。内部サービスの契約試験は実AI投稿成功を意味しない。
+
+実装境界・API一覧・Binding設定・RBAC表・停止後の復旧は[正本永続化手順](persistence.md)を参照。実Cosmos、実Entra、実RBAC、Azure展開、有料AI呼出しは未実施で、#9の接続検証に残す。構成図は目標構成のままで描画を変更していない。
+
+今回の検証結果：
+
+- `dotnet restore --locked-mode` とソリューションビルド成功。既存のASPIRE010警告1件（CLI bundle設定）、エラーなし。
+- .NET全75件成功（大集合評価の回帰を含む）。カバレッジを収集。メモリーadapter・HTTPテストであり実Cosmosの通信試験ではない。
+- Python契約9件、評価fixture4件、設定／Bicep ARM23件成功。Bicepコンパイル成功。
+- React型検査／Vite本番ビルド成功、Playwright Chromiumの既存3シナリオ成功。
+- Markdownローカルリンク、構成図JSON構文、`git diff --check` 成功。図の視覚検証は再実行していない。
+- 最初の.NET試行はローカルIPCのsandbox制限で失敗し、許可されたローカル実行環境で再実行。Python契約試験は不足依存のある既定Pythonから既存の契約用venvへ切り替えて成功。

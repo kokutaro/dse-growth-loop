@@ -12,6 +12,11 @@ from cost_config import integer, parameters as cost_parameters
 RG = "dse-growth-loop-rg"
 
 
+def identity_settings(env):
+    pattern = r"Auth__(Bindings__\d+__(TenantId|Oid|PrincipalId|PersonId|Enabled|Roles__\d+)|Grants__\d+__(PrincipalId|ScopeIds__\d+))"
+    return [{"name": key, "value": value} for key, value in sorted(env.items()) if re.fullmatch(pattern, key) and value]
+
+
 def main():
     parser = argparse.ArgumentParser(description="dse-growth-loop-rg の基盤・アプリ配置")
     parser.add_argument("action", choices=["validate", "what-if", "foundation", "build", "push", "apps", "seed"])
@@ -91,6 +96,7 @@ def main():
     }
     try:
         values.update(cost_parameters(env))
+        values["runtimeSettings"].extend(identity_settings(env))
     except ValueError as error:
         parser.error(str(error))
     if include_apps:

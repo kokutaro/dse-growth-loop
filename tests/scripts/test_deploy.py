@@ -42,3 +42,11 @@ class DeploymentTests(unittest.TestCase):
                 patch.object(deploy.subprocess, "run") as run, patch("sys.stderr"), self.assertRaises(SystemExit):
             deploy.main()
         run.assert_not_called()
+
+    def test_identity_settings_only_include_supported_server_configuration(self):
+        env = {"Auth__Bindings__0__TenantId": "dummy-tenant", "Auth__Bindings__0__Roles__0": "member",
+               "Auth__Grants__0__ScopeIds__0": "demo", "Auth__Bindings__0__Secret": "never-send",
+               "Jev__ApiKey": "never-send", "Auth__ClientId": "configured-elsewhere"}
+        settings = {x["name"]: x["value"] for x in deploy.identity_settings(env)}
+        self.assertEqual(len(settings), 3)
+        self.assertNotIn("never-send", str(settings))

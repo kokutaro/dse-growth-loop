@@ -179,26 +179,43 @@ resource pullRoles 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for (
   scope: registry
   properties: { principalId: identities[i].properties.principalId, principalType: 'ServicePrincipal', roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') }
 }]
-resource cosmosRoles 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2025-04-15' = [for (name, i) in ['api', 'worker']: {
+// API/Workerとも業務更新とフェンスの条件付き書込が必要。DB全体には付与しない。
+var cosmosAccess = [
+  { identity: 0, container: 'catalog' }
+  { identity: 0, container: 'conversations' }
+  { identity: 1, container: 'catalog' }
+  { identity: 1, container: 'conversations' }
+]
+resource cosmosRoles 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2025-04-15' = [for grant in cosmosAccess: {
   parent: cosmos
-  name: guid(cosmos.id, identities[i].id, 'catalog')
+  name: guid(cosmos.id, identities[grant.identity].id, grant.container)
   properties: {
-    principalId: identities[i].properties.principalId
-    roleDefinitionId: '${cosmos.id}/sqlRoleDefinitions/${i == 0 ? '00000000-0000-0000-0000-000000000001' : '00000000-0000-0000-0000-000000000002'}'
-    scope: '${cosmos.id}/dbs/${database.name}/colls/${catalog.name}'
+    principalId: identities[grant.identity].properties.principalId
+    roleDefinitionId: '${cosmos.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002'
+    scope: '${cosmos.id}/dbs/${database.name}/colls/${grant.container}'
   }
 }]
-// 初回実装では API は読み取り専用。取込 Worker に必要な権限を限定して用意する。
-resource blobRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(storage.id, identities[1].id, 'blob')
-  scope: storage
-  properties: { principalId: identities[1].properties.principalId, principalType: 'ServicePrincipal', roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe') }
+// #6の原本受付/抽出、#8の原本参照に必要なコンテナだけに限定。
+resource apiOriginalsRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(containers[0].id, identities[0].id, 'blob')
+  scope: containers[0]
+  properties: { principalId: identities[0].properties.principalId, principalType: 'ServicePrincipal', roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe') }
 }
-resource queueRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(storage.id, identities[1].id, 'queue')
-  scope: storage
-  properties: { principalId: identities[1].properties.principalId, principalType: 'ServicePrincipal', roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '974c5e8b-45b9-4653-ba55-5f855dd0fb88') }
+resource workerBlobRoles 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for i in range(0, 2): {
+  name: guid(containers[i].id, identities[1].id, 'blob')
+  scope: containers[i]
+  properties: { principalId: identities[1].properties.principalId, principalType: 'ServicePrincipal', roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', i == 0 ? '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1' : 'ba92f5b4-2d11-453d-a403-e96b0029c9fe') }
+}]
+resource apiQueueSender 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(jobQueues[0].id, identities[0].id, 'sender')
+  scope: jobQueues[0]
+  properties: { principalId: identities[0].properties.principalId, principalType: 'ServicePrincipal', roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'c6a89b2d-59bc-44d0-9896-0f6e12d7b80a') }
 }
+resource workerQueueRoles 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for i in range(0, 2): {
+  name: guid(jobQueues[i].id, identities[1].id, 'queue')
+  scope: jobQueues[i]
+  properties: { principalId: identities[1].properties.principalId, principalType: 'ServicePrincipal', roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', i == 0 ? '974c5e8b-45b9-4653-ba55-5f855dd0fb88' : 'c6a89b2d-59bc-44d0-9896-0f6e12d7b80a') }
+}]
 resource vaultRoles 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for (name, i) in ['api', 'worker']: {
   name: guid(vault.id, identities[i].id, 'secrets')
   scope: vault

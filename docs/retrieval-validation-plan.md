@@ -140,3 +140,7 @@ APIは最小0／最大1。コールド起動の待ち時間とウォーム状態
 ## 実装契約との対応
 
 評価用データの型・分類体系・正規化辞書は[実装契約 v1](specs/README.md)を参照する。既存fixtureの疎な分類値はLegacySearchUnitとして維持し、新規分類の全Probability・別Confidence・Noulの未評価/不明と混同しない。契約検証の成功は本計画のRecall・順位品質・実AI費用の実測を代替しない。
+
+## 正本照合の実装回帰（Issue #5）
+
+[永続化・認可基盤](persistence.md)では、検索候補のsourceVersion/activeVersion/accessVersionと根拠の文書版を正本に照合する。撤回済み知識、参加不可人物、building/旧版投影、scope不一致を除外し、再照合障害は503にする。5,000投影／1,000RUの打切りをno_matchへ変換しない。固定fixtureでAI入力・表示・共有確定の拒否を試験し、既存の同一配列要素照合・安定順・救済枠を維持する。これは取得制御の回帰試験であり、実AIの検索品質や実CosmosのRU実測ではない。

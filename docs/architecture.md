@@ -180,7 +180,7 @@ Jev停止時も保存済み分布は利用できる。質問の新規分類が�
 
 ### 9. 原本・正本・検索用データを分ける
 
-Issue #3の[実装契約 v1](specs/README.md)で最小スキーマ、API、権限、状態遷移、未承認事項を定義した。以下の設計上の名称SessionOutcome/KnowledgeItem/OpportunityRunは、契約ではOutcome/Knowledge/Job＋Opportunityに対応する。永続化・認可・業務機能の実装完了を意味しない。
+Issue #3の[実装契約 v1](specs/README.md)で最小スキーマ、API、権限、状態遷移、未承認事項を定義した。以下の設計上の名称SessionOutcome/KnowledgeItem/OpportunityRunは、契約ではOutcome/Knowledge/Job＋Opportunityに対応する。Issue #5で正本保存・認可・有効版照合の基盤を追加した（[実装・復旧手順](persistence.md)）。AI・取込・協働業務全体の実装完了を意味しない。
 
 | データ | 主な内容 | 保管先 |
 |---|---|---|
