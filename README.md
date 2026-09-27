@@ -12,7 +12,7 @@
 - [構成図](docs/diagrams/architecture.html)：ブラウザで開ける単独HTML。図中の文章は日本語。ビューアの固定操作UIとHTMLの言語指定は英語。
 - [構成図の編集元](docs/diagrams/architecture.json)。
 
-設計版0.2に沿って初期実装を開始。React UI、.NET 10 API/Worker、Aspire AppHost、Bicepを追加した。現在動くのは手動条件による一次検索と根拠表示、および認可付きの本人訂正・正本照合API。実AI、文書取込、チャット等は次工程。[実装状況](docs/implementation-status.md)に実装済み・未実装・未検証を区別する。
+設計版0.2に沿って初期実装を開始。React UI、.NET 10 API/Worker、Aspire AppHost、Bicepを追加した。現在動くのは手動条件による一次検索と根拠表示、および認可付きの本人訂正・正本照合API。docx/xlsxのアップロード・機械抽出・出典プレビューと永続ジョブ回復にも対応。[取込手順](docs/document-ingestion.md)を参照。実AI・チャット等は次工程。[実装状況](docs/implementation-status.md)に実装済み・未実装・未検証を区別する。
 
 ## ローカル起動
 
@@ -37,7 +37,7 @@ npm --prefix web run dev
 
 ## Azure配置
 
-RGは **`dse-growth-loop-rg`** 固定。[Azure展開手順](docs/deployment.md)を参照。APIはHTTP起動の最小0／最大1、Workerは手動seed／フェンス回復のみ。ビルドはローカル既定で、有料操作には承認予算と明示フラグが必要。[費用ガードとAI上限契約](docs/development-cost-controls.md)を参照。実際のAzure展開・有料API呼出しはまだ実施していない。
+RGは **`dse-growth-loop-rg`** 固定。[Azure展開手順](docs/deployment.md)を参照。APIはHTTP起動の最小0／最大1、WorkerはQueue消費を明示opt-inし、手動seed／フェンス回復／通知回復を提供する。ビルドはローカル既定で、有料操作には承認予算と明示フラグが必要。[費用ガードとAI上限契約](docs/development-cost-controls.md)を参照。実際のAzure展開・有料API呼出しはまだ実施していない。
 
 ## 検証
 

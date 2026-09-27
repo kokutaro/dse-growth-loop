@@ -8,6 +8,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Dse.Infrastructure;
 
+public sealed class DependencyRetryException(TimeSpan retryAfter) : Exception("DEPENDENCY_UNAVAILABLE")
+{
+    public TimeSpan RetryAfter { get; } = retryAfter;
+}
+
 public interface IRecordStore
 {
     Task<StoredRecord?> ReadAsync(RecordPartition partition, string id, CancellationToken ct);
@@ -42,6 +47,14 @@ public sealed class MemoryRecordStore : IRecordStore
     private readonly object sync = new();
     private readonly Dictionary<(RecordPartition, string), StoredRecord> records = [];
     private long version;
+    internal void Restore(LocalRecordSnapshot snapshot)
+    {
+        lock (sync) { version = snapshot.Version; foreach (var row in snapshot.Records) records[(row.Partition, row.Record.Value.Text("id"))] = row.Record; }
+    }
+    internal LocalRecordSnapshot Snapshot()
+    {
+        lock (sync) return new(version, records.Select(x => new LocalStoredRecord(x.Key.Item1, x.Value)).ToArray());
+    }
     public Task<StoredRecord?> ReadAsync(RecordPartition partition, string id, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -133,6 +146,7 @@ public sealed class CosmosRecordStore(CosmosClient client, IConfiguration config
             var statuses = Enumerable.Range(0, response.Count).Select(i => response[i].StatusCode).ToArray();
             if (statuses.Contains(HttpStatusCode.PreconditionFailed)) throw new StoreConflictException(true);
             if (statuses.Contains(HttpStatusCode.Conflict)) throw new StoreConflictException(false);
+            if (response.StatusCode == HttpStatusCode.TooManyRequests) throw new DependencyRetryException(response.RetryAfter ?? TimeSpan.FromSeconds(10));
             throw new DomainException(503, "DEPENDENCY_UNAVAILABLE");
         }
         finally { foreach (var stream in streams) stream.Dispose(); }

@@ -95,7 +95,7 @@ public static class InfrastructureRegistration
             if (!development) throw new InvalidOperationException("Demo モードは Development 環境専用です。");
             services.AddSingleton<IRecordStore>(_ =>
             {
-                var store = new MemoryRecordStore();
+                IRecordStore store = string.IsNullOrWhiteSpace(configuration["Data:LocalPath"]) ? new MemoryRecordStore() : new LocalRecordStore(new LocalIngestionFiles(configuration["Data:LocalPath"]!));
                 DemoRecords.SeedAsync(store, "demo", default).GetAwaiter().GetResult();
                 return store;
             });

@@ -7,8 +7,7 @@
         "worker"
       ],
       "guards": [
-        "lease_acquired",
-        "budget_allowed"
+        "lease_acquired"
       ]
     },
     {
@@ -54,8 +53,7 @@
       ],
       "guards": [
         "retry_authorized",
-        "new_job",
-        "budget_allowed"
+        "new_job"
       ]
     },
     {
@@ -67,8 +65,30 @@
       ],
       "guards": [
         "retry_authorized",
-        "new_job",
-        "budget_allowed"
+        "new_job"
+      ]
+    },
+    {
+      "from": "processing",
+      "to": "queued",
+      "actors": [
+        "worker"
+      ],
+      "guards": [
+        "lease_owned",
+        "retry_remaining",
+        "available_at_set"
+      ]
+    },
+    {
+      "from": "processing",
+      "to": "cancelled",
+      "actors": [
+        "worker"
+      ],
+      "guards": [
+        "lease_owned",
+        "version_obsolete"
       ]
     }
   ],

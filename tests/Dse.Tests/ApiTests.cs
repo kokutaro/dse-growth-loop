@@ -139,4 +139,14 @@ public class ApiTests
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
         Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
     }
+    [Theory]
+    [InlineData("/api/v1/documents", "POST")]
+    [InlineData("/api/v1/documents/unknown/original", "GET")]
+    [InlineData("/api/v1/jobs/unknown/retry", "POST")]
+    public async Task Ingestion_routes_require_authentication(string path, string method)
+    {
+        using var factory = Factory(false); using var client = factory.CreateClient();
+        var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), path));
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
 }

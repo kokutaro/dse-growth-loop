@@ -16,6 +16,12 @@ if (!demo && (!Guid.TryParse(tenantId, out _) || !Guid.TryParse(clientId, out _)
     throw new InvalidOperationException("Auth__TenantId、Auth__ClientId、Auth__AllowedObjectIds__0 以降を設定してください。");
 
 builder.Services.AddCatalog(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddIngestion(builder.Configuration);
+if (demo && builder.Configuration["Ingestion:RunWorker"] == "true") builder.Services.AddHostedService<IngestionBackgroundService>();
+var uploadLimits = IngestionOptions.Read(builder.Configuration);
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o => {
+    o.MultipartBodyLengthLimit = uploadLimits.OriginalBytes + 65536; o.ValueLengthLimit = 2048; o.ValueCountLimit = 3;
+});
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler(o => o.SuppressDiagnosticsCallback = _ => true);
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow);
@@ -49,6 +55,8 @@ builder.Services.AddRateLimiter(o =>
 builder.Services.AddRateLimiter(o => o.AddPolicy("records", context => RateLimitPartition.GetFixedWindowLimiter(
     (context.User.FindFirstValue("oid") ?? "local") + (HttpMethods.IsGet(context.Request.Method) ? ":read" : ":write"),
     _ => new FixedWindowRateLimiterOptions { PermitLimit = HttpMethods.IsGet(context.Request.Method) ? 120 : 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })));
+builder.Services.AddRateLimiter(o => o.AddPolicy("upload", context => RateLimitPartition.GetFixedWindowLimiter(
+    context.User.FindFirstValue("oid") ?? "local", _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })));
 builder.Services.AddHealthChecks().AddCheck<CatalogHealthCheck>("catalog", tags: ["ready"]);
 var app = builder.Build();
 app.UseExceptionHandler(handler => handler.Run(async context =>
@@ -73,6 +81,14 @@ app.Use(async (context, next) =>
     context.Response.Headers.ContentSecurityPolicy = $"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://login.microsoftonline.com; frame-src 'self' https://login.microsoftonline.com; frame-ancestors {ancestors}; base-uri 'self'; object-src 'none'";
     await next();
 });
+app.Use(async (context, next) =>
+{
+    var limit = context.Request.Path == "/api/v1/documents" && HttpMethods.IsPost(context.Request.Method) ? uploadLimits.OriginalBytes + 65536 : 32 * 1024;
+    var feature = context.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>();
+    if (feature is { IsReadOnly: false }) feature.MaxRequestBodySize = limit;
+    if (context.Request.ContentLength > limit) { await ApiProblem.Result(context, 413).ExecuteAsync(context); return; }
+    await next();
+});
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseAuthentication();
@@ -91,6 +107,7 @@ var search = app.MapPost("/api/search", (SearchRequest request, HttpContext cont
     new CatalogResult(catalog, request, RecordEndpoints.Actor(context))).RequireRateLimiting("search");
 var records = app.MapGroup("/api/v1").RequireRateLimiting("records");
 records.MapRecords();
+records.MapDocuments();
 if (!demo)
 {
     search.RequireAuthorization("DemoUsers");

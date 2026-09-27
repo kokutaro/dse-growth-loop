@@ -138,3 +138,14 @@ class CostControlsTests(unittest.TestCase):
             commands = self.invoke([action, '--confirm-cost'], env)
             self.assertEqual(commands[0][:4], ['az', 'deployment', 'sub', 'create'])
         self.assertEqual(self.invoke(['seed', '--confirm-cost'], env)[0][:4], ['az', 'containerapp', 'job', 'start'])
+
+
+class IngestionSettingsTests(unittest.TestCase):
+    def test_worker_opt_in_and_upload_safety_ceiling(self):
+        import cost_config
+        self.assertTrue(cost_config.parameters({'DEPLOY_INGESTION_WORKER': 'true'})['deployIngestionWorker'])
+        self.assertFalse(cost_config.parameters({})['deployIngestionWorker'])
+        with self.assertRaises(ValueError):
+            cost_config.parameters({'Ingestion__OriginalBytes': '10485761'})
+        runtime = {item['name']: item['value'] for item in cost_config.parameters({'Ingestion__Attempts': '2'})['runtimeSettings']}
+        self.assertEqual(runtime['Ingestion__Attempts'], '2')
