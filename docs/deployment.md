@@ -34,7 +34,7 @@ AspireのDashboard/DCP依存はOS別のため、AppHostのみ `packages.<RID>.lo
 
 `infra/main.bicep` はサブスクリプションスコープでRGと次のリソースを作成／更新する。
 
-- Container Apps環境、API（最小0／最大1、Single revision＋HTTPS起動）。未実装Workerは配置しない。
+- Container Apps環境、API（最小0／最大1、Single revision＋HTTPS起動）。Queue消費WorkerはDEPLOY_INGESTION_WORKER=trueで明示配置。既定は配置しない。
 - 手動Container Apps Job `dse-seed-demo`（ダミー初期データ投入）。
 - ACR Basic。管理者パスワードを無効化し、Managed Identityでpull。
 - Cosmos DB for NoSQL Serverless、DB `dse-growth-loop`、`catalog`（`/tenantId`）、`conversations`（`/sessionId`）。予約RUなし。
@@ -42,7 +42,7 @@ AspireのDashboard/DCP依存はOS別のため、AppHostのみ `packages.<RID>.lo
 - Key Vault（RBAC、ソフト削除、purge protection）。秘密そのものはテンプレートに含めない。
 - Foundry AI Servicesアカウント、プロジェクト、任意のモデル配置。
 - Log Analytics（既定30日保持、0.05 GB/日収集cap）、Application Insights（サンプリング設定10%）。設定と制限は[費用ガード](development-cost-controls.md)を参照。
-- API/WorkerごとのManaged Identity。APIはcatalog読取、Workerはcatalog書込。Blob/Queue書込はWorkerのみ。
+- API/WorkerごとのManaged Identity。catalog/conversationsとBlob/QueueはAPI/Worker別にコンテナ単位RBACを付与する。詳細は正本永続化手順の操作表を参照。
 
 公開サービスエンドポイント＋Entra認証の初期構成で、Private Endpoint/VNet閉域化は未実装。全件ダミーの小規模デモが対象。ACR・保存データ・実行中レプリカ・ログ等に費用が発生し、ログ上限は請求全体の上限ではない。GlobalStandardモデル配置は国内完結を保証しない。
 
@@ -112,7 +112,7 @@ az containerapp job execution list --name dse-seed-demo --resource-group dse-gro
 - `/api/config` はブラウザ用の公開認証設定のみ。
 - `/api/search` はJWT必須（Development＋Demoのみ省略）。30回/分、JSON最大32KiB。
 - コンパイルではSKU利用可否、クォータ、権限伝播、モデル利用権限を保証できない。Azureでのwhat-if・展開・動作確認は未実施。
-- Jev秘密値のKey Vault格納、実AI接続、Queue処理、手動の事業分析・通知漏れ回復は次工程。Workerは手動ダミー投入専用。定期ジョブは配置しない。
+- Jev秘密値のKey Vault格納、実AI接続、手動の事業分析は次工程。WorkerはQueue消費と手動ダミー投入・フェンス回復・通知回復を提供。定期ジョブは配置しない。
 
 ## 確認した公式仕様
 
@@ -122,3 +122,7 @@ az containerapp job execution list --name dse-seed-demo --resource-group dse-gro
 - [Aspire AppHost SDK](https://aspire.dev/get-started/aspire-sdk/)
 
 Issue #5でcatalog／conversationsの書込とコンテナ・Queue単位のRBACを定義した。[API／Workerの操作表と旧付与の扱い](persistence.md#apiworkerのrbac)を参照。実Azureの適用・許可／拒否検証は未実施。
+
+## Office取込Worker
+
+`DEPLOY_INGESTION_WORKER=true` は承認済みのapps配置時に指定する。既定false、有料操作の承認境界は維持。[取込設定・ローカル永続化・回復CLI](document-ingestion.md)を参照。実Queueとスケール0→1→0の受入は #9 に記録する。

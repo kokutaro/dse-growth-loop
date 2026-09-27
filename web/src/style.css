@@ -278,3 +278,8 @@ footer {
     padding: 35px 15px;
   }
 }
+
+.documents { margin-top: 2rem; overflow-wrap: anywhere; }
+.documents form { display: grid; gap: .75rem; max-width: 44rem; }
+.documents article { border-top: 1px solid #8885; margin-top: 1rem; }
+.evidence-text { white-space: pre-wrap; }

@@ -1,6 +1,6 @@
 # 初期実装の状況
 
-更新日：2026-09-26。設計版0.2の実装着手分＋Issue #2〜#5の基盤・契約・評価。Azure展開と有料AI呼出しは未実施。
+更新日：2026-09-27。設計版0.2の実装着手分＋Issue #2〜#6の基盤・契約・評価・Office取込。Azure展開と有料AI呼出しは未実施。
 
 ## 実装した範囲
 
@@ -29,7 +29,7 @@
 
 後続Issueは[実装契約 v1](specs/README.md)を共有する。公開承認者・保持期限・評価尺度・承認予算は[決定ログ](specs/decisions.md)に未承認として残しており、この仕様PRによって運用承認されたとは扱わない。
 
-1. Open XML取込、Blob原本、文書版・根拠、同一パーティション内のジョブ登録とQueue通知。容量・展開上限、再送、通知漏れ回復、poison、冪等性。
+1. 実AzureのBlob/Queue/Cosmos/RBAC・Worker 0→1→0と強制停止の結合検証（#9）。
 2. Foundry構造化とJev公式API。全分布・Confidence・Noul未評価・モデル版・入力ハッシュの正本保存、本人訂正と再取込競合。
 3. 質問のJev分類、Foundry再順位付け、候補／根拠ID検証、正本の有効版と公開撤回の再照合。
 4. 依頼・参加承諾、SignalRチャット、事例自動投稿、公開承認、解決評価。
@@ -94,3 +94,17 @@
 - React型検査／Vite本番ビルド成功、Playwright Chromiumの既存3シナリオ成功。
 - Markdownローカルリンク、構成図JSON構文、`git diff --check` 成功。図の視覚検証は再実行していない。
 - 最初の.NET試行はローカルIPCのsandbox制限で失敗し、許可されたローカル実行環境で再実行。Python契約試験は不足依存のある既定Pythonから既存の契約用venvへ切り替えて成功。
+
+## Issue #6：Office取込
+
+[Office文書取込と回復手順](document-ingestion.md)を追加。docx/xlsxの型・展開制限、段落/表/シート/セル抽出、非公開Blob、原本hash/処理版重複検出、永続Job＋Queue通知、ETagリース/不可視期限更新、有限再試行/poison、reconcile、明示一時Blob回収を実装した。UIでアップロード・進捗・失敗・再実行・出典・原本取得を提供する。AI構造化は未実施を明示する。Aspireではファイル保存のローカル正本/Blob/Queueを使う。
+
+本人資料・サーバー指定scopeという既存認可を維持。形式/上限はIssue #6のdocx/xlsx・10 MiB/50 MiB・1万エントリ/120秒に統一した。実Azure・実Queue・RBACと有料呼出しは未実施。旧節の検証件数は当時の記録。
+
+2026-09-27のIssue #6ローカル検証（今回実行）：
+
+- .NET全108件成功、カバレッジ収集。API認証/認可、正常docx/xlsx、ZIP bomb/暗号化/偽装/展開上限、通知漏れ、同時消費、20秒周期リース更新、途中停止後の再開、poison再実行、旧版破棄、一時Blob回収を含む。
+- Python契約10件（実取込出力もSchema照合）、評価fixture4件、設定/Bicep24件成功。契約追加検証ロジックのカバレッジ100%。Bicepコンパイル成功。
+- React型検査/Viteビルド成功。Playwright Chromium 7件成功。正常docx/xlsxは実API/ローカルQueueによるE2E、失敗状態の表示・再実行1件は状態API fixtureとして区別。出典表示のスクリーンショットを目視確認。
+- ソリューションビルド成功（既存ASPIRE010警告のみ）。Markdownリンク、仕様/構成図JSON構文、差分空白の検査成功。構成図の描画は変更しておらず視覚再検証の対象外。
+- 実Queue/Cosmos/RBAC、Azureでの0→1→0・障害試験は未実施で #9 に残す。AI品質評価・性能上限の達成を意味しない。

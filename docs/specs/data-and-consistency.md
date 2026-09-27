@@ -56,9 +56,9 @@ Jobは永続状態が正本。Queueは`jobId/container/tenantId/sessionId`だけ
 
 | 対象 | from → to | 主体・条件 |
 |---|---|---|
-| 取込 | queued → processing | Worker、リース取得、予算許可 |
+| 取込 | queued → processing | Worker、リース取得（機械抽出にAI予算は不要） |
 | 取込 | processing → ready / needs_review / failed | リース所有・対象版一致。readyには根拠検証成功も必要 |
-| 取込 | failed / needs_review → queued | 所有者または運用者、再実行許可、新Job、予算許可 |
+| 取込 | failed / needs_review → queued | 所有者または運用者、再実行許可、新Job（AI接続時は別途予算許可） |
 | 本人 | ai_unconfirmed → self_corrected / self_confirmed | 紐付け済み本人、If-Match一致 |
 | 本人 | self_corrected → self_confirmed / self_corrected、self_confirmed → self_corrected | 本人、If-Match一致。Workerからai_unconfirmedへの巻き戻しは禁止 |
 | 参加 | requested → accepted / declined | 招待対象本人のみ、If-Match一致。再依頼は新レコード |

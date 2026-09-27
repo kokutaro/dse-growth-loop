@@ -123,6 +123,13 @@ class ContractsTests(unittest.TestCase):
             self.assertTrue({s["signalId"] for s in fixture["experienceSignals"]}
                             <= set(self.taxonomy["signalIds"]))
 
+    def test_real_ingestion_records_match_contract(self):
+        path = ROOT / 'tests/Dse.Tests/TestResults/ingestion-contract-fixture.json'
+        self.assertTrue(path.exists(), 'Run dotnet test first')
+        for row in json.loads(path.read_text()):
+            with self.subTest(schema=row['schema']):
+                self.validator(row['schema']).validate(row['value'])
+
     def test_cross_field_invalid_examples(self):
         examples = {c["name"]: c for c in self.examples}
         mutations = [

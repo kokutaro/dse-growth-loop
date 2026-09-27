@@ -73,12 +73,14 @@ def parameters(env):
         'AiUsage__FxVersion': fx_version,
         'AiUsage__DayTimeZone': 'UTC',
     }
+    for name, default, ceiling in [('OriginalBytes', 10485760, 10485760), ('ExpandedBytes', 52428800, 52428800), ('Entries', 10000, 10000), ('ProcessingSeconds', 120, 120), ('Attempts', 3, 3)]:
+        runtime['Ingestion__' + name] = str(integer(env, 'Ingestion__' + name, default, 1, ceiling))
     return {
         'approvedMonthlyBudgetJpy': budget,
         'budgetEmails': emails,
         'budgetStartDate': f'{start}T00:00:00Z' if budget else '',
-        # Worker実装前はdeploy.py経由では有効化しない。
-        'deployIngestionWorker': False,
+        # Queue消費Workerは明示opt-in。既定は未配置。
+        'deployIngestionWorker': boolean(env, 'DEPLOY_INGESTION_WORKER', 'false'),
         'logsDailyQuotaGb': decimal_value(env, 'LOGS_DAILY_QUOTA_GB', '0.05', Decimal('0.023')),
         'logsRetentionDays': integer(env, 'LOGS_RETENTION_DAYS', 30, 30, 730),
         'telemetrySamplingPercentage': integer(env, 'TELEMETRY_SAMPLING_PERCENTAGE', 10, 1, 100),

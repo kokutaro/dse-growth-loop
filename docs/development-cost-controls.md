@@ -12,7 +12,7 @@ APIはConsumption、Single revision、最小0／最大1、0.5 vCPU／1 GiB。HTT
 
 後続Issue #6では **Queue＋ユーザー割当Managed IdentityのContainer Appスケーラー** を採用する。既存の長時間取込・不可視期間延長・再試行を一つの消費ループで扱いやすいため。イベント駆動Jobは、1件ごとの終了とタイムアウトで処理を分離する必要が出た時の代替案とする。CPUだけでは0台から仕事の到着を検知できない。[Jobsの実行方式](https://learn.microsoft.com/en-us/azure/container-apps/jobs)
 
-`infra/modules/apps.bicep` の `deployIngestionWorker=false` が既定。将来用の構成は最小0／最大1、0.25 vCPU／0.5 GiB、`azure-queue`、`ingestion`、queueLength=1、activationQueueLength=0、pollingInterval=60秒、cooldown=300秒。スケーラーはWorkerのManaged IdentityリソースIDを使用する。`deploy.py` は常にfalseを渡す。消費処理実装・停止時のリース回復試験後にこのガードを変更する。現在のイメージで有効化すると起動失敗を繰り返すため、有効化しない。
+`infra/modules/apps.bicep` の `deployIngestionWorker=false` が既定。将来用の構成は最小0／最大1、0.25 vCPU／0.5 GiB、`azure-queue`、`ingestion`、queueLength=1、activationQueueLength=0、pollingInterval=60秒、cooldown=300秒。スケーラーはWorkerのManaged IdentityリソースIDを使用する。Issue #6で消費処理を実装し、`deploy.py` は `DEPLOY_INGESTION_WORKER=true` の明示設定時のみ有効化する。既定false。実Azureの0→1→0検証は #9 に残す。
 
 必要RBACはWorkerのStorage Queue Data Contributor（スケーラーのキュー属性取得と消費を含む）、Storage Blob Data Contributor、Cosmos catalog Data Contributor、ACRのAcrPull。スケーラー認証に接続文字列・共有キーは使わない。現在はStorageアカウントスコープで割り当てている。後続の正本コンテナ等の権限は #5/#6 で追加・限定する。APIにキュー書込権限はまだなく、HTTP経由の取込は未実装。
 

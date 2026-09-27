@@ -40,8 +40,8 @@ POST/PATCH/PUTはすべて`Idempotency-Key`必須（自然文searchも有料再�
 | 項目 | 上限・拒否 |
 |---|---|
 | JSON body | 32KiB。413、どのフィールドも切り詰めて成功にしない |
-| upload | ファイル20MiB、1個、multipart overhead 64KiB。空ファイル400。docx/xlsx/pptxのみ。拡張子/MIME/コンテナ署名の不一致400 |
-| Open XML展開 | 展開合計100MiB、2,000エントリ、1エントリ20MiB、圧縮比100倍まで。マクロ、暗号化、外部リンク追跡、パストラバーサルは拒否。受付後に判明した不正はJob.failed/INVALID_INPUT（過大ならPAYLOAD_TOO_LARGE） |
+| upload | ファイル10MiB、1個、multipart overhead 64KiB。空ファイル400。docx/xlsxのみ。拡張子/MIME/コンテナ署名の不一致400 |
+| Open XML展開 | 展開合計50MiB、10,000エントリ、1エントリ50MiB、圧縮比100倍まで。マクロ、暗号化、埋込コード、パストラバーサルは拒否。外部リンクは追跡せず警告。受付後に判明した不正はJob.failed/INVALID_PACKAGE等（過大ならPAYLOAD_TOO_LARGE）。機械抽出120秒、最大3試行 |
 | query | 1〜2,000文字、空白のみは400。limit=1〜100、初期UIは20 |
 | title / displayName | 300 / 100文字 |
 | message / summary / evidence text | 8,000文字。複数フィールド合計でもbody上限を満たす |
@@ -64,7 +64,7 @@ GETの配列は`{items, continuationToken}`。`pageSize`は1〜100（省略20）
 - 同一キーの異なる内容は409 `IDEMPOTENCY_CONFLICT`。処理中なら同じjobIdの202、同期要求がまだ確定前なら409＋Retry-Afterで再照会を促す。
 - 冪等性記録と業務更新を同一パーティションで確定する。受付後に応答が失われても同じキーで再送する。入力/認証失敗は受付記録を作らない。再送時の旧If-Matchは、既存の確定結果を識別した後に判定するため、保存済みの同じ操作を412にしない。
 - If-MatchはGETで得た強いETag、`*`/欠落は400、古い値は412 `STALE_VERSION`。再取得・比較してから**新しいキー**で編集を送る。黙ってlast-write-winsにしない。
-- 202はJobの永続保存までを保証し、AIやQueue到達の成功ではない。`Accepted={jobId,status:queued,statusUrl}`、Location=statusUrl。Job取得でstatus/resultId/lastErrorCodeを確認する。conversationsのstatusUrlにはsessionIdを含める。
+- 202はJobの永続保存までを保証し、AIやQueue到達の成功ではない。`Accepted={jobId,status:queued,statusUrl}`、文書uploadは追加でdocumentId/versionを返す。Location=statusUrl。Job取得でstatus/resultId/lastErrorCodeを確認する。conversationsのstatusUrlにはsessionIdを含める。
 - Job.retryはqueued＋notificationState=pendingなら同じJobを再通知する（追加AI不要）。failed/needs_review/budget_stoppedの再実行は新Job＋supersedesJobId。processingの有効リースがあれば409。期限切れはoperatorの手動回復としてリースを再獲得。readyの再実行は409。再実行で有料ゲートを解除しない。
 
 保存に失敗したMessageは503 `SAVE_FAILED`。端末はclientMessageId/bodyを`save_failed`として保持し、自動的に保存済みへ変えない。ネットワーク切断で結果不明なら同じIdempotency-Key/clientMessageIdを再送して結果を確認する。保存済みMessageの通知漏れはGETによる連番回復で補う。
@@ -91,3 +91,5 @@ GETの配列は`{items, continuationToken}`。`pageSize`は1〜100（省略20）
 | 409／非同期失効 | SOURCE_REVOKED | 「参照元の公開状態が変わりました」。生成破棄、本文/引用を表示しない |
 
 Jev停止時に別AIへ自動切替しない。質問分類が利用できなければ手動条件検索・正規化語へ縮退する。Foundry停止時は一次候補を返せても再順位付け成功と記録しない。新規有料処理自体を受付けられなければ429、永続受付後の停止はJob状態で返す。失敗・該当なし・予算停止を同じ空配列表示にまとめない。
+
+Issue #6の実装・設定・失敗コード・回復手順は[Office文書取込](../document-ingestion.md)。原本取得 `/documents/{documentId}/original` と本人の登録先取得 `/upload-context` も認可必須。機械抽出はAI予算を消費しない。

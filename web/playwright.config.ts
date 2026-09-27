@@ -12,6 +12,7 @@ export default defineConfig({
       env: {
         ASPNETCORE_ENVIRONMENT: "Development",
         Data__Mode: "Demo",
+        Ingestion__RunWorker: "true",
         ASPNETCORE_URLS: "http://127.0.0.1:5180",
       },
       timeout: 120000,

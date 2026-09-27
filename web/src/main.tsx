@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { initializeAuth, getToken, type AppConfig } from "./auth";
 import "./style.css";
+import { Documents } from "./documents";
 
 type SourceRef = {
   id: string;
@@ -233,6 +234,7 @@ function App() {
             )}
           </section>
         </div>
+        {config && <Documents config={config} />}
       </main>
       <footer>
         人の優劣ではなく、経験との接点を探す。DSE Growth Loop / 開発初期版

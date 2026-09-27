@@ -18,7 +18,7 @@ param entraClientId string
 @minLength(1)
 param allowedObjectIds array
 param modelDeploymentName string
-// 後続の取込ハンドラー実装後にだけ有効化する。初期配置は手動seedのみ。
+// Queue消費Workerは明示opt-in。実Azure起動停止検証は #9。
 param deployIngestionWorker bool = false
 param runtimeSettings array = []
 param telemetrySamplingPercentage int = 10
