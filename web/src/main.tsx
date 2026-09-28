@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { initializeAuth, getToken, type AppConfig } from "./auth";
 import "./style.css";
+import { Conversations } from "./conversations";
 import { Documents } from "./documents";
 
 type SourceRef = {
@@ -205,6 +206,7 @@ function App() {
                       <span className="fixture">架空データ</span>
                     </div>
                     <h3>{candidate.title}</h3>
+                    {candidate.entityType === "person" && <small>相談する人物ID：{candidate.entityId}</small>}
                     <p>{candidate.units[0].summary}</p>
                     <div className="routes">
                       {candidate.routes.map((route) => (
@@ -234,6 +236,7 @@ function App() {
             )}
           </section>
         </div>
+        {config && <Conversations config={config} candidates={result?.candidates ?? []} />}
         {config && <Documents config={config} />}
       </main>
       <footer>

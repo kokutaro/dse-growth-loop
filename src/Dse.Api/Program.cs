@@ -17,6 +17,13 @@ if (!demo && (!Guid.TryParse(tenantId, out _) || !Guid.TryParse(clientId, out _)
 
 builder.Services.AddCatalog(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddIngestion(builder.Configuration);
+builder.Services.AddSingleton<ConversationLocks>();
+builder.Services.AddSingleton<ConversationService>();
+// Do not export URLs from the hub transport; tokens are header-only and query tokens are rejected.
+builder.Services.Configure<OpenTelemetry.Instrumentation.AspNetCore.AspNetCoreTraceInstrumentationOptions>(o =>
+    o.Filter = context => !context.Request.Path.StartsWithSegments("/api/hubs"));
+builder.Logging.AddFilter("Microsoft.AspNetCore.Hosting.Diagnostics", LogLevel.Warning);
+builder.Services.AddSignalR(o => { o.MaximumReceiveMessageSize = 4096; o.EnableDetailedErrors = false; });
 if (demo && builder.Configuration["Ingestion:RunWorker"] == "true") builder.Services.AddHostedService<IngestionBackgroundService>();
 var uploadLimits = IngestionOptions.Read(builder.Configuration);
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o => {
@@ -57,6 +64,10 @@ builder.Services.AddRateLimiter(o => o.AddPolicy("records", context => RateLimit
     _ => new FixedWindowRateLimiterOptions { PermitLimit = HttpMethods.IsGet(context.Request.Method) ? 120 : 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })));
 builder.Services.AddRateLimiter(o => o.AddPolicy("upload", context => RateLimitPartition.GetFixedWindowLimiter(
     context.User.FindFirstValue("oid") ?? "local", _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })));
+// Transport polls/invocations must not consume the 30/minute business-write budget.
+builder.Services.AddRateLimiter(o => o.AddPolicy("chatConnections", context => RateLimitPartition.GetFixedWindowLimiter(
+    context.User.FindFirstValue("oid") ?? context.Connection.RemoteIpAddress?.ToString() ?? "local",
+    _ => new FixedWindowRateLimiterOptions { PermitLimit = 120, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })));
 builder.Services.AddHealthChecks().AddCheck<CatalogHealthCheck>("catalog", tags: ["ready"]);
 var app = builder.Build();
 app.UseExceptionHandler(handler => handler.Run(async context =>
@@ -91,6 +102,13 @@ app.Use(async (context, next) =>
 });
 app.UseDefaultFiles();
 app.UseStaticFiles();
+// Long Polling uses Authorization headers, so access_token in URLs is never supported.
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api/hubs") && context.Request.Query.ContainsKey("access_token"))
+    { await ApiProblem.Result(context, 400).ExecuteAsync(context); return; }
+    await next();
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
@@ -100,7 +118,7 @@ app.MapGet("/api/config", () => new { mode = demo ? "Demo" : "Azure", tenantId, 
 app.Use(async (context, next) =>
 {
     if (context.Request.Path.StartsWithSegments("/api") && context.Request.Path != "/api/config")
-        context.Items[typeof(ActorAccess)] = demo ? IdentityResolver.Demo : context.RequestServices.GetRequiredService<IdentityResolver>().Resolve(context.User);
+        context.Items[typeof(ActorAccess)] = demo ? DemoActor.Resolve(context) : context.RequestServices.GetRequiredService<IdentityResolver>().Resolve(context.User);
     await next();
 });
 var search = app.MapPost("/api/search", (SearchRequest request, HttpContext context, ICatalog catalog) =>
@@ -108,8 +126,16 @@ var search = app.MapPost("/api/search", (SearchRequest request, HttpContext cont
 var records = app.MapGroup("/api/v1").RequireRateLimiting("records");
 records.MapRecords();
 records.MapDocuments();
+records.MapConversations(demo);
+var chatHub = app.MapHub<ConversationHub>("/api/hubs/conversations", options =>
+{
+    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
+    options.CloseOnAuthenticationExpiration = true;
+    options.LongPolling.PollTimeout = TimeSpan.FromSeconds(20);
+}).RequireRateLimiting("chatConnections");
 if (!demo)
 {
+    chatHub.RequireAuthorization("DemoUsers");
     search.RequireAuthorization("DemoUsers");
     records.RequireAuthorization("DemoUsers");
 }

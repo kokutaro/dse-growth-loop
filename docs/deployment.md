@@ -126,3 +126,7 @@ Issue #5でcatalog／conversationsの書込とコンテナ・Queue単位のRBAC�
 ## Office取込Worker
 
 `DEPLOY_INGESTION_WORKER=true` は承認済みのapps配置時に指定する。既定false、有料操作の承認境界は維持。[取込設定・ローカル永続化・回復CLI](document-ingestion.md)を参照。実Queueとスケール0→1→0の受入は #9 に記録する。
+
+## 会話接続（Issue #7）
+
+SignalR Long PollingはAPIと同じoriginの`/api/hubs/conversations`を使用する。最大1レプリカを維持し、Redis/Azure SignalR Serviceを追加しない。接続や画面の履歴取得中は稼働が続くため、利用後は相談画面を閉じる。再配置・ゼロスケールで接続が消えてもCosmosの会話履歴は残る。認証失効・ログ抑止・回復手順は[会話手順](conversations.md)。Azureの接続/0→1→0は未検証。

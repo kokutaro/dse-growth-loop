@@ -130,6 +130,13 @@ class ContractsTests(unittest.TestCase):
             with self.subTest(schema=row['schema']):
                 self.validator(row['schema']).validate(row['value'])
 
+    def test_real_conversation_records_match_contract(self):
+        path = ROOT / 'tests/Dse.Tests/TestResults/conversation-contract-fixture.json'
+        self.assertTrue(path.exists(), 'Run dotnet test first')
+        for row in json.loads(path.read_text()):
+            with self.subTest(schema=row['schema']):
+                self.validator(row['schema']).validate(row['value'])
+
     def test_cross_field_invalid_examples(self):
         examples = {c["name"]: c for c in self.examples}
         mutations = [

@@ -1,6 +1,6 @@
 # 初期実装の状況
 
-更新日：2026-09-27。設計版0.2の実装着手分＋Issue #2〜#6の基盤・契約・評価・Office取込。Azure展開と有料AI呼出しは未実施。
+更新日：2026-09-27。設計版0.2の実装着手分＋Issue #2〜#7の基盤・契約・評価・Office取込・会話。Azure展開と有料AI呼出しは未実施。
 
 ## 実装した範囲
 
@@ -15,7 +15,7 @@
 | 設定 | 環境変数／`.env`、Bicepパラメーター変換。秘密ファイルをgit/Dockerから除外 |
 | 配置・監視 | Bicep、Dockerfile、HTTPゼロスケール、手動seed、ローカルbuild／明示push、有料操作の承認フラグ、Budget通知・ログ保持設定 |
 | CI | .NET・UIビルド、単体/API/E2Eテスト、Bicepコンパイル。クラウド展開なし |
-| 実装契約 | [正本・API・権限・状態遷移・分類体系](specs/README.md)のJSON Schema/OpenAPI、正常/不正例、契約テスト。正本保存・認可基盤はIssue #5、後続業務フローは未実装 |
+| 実装契約 | [正本・API・権限・状態遷移・分類体系](specs/README.md)のJSON Schema/OpenAPI、正常/不正例、契約テスト。正本保存・認可基盤はIssue #5、Office取込は#6、課題・承諾・会話は#7。AI支援等は後続 |
 
 固定ダミーは架空社員3名＋架空事例1件。分類値・Noul値はfixtureであり、Jev実測値ではない。画面でも固定データと再順位付け未実施を明示する。検索投影には全カテゴリ値を保持するが、AI実行の正本・生応答・Confidence保存処理はまだない。
 
@@ -32,7 +32,7 @@
 1. 実AzureのBlob/Queue/Cosmos/RBAC・Worker 0→1→0と強制停止の結合検証（#9）。
 2. Foundry構造化とJev公式API。全分布・Confidence・Noul未評価・モデル版・入力ハッシュの正本保存、本人訂正と再取込競合。
 3. 質問のJev分類、Foundry再順位付け、候補／根拠ID検証、正本の有効版と公開撤回の再照合。
-4. 依頼・参加承諾、SignalRチャット、事例自動投稿、公開承認、解決評価。
+4. 事例自動投稿、公開承認、解決評価（依頼・参加承諾・SignalR会話は#7で実装）。
 5. 事業仮説生成と通知漏れ回復の手動実行。日次スケジュールは配置しない。
 
 本人訂正と正本読取APIを公開した。撤回・追加の業務APIは後続Issue。Entra実テナント・部署別ACL・実AI・実Cosmosの統合試験は今後実施する。構成図は目標構成であり稼働済み構成図ではない。
@@ -108,3 +108,11 @@
 - React型検査/Viteビルド成功。Playwright Chromium 7件成功。正常docx/xlsxは実API/ローカルQueueによるE2E、失敗状態の表示・再実行1件は状態API fixtureとして区別。出典表示のスクリーンショットを目視確認。
 - ソリューションビルド成功（既存ASPIRE010警告のみ）。Markdownリンク、仕様/構成図JSON構文、差分空白の検査成功。構成図の描画は変更しておらず視覚再検証の対象外。
 - 実Queue/Cosmos/RBAC、Azureでの0→1→0・障害試験は未実施で #9 に残す。AI品質評価・性能上限の達成を意味しない。
+
+## Issue #7：課題・参加承諾・永続チャット（2026-09-27〜28）
+
+課題作成/一覧/詳細、依頼/承諾/辞退/退会、チャット、AI設定保存、保存/未保存/再送/接続状態を実装。[操作・API・障害回復](conversations.md)を参照。Session・Participation・MessageとMessageCommitted Jobをconversationsに保存し、単一APIレプリカのSignalR通知をDB連番取得で補完する。ローカル切替はDevelopment＋Demoだけ。本番は既存JWT/主体対応と現在の参加者を検査する。
+
+今回実行：.NET全体124件成功（接続制限の分離・冪等キー境界・現在scopeの再検査を含む）。Playwright Chromium 10件（3 worker）、契約11件、設定/Bicep24件、評価fixture4件が成功。契約検証器カバレッジ100%。locked-mode restore・全体ビルド・React型検査/Vite本番ビルド・リンク/差分検査も成功（既存のAspire ASPIRE010警告あり）。画面のスクリーンショットを確認。再接続試験で検出した通知失敗による履歴取得停止と、接続維持による業務APIレート消費を修正して再実行した。旧試験記録の流用ではない。
+
+実CosmosのTransactional Batch/RBAC、Entraトークン更新/失効、Container Apps再配置/0→1→0のライブ検証は未実施。AI投稿・messageCommitted Jobの消費は#13。実環境の作成、有料API呼出し、既存データ削除は実行していない。

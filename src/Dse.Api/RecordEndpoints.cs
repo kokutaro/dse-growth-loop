@@ -64,6 +64,7 @@ public static class RecordEndpoints
             {
                 var actor = Actor(context);
                 var partition = sessionId is null ? RecordPartition.Catalog(actor.TenantId) : RecordPartition.Conversation(actor.TenantId, sessionId);
+                if (sessionId is not null) await context.RequestServices.GetRequiredService<ConversationService>().SessionAsync(actor, sessionId, token);
                 var job = await repository.ReadAsync(partition, id, token);
                 if (job is null || job.Value.Text("kind") != "job") throw new DomainException(404, "NOT_FOUND");
                 AccessPolicy.RequireRead(actor, job.Value);

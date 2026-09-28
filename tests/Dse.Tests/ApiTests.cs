@@ -149,4 +149,32 @@ public class ApiTests
         var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), path));
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+    [Theory]
+    [InlineData("/api/hubs/conversations/negotiate?negotiateVersion=1", "POST")]
+    [InlineData("/api/v1/challenges", "GET")]
+    [InlineData("/api/v1/sessions/unknown/messages", "POST")]
+    public async Task Conversation_routes_never_accept_demo_headers_in_production(string path, string method)
+    {
+        using var factory = Factory(false); using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Demo-Person", "demo-person-02");
+        Assert.Equal(HttpStatusCode.Unauthorized, (await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), path))).StatusCode);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        var context = await client.GetStringAsync("/api/v1/conversation-context");
+        Assert.Contains("principal-test", context); Assert.DoesNotContain("demo-person-02", context);
+    }
+    [Fact]
+    public async Task Hub_rejects_expired_tokens_and_disabled_bindings()
+    {
+        using var factory = Factory(false); using var client = factory.CreateClient();
+        var expired = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken($"https://login.microsoftonline.com/{Tenant}/v2.0", Client,
+            [new Claim("tid", Tenant), new Claim("oid", User), new Claim("scp", "access_as_user")],
+            DateTime.UtcNow.AddMinutes(-20), DateTime.UtcNow.AddMinutes(-10), new SigningCredentials(Key, SecurityAlgorithms.HmacSha256)));
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", expired);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/api/hubs/conversations/negotiate?negotiateVersion=1", null)).StatusCode);
+        using var disabled = Factory(false).WithWebHostBuilder(b => b.UseSetting("Auth:Bindings:0:Enabled", "false"));
+        using var disabledClient = disabled.CreateClient();
+        disabledClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        Assert.Equal(HttpStatusCode.Forbidden, (await disabledClient.PostAsync("/api/hubs/conversations/negotiate?negotiateVersion=1", null)).StatusCode);
+    }
+
 }
