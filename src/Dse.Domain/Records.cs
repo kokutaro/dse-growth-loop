@@ -72,7 +72,7 @@ public sealed record RecordPartition(string Container, string TenantId, string K
     public static RecordPartition For(JsonObject value)
     {
         var kind = value.Text("kind");
-        var conversation = kind is "session" or "message" or "outcome" or "feedback" ||
+        var conversation = kind is "session" or "message" or "outcome" or "feedback" || (kind == "participation" && value.Text("sessionId") != "") ||
             (kind is "job" or "aiRun" && value.Text("container") == "conversations");
         return conversation ? Conversation(value.Text("tenantId"), value.Text("sessionId")) : Catalog(value.Text("tenantId"));
     }

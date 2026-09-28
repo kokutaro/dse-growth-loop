@@ -40,5 +40,7 @@ public sealed class IdentityResolver
         var g = grants.SingleOrDefault(g => g.PrincipalId == b?.PrincipalId);
         return b is null || g is null ? null : new(tenant, b.PrincipalId, b.PersonId, b.Roles, g.ScopeIds);
     }
+    public static ActorAccess? DemoPerson(string person) => person is "demo-person-01" or "demo-person-02" or "demo-person-03"
+        ? new("demo", "principal-demo-" + person[^2..], person, ["member"], ["demo"]) : null;
     public static ActorAccess Demo => new("demo", "principal-demo-01", "demo-person-01", ["member"], ["demo"]);
 }

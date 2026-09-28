@@ -24,8 +24,9 @@
 | Person / Experience / DepartmentActivity | `catalog`。PersonとExperienceの本人訂正を正本として保持 | Experience.personIdの所有主体、参照文書の閲覧権限。部署の活動を所属者全員の経験へ転記しない |
 | ClassificationResult / ExperienceSignal | `catalog`。推論の保存結果、入力根拠とAiRunを固定 | 同tenant・同単位・同文書版の検証済み根拠のみ |
 | SearchUnit | `catalog`。正本から再生成する投影 | entityId/unitId、全分類、正本のactiveVersion/accessVersion、projectionState=ready |
-| Challenge / Participation | `catalog`。依頼と参加承諾の正本 | 課題所有者、招待対象本人。同じ課題と人物の有効依頼は1件 |
-| Session / Message / Outcome / Feedback | `conversations /sessionId`。Session.id=sessionId。tenantも必須 | catalogの課題・承諾から作成。以後はSessionが現在の参加者の正本。Messageのauthor、sequenceはサーバー採番 |
+| Challenge | `catalog`。課題と初期化Job | 課題所有者。Session IDは決定論的で初期化を再実行可能 |
+| Participation | `conversations /sessionId`。依頼と参加承諾の正本 | 課題所有者、招待対象本人。同じSessionと人物の依頼は1件 |
+| Session / Message / Outcome / Feedback | `conversations /sessionId`。Session.id=sessionId。tenantも必須 | catalogの課題から所有者だけのSessionを作成。承諾時にParticipationとSession参加者を同時更新。Messageのauthor、sequenceはサーバー採番 |
 | Knowledge | `catalog`。公開要約・対象版・参加者確認・承認者の正本 | 元Session参加資格とメッセージIDを検証。会話を移し替えず、承認した要約だけを保存 |
 | Opportunity / RetrievalRun | `catalog`。分析・検索実行者の非公開結果 | 正本版・根拠ID・許可版のスナップショット。取得時も許可を再検証 |
 | Job / AiRun | 対象と同じコンテナ・パーティション。`container`＋nullable `sessionId`を保持 | catalogならsessionId=null、conversationsなら非null。JobはaggregateId/aggregateVersion、AiRunは入力版と使用量を固定 |
@@ -38,9 +39,9 @@
 |---|---|---|
 | 文書受付 | Document＋DocumentVersionメタデータ＋Job＋冪等性記録 | 一時Blob保存が先、DB確定後Queue通知。一時Blobだけ残れば未受付、削除は保持方針と別承認に従う |
 | 本人訂正 | Person＋対象Experience＋監査差分＋投影Job＋冪等性記録 | 1要求20経験まで。どれかの版が競合なら全体を拒否。再取込候補は別版、本人の値を維持 |
-| 参加承諾 | Participation＋課題の版更新＋Session作成Job | conversations初期化は別。acceptedでもSession準備中なら202の状態を表示する |
-| Session作成 | Session＋処理済み初期化キー | 決定論的sessionIdで再実行しても重複作成しない。catalog側リンク確定の通知漏れを手動照合 |
-| メッセージ保存 | Session.lastSequence増分＋Message＋chat_assist Job＋冪等性記録 | Queue/SignalR配送は後。保存成功＋通知失敗でもMessageはsaved。再接続は永続連番から再取得 |
+| 参加承諾・退会 | Participation＋Session参加者集合・membershipVersion＋冪等性記録 | 同一会話パーティションで確定。退会前のSignalRグループは無効になる |
+| Session作成 | create-only Session（決定論的IDが初期化キー） | 決定論的sessionIdで再実行しても重複作成しない。catalogの初期化Jobをreadyへ。途中停止は所有者GET/一覧または作成再送で回復 |
+| メッセージ保存 | Session.lastSequence増分＋Message＋messageCommitted Job＋冪等性記録 | Queue/SignalR配送は後。保存成功＋通知失敗でもMessageはsaved。再接続は永続連番から再取得 |
 | 公開・撤回 | Knowledgeの状態/版/確認・accessVersion＋投影Job＋監査＋冪等性記録 | 公開反映遅延は許容。撤回正本は直ちに利用を拒否し、投影・キャッシュ・既存引用は遅れて無効化 |
 | AI結果確定 | 同じ対象パーティションのAiRun＋Job結果＋業務結果 | AI呼出しはDB外。リース喪失・対象版変更なら結果を採用しない。呼出し済み使用量は成功/失敗にかかわらず記録 |
 
@@ -83,3 +84,5 @@ Periodはstart/end/precision/months。unknownではすべてnull。年/月だけ
 `taxonomy-v1`は既存domainのsales/operations/manufacturing/mechanical/softwareにunknownを加え、signalはhandover。未知の自然言語分類はunknownへ、未知の機械IDや欠けた分布は不正入力として扱う。taxonomy追加は版更新と再分類計画を必要とする。
 
 現`DemoData.Create`は疎な分布、Confidence・監査・有効版を持たない`LegacySearchUnit`として検証する。既存の分類値・ID・`confirmationState=fixture`・検索結果は変更しない。新正本へ移行する場合はfixture由来を明示し欠落カテゴリ0を補うが、実AIの測定結果を捏造しない。通常のAI応答の欠落を0で補完して成功にはしない。正規化辞書はNFKC→trim→不変小文字→完全一致別名変換→重複排除→ordinal順。辞書は登録・検索で共通の版を使い、現fixtureの語はそのまま保つ。
+
+Issue #7の保存先・冪等性・再接続の実装詳細は[会話手順](../conversations.md)。旧fixtureのsessionIdなしParticipationは互換検証専用で、新しい会話の認可には使用しない。

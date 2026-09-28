@@ -283,3 +283,12 @@ footer {
 .documents form { display: grid; gap: .75rem; max-width: 44rem; }
 .documents article { border-top: 1px solid #8885; margin-top: 1rem; }
 .evidence-text { white-space: pre-wrap; }
+
+.conversations { margin-top: 2rem; overflow-wrap: anywhere; }
+.conversations form { display: grid; gap: .75rem; max-width: 44rem; margin: 1rem 0; }
+.conversations textarea { width: 100%; min-height: 5rem; font: inherit; padding: .75rem; border: 1px solid #8888; border-radius: .5rem; background: transparent; color: inherit; }
+.conversations button { margin: .3rem .5rem .3rem 0; }
+.challenge-list { list-style: none; padding: 0; }
+.chat { border-top: 1px solid #8885; margin-top: 1.5rem; padding-top: 1rem; }
+.message-body { white-space: pre-wrap; }
+.chat ol { max-height: 28rem; overflow-y: auto; }

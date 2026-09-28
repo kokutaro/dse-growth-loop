@@ -423,3 +423,7 @@ Issue #4 の[架空データ・評価器](offline-evaluation.md)は実AIを呼�
 ## Office機械抽出の実装境界（2026-09-27）
 
 Issue #6でdocx/xlsxの受付、非公開Blob、永続Job/Queue、位置付き抽出と回復を実装した。[取込手順](document-ingestion.md)を参照。図はAI分類・構造化を含む目標フローのままで、現在は機械抽出完了まで。本人資料とサーバー指定scope、10 MiB/50 MiB/1万エントリ/120秒を初期値とする。実Azure試験は未実施。
+
+## Issue #7の実装差分（2026-09-27）
+
+課題・参加承諾・退会・永続チャットを実装した。ParticipationもSessionと同じ会話パーティションに置き、承諾/退会を原子的に反映する。SignalRは同一originのLong Pollingでヘッダー認証を使い、通知の欠落をDB連番で補完する。MessageCommitted Jobは保存するが、AI投稿・Queue配送は後続#13。図は引き続きAI支援を含む目標構成を示す。詳細は[会話手順](conversations.md)。

@@ -1591,5 +1591,18 @@
       ],
       "retrievalRunId": "retrieval-run-01"
     }
+  },
+  {
+    "name": "MessageCommitted",
+    "schema": "MessageCommitted",
+    "value": {
+      "eventId": "message-committed-0000000001",
+      "tenantId": "demo-tenant",
+      "sessionId": "session-01",
+      "messageId": "message-0000000001",
+      "sequence": 1,
+      "membershipVersion": 1,
+      "payloadVersion": "1.0"
+    }
   }
 ]

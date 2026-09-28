@@ -1273,7 +1273,9 @@
             "chat_assist",
             "knowledge",
             "opportunity",
-            "notification_recovery"
+            "notification_recovery",
+            "sessionInitialization",
+            "messageCommitted"
           ]
         },
         "aggregateId": {
@@ -1376,6 +1378,17 @@
               "type": "null"
             }
           ]
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "ownerPersonId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "event": {
+          "$ref": "#/$defs/MessageCommitted"
         }
       },
       "required": [
@@ -1704,7 +1717,8 @@
           "enum": [
             "requested",
             "accepted",
-            "declined"
+            "declined",
+            "left"
           ]
         },
         "decidedBy": {
@@ -1716,6 +1730,10 @@
               "type": "null"
             }
           ]
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
         }
       },
       "required": [
@@ -2643,7 +2661,8 @@
         "decision": {
           "enum": [
             "accepted",
-            "declined"
+            "declined",
+            "left"
           ]
         }
       },
@@ -3017,6 +3036,10 @@
               "type": "null"
             }
           ]
+        },
+        "lastSequence": {
+          "type": "integer",
+          "minimum": 0
         }
       },
       "required": [
@@ -3243,6 +3266,82 @@
         "maxBytes"
       ],
       "additionalProperties": false
+    },
+    "MessageCommitted": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "messageId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "membershipVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "payloadVersion": {
+          "const": "1.0"
+        }
+      },
+      "required": [
+        "eventId",
+        "tenantId",
+        "sessionId",
+        "messageId",
+        "sequence",
+        "membershipVersion",
+        "payloadVersion"
+      ],
+      "additionalProperties": false
+    },
+    "CommittedChange": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "status": {
+          "enum": [
+            "requested",
+            "accepted",
+            "declined",
+            "left",
+            "open",
+            "closed"
+          ]
+        },
+        "sourceVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "sessionId",
+        "status",
+        "sourceVersion"
+      ],
+      "additionalProperties": false
     }
   },
   "oneOf": [
@@ -3353,6 +3452,7 @@
     "EvidencePage",
     "MessagePage",
     "OpportunityPage",
-    "ExperiencePage"
+    "ExperiencePage",
+    "MessageCommitted"
   ]
 }

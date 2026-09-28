@@ -1,6 +1,6 @@
 # API契約 v1
 
-[OpenAPI 3.1](openapi.json)がパス・要求・応答形状の正本。この文書は認可、複数リソースの前提、HTTPだけでは表せない動作を規定する。現行`/api/search`の手動検索は変更しない。新契約は`/api/v1`配下として後続Issueで実装する。OpenAPI 3.1は[JSON Schema 2020-12に対応する仕様](https://spec.openapis.org/oas/v3.1.0#schema-object)を使用する。
+[OpenAPI 3.1](openapi.json)がパス・要求・応答形状の正本。この文書は認可、複数リソースの前提、HTTPだけでは表せない動作を規定する。現行`/api/search`の手動検索は変更しない。新契約は`/api/v1`配下。実装範囲は[実装状況](../implementation-status.md)と[会話手順](../conversations.md)を参照。OpenAPI 3.1は[JSON Schema 2020-12に対応する仕様](https://spec.openapis.org/oas/v3.1.0#schema-object)を使用する。
 
 ## エンドポイントと前提版
 
@@ -14,9 +14,9 @@
 | GET experiences | `/people/{personId}/experiences` | 本人のプロフィール詳細（閲覧scopeも検査）、ページング |
 | POST search | `/search` | 不要。queryとlimit。200で候補とrunId、再順位付け状態 |
 | POST / GET challenge | `/challenges`、`/challenges/{challengeId}` | 作成は不要。既定scopeはサーバー設定 |
-| POST participation | `/challenges/{challengeId}/participations` | ChallengeのETag。ownerから対象personへ依頼、requested |
-| GET / PATCH participation | `/participations/{participationId}` | PATCHはParticipationのETag。本人がaccepted/declinedを決定 |
-| POST session | `/sessions` | bodyのChallengeのETag。ownerとaccepted対象を確定し、初期化Jobを202受付 |
+| POST participation | `/sessions/{sessionId}/participations` | SessionのETag。ownerから対象personへ依頼、requested |
+| GET / PATCH participation | `/sessions/{sessionId}/participations`、`/sessions/{sessionId}/participation` | PATCHは本人ParticipationのETag。accepted/declined/leftを決定 |
+| Session準備 | `POST /challenges`に統合 | catalogの初期化Jobから所有者だけのSessionを準備して201。途中停止は同一キー再送/所有者GETで回復 |
 | GET / PATCH session | `/sessions/{sessionId}` | PATCHはSessionのETag。AI停止/再開は参加者、closeはowner。closed→openは禁止 |
 | GET / POST message | `/sessions/{sessionId}/messages` | POSTはSessionのETag。201で保存済みMessageと連番。AI生成はこのユーザーAPIで指定不可 |
 | GET / PUT outcome | `/sessions/{sessionId}/outcome` | PUTはSessionのETag。ownerが解決状態を記録しSessionの版も更新 |
@@ -31,7 +31,7 @@
 
 POST/PATCH/PUTはすべて`Idempotency-Key`必須（自然文searchも有料再実行を抑制）。bodyのtenantId/scopeIds/ownerId/etag/createdByは受付けない。scope選択はv1の一般APIで提供せず、サーバーの事前設定に従う。署名URLや資格情報は応答へ含めない。
 
-親ETagを使う操作は、子の作成と親版の更新を同じパーティションで確定する。別コンテナに作成するSession/Knowledgeは、まず元の版付き受付Jobを元パーティションに保存してから確定処理する。Knowledge作成はこの理由から202＋jobIdを返す。Job完了後、作成IDを取得できる。作成レスポンスのETagは作成リソースの版であり、次回親ETagを必要とする操作の前には親を再取得する。
+親ETagを使う操作は、子の作成と親版の更新を同じパーティションで確定する。別コンテナに作成するSession/Knowledgeは、まず元の版付き受付Jobを元パーティションに保存してから確定処理する。Issue #7のSessionはChallenge登録に統合し、初期化完了後201を返す。参加/設定変更はCommittedChangeを返し、編集用ETagはGETで取得する。Knowledge作成はこの理由から202＋jobIdを返す。Job完了後、作成IDを取得できる。作成レスポンスのETagは作成リソースの版であり、次回親ETagを必要とする操作の前には親を再取得する。
 
 ## 入力・処理上限
 
@@ -93,3 +93,5 @@ GETの配列は`{items, continuationToken}`。`pageSize`は1〜100（省略20）
 Jev停止時に別AIへ自動切替しない。質問分類が利用できなければ手動条件検索・正規化語へ縮退する。Foundry停止時は一次候補を返せても再順位付け成功と記録しない。新規有料処理自体を受付けられなければ429、永続受付後の停止はJob状態で返す。失敗・該当なし・予算停止を同じ空配列表示にまとめない。
 
 Issue #6の実装・設定・失敗コード・回復手順は[Office文書取込](../document-ingestion.md)。原本取得 `/documents/{documentId}/original` と本人の登録先取得 `/upload-context` も認可必須。機械抽出はAI予算を消費しない。
+
+Issue #7のメッセージは`afterSequence`＋署名付きtokenでページングする。Messageの冪等キーは履歴保持中失効させず、再送はETagが変わっても同じclientMessageId/本文の保存結果を再生する（他の変更操作はIf-Matchをhashに含める）。詳細は[会話手順](../conversations.md)。

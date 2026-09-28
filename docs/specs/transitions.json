@@ -164,6 +164,17 @@
       "guards": [
         "etag_current"
       ]
+    },
+    {
+      "from": "accepted",
+      "to": "left",
+      "actors": [
+        "invitee"
+      ],
+      "guards": [
+        "etag_current",
+        "session_open"
+      ]
     }
   ],
   "knowledge": [
