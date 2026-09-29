@@ -28,11 +28,36 @@ jobs:
       - run: python -m coverage report --include="*/contract_rules.py" --fail-under=80
       - run: npm ci && npm run build
         working-directory: web
-      - run: npx playwright install --with-deps chromium
-        working-directory: web
-      - run: npm run test:e2e
-        working-directory: web
       - run: az bicep install --version v0.47.16
       - run: python3 scripts/deploy.py validate
       - run: python3 -m unittest discover -s tests/scripts
       - run: git diff --check
+  browser-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # Each suite gets a fresh API and rate-limit budget, as well as fresh data.
+      matrix:
+        suite: [conversations, documents, search]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.13.0"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - run: npm run test:e2e -- tests/${{ matrix.suite }}.spec.ts --workers=1 --trace retain-on-failure
+        working-directory: web
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-${{ matrix.suite }}
+          path: web/test-results
+          retention-days: 7

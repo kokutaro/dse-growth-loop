@@ -48,7 +48,9 @@ dotnet test tests/Dse.Tests --collect:"XPlat Code Coverage"
 npm --prefix web run build
 cd web
 npx playwright install chromium
-npm run test:e2e
+for suite in conversations documents search; do
+  npm run test:e2e -- "tests/$suite.spec.ts" --workers=1 || exit 1
+done
 cd ..
 python3 scripts/deploy.py validate
 python3 -m unittest discover -s tests/scripts
@@ -57,6 +59,8 @@ python3 -m venv /tmp/dse-contracts-venv
 /tmp/dse-contracts-venv/bin/python -m unittest discover -s tests/contracts
 git diff --check
 ```
+
+E2EはCIと同じくテスト群ごとにAPIを再起動し、ダミー主体のレート枠とデータを分離する。一括実行では共有の読み取り上限に達して429になる場合がある。本番のレート制限は緩和しない。
 
 Bicep検証にはAzure CLIとBicep CLIが必要。E2E時は5173/5180ポートを空ける。CIも同じビルド・テストを実行し、Azure展開は行わない。
 

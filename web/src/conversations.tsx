@@ -80,11 +80,11 @@ function Chat({ challenge, principal, api, config, person, candidates }: { chall
     try { return (JSON.parse(sessionStorage.getItem(storageKey) ?? "[]") as Pending[]).map(x => ({ ...x, state: "save_failed" })); } catch { return []; }
   });
   useEffect(() => { sessionStorage.setItem(storageKey, JSON.stringify(pending)); }, [pending, storageKey]);
-  const last = useRef(0), generation = useRef(0), syncing = useRef(false);
+  const last = useRef(0), generation = useRef(0), resync = useRef(false);
+  const syncing = useRef<Promise<void> | undefined>(undefined);
   const hub = useRef<ReturnType<HubConnectionBuilder["build"]>>(undefined);
-  const sync = useCallback(async () => {
-    if (syncing.current) return;
-    syncing.current = true; const run = generation.current;
+  const refresh = useCallback(async () => {
+    const run = generation.current;
     try {
       const invites = await api<Page>(`${path}/participations`);
       if (run !== generation.current) return;
@@ -113,8 +113,20 @@ function Chat({ challenge, principal, api, config, person, candidates }: { chall
         setSession(undefined); setMessages([]); last.current = 0;
         setConnection("参加承諾待ち、または閲覧権限がありません");
       } else setConnection("履歴を取得できません。再接続時に再取得します");
-    } finally { syncing.current = false; }
+    }
   }, [api, path, sid]);
+  const sync = useCallback(() => {
+    resync.current = true;
+    if (!syncing.current) {
+      // A mutation or hint during replay must trigger a fresh read after that replay.
+      syncing.current = (async () => {
+        try {
+          do { resync.current = false; await refresh(); } while (resync.current);
+        } finally { syncing.current = undefined; }
+      })();
+    }
+    return syncing.current;
+  }, [refresh]);
   useEffect(() => {
     let disposed = false;
     const transport = new HubConnectionBuilder().withUrl("/api/hubs/conversations", {
