@@ -11,6 +11,30 @@ async function send(page: Page, body: string) {
   await page.getByLabel("メッセージ", { exact: true }).fill(body);
   await page.getByRole("button", { name: "送信", exact: true }).click();
 }
+test("履歴取得中に相談を依頼しても参加者一覧を更新する", async ({ page }) => {
+  await page.route("**/api/hubs/**", route => route.abort());
+  let release!: () => void;
+  const blocked = new Promise<void>(resolve => { release = resolve; });
+  let started!: () => void;
+  const historyStarted = new Promise<void>(resolve => { started = resolve; });
+  await page.route("**/api/v1/sessions/*/messages?**", async route => {
+    const response = await route.fetch();
+    started();
+    await blocked;
+    await route.fulfill({ response });
+  });
+  try {
+    await create(page, `取得中の依頼 ${Date.now()}`);
+    await historyStarted;
+    await page.getByLabel("相談する人物ID").fill("demo-person-02");
+    const saved = page.waitForResponse(response => response.url().endsWith("/participations") && response.request().method() === "POST");
+    await page.getByRole("button", { name: "相談を依頼" }).click();
+    expect((await saved).ok()).toBeTruthy();
+    await page.evaluate(() => new Promise(requestAnimationFrame));
+    release();
+    await expect(page.getByText("demo-person-02：依頼中", { exact: true })).toBeVisible();
+  } finally { release(); }
+});
 test("二人で承諾・会話・退会し、AI停止中も保存できる", async ({ page, browser }) => {
   const title = `二人の相談 ${Date.now()}`;
   await create(page, title);

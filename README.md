@@ -6,6 +6,7 @@
 
 - [アーキテクチャ文書](docs/architecture.md)：コンセプト、仕組み、構成、データ、処理、検証計画。
 - [正本永続化・認可・復旧手順](docs/persistence.md)：Issue #5のAPI、RBAC、失効フェンス、検証境界。
+- [AIアダプター・使用量台帳](docs/ai-adapters.md)：Issue #8の型付きポート、固定モデル、予算予約、承認後のライブ確認手順。
 - [実装契約 v1](docs/specs/README.md)：正本・状態遷移・API・権限・分類体系、JSON Schema/OpenAPIと検証例。後続Issue共通の入口。
 - [技術選定の調査記録](docs/technology-research-2026-09-21.md)：2026年9月21日に確認した一次情報と選定理由。
 - [検索検証計画](docs/retrieval-validation-plan.md)：Probability・補助Noulによる一次検索とLLM再順位付けを段階別に検証。
@@ -47,7 +48,9 @@ dotnet test tests/Dse.Tests --collect:"XPlat Code Coverage"
 npm --prefix web run build
 cd web
 npx playwright install chromium
-npm run test:e2e
+for suite in conversations documents search; do
+  npm run test:e2e -- "tests/$suite.spec.ts" --workers=1 || exit 1
+done
 cd ..
 python3 scripts/deploy.py validate
 python3 -m unittest discover -s tests/scripts
@@ -56,6 +59,8 @@ python3 -m venv /tmp/dse-contracts-venv
 /tmp/dse-contracts-venv/bin/python -m unittest discover -s tests/contracts
 git diff --check
 ```
+
+E2EはCIと同じくテスト群ごとにAPIを再起動し、ダミー主体のレート枠とデータを分離する。一括実行では共有の読み取り上限に達して429になる場合がある。本番のレート制限は緩和しない。
 
 Bicep検証にはAzure CLIとBicep CLIが必要。E2E時は5173/5180ポートを空ける。CIも同じビルド・テストを実行し、Azure展開は行わない。
 

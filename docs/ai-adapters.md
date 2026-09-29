@@ -1,0 +1,88 @@
+# AIアダプター・使用量台帳
+
+更新日：2026-09-29。Issue #8のローカル実装。全件ダミー限定。実Azure・有料推論・実請求との照合は未実施で、#9の承認ゲートで行う。
+
+## 呼出し境界
+
+Domainの`ITextStructurer`、`IDecisionProvider`、`IReranker`、`ISummarizer`をAPI/WorkerのDIへ登録する。業務層へ提供元JSONを渡さず、`StructuredText`、`Decisions`、`Ranking`、`GroundedText`を返す。実HTTPと決定論的Mockは同じ応答検証を通る。`Ai__Mode=Mock`の結果は`modelId=mock-v1`で区別し、使用トークン・推定費用は0。
+
+機能別プロンプト、分類正本への全分布保存、訂正競合、検索画面との結合は#10・#11、事例自動投稿は#13。現行の検索・Office取込・会話から推論を自動起動しない。既存投影の人物・事例と有効版の根拠を読む境界を提供する。新規文書版の構造化は#10で取込Jobの認可・版照合と統合する。
+
+`AiContext`はサーバー内部で作る。主体、Job ID、プロンプト版、分類体系版、データ版、根拠参照、候補SearchUnitを渡す。外部APIにこの型を直接公開しない。候補IDはSearchUnitのIDで、集約人物IDとは区別する。送信前に正本を読み、投影の要約ではなく検証済み根拠本文を組み立てる。会話内呼出しは現在の参加者・open状態・AI有効設定も確認する。出力の候補ID・根拠ID・候補と根拠の対応を照合するが、内容の意味的正しさや引用の妥当性は後続の品質評価が必要。
+
+Jev Choiceは要求した全選択肢、有限数0〜1、合計1（許容差1e-6）、最大確率のchoice、別のconfidenceを検証する。公式の`noul`を`YesProbability`へ写し、0も有効。`HasEvidence=false`のNoulは送信せず`Unknown/null`、停止・失敗は`AiResult`の状態で未実行と区別する。Noulしかなく全て根拠不足ならHTTP 0回で`NotEvaluated`。根拠充足の判断はサーバー側業務処理の責任で、確率0.5を勝手に未判定へ変換しない。
+
+Foundryは`json_schema`のstrict構造化出力を要求し、ローカルでもキー・型・IDを検証する。拒否、content_filter、length、異常JSON、スキーマ不一致、モデル不一致、ID捏造は成功にしない。上流のエラー本文・例外本文を利用者へ流さない。
+
+## 提供元と設定
+
+| 項目 | 契約 |
+|---|---|
+| Jev | `https://api.typesafe.ai/v1/systemone`のみ。リダイレクトなし、仲介APIなし。`jev-1.13.0`等の明示版のみ |
+| Jev秘密 | `KeyVault__Uri`、`Jev__SecretName`、32桁の`Jev__SecretVersion`を指定。Key Vault REST 2025-07-01で取得。キー本文の環境変数は読まない |
+| Foundry | Azure OpenAI v1 Chat Completions。`Foundry__Endpoint`はHTTPSの`*.openai.azure.com/`。Deploymentを指定 |
+| 認証 | Azureモードは`AZURE_CLIENT_ID`のUser-assigned Managed Identity。Foundryは`https://ai.azure.com/.default`、Key Vaultは`https://vault.azure.net/.default`。Demoからの明示Liveでは開発者のDefaultAzureCredential |
+| モデル固定 | `Foundry__ModelId`は応答の正確なmodel文字列、`ModelVersion`、`Region`、`Sku`、`OutputLimit`を実契約で確認。SKUはStandard/GlobalStandard/DataZoneStandard。Lunaが候補、Terraは明示比較用。未確認の実IDは設定しない |
+| 単価 | 提供元ごとの`InputUsdPerMillion`、`OutputUsdPerMillion`、共通の単価版・為替版・USD/JPYを明示。Jev出力単価0も設定値として保持 |
+
+latest/previewエイリアス・別モデルへの黙示フォールバックは拒否する。配置定義の`NoAutoUpgrade`と実配置の固定版が一致していることを#9で確認する。`ModelVersion`だけでサービスの配置内容を証明できるとは扱わない。対象モデルがv1 Chat Completions/strict schema/`max_completion_tokens`に対応しない場合は停止し、API方式・スキーマを別途変更してから再承認する。
+
+`AI_STOPPED=true`が既定。実送信は`AI_STOPPED=false`に加え`Ai__Mode=Live`、`AiUsage__LiveOptIn=true`が必要。UTC日次回数・トークン・推定円上限と単価/為替版は#2の設定を使用する。配置時は`scripts/cost_config.py`が`AiUsage__*`へ変換し、ローカルは`AI_*`も読む。両方ある場合は`AiUsage__*`が優先。API/Workerには同じ予算・単価設定を配布する。
+
+上限の既定は入力8,000、出力1,000、同時実行1、最大試行2、全試行合計30秒。設定可能な絶対上限は16,000/8,000/8/3/120秒。現行のtenant単位AccessFenceは認可変更との競合を防ぐため、実効同時実行をさらに1に制限する。停止設定は試行ごとに再確認し、進行中のリクエストは期限までに終了する。環境変数変更はプロセス再起動が必要。
+
+## 台帳・費用・不確定課金
+
+`catalog`の設定済み単一tenantパーティション内に以下の内部レコードを置く。通常業務読取APIには公開しない。
+
+| kind | ID / 内容 |
+|---|---|
+| `aiUsageDay` | `ai-day-YYYY-MM-DD`。UTCの予約開始日、確定＋予約トークン・回数・推定円 |
+| `aiUsageGate` | `system-ai-gate`。未完了予約ID、提供元の上限超過による停止フラグ |
+| `aiReservation` | `ai-res-<UUID>`。runId、日、予約トークン/推定円、モデル版、単価版、為替版/値、pending/settled/uncertain |
+
+送信試行ごとに最大入力＋最大出力トークンとその費用、1回、1実行枠を予約する。day・gate・reservationをETag条件付きの同一Transactional Batchで作成/更新し、競合時は最大20回のCAS再試行後に停止する。再起動・API/Worker並行・異なるモデルでも共通上限を使う。ローカル実送信では`Data__LocalPath`による永続台帳が必須。MemoryRecordStoreはfake HTTPテスト用。
+
+提供元がusageを返せば、推論結果の成否と無関係に精算する。429/5xx/切断/認証失敗/無効JSON/usage欠落等では課金の有無を断定せず、その試行の最大予約額を`uncertain`として残す。SDKの推論再試行は使わず共通実行層だけが429/5xx/切断を有限回再試行し、その都度新規予約する。401/403、スキーマ不一致等は再試行しない。Retry-Afterの秒・日時を尊重し、残り期限より長ければ再送せず失敗にする。
+
+入力の事前検査はリクエストJSONのUTF-8バイト数＋256で保守的に見積もる。Jevにはmax-output指定がないため、質問/選択肢数・IDバイト数から固定応答の上限見積もりを検査する。Foundryには`max_completion_tokens`を渡す。受信本文にもバイト上限を設ける。モデル固有のtokenizerで測定した値ではなく、内部フレーミングや提供元の数え方による誤差は未測定。
+
+usage欠落時の計上は最大入力/出力の全予約量。実使用が契約上限内なら、トークン過大推定は0〜その予約量、円の過大推定は0〜予約額の範囲となる。提供元が予約上限を超えるusageを返した場合は実usageを記録し、将来の日もgateを停止する。料金改定・為替・割引/無料枠・サービス側上限違反を含む実請求の絶対上限は保証しない。推定額を請求額と呼ばず、Azure Budget通知とも区別する。
+
+予約は時間で自動返却しない。プロセス死亡時は実行枠も保持して停止する。API/Workerを全停止し、CosmosでrunIdに対応する予約とAccessFenceを確認した後に以下を実行する。これは使用量の返金・既存データ削除をしない。dayを跨いでも古い予約は元の日に残り、新規枠は新しいUTC日の予算を使う。
+
+```sh
+Recovery__ProcessesStopped=true Recovery__AiReservationId=ai-res-対象ID \
+  python3 scripts/run-env.py -- dotnet run --project src/Dse.Worker -- --recover-ai-slot
+```
+
+クラッシュで残ったAccessFenceは[既存の手動復旧](persistence.md)に従う。台帳精算と別パーティションのAiRun確定の間に死亡した場合、AiRunは`not_evaluated`等の未確定状態で残り得る。課金判断はrunIdで関連する予約を正本として照合し、成功結果を推測しない。上限超過gateの解除や不確定課金の減額は自動提供しない。契約調査・全停止・承認を経た保守作業とし、通常コマンドでは予算を戻さない。
+
+## 追跡・キャッシュ・縮退
+
+対象のcatalog/conversationsへAiRunを保存する。入力ハッシュ、入力正本の版、根拠ID、モデルID/版/リージョン/SKU、プロンプト/分類体系/データ版、トークン、試行・再試行回数、経過時間、成否、推定円、単価/為替版、推定usageフラグを保持する。生応答・入力本文・秘密を通常ログやAiRunに保存しない。現在は生応答Blob保存を有効化していない。将来調査で保存が必要な場合も、専用非公開Blobと保持/アクセス制御を別途用意してから明示的に有効化する。
+
+HTTPヘッダーで取得できた形式検証済みの要求IDを`providerRequestIds`へ保存する。Cosmos RUは既存repositoryの相関ID付きログで計測し、AiRunの`requestUnits`には現在集約していない（既定0をRU実測値と解釈しない）。
+
+成功結果だけを最大128件・5分のプロセス内キャッシュへ保存。入力/根拠版、モデル設定、プロンプト版、分類体系版、データ版、tenant/主体/sessionをキーへ含める。キャッシュ取得前も現在の正本・認可を再確認し、取得後も版を照合する。キャッシュ利用のAiRunは新規送信なしの`not_evaluated`、usage 0、`cachedFromRunId`を記録する。呼出し側の結果は`Succeeded`＋`Cached=true`で区別する。
+
+停止・予算枯渇・実行枠不足は`BudgetStopped`と理由を返す。呼出し開始後の失敗は`Failed`で、消費済み使用量を残す。これらを候補0件と表示しない。Jev停止時は手動条件/正規化語検索、Foundry停止時は一次候補へ縮退し、再順位付け成功や自動投稿として扱わない。この画面への結合は#11。
+
+## 承認後のライブスモーク
+
+通常CIはfake HTTP/Mockのみで外部推論0回。以下は**今回実行していない**。#9で実行者・対象契約・承認参照・承認予算を確定してから、承認された環境で実行する。新規Azure展開をこのコマンドから行わない。
+
+1. モデル固定設定、Jev固定secret版、MIのKey Vault Secrets User/Cognitive Services OpenAI User、Cosmos catalog書込権限、Authの架空人物Binding/Grantを確認する。キー本文を端末やIssueへ貼らない。
+2. `Data__Mode=Azure`、`Ai__Mode=Live`、停止解除、実送信opt-in、正のUTC日次上限・単価/為替版、`APPROVED_MONTHLY_BUDGET_JPY`を設定する。承認額内で両提供元の最大予約を確保できる値にする。
+3. `AiSmoke__Approved=true`、`AiSmoke__DummyOnly=true`、`AiSmoke__OperatorPersonId`、`AiSmoke__ApprovalReference`、`AiSmoke__Count=2`を明示する。`AiUsage__MaxAttempts=1`、`AiUsage__MaxInputTokens=8000`、`AiUsage__MaxOutputTokens=1000`と、同じ値の`AiSmoke__MaxInputTokens`/`AiSmoke__MaxOutputTokens`を指定する。より小さい上限も可能だが、構造応答見積もりを満たす必要がある。
+4. 次を1回実行する。固定ダミーのJev Choice 1件、Foundry構造化1件、最大2推論試行。承認情報をauditに保存する。正常時は終了0、片方でも失敗なら終了1。標準出力は状態とrun IDのみ。
+
+```sh
+python3 scripts/run-env.py -- dotnet run --project src/Dse.Worker -- --ai-smoke
+```
+
+5. AiRun・予約・プロバイダーusageを照合して結果を#9に記録し、停止とopt-in無効へ戻す。401/403なら認証/RBAC、429なら待機/クォータ、model/schema不一致なら固定設定/契約を調査する。未承認の別モデル・別APIへ切り替えない。
+
+## 公式契約の確認元
+
+2026-09-28確認：[Jev API](https://docs.typesafe.ai/api)、[固定モデル](https://docs.typesafe.ai/models)、[Noul](https://docs.typesafe.ai/primitives/noul)、[Foundry Chat Completions](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/chatgpt?view=foundry-classic)、[構造化出力](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/structured-outputs?view=foundry-classic)、[Key Vault Get Secret](https://learn.microsoft.com/en-us/rest/api/keyvault/secrets/get-secret/get-secret?view=rest-keyvault-secrets-2025-07-01)。公開資料の応答fixtureは実契約の接続成功やAI品質測定を意味しない。

@@ -1,4 +1,4 @@
-"""開発費用設定の検証とBicepへの変換。AIの実行時制御は後続アダプターの契約。"""
+"""開発費用設定の検証とBicepへの変換。AI台帳の実行時制御へ渡す設定。"""
 from datetime import date
 from decimal import Decimal, InvalidOperation
 import re
@@ -75,6 +75,19 @@ def parameters(env):
     }
     for name, default, ceiling in [('OriginalBytes', 10485760, 10485760), ('ExpandedBytes', 52428800, 52428800), ('Entries', 10000, 10000), ('ProcessingSeconds', 120, 120), ('Attempts', 3, 3)]:
         runtime['Ingestion__' + name] = str(integer(env, 'Ingestion__' + name, default, 1, ceiling))
+    mode = env.get('Ai__Mode', 'Mock')
+    if mode not in ('Mock', 'Live'):
+        raise ValueError('Ai__Mode は Mock / Live を指定してください。')
+    runtime['Ai__Mode'] = mode
+    runtime['AiUsage__LiveOptIn'] = str(boolean(env, 'AiUsage__LiveOptIn', 'false')).lower()
+    for name, default, ceiling in [('MaxInputTokens', 8000, 16000), ('MaxOutputTokens', 1000, 8000), ('MaxConcurrency', 1, 8), ('MaxAttempts', 2, 3), ('TimeoutSeconds', 30, 120)]:
+        runtime['AiUsage__' + name] = str(integer(env, 'AiUsage__' + name, default, 1, ceiling))
+    # 明示allowlist。キー本文やsmoke承認を通常配置へコピーしない。
+    for key in ('Foundry__ModelId', 'Foundry__ModelVersion', 'Foundry__Region', 'Foundry__Sku',
+                'Foundry__OutputLimit', 'Foundry__InputUsdPerMillion', 'Foundry__OutputUsdPerMillion',
+                'Jev__Model', 'Jev__SecretVersion', 'Jev__InputUsdPerMillion', 'Jev__OutputUsdPerMillion', 'Jev__OutputLimit'):
+        if env.get(key):
+            runtime[key] = env[key]
     return {
         'approvedMonthlyBudgetJpy': budget,
         'budgetEmails': emails,

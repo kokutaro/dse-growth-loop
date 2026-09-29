@@ -109,6 +109,13 @@ class ContractsTests(unittest.TestCase):
             del broken["probabilities"][category]
             self.assertFalse(self.validator("ClassificationResult").is_valid(broken))
 
+    def test_actual_ai_run_trace_matches_contract(self):
+        value = json.loads((ROOT / "tests/Dse.Tests/TestResults/ai-run.json").read_text())
+        self.validator("AiRun").validate(value)
+        validate_invariants("AiRun", value, self.taxonomy)
+        self.assertEqual(value["trace"]["attemptCount"], 1)
+        self.assertFalse(value["trace"]["usageEstimated"])
+
     def test_fixture_compatibility_uses_actual_domain_serialization(self):
         # Exported by FixtureContractTests; no second hand-copied fixture.
         fixture_path = ROOT / "tests/Dse.Tests/TestResults/contract-fixture.json"

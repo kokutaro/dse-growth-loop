@@ -149,3 +149,27 @@ class IngestionSettingsTests(unittest.TestCase):
             cost_config.parameters({'Ingestion__OriginalBytes': '10485761'})
         runtime = {item['name']: item['value'] for item in cost_config.parameters({'Ingestion__Attempts': '2'})['runtimeSettings']}
         self.assertEqual(runtime['Ingestion__Attempts'], '2')
+
+
+class AiSettingsTests(unittest.TestCase):
+    def test_pins_and_limits_are_passed_but_secrets_and_approval_are_not(self):
+        from cost_config import parameters
+        values = parameters({'Jev__Model': 'jev-1.13.0', 'Jev__SecretVersion': 'dummy-version',
+                             'Jev__ApiKey': 'must-not-pass', 'AiSmoke__Approved': 'true',
+                             'Foundry__ModelId': 'dummy-pinned', 'AiUsage__MaxAttempts': '1'})
+        runtime = {item['name']: item['value'] for item in values['runtimeSettings']}
+        self.assertEqual(runtime['Ai__Mode'], 'Mock')
+        self.assertEqual(runtime['AiUsage__LiveOptIn'], 'false')
+        self.assertEqual(runtime['AiUsage__MaxAttempts'], '1')
+        self.assertEqual(runtime['Foundry__ModelId'], 'dummy-pinned')
+        self.assertEqual(runtime['Jev__SecretVersion'], 'dummy-version')
+        self.assertNotIn('Jev__ApiKey', runtime)
+        self.assertNotIn('AiSmoke__Approved', runtime)
+
+    def test_invalid_mode_opt_in_and_ceiling_fail_before_deployment(self):
+        from cost_config import parameters
+        for key, value in [('Ai__Mode', 'Auto'), ('AiUsage__LiveOptIn', 'yes'),
+                           ('AiUsage__MaxAttempts', '4'), ('AiUsage__MaxInputTokens', '16001'),
+                           ('AiUsage__TimeoutSeconds', '121'), ('AiUsage__MaxConcurrency', '0')]:
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                parameters({key: value})

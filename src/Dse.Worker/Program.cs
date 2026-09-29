@@ -2,9 +2,10 @@ using Dse.Infrastructure;
 using Dse.Domain;
 
 var command = args.Length == 0 ? "--consume" : args[0];
-if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging"))
-    throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging");
+if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--recover-ai-slot"))
+    throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --recover-ai-slot");
 var builder = Host.CreateApplicationBuilder([]);
+if (command == "--ai-smoke") AiSmoke.Validate(builder.Configuration);
 builder.Services.AddCatalog(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddIngestion(builder.Configuration);
 if (command == "--consume") builder.Services.AddHostedService<IngestionBackgroundService>();
@@ -16,6 +17,17 @@ using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(4));
 var ct = timeout.Token;
 switch (command)
 {
+    case "--ai-smoke":
+        if (!await AiSmoke.RunAsync(builder.Configuration, host.Services.GetRequiredService<IdentityResolver>(),
+            host.Services.GetRequiredService<IPrimaryRepository>(), host.Services.GetRequiredService<IDecisionProvider>(),
+            host.Services.GetRequiredService<ITextStructurer>(), ct)) Environment.ExitCode = 1;
+        break;
+    case "--recover-ai-slot":
+        var reservationId = builder.Configuration["Recovery:AiReservationId"];
+        if (string.IsNullOrWhiteSpace(reservationId)) throw new ArgumentException("Recovery__AiReservationId required");
+        await host.Services.GetRequiredService<AiLedger>().RecoverSlotAsync(tenant, reservationId,
+            builder.Configuration["Recovery:ProcessesStopped"] == "true", ct);
+        break;
     case "--seed-demo":
         await host.Services.GetRequiredService<ICatalog>().SeedDemoAsync(tenant, ct); break;
     case "--once":

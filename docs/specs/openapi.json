@@ -3322,6 +3322,38 @@
             "type": "number",
             "minimum": 0
           },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "providerRequestIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "attemptCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "usageEstimated": {
+            "type": "boolean"
+          },
+          "fxVersion": {
+            "type": "string"
+          },
+          "modelVersion": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "cachedFromRunId": {
+            "type": "string"
+          },
           "pricingVersion": {
             "type": "string",
             "minLength": 1,

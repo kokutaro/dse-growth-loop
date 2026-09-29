@@ -2,6 +2,8 @@
 
 更新日：2026-09-26。対象は全件ダミーデータの初期実装。[実装状況](implementation-status.md)も参照。
 
+Issue #8追加：AIは既定で停止し、実送信には別のopt-inが必要。モデル/単価/Key Vault固定版、使用量台帳、#9承認後の専用コマンドは[AIアダプター運用手順](ai-adapters.md)を参照。
+
 ## 設定の注入
 
 `.env.example` を `.env` へコピーし、`python3 scripts/run-env.py -- <command>` で起動する。既存の環境変数がファイルより優先される。`.NET` 単体では `.env` を自動読込しない。

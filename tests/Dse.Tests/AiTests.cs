@@ -1,0 +1,443 @@
+using System.Net;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Dse.Domain;
+using Dse.Infrastructure;
+using Microsoft.Extensions.Configuration;
+using Xunit;
+
+namespace Dse.Tests;
+
+public class AiTests
+{
+    private static string Root => FindRoot();
+    private static string FindRoot()
+    {
+        var d = new DirectoryInfo(AppContext.BaseDirectory);
+        while (!File.Exists(Path.Combine(d!.FullName, "DseGrowthLoop.slnx"))) d = d.Parent;
+        return d.FullName;
+    }
+    private static string Fixture(string name) => File.ReadAllText(Path.Combine(Root, "tests/Dse.Tests/Fixtures/jev-" + name + ".json"));
+    private static IConfigurationRoot Config() => new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+    {
+        ["Data:Mode"] = "Demo", ["Ai:Mode"] = "Live", ["AiUsage:Stopped"] = "false", ["AiUsage:LiveOptIn"] = "true",
+        ["AiUsage:DailyTokenLimit"] = "100000", ["AiUsage:DailyCallLimit"] = "10", ["AiUsage:DailyEstimatedJpyLimit"] = "100",
+        ["AiUsage:UsdToJpy"] = "150", ["AiUsage:PriceVersion"] = "test-price-v1", ["AiUsage:FxVersion"] = "test-fx-v1",
+        ["Jev:Model"] = "jev-1.13.0", ["Jev:InputUsdPerMillion"] = "0.042", ["Jev:OutputUsdPerMillion"] = "0", ["Jev:OutputLimit"] = "1000",
+        ["Foundry:Endpoint"] = "https://dummy.openai.azure.com/", ["Foundry:Deployment"] = "dummy-deployment",
+        ["Foundry:ModelId"] = "dummy-model-2026-09-28", ["Foundry:ModelVersion"] = "2026-09-28", ["Foundry:Region"] = "test", ["Foundry:Sku"] = "GlobalStandard",
+        ["Foundry:InputUsdPerMillion"] = "1", ["Foundry:OutputUsdPerMillion"] = "2", ["Foundry:OutputLimit"] = "1000"
+    }).Build();
+    private static AiContext Context() => new(IdentityResolver.Demo, "job-ai-test", "prompt-v1", "taxonomy-v1", 1, [], []);
+    private static ChoiceQuestion[] Questions() => [new("department", "Select a department", new Dictionary<string, string> { ["billing"] = "Billing", ["technical"] = "Technical", ["sales"] = "Sales" })];
+    private static HttpResponseMessage Response(string body, HttpStatusCode status = HttpStatusCode.OK) => new(status) { Content = new StringContent(body) };
+    private sealed class Credentials : IAiCredentials
+    {
+        public Task<string> BearerAsync(string provider, CancellationToken ct) => Task.FromResult("dummy-secret");
+    }
+    private sealed class Handler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> send) : HttpMessageHandler
+    {
+        public int Calls;
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) { Calls++; return send(request, ct); }
+    }
+    private static AiService Service(IConfiguration config, IRecordStore store, HttpMessageHandler handler)
+    {
+        var repo = new PrimaryRepository(store);
+        return new(config, repo, new(repo), new(repo), new(store, TimeProvider.System), new AiHttpTransport(new HttpClient(handler), new Credentials(), TimeProvider.System, config), TimeProvider.System);
+    }
+    private static Task<AiResult<Decisions>> Decide(AiService service, AiContext? context = null, CancellationToken ct = default) =>
+        service.DecideAsync(context ?? Context(), "Dummy billing request", Questions(), [], ct);
+
+    [Fact]
+    public async Task Official_choice_keeps_distribution_confidence_usage_and_versioned_cache()
+    {
+        var store = new MemoryRecordStore(); var config = Config();
+        var handler = new Handler(async (request, ct) =>
+        {
+            Assert.Equal("https://api.typesafe.ai/v1/systemone", request.RequestUri!.AbsoluteUri);
+            Assert.Equal("Bearer", request.Headers.Authorization!.Scheme);
+            var body = JsonNode.Parse(await request.Content!.ReadAsStringAsync(ct))!;
+            Assert.Equal("choice", body["questions"]!["department"]!["type"]!.GetValue<string>());
+            Assert.NotNull(body["questions"]!["department"]!["criteria"]!["sales"]);
+            var response = Response(Fixture("choice")); response.Headers.Add("x-request-id", "dummy-request-id"); return response;
+        });
+        using var service = Service(config, store, handler);
+        var first = await Decide(service);
+        Assert.Equal(AiStatus.Succeeded, first.Status);
+        Assert.Equal(3, first.Value!.Choices["department"].Probabilities.Count);
+        Assert.Equal(0, first.Value.Choices["department"].Probabilities["sales"]);
+        Assert.Equal(.81, first.Value.Choices["department"].Confidence);
+        var run = (await store.ReadAsync(RecordPartition.Catalog("demo"), first.RunId, default))!.Value;
+        Assert.Equal(318, run["trace"]!["inputTokens"]!.GetValue<long>());
+        Assert.Equal("dummy-request-id", run["trace"]!["providerRequestIds"]![0]!.GetValue<string>());
+        Assert.DoesNotContain("Dummy billing request", run.ToJsonString());
+        Assert.DoesNotContain("dummy-secret", run.ToJsonString());
+        Assert.True((await Decide(service)).Cached);
+        Assert.False((await Decide(service, Context() with { PromptVersion = "prompt-v2" })).Cached);
+        Assert.Equal(2, handler.Calls);
+        var output = Path.Combine(Root, "tests/Dse.Tests/TestResults"); Directory.CreateDirectory(output);
+        await File.WriteAllTextAsync(Path.Combine(output, "ai-run.json"), run.ToJsonString());
+    }
+
+    [Fact]
+    public async Task Noul_zero_is_supported_and_missing_evidence_is_unknown_without_call()
+    {
+        var handler = new Handler((_, _) => Task.FromResult(Response(Fixture("noul").Replace("0.95", "0.0"))));
+        using var service = Service(Config(), new MemoryRecordStore(), handler);
+        var result = await service.DecideAsync(Context(), "dummy", [], [new("is_urgent", "Urgent?", true), new("missing", "Unknown?", false)], default);
+        Assert.Equal(new NoulAnswer(NoulState.Supported, 0), result.Value!.Nouls["is_urgent"]);
+        Assert.Equal(new NoulAnswer(NoulState.Unknown, null), result.Value.Nouls["missing"]);
+        var unknown = await service.DecideAsync(Context(), "dummy", [], [new("missing", "Unknown?", false)], default);
+        Assert.Equal(AiStatus.NotEvaluated, unknown.Status); Assert.Equal(1, handler.Calls);
+    }
+
+    [Theory]
+    [InlineData("missing", AiFailure.SchemaMismatch)]
+    [InlineData("range", AiFailure.SchemaMismatch)]
+    [InlineData("sum", AiFailure.SchemaMismatch)]
+    [InlineData("choice", AiFailure.SchemaMismatch)]
+    [InlineData("model", AiFailure.ModelMismatch)]
+    [InlineData("json", AiFailure.InvalidJson)]
+    [InlineData("duplicate", AiFailure.InvalidJson)]
+    [InlineData("usage", AiFailure.SchemaMismatch)]
+    public async Task Invalid_Jev_response_never_succeeds(string change, AiFailure expected)
+    {
+        var json = JsonNode.Parse(Fixture("choice"))!;
+        var answer = json["answers"]!["department"]!;
+        switch (change)
+        {
+            case "missing": answer["probabilities"]!.AsObject().Remove("sales"); break;
+            case "range": answer["confidence"] = 1.1; break;
+            case "sum": answer["probabilities"]!["sales"] = .5; break;
+            case "choice": answer["choice"] = "sales"; break;
+            case "model": json["model"] = "jev-latest"; break;
+            case "usage": json["usage"]!["input_tokens"] = -1; break;
+        }
+        var payload = change switch { "json" => "{broken", "duplicate" => json.ToJsonString().Replace("{\"model\":", "{\"model\":\"unexpected\",\"model\":"), _ => json.ToJsonString() };
+        var handler = new Handler((_, _) => Task.FromResult(Response(payload)));
+        using var service = Service(Config(), new MemoryRecordStore(), handler);
+        var result = await Decide(service);
+        Assert.Equal(AiStatus.Failed, result.Status); Assert.Equal(expected, result.Failure); Assert.Null(result.Value); Assert.Equal(1, handler.Calls);
+    }
+
+    [Theory]
+    [InlineData(401, 1, AiFailure.Unauthorized)]
+    [InlineData(403, 1, AiFailure.Unauthorized)]
+    [InlineData(429, 2, AiFailure.RateLimited)]
+    [InlineData(500, 2, AiFailure.Unavailable)]
+    [InlineData(529, 2, AiFailure.Unavailable)]
+    public async Task Http_errors_are_bounded_and_each_retry_reserves_spend(int status, int expectedCalls, AiFailure failure)
+    {
+        var store = new MemoryRecordStore();
+        var handler = new Handler((_, _) =>
+        {
+            var response = Response("SECRET BODY", (HttpStatusCode)status);
+            response.Headers.RetryAfter = new(TimeSpan.Zero); return Task.FromResult(response);
+        });
+        using var service = Service(Config(), store, handler);
+        var result = await Decide(service);
+        Assert.Equal(failure, result.Failure); Assert.Equal(expectedCalls, handler.Calls);
+        var run = (await store.ReadAsync(RecordPartition.Catalog("demo"), result.RunId, default))!.Value;
+        Assert.Equal(expectedCalls, run["trace"]!["attemptCount"]!.GetValue<int>());
+        Assert.True(run["trace"]!["usageEstimated"]!.GetValue<bool>());
+        Assert.DoesNotContain("SECRET BODY", run.ToJsonString());
+    }
+
+    [Fact]
+    public async Task Retry_after_larger_than_deadline_does_not_send_early()
+    {
+        var handler = new Handler((_, _) =>
+        {
+            var response = Response("", HttpStatusCode.TooManyRequests); response.Headers.RetryAfter = new(TimeSpan.FromMinutes(10)); return Task.FromResult(response);
+        });
+        using var service = Service(Config(), new MemoryRecordStore(), handler);
+        Assert.Equal(AiFailure.RateLimited, (await Decide(service)).Failure); Assert.Equal(1, handler.Calls);
+    }
+
+    [Theory]
+    [InlineData("disconnect", AiFailure.Unavailable)]
+    [InlineData("timeout", AiFailure.Timeout)]
+    [InlineData("stream-disconnect", AiFailure.Unavailable)]
+    public async Task Disconnect_and_timeout_keep_uncertain_charge(string mode, AiFailure expected)
+    {
+        var config = Config(); config["AiUsage:TimeoutSeconds"] = "1";
+        var store = new MemoryRecordStore();
+        var handler = new Handler(async (_, ct) =>
+        {
+            if (mode == "timeout") await Task.Delay(Timeout.Infinite, ct);
+            if (mode == "stream-disconnect") throw new IOException("Secret stream exception text");
+            throw new HttpRequestException("Secret exception text");
+        });
+        using var service = Service(config, store, handler);
+        Assert.Equal(expected, (await Decide(service)).Failure);
+        var day = (await store.ReadAsync(RecordPartition.Catalog("demo"), "ai-day-" + DateTimeOffset.UtcNow.ToString("yyyy-MM-dd"), default))!;
+        Assert.True(day.Value["tokens"]!.GetValue<long>() >= 9000);
+    }
+
+    private static string Foundry(string content, string finish = "stop", bool refusal = false) => JsonSerializer.Serialize(new
+    {
+        model = "dummy-model-2026-09-28", choices = new[] { new { finish_reason = finish, message = new { content, refusal = refusal ? "no" : null } } },
+        usage = new { prompt_tokens = 20, completion_tokens = 30 }
+    });
+    [Theory]
+    [InlineData("refusal", AiFailure.Refused)]
+    [InlineData("length", AiFailure.Truncated)]
+    [InlineData("content_filter", AiFailure.Refused)]
+    [InlineData("id", AiFailure.InventedId)]
+    [InlineData("schema", AiFailure.SchemaMismatch)]
+    [InlineData("json", AiFailure.InvalidJson)]
+    public async Task Foundry_rejects_refusal_truncation_invalid_JSON_schema_and_invented_evidence(string mode, AiFailure failure)
+    {
+        var content = mode switch { "schema" => "{}", "json" => "broken", "id" => "{\"text\":\"dummy\",\"evidenceIds\":[\"invented\"]}", _ => "{\"text\":\"dummy\",\"evidenceIds\":[]}" };
+        var handler = new Handler((request, _) =>
+        {
+            Assert.EndsWith("/openai/v1/chat/completions", request.RequestUri!.AbsoluteUri);
+            return Task.FromResult(Response(Foundry(content, mode is "length" or "content_filter" ? mode : "stop", mode == "refusal")));
+        });
+        using var service = Service(Config(), new MemoryRecordStore(), handler);
+        var result = await service.SummarizeAsync(Context(), "dummy", default);
+        Assert.Equal(AiStatus.Failed, result.Status); Assert.Equal(failure, result.Failure); Assert.Equal(1, handler.Calls);
+    }
+
+    [Fact]
+    public async Task Cache_hit_rechecks_authoritative_source_and_revocation_blocks_send()
+    {
+        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);
+        var units = await new MemoryProjectionRepository(store).FindAsync(new([], [], ["dummy"]), IdentityResolver.Demo.Search, default);
+        var unit = units.Single(x => x.EntityId == "demo-person-01");
+        var config = Config(); config["Ai:Mode"] = "Mock";
+        var handler = new Handler((_, _) => throw new Xunit.Sdk.XunitException("External call"));
+        using var service = Service(config, store, handler);
+        var context = Context() with { Candidates = [unit] };
+        Assert.Equal(AiStatus.Succeeded, (await service.RerankAsync(context, "dummy", default)).Status);
+        Assert.True((await service.RerankAsync(context, "dummy", default)).Cached);
+        var partition = RecordPartition.Catalog("demo"); var source = (await store.ReadAsync(partition, unit.EntityId, default))!;
+        source.Value["available"] = false; await store.CommitAsync(partition, [RecordWrite.Replace(source.Value, source.ETag)], default);
+        var error = await Assert.ThrowsAsync<DomainException>(() => service.RerankAsync(context, "dummy", default));
+        Assert.Equal("SOURCE_REVOKED", error.Code); Assert.Equal(0, handler.Calls);
+    }
+
+    [Theory]
+    [InlineData("AiUsage:Stopped", "true", AiFailure.Stopped)]
+    [InlineData("AiUsage:LiveOptIn", "false", AiFailure.Stopped)]
+    [InlineData("AiUsage:DailyCallLimit", "0", AiFailure.Budget)]
+    [InlineData("AiUsage:MaxInputTokens", "1", AiFailure.InputLimit)]
+    [InlineData("AiUsage:MaxOutputTokens", "1", AiFailure.OutputLimit)]
+    public async Task Guards_block_HTTP(string key, string value, AiFailure failure)
+    {
+        var config = Config(); config[key] = value;
+        var handler = new Handler((_, _) => throw new Xunit.Sdk.XunitException("External call"));
+        using var service = Service(config, new MemoryRecordStore(), handler);
+        Assert.Equal(failure, (await Decide(service)).Failure); Assert.Equal(0, handler.Calls);
+    }
+
+    [Fact]
+    public async Task Missing_usage_charges_full_reservation_and_restart_cannot_bypass_budget()
+    {
+        var config = Config(); config["AiUsage:DailyTokenLimit"] = "9000";
+        var handler = new Handler((_, _) =>
+        {
+            var body = JsonNode.Parse(Fixture("choice"))!.AsObject(); body.Remove("usage"); return Task.FromResult(Response(body.ToJsonString()));
+        });
+        var store = new MemoryRecordStore();
+        using (var service = Service(config, store, handler)) Assert.Equal(AiStatus.Succeeded, (await Decide(service)).Status);
+        using (var service = Service(config, store, handler)) Assert.Equal(AiFailure.Budget, (await Decide(service)).Failure);
+        Assert.Equal(1, handler.Calls);
+    }
+
+    [Fact]
+    public async Task Durable_ledger_competition_crash_recovery_and_UTC_rollover()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "ai-ledger-" + Guid.NewGuid().ToString("N"));
+        var clock = new Clock(); var config = Config(); var limits = AiLimits.Read(config); var model = AiModel.Read(config, "Jev", limits.OutputTokens);
+        try
+        {
+            AiLedger Ledger() => new(new LocalRecordStore(new LocalIngestionFiles(root)), clock);
+            var tasks = Enumerable.Range(0, 12).Select(async i =>
+            {
+                try { return await Ledger().ReserveAsync("demo", "run-" + i, model, limits, 8000, 1000, default); }
+                catch (AiException e) { Assert.Equal(AiFailure.Busy, e.Failure); return null; }
+            });
+            var reserved = Assert.Single(await Task.WhenAll(tasks), x => x is not null)!;
+            var restarted = Ledger();
+            await Assert.ThrowsAsync<AiException>(() => restarted.ReserveAsync("demo", "run-new", model, limits, 8000, 1000, default));
+            await Assert.ThrowsAsync<ArgumentException>(() => restarted.RecoverSlotAsync("demo", reserved.Id, false, default));
+            await restarted.RecoverSlotAsync("demo", reserved.Id, true, default);
+            var strict = limits with { DailyTokens = 9000 };
+            Assert.Equal(AiFailure.Budget, (await Assert.ThrowsAsync<AiException>(() => restarted.ReserveAsync("demo", "run-next", model, strict, 8000, 1000, default))).Failure);
+            clock.Now = clock.Now.AddDays(1);
+            var next = await restarted.ReserveAsync("demo", "run-next", model, strict, 8000, 1000, default);
+            await restarted.SettleAsync(next, new(318, 34, false), model, strict, default);
+            await restarted.SettleAsync(next, new(318, 34, false), model, strict, default);
+            var day = (await new LocalRecordStore(new LocalIngestionFiles(root)).ReadAsync(RecordPartition.Catalog("demo"), next.DayId, default))!;
+            Assert.Equal(352, day.Value["tokens"]!.GetValue<long>()); Assert.Equal(1, day.Value["calls"]!.GetValue<long>());
+        }
+        finally { Directory.Delete(root, true); }
+    }
+    private sealed class Clock : TimeProvider
+    {
+        public DateTimeOffset Now = new(2026, 9, 28, 0, 0, 0, TimeSpan.Zero);
+        public override DateTimeOffset GetUtcNow() => Now;
+    }
+
+    [Theory]
+    [InlineData("calls")]
+    [InlineData("tokens")]
+    [InlineData("money")]
+    public async Task Parallel_reservations_cannot_exceed_any_daily_ceiling(string ceiling)
+    {
+        var store = new MemoryRecordStore(); var config = Config(); var model = AiModel.Read(config, "Jev", 1000);
+        var limits = AiLimits.Read(config) with { Concurrency = 8 };
+        limits = ceiling switch { "calls" => limits with { DailyCalls = 1 }, "tokens" => limits with { DailyTokens = 9000 }, _ => limits with { DailyJpy = model.Cost(8000, 1000, limits) } };
+        var outcomes = await Task.WhenAll(Enumerable.Range(0, 8).Select(async i =>
+        {
+            try { await new AiLedger(store, TimeProvider.System).ReserveAsync("demo", "run-" + i, model, limits, 8000, 1000, default); return true; }
+            catch (AiException e) { Assert.Equal(AiFailure.Budget, e.Failure); return false; }
+        }));
+        Assert.Single(outcomes, x => x);
+    }
+
+    [Fact]
+    public async Task Provider_overrun_blocks_following_calls_even_next_day()
+    {
+        var clock = new Clock(); var store = new MemoryRecordStore(); var config = Config(); var limits = AiLimits.Read(config);
+        var model = AiModel.Read(config, "Jev", 1000); var ledger = new AiLedger(store, clock);
+        var reservation = await ledger.ReserveAsync("demo", "run-test", model, limits, 8000, 1000, default);
+        await ledger.SettleAsync(reservation, new(8001, 1000, false), model, limits, default);
+        clock.Now = clock.Now.AddDays(1);
+        Assert.Equal(AiFailure.Budget, (await Assert.ThrowsAsync<AiException>(() => ledger.ReserveAsync("demo", "run-next", model, limits, 8000, 1000, default))).Failure);
+    }
+
+    [Fact]
+    public async Task Caller_cancellation_records_failure_and_releases_slot()
+    {
+        using var cancel = new CancellationTokenSource();
+        var handler = new Handler(async (_, ct) => { cancel.Cancel(); await Task.Delay(Timeout.Infinite, ct); return Response(""); });
+        var store = new MemoryRecordStore(); using var service = Service(Config(), store, handler);
+        var result = await Decide(service, ct: cancel.Token);
+        Assert.Equal(AiFailure.Cancelled, result.Failure);
+        var gate = (await store.ReadAsync(RecordPartition.Catalog("demo"), "system-ai-gate", default))!;
+        Assert.Empty(gate.Value.Strings("active"));
+    }
+
+    [Theory]
+    [InlineData("Jev:Endpoint", "https://intermediary.invalid/v1/systemone")]
+    [InlineData("Jev:Model", "jev-latest")]
+    [InlineData("Foundry:ModelVersion", "latest")]
+    [InlineData("Foundry:Sku", "ProvisionedManaged")]
+    [InlineData("Foundry:Endpoint", "http://dummy.openai.azure.com/")]
+    public void Model_contract_rejects_alias_unapproved_endpoint_and_non_metered_SKU(string key, string value)
+    {
+        var config = Config(); config[key] = value;
+        Assert.Throws<InvalidOperationException>(() => AiModel.Read(config, key.StartsWith("Jev") ? "Jev" : "Foundry", 1000));
+    }
+
+    [Fact]
+    public void Smoke_requires_all_explicit_gates()
+    {
+        var config = Config(); Assert.Throws<InvalidOperationException>(() => AiSmoke.Validate(config));
+        config["Data:Mode"] = "Azure"; config["AiSmoke:Approved"] = "true"; config["AiSmoke:DummyOnly"] = "true";
+        config["AiSmoke:OperatorPersonId"] = "demo-person-01"; config["AiSmoke:ApprovalReference"] = "issue-9-approval";
+        config["AiSmoke:Count"] = "2"; config["AiSmoke:MaxInputTokens"] = "8000"; config["AiSmoke:MaxOutputTokens"] = "1000";
+        config["AiUsage:MaxAttempts"] = "1"; config["APPROVED_MONTHLY_BUDGET_JPY"] = "100";
+        AiSmoke.Validate(config);
+        foreach (var key in new[] { "AiSmoke:Approved", "AiSmoke:DummyOnly", "AiSmoke:OperatorPersonId", "AiSmoke:ApprovalReference", "AiSmoke:Count", "AiSmoke:MaxInputTokens", "AiSmoke:MaxOutputTokens", "APPROVED_MONTHLY_BUDGET_JPY" })
+        {
+            var value = config[key]; config[key] = ""; Assert.Throws<InvalidOperationException>(() => AiSmoke.Validate(config)); config[key] = value;
+        }
+    }
+
+    private sealed class Token : Azure.Core.TokenCredential
+    {
+        public string[] Scopes = [];
+        public override Azure.Core.AccessToken GetToken(Azure.Core.TokenRequestContext context, CancellationToken ct) => throw new NotSupportedException();
+        public override ValueTask<Azure.Core.AccessToken> GetTokenAsync(Azure.Core.TokenRequestContext context, CancellationToken ct)
+        { Scopes = context.Scopes; return ValueTask.FromResult(new Azure.Core.AccessToken("dummy-mi-token", DateTimeOffset.UtcNow.AddMinutes(10))); }
+    }
+    [Fact]
+    public async Task Jev_secret_comes_from_pinned_Key_Vault_version_and_Foundry_uses_Entra()
+    {
+        var config = Config(); config["KeyVault:Uri"] = "https://dummy.vault.azure.net/";
+        config["Jev:SecretVersion"] = new string('a', 32); var token = new Token();
+        var handler = new Handler((request, _) =>
+        {
+            Assert.Equal("https://dummy.vault.azure.net/secrets/jev-api-key/" + new string('a', 32) + "?api-version=2025-07-01", request.RequestUri!.AbsoluteUri);
+            Assert.Equal("dummy-mi-token", request.Headers.Authorization!.Parameter);
+            return Task.FromResult(Response("{\"value\":\"dummy-vault-secret\"}"));
+        });
+        using var http = new HttpClient(handler); var credentials = new AzureAiCredentials(http, token, config);
+        Assert.Equal("dummy-vault-secret", await credentials.BearerAsync("Jev", default));
+        Assert.Equal("https://vault.azure.net/.default", Assert.Single(token.Scopes));
+        Assert.Equal("dummy-mi-token", await credentials.BearerAsync("Foundry", default));
+        Assert.Equal("https://ai.azure.com/.default", Assert.Single(token.Scopes)); Assert.Equal(1, handler.Calls);
+    }
+
+    [Fact]
+    public async Task Wrong_tenant_or_session_participant_is_rejected_before_HTTP()
+    {
+        var store = new MemoryRecordStore(); var context = Context();
+        var session = RecordJson.New("session", "session-test", "demo", "other", ["demo"], DateTimeOffset.UtcNow);
+        session["sessionId"] = "session-test"; session["participantIds"] = RecordJson.Array(["other"]);
+        session["status"] = "open"; session["aiAssistance"] = "enabled";
+        await store.CommitAsync(RecordPartition.Conversation("demo", "session-test"), [RecordWrite.Create(session)], default);
+        var handler = new Handler((_, _) => throw new Xunit.Sdk.XunitException("External call"));
+        using var service = Service(Config(), store, handler);
+        await Assert.ThrowsAsync<ArgumentException>(() => Decide(service, context with { Actor = context.Actor with { TenantId = "other" } }));
+        await Assert.ThrowsAsync<DomainException>(() => Decide(service, context with { SessionId = "session-test" }));
+        Assert.Equal(0, handler.Calls);
+    }
+
+    [Fact]
+    public async Task Oversized_stream_response_fails_without_body_logging()
+    {
+        var handler = new Handler((_, _) => Task.FromResult(Response(new string('x', 100000))));
+        using var service = Service(Config(), new MemoryRecordStore(), handler);
+        Assert.Equal(AiFailure.OutputLimit, (await Decide(service)).Failure);
+    }
+
+    [Fact]
+    public async Task Foundry_success_uses_strict_schema_output_cap_and_grounded_candidate_ids()
+    {
+        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);
+        var unit = (await new MemoryProjectionRepository(store).FindAsync(new([], [], ["dummy"]), IdentityResolver.Demo.Search, default))[0];
+        var evidenceId = unit.EvidenceRefs![0].Id;
+        var handler = new Handler(async (request, ct) =>
+        {
+            var body = JsonNode.Parse(await request.Content!.ReadAsStringAsync(ct))!;
+            Assert.Equal("dummy-deployment", body["model"]!.GetValue<string>());
+            Assert.Equal(1000, body["max_completion_tokens"]!.GetValue<int>());
+            Assert.True(body["response_format"]!["json_schema"]!["strict"]!.GetValue<bool>());
+            var operation = body["response_format"]!["json_schema"]!["name"]!.GetValue<string>();
+            var item = new JsonObject { ["text"] = "Dummy", ["evidenceIds"] = RecordJson.Array([evidenceId]) };
+            if (operation == "rerank") { item.Remove("text"); item["candidateId"] = unit.Id; item["reason"] = "Dummy reason"; }
+            var content = operation == "summarize" ? item : new JsonObject { ["items"] = new JsonArray(item) };
+            return Response(Foundry(content.ToJsonString()));
+        });
+        using var service = Service(Config(), store, handler);
+        var context = Context() with { Candidates = [unit], Evidence = unit.EvidenceRefs };
+        Assert.Equal(AiStatus.Succeeded, (await service.StructureAsync(context, "Dummy", default)).Status);
+        Assert.Equal(AiStatus.Succeeded, (await service.SummarizeAsync(context, "Dummy", default)).Status);
+        var ranking = await service.RerankAsync(context, "Dummy", default);
+        Assert.Equal(unit.Id, Assert.Single(ranking.Value!.Items).CandidateId);
+        Assert.Equal(3, handler.Calls);
+    }
+
+    [Theory]
+    [InlineData("candidate")]
+    [InlineData("evidence")]
+    public async Task Reranker_rejects_invented_candidate_or_cross_candidate_evidence(string field)
+    {
+        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);
+        var units = await new MemoryProjectionRepository(store).FindAsync(new([], [], ["dummy"]), IdentityResolver.Demo.Search, default);
+        var unit = units.Single(x => x.EntityId == "demo-person-01");
+        var other = units.Single(x => x.EntityId == "demo-person-02");
+        var content = JsonSerializer.Serialize(new { items = new[] { new {
+            candidateId = field == "candidate" ? "invented" : unit.Id, reason = "Dummy reason",
+            evidenceIds = new[] { field == "evidence" ? other.EvidenceRefs![0].Id : unit.EvidenceRefs![0].Id }
+        } } });
+        var handler = new Handler((_, _) => Task.FromResult(Response(Foundry(content))));
+        using var service = Service(Config(), store, handler);
+        var result = await service.RerankAsync(Context() with { Candidates = [unit, other] }, "Dummy", default);
+        Assert.Equal(AiFailure.InventedId, result.Failure); Assert.Null(result.Value); Assert.Equal(1, handler.Calls);
+    }
+}
