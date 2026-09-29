@@ -6,6 +6,7 @@
 
 - [アーキテクチャ文書](docs/architecture.md)：コンセプト、仕組み、構成、データ、処理、検証計画。
 - [正本永続化・認可・復旧手順](docs/persistence.md)：Issue #5のAPI、RBAC、失効フェンス、検証境界。
+- [AIアダプター・使用量台帳](docs/ai-adapters.md)：Issue #8の型付きポート、固定モデル、予算予約、承認後のライブ確認手順。
 - [実装契約 v1](docs/specs/README.md)：正本・状態遷移・API・権限・分類体系、JSON Schema/OpenAPIと検証例。後続Issue共通の入口。
 - [技術選定の調査記録](docs/technology-research-2026-09-21.md)：2026年9月21日に確認した一次情報と選定理由。
 - [検索検証計画](docs/retrieval-validation-plan.md)：Probability・補助Noulによる一次検索とLLM再順位付けを段階別に検証。

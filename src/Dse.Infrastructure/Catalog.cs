@@ -127,6 +127,7 @@ public static class InfrastructureRegistration
         services.AddSingleton<DocumentAcceptance>();
         services.AddSingleton<ProjectionActivation>();
         services.AddSingleton<SourceUseService>();
+        services.AddAi(configuration);
         if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
         {
             if (!int.TryParse(configuration["Telemetry:SamplingPercentage"] ?? "10", out var percentage) || percentage is < 1 or > 100)
