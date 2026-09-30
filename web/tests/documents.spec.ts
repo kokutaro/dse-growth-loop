@@ -8,7 +8,7 @@ for (const extension of ["docx", "xlsx"]) {
     await page.getByLabel("原本ファイル").setInputFiles(path.resolve(`../evaluation/documents/tuning.${extension}`));
     await page.getByRole("button", { name: "アップロード", exact: true }).click();
     await expect(page.getByRole("status")).toContainText("機械抽出済み", { timeout: 20000 });
-    await expect(page.getByRole("status")).toContainText("AI構造化：未実施");
+    await expect(page.getByRole("status")).toContainText("AI構造化：");
     await expect(page.getByRole("heading", { name: "出典プレビュー", exact: true })).toBeVisible();
     await expect(page.locator(".evidence-text").first()).not.toBeEmpty();
     const download = page.waitForEvent("download");

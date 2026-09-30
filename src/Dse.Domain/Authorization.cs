@@ -18,7 +18,8 @@ public static class AccessPolicy
         var owner = value.Text("ownerId") == actor.PrincipalId;
         return value.Text("kind") switch
         {
-            "person" or "document" or "documentVersion" or "evidenceSpan" or "departmentActivity" => actor.HasRole("member"),
+            "person" => actor.HasRole("member") && (value.Text("publicationState") != "withdrawn" || owner || actor.HasRole("operator")),
+            "document" or "documentVersion" or "evidenceSpan" or "departmentActivity" => actor.HasRole("member"),
             "experience" => actor.HasRole("member") && value.Text("personId") == actor.PersonId,
             "session" => value.Strings("participantIds").Contains(actor.PersonId),
             "knowledge" => value.Text("status") == "published" ? actor.HasRole("member") :
@@ -34,7 +35,7 @@ public static class AccessPolicy
     public static bool CanUse(ActorAccess actor, JsonObject value) => actor.HasRole("member") && CanRead(actor, value) &&
         value["activeVersion"] is not null && value.Number("accessVersion") >= 1 && (value.Text("kind") switch
         {
-            "person" => value["available"]?.GetValue<bool>() == true,
+            "person" => value["available"]?.GetValue<bool>() == true && value.Text("publicationState") != "withdrawn",
             "knowledge" => value.Text("status") == "published" && value["approvedBy"] is not null,
             "document" => true, // a newer queued version may coexist with the previous active version
             "departmentActivity" => true,

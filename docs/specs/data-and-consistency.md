@@ -86,3 +86,7 @@ Periodはstart/end/precision/months。unknownではすべてnull。年/月だけ
 現`DemoData.Create`は疎な分布、Confidence・監査・有効版を持たない`LegacySearchUnit`として検証する。既存の分類値・ID・`confirmationState=fixture`・検索結果は変更しない。新正本へ移行する場合はfixture由来を明示し欠落カテゴリ0を補うが、実AIの測定結果を捏造しない。通常のAI応答の欠落を0で補完して成功にはしない。正規化辞書はNFKC→trim→不変小文字→完全一致別名変換→重複排除→ordinal順。辞書は登録・検索で共通の版を使い、現fixtureの語はそのまま保つ。
 
 Issue #7の保存先・冪等性・再接続の実装詳細は[会話手順](../conversations.md)。旧fixtureのsessionIdなしParticipationは互換検証専用で、新しい会話の認可には使用しない。
+
+### Issue #10 の同一パーティション公開
+
+現在のプロフィール処理は新経験・分類・全SearchUnit・親の有効版・完了Jobを単一catalogトランザクションで公開する。部分版は保存しない。本文・根拠・断片数上限内で完結し、上限超過は保留する。PersonのdocumentHeadsが同名/同種資料の最新受付を指定し、古い原本の通知を排除する。本人訂正を保持し、競合候補はpendingExtractionへ保存する。[操作・復旧](../profile-pipeline.md)を参照。

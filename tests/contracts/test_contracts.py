@@ -29,6 +29,15 @@ class ContractsTests(unittest.TestCase):
             format_checker=FormatChecker(),
         )
 
+    def test_generated_profile_pipeline_contracts(self):
+        path = ROOT / "tests/Dse.Tests/TestResults/profile-contract-fixture.json"
+        if not path.exists():
+            self.skipTest("Run ProfilePipelineTests first")
+        for row in json.loads(path.read_text()):
+            with self.subTest(schema=row["schema"], id=row["value"]["id"]):
+                self.validator(row["schema"]).validate(row["value"])
+                validate_invariants(row["schema"], row["value"], self.taxonomy)
+
     def test_schema_and_every_named_example(self):
         Draft202012Validator.check_schema(self.schema)
         covered = set()

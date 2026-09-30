@@ -25,7 +25,7 @@ def validate_invariants(name, value, taxonomy):
                 "Choice probabilities must sum to one")
         require(value["probabilities"][value["choice"]] == max(value["probabilities"].values()),
                 "Choice must be one of the maximum probability categories")
-        require(value["origin"] != "ai" or (value["confidence"] is not None and value["aiRunId"] is not None),
+        require(value["origin"] not in ("ai", "mock") or (value["confidence"] is not None and value["aiRunId"] is not None),
                 "AI classification must retain Confidence and run provenance")
         require(value["origin"] != "fixture" or value["aiRunId"] is None,
                 "legacy fixture must not invent an AI run")

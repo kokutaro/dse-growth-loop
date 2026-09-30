@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Dse.Infrastructure;
 
 public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestionBlobs blobs, IIngestionQueue queue,
-    OfficeExtractor extractor, IngestionOptions options, AccessFence fence, TimeProvider clock, ILogger<IngestionProcessor> logger)
+    OfficeExtractor extractor, IngestionOptions options, AccessFence fence, TimeProvider clock, ILogger<IngestionProcessor> logger, ProfilePipeline? profiles = null, JobNotifications? notifications = null)
 {
     private static readonly TimeSpan Visibility = TimeSpan.FromSeconds(60);
     public async Task<bool> RunOnceAsync(CancellationToken ct)
@@ -30,9 +30,9 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
         }
         var partition = RecordPartition.Catalog(notice.TenantId);
         var job = await repository.ReadAsync(partition, notice.JobId, ct);
-        if (job is null || job.Value.Text("jobType") != "ingestion" || job.Value.Number("aggregateVersion") != notice.Version)
+        if (job is null || job.Value.Text("jobType") is not ("ingestion" or "enrichment" or "projection") || job.Value.Number("aggregateVersion") != notice.Version)
         { await queue.DeleteAsync(delivery, ct); return true; }
-        if (job.Value.Text("status") is "ready" or "cancelled" or "needs_review" or "failed")
+        if (job.Value.Text("status") is "ready" or "cancelled" or "needs_review" or "failed" or "budget_stopped")
         {
             if (job.Value.Text("status") == "failed") await queue.SendAsync(notice, ct, poison: true);
             await queue.DeleteAsync(delivery, ct); return true;
@@ -86,6 +86,23 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
         try
         {
             if (exhausted) throw new DomainException(400, "RETRY_EXHAUSTED");
+            if (job.Value.Text("jobType") is "enrichment" or "projection")
+            {
+                if (profiles is null) throw new DomainException(422, "PIPELINE_UNAVAILABLE");
+                var plan = await profiles.BuildAsync(job.Value, processing.Token);
+                await gate.WaitAsync(processing.Token);
+                try
+                {
+                    var current = await Owned(processing.Token);
+                    current.Value["status"] = "ready"; current.Value["resultId"] = plan.ResultId;
+                    current.Value["leaseUntil"] = null; current.Value["leaseOwner"] = null;
+                    current.Value["lastErrorCode"] = null;
+                    await profiles.CommitAsync(plan, [RecordWrite.Replace(current.Value, current.ETag)], processing.Token);
+                }
+                finally { gate.Release(); }
+                await queue.DeleteAsync(delivery, ct);
+                return true;
+            }
             var doc = await repository.ReadAsync(partition, job.Value.Text("aggregateId"), processing.Token) ?? throw new DomainException(409, "SOURCE_REVOKED");
             var ver = await repository.ReadAsync(partition, doc.Value.Text("currentVersionId"), processing.Token) ?? throw new DomainException(409, "SOURCE_REVOKED");
             if (doc.Value.Number("sourceVersion") != notice.Version || ver.Value.Text("jobId") != notice.JobId) throw new DomainException(409, "SOURCE_REVOKED");
@@ -142,9 +159,21 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                     latestVersion.Value["evidenceCount"] = extraction.Spans.Length;
                     current.Value["status"] = status; current.Value["resultId"] = doc.Value.Text("id"); current.Value["leaseUntil"] = null; current.Value["leaseOwner"] = null;
                     current.Value["lastErrorCode"] = extraction.Spans.Length == 0 ? "EMPTY_DOCUMENT" : null;
-                    await repository.CommitAsync(partition, [RecordWrite.Replace(latest.Value, latest.ETag), RecordWrite.Replace(latestVersion.Value, latestVersion.ETag), RecordWrite.Replace(current.Value, current.ETag)], token);
+                    List<RecordWrite> completion = [];
+                    if (profiles is not null && extraction.Spans.Length > 0)
+                    {
+                        var next = Jobs.Create(latest.Value, "enrichment", clock.GetUtcNow());
+                        latest.Value["enrichmentJobId"] = next.Text("id"); latest.Value["aiState"] = "queued";
+                        completion.Add(RecordWrite.Create(next));
+                    }
+                    await repository.CommitAsync(partition, [RecordWrite.Replace(latest.Value, latest.ETag), RecordWrite.Replace(latestVersion.Value, latestVersion.ETag), RecordWrite.Replace(current.Value, current.ETag), .. completion], token);
                     return true;
                 }, processing.Token);
+                if (notifications is not null)
+                {
+                    var completed = await repository.ReadAsync(partition, doc.Value.Text("id"), ct);
+                    if (completed!.Value.Text("enrichmentJobId") is { Length: > 0 } nextId) await notifications.TrySendAsync(notice.TenantId, nextId, ct);
+                }
                 delete = true;
             }
             finally { gate.Release(); }
@@ -160,7 +189,9 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                 var code = error is DomainException de ? de.Code : error is OperationCanceledException ? "PROCESSING_TIMEOUT" : invalidPackage ? "INVALID_PACKAGE" : "DEPENDENCY_UNAVAILABLE";
                 var permanent = error is DomainException { Status: < 500 } || invalidPackage;
                 var terminal = permanent || current.Value.Number("attempt") >= options.Attempts;
-                current.Value["status"] = code == "SOURCE_REVOKED" ? "cancelled" : terminal ? "failed" : "queued";
+                var profileJob = current.Value.Text("jobType") is "enrichment" or "projection";
+                current.Value["status"] = code == "SOURCE_REVOKED" ? "cancelled" : code == "AI_BUDGET_STOPPED" ? "budget_stopped" :
+                    profileJob && permanent ? "needs_review" : terminal ? "failed" : "queued";
                 current.Value["lastErrorCode"] = code; current.Value["leaseUntil"] = null; current.Value["leaseOwner"] = null;
                 var delay = TimeSpan.FromSeconds(10 * Math.Pow(2, current.Value.Number("attempt") - 1));
                 if (error is RequestFailedException request && request.GetRawResponse()?.Headers.TryGetValue("Retry-After", out var retry) == true && int.TryParse(retry, out var seconds)) delay = TimeSpan.FromSeconds(Math.Clamp(seconds, 1, 604800));
@@ -170,7 +201,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                 current.Value["notificationState"] = "pending";
                 List<RecordWrite> failureWrites = [RecordWrite.Replace(current.Value, current.ETag)];
                 var failedDoc = await repository.ReadAsync(partition, current.Value.Text("aggregateId"), ct);
-                if (failedDoc is not null && failedDoc.Value.Number("sourceVersion") == notice.Version && code != "SOURCE_REVOKED")
+                if (!profileJob && failedDoc is not null && failedDoc.Value.Number("sourceVersion") == notice.Version && code != "SOURCE_REVOKED")
                 {
                     var failedVersion = await repository.ReadAsync(partition, failedDoc.Value.Text("currentVersionId"), ct);
                     if (failedVersion is not null && failedVersion.Value.Text("jobId") == notice.JobId)

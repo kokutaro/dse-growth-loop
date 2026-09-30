@@ -65,7 +65,7 @@ GETの配列は`{items, continuationToken}`。`pageSize`は1〜100（省略20）
 - 冪等性記録と業務更新を同一パーティションで確定する。受付後に応答が失われても同じキーで再送する。入力/認証失敗は受付記録を作らない。再送時の旧If-Matchは、既存の確定結果を識別した後に判定するため、保存済みの同じ操作を412にしない。
 - If-MatchはGETで得た強いETag、`*`/欠落は400、古い値は412 `STALE_VERSION`。再取得・比較してから**新しいキー**で編集を送る。黙ってlast-write-winsにしない。
 - 202はJobの永続保存までを保証し、AIやQueue到達の成功ではない。`Accepted={jobId,status:queued,statusUrl}`、文書uploadは追加でdocumentId/versionを返す。Location=statusUrl。Job取得でstatus/resultId/lastErrorCodeを確認する。conversationsのstatusUrlにはsessionIdを含める。
-- Job.retryはqueued＋notificationState=pendingなら同じJobを再通知する（追加AI不要）。failed/needs_review/budget_stoppedの再実行は新Job＋supersedesJobId。processingの有効リースがあれば409。期限切れはoperatorの手動回復としてリースを再獲得。readyの再実行は409。再実行で有料ゲートを解除しない。
+- Job.retryはqueued＋notificationState=pendingなら同じJobを再通知する（追加AI不要）。failed/needs_review/budget_stoppedの再実行は新Job＋supersedesJobId。processingの有効リースがあれば409。期限切れはoperatorの手動回復としてリースを再獲得。enrichmentのcancelledは現在の取込系列・本人状態を再検証して新Jobで再実行できる。readyの再実行は409。再実行で有料ゲートを解除しない。
 
 保存に失敗したMessageは503 `SAVE_FAILED`。端末はclientMessageId/bodyを`save_failed`として保持し、自動的に保存済みへ変えない。ネットワーク切断で結果不明なら同じIdempotency-Key/clientMessageIdを再送して結果を確認する。保存済みMessageの通知漏れはGETによる連番回復で補う。
 
@@ -95,3 +95,7 @@ Jev停止時に別AIへ自動切替しない。質問分類が利用できなけ
 Issue #6の実装・設定・失敗コード・回復手順は[Office文書取込](../document-ingestion.md)。原本取得 `/documents/{documentId}/original` と本人の登録先取得 `/upload-context` も認可必須。機械抽出はAI予算を消費しない。
 
 Issue #7のメッセージは`afterSequence`＋署名付きtokenでページングする。Messageの冪等キーは履歴保持中失効させず、再送はETagが変わっても同じclientMessageId/本文の保存結果を再生する（他の変更操作はIf-Matchをhashに含める）。詳細は[会話手順](../conversations.md)。
+
+### Issue #10 のプロフィール・管理表示
+
+PATCH Personは任意の`publicationState: published|withdrawn`を追加する（省略時は維持）。撤回はactiveVersionをNULLにし、通常メンバーへのGET Personと検索利用を拒否する。本人・operatorは読取可能。`GET /api/v1/documents/{documentId}/pipeline`は所有者またはoperatorに抽出・AI段階、Job、AiRunの根拠・版・使用量を返す。詳細と初期入力上限は[プロフィール処理](../profile-pipeline.md)を参照。
