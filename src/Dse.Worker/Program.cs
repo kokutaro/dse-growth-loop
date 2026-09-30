@@ -39,8 +39,8 @@ switch (command)
         do
         {
             var page = await host.Services.GetRequiredService<IPrimaryRepository>().QueryAsync(RecordPartition.Catalog(tenant), "job", null, null, 100, cursor, ct);
-            foreach (var row in page.Items.Where(x => x.Value.Text("jobType") == "ingestion"))
-                Console.WriteLine($"{row.Value.Text("id")} {row.Value.Text("status")} attempt={row.Value.Number("attempt")} code={row.Value.Text("lastErrorCode")} notification={row.Value.Text("notificationState")}");
+            foreach (var row in page.Items.Where(x => x.Value.Text("jobType") is "ingestion" or "enrichment" or "projection"))
+                Console.WriteLine($"{row.Value.Text("id")} {row.Value.Text("jobType")} {row.Value.Text("status")} attempt={row.Value.Number("attempt")} code={row.Value.Text("lastErrorCode")} notification={row.Value.Text("notificationState")}");
             cursor = page.ContinuationToken;
         } while (cursor is not null);
         break;

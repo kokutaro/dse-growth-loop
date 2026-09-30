@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { initializeAuth, getToken, type AppConfig } from "./auth";
 import "./style.css";
 import { Conversations } from "./conversations";
+import { Profiles } from "./profiles";
 import { Documents } from "./documents";
 
 type SourceRef = {
@@ -16,7 +17,7 @@ type Candidate = {
   entityType: string;
   title: string;
   routes: string[];
-  units: { summary: string; sourceRefs: SourceRef[] }[];
+  units: { summary: string; sourceRefs: SourceRef[]; confirmationState: string; processingMode?: string }[];
 };
 type SearchResult = {
   candidates: Candidate[];
@@ -208,6 +209,7 @@ function App() {
                     <h3>{candidate.title}</h3>
                     {candidate.entityType === "person" && <small>相談する人物ID：{candidate.entityId}</small>}
                     <p>{candidate.units[0].summary}</p>
+                    <small>{candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>
                     <div className="routes">
                       {candidate.routes.map((route) => (
                         <span key={route}>{routeNames[route] ?? route}</span>
@@ -238,6 +240,7 @@ function App() {
         </div>
         {config && <Conversations config={config} candidates={result?.candidates ?? []} />}
         {config && <Documents config={config} />}
+        {config && <Profiles config={config} />}
       </main>
       <footer>
         人の優劣ではなく、経験との接点を探す。DSE Growth Loop / 開発初期版

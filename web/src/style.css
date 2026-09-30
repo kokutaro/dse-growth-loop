@@ -292,3 +292,10 @@ footer {
 .chat { border-top: 1px solid #8885; margin-top: 1.5rem; padding-top: 1rem; }
 .message-body { white-space: pre-wrap; }
 .chat ol { max-height: 28rem; overflow-y: auto; }
+
+.profiles { margin-top: 2rem; }
+.profile-experience { margin: 1.5rem 0; padding-top: 1rem; border-top: 1px solid #dde7e2; }
+.profile-experience label { display: block; margin-top: .75rem; }
+.profile-experience textarea { display: block; width: 100%; min-height: 6rem; padding: .75rem; font: inherit; border: 1px solid #c6d8cf; border-radius: .4rem; box-sizing: border-box; }
+.profiles p, .documents p { overflow-wrap: anywhere; }
+.profiles button + button, .documents button + button { margin-top: .5rem; }

@@ -81,7 +81,13 @@
       "properties": {
         "signalId": {
           "enum": [
-            "handover"
+            "handover",
+            "mechanical",
+            "software",
+            "sales",
+            "manufacturing",
+            "operations",
+            "unknown"
           ]
         },
         "yesProbability": {
@@ -434,6 +440,7 @@
         "aiState": {
           "enum": [
             "not_started",
+            "queued",
             "complete"
           ]
         },
@@ -443,6 +450,24 @@
             "type": "string"
           },
           "uniqueItems": true
+        },
+        "importKey": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "enrichmentJobId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        },
+        "profileResultId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
         }
       },
       "required": [
@@ -658,6 +683,69 @@
         "accessVersion": {
           "type": "integer",
           "minimum": 1
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 8000
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        },
+        "classificationResultId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "decisions": {
+          "$ref": "#/$defs/ProfileDecisions"
+        },
+        "publicationState": {
+          "enum": [
+            "published",
+            "withdrawn"
+          ]
+        },
+        "projectionJobId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "projectionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "documentHeads": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          }
+        },
+        "totalExperienceMonths": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -734,6 +822,73 @@
               "type": "null"
             }
           ]
+        },
+        "documentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "importKey": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "structureRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        },
+        "classificationResultId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "decisions": {
+          "$ref": "#/$defs/ProfileDecisions"
+        },
+        "pendingExtraction": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "maxLength": 8000
+                },
+                "period": {
+                  "$ref": "#/$defs/Period"
+                },
+                "evidenceRefs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EvidenceRef"
+                  },
+                  "minItems": 1,
+                  "maxItems": 100,
+                  "uniqueItems": true
+                },
+                "removed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "description"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -781,6 +936,71 @@
           "minItems": 1,
           "maxItems": 100,
           "uniqueItems": true
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 8000
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        },
+        "classificationResultId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "decisions": {
+          "$ref": "#/$defs/ProfileDecisions"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "confirmationState": {
+          "enum": [
+            "ai_unconfirmed",
+            "self_corrected",
+            "self_confirmed"
+          ]
+        },
+        "correctionState": {
+          "enum": [
+            "none",
+            "conflict"
+          ]
+        },
+        "totalExperienceMonths": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "projectionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "fragments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DepartmentActivityFragment"
+          },
+          "maxItems": 20
         }
       },
       "required": [
@@ -906,8 +1126,30 @@
         "origin": {
           "enum": [
             "ai",
-            "fixture"
+            "fixture",
+            "mock"
           ]
+        },
+        "entityId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "decisions": {
+          "$ref": "#/$defs/ProfileDecisions"
+        },
+        "promptVersion": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 1
         }
       },
       "required": [
@@ -1245,6 +1487,21 @@
           "minItems": 1,
           "maxItems": 100,
           "uniqueItems": true
+        },
+        "skillIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
         }
       },
       "required": [
@@ -1307,7 +1564,8 @@
             "opportunity",
             "notification_recovery",
             "sessionInitialization",
-            "messageCommitted"
+            "messageCommitted",
+            "enrichment"
           ]
         },
         "aggregateId": {
@@ -1530,6 +1788,14 @@
             {
               "type": "null"
             }
+          ]
+        },
+        "operation": {
+          "enum": [
+            "structure",
+            "decide",
+            "rerank",
+            "summarize"
           ]
         }
       },
@@ -2565,6 +2831,19 @@
           "minItems": 0,
           "maxItems": 20,
           "uniqueItems": true
+        },
+        "publicationState": {
+          "anyOf": [
+            {
+              "enum": [
+                "published",
+                "withdrawn"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -3374,6 +3653,217 @@
         "sourceVersion"
       ],
       "additionalProperties": false
+    },
+    "ProfileDecisions": {
+      "type": "object",
+      "properties": {
+        "choices": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "choice": {
+                "type": "string"
+              },
+              "probabilities": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "choice",
+              "probabilities",
+              "confidence"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "nouls": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "enum": [
+                  0,
+                  1,
+                  2
+                ]
+              },
+              "yesProbability": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "state",
+              "yesProbability"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "choices",
+        "nouls"
+      ],
+      "additionalProperties": false
+    },
+    "DepartmentActivityFragment": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "departmentActivityFragment"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "period": {
+          "$ref": "#/$defs/Period"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "confirmationState": {
+          "enum": [
+            "ai_unconfirmed",
+            "self_corrected",
+            "self_confirmed"
+          ]
+        },
+        "correctionState": {
+          "enum": [
+            "none",
+            "conflict"
+          ]
+        },
+        "pendingAiVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "documentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "importKey": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "structureRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        },
+        "classificationResultId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "decisions": {
+          "$ref": "#/$defs/ProfileDecisions"
+        },
+        "pendingExtraction": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "maxLength": 8000
+                },
+                "period": {
+                  "$ref": "#/$defs/Period"
+                },
+                "evidenceRefs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EvidenceRef"
+                  },
+                  "minItems": 1,
+                  "maxItems": 100,
+                  "uniqueItems": true
+                },
+                "removed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "description"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "title",
+        "description",
+        "period",
+        "evidenceRefs",
+        "confirmationState",
+        "correctionState",
+        "pendingAiVersion"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
     }
   },
   "oneOf": [

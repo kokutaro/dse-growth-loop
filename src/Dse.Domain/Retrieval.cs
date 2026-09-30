@@ -13,6 +13,8 @@ public sealed record SearchUnit(string Id, string EntityId, string EntityType, s
     SourceRef[] SourceRefs, string ConfirmationState)
 {
     public string Kind => "searchUnit";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string[]? SkillIds { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ProcessingMode { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? SourceVersion { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? AccessVersion { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? ProjectionVersion { get; init; }
@@ -45,7 +47,10 @@ public sealed record SearchResult(Candidate[] Candidates, int MatchedUnits, int 
 public static class Retriever
 {
     public const string TaxonomyVersion = "taxonomy-v1";
-    public static string Normalize(string value) => value.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant();
+    public static string Normalize(string value) => value.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant() switch
+    {
+        "引継ぎ" or "引継" => "引き継ぎ", "software" => "ソフトウェア", var term => term
+    };
 
     public static SearchResult Search(IEnumerable<SearchUnit> source, SearchRequest request, SearchAccess access)
     {

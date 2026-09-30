@@ -133,6 +133,7 @@ public sealed class IngestionHarness : IDisposable
 {
     public string Path { get; } = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dse-test-" + Guid.NewGuid().ToString("N"));
     public IPrimaryRepository Repo { get; }
+    public IRecordStore Store { get; }
     public IngestionClock Clock { get; } = new();
     public IIngestionBlobs Blobs { get; }
     public FaultQueue Queue { get; }
@@ -143,7 +144,7 @@ public sealed class IngestionHarness : IDisposable
     public IngestionHarness()
     {
         var files = new LocalIngestionFiles(Path);
-        var store = new LocalRecordStore(files); Repo = new PrimaryRepository(store);
+        var store = new LocalRecordStore(files); Store = store; Repo = new PrimaryRepository(store);
         DemoRecords.SeedAsync(store, "demo", default).GetAwaiter().GetResult();
         Blobs = new LocalIngestionBlobs(files); Queue = new(new LocalIngestionQueue(files, Clock));
         var fence = new AccessFence(Repo); var idempotency = new IdempotencyExecutor(Repo, Clock);

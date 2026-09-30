@@ -1,6 +1,6 @@
 # Office文書取込（Issue #6）
 
-全件ダミー用途。docx/xlsxを機械抽出し、原本と抽出JSONを非公開Blobへ、Document・DocumentVersion・Job・EvidenceSpanをcatalogへ保存する。AI分類・構造化・検索投影の追加は #8/#10。`ready` は機械抽出が完了した意味であり、`extractionState=complete` と `aiState=not_started` を別表示する。
+全件ダミー用途。docx/xlsxを機械抽出し、原本と抽出JSONを非公開Blobへ、Document・DocumentVersion・Job・EvidenceSpanをcatalogへ保存する。機械抽出後は #10 の構造化・分類・検索投影ジョブへ接続する。[プロフィール手順](profile-pipeline.md)を参照。取込Jobの `ready` は機械抽出の完了、enrichment Jobの `ready` は検索投影の完了であり、画面でも区別する。
 
 ## 受付と認可
 

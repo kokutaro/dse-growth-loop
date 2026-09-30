@@ -13,6 +13,7 @@ export function Documents({ config }: { config: AppConfig }) {
   const [job, setJob] = useState<Job>();
   const [evidence, setEvidence] = useState<Evidence[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [pipeline, setPipeline] = useState<{ aiState: string; processingMode: string; sourceVersion: number; resultId: string; moreRuns?: boolean; runs?: { id: string; operation: string; status: string; errorCode?: string; trace: { modelId: string | null; promptVersion: string; taxonomyVersion: string; dataVersion: number; evidenceIds: string[]; inputTokens: number; outputTokens: number; attemptCount: number } }[]; job?: Job & { id: string; etag: string } }>();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [title, setTitle] = useState("");
@@ -53,6 +54,7 @@ export function Documents({ config }: { config: AppConfig }) {
       const response = await request(`/api/v1/jobs/${value.jobId}`); etag.current = response.headers.get("ETag") ?? "";
       const current: Job = await response.json(); setJob(current);
       const doc = await (await request(`/api/v1/documents/${value.documentId}`)).json(); setWarnings(doc.warnings ?? []);
+      if (doc.enrichmentJobId) setPipeline(await (await request(`/api/v1/documents/${value.documentId}/pipeline`)).json());
       if (current.status === "ready") {
         const all: Evidence[] = []; let token: string | null = null;
         do {
@@ -65,7 +67,7 @@ export function Documents({ config }: { config: AppConfig }) {
     } catch (e) { setEvidence([]); setError(String(e)); }
   }
   useEffect(() => {
-    if (!accepted || !job || !["queued", "processing"].includes(job.status)) return;
+    if (!accepted || !job || !["queued", "processing"].includes(job.status) && !["queued", "processing"].includes(pipeline?.job?.status ?? "")) return;
     // Poll only while this view has an active job; stop after five minutes or when hidden.
     const started = Date.now(); let running = false;
     const timer = setInterval(async () => {
@@ -74,7 +76,7 @@ export function Documents({ config }: { config: AppConfig }) {
       running = true; try { await refresh(accepted); } finally { running = false; }
     }, 3000);
     return () => clearInterval(timer);
-  }, [accepted?.jobId, job?.status]);
+  }, [accepted?.jobId, job?.status, pipeline?.job?.status]);
   async function upload(event: React.SubmitEvent) {
     event.preventDefault(); setBusy(true); setError("");
     try {
@@ -83,7 +85,7 @@ export function Documents({ config }: { config: AppConfig }) {
       const body = new FormData(); body.set("file", file); body.set("title", title); body.set("documentType", type);
       const value: Accepted = await (await request("/api/v1/documents", { method: "POST", headers: { "Idempotency-Key": key.current }, body })).json();
       sessionStorage.setItem("dse-upload-job", JSON.stringify(value));
-      setAccepted(value); setEvidence([]); setJob({ status: "queued", lastErrorCode: null, resultId: null }); await refresh(value);
+      setAccepted(value); setPipeline(undefined); setEvidence([]); setJob({ status: "queued", lastErrorCode: null, resultId: null }); await refresh(value);
     } catch (e) { setError(String(e)); } finally { setBusy(false); }
   }
   async function retry() {
@@ -105,7 +107,7 @@ export function Documents({ config }: { config: AppConfig }) {
   }
   return <section className="panel documents" aria-labelledby="documents-title">
     <h2 id="documents-title">文書を取り込む</h2>
-    <p>ダミーのWord（docx）・Excel（xlsx）を登録できます。画像OCRとAI構造化は未実施です。</p>
+    <p>ダミーのWord（docx）・Excel（xlsx）を登録できます。画像OCRは対象外です。構造化・分類・検索投影の状態を下に表示します。</p>
     {!context ? <button onClick={loadContext}>登録先を確認する</button> : <p>対象者：{context.personId} ／ 部署：{context.departmentId} ／ 閲覧範囲：{context.scopeIds.join("、")} ／ 上限：{context.maxBytes / 1024 / 1024} MiB</p>}
     <form onSubmit={upload}>
       <label htmlFor="document-title">文書名</label><input id="document-title" value={title} required maxLength={300} onChange={e => { setTitle(e.target.value); key.current = crypto.randomUUID(); }} />
@@ -114,7 +116,15 @@ export function Documents({ config }: { config: AppConfig }) {
       <button disabled={busy || !context} type="submit">{busy ? "処理しています…" : "アップロード"}</button>
     </form>
     {error && <p role="alert">{error}</p>}
-    {accepted && <div><p role="status">{statuses[job?.status ?? "queued"]} ／ AI構造化：未実施</p><p>文書ID：{accepted.documentId} ／ 版：{accepted.version}</p>
+    {accepted && <div><p role="status">{statuses[job?.status ?? "queued"]} ／ AI構造化：{pipeline?.job?.status === "ready" ? "検索投影済み" : pipeline?.job ? (statuses[pipeline.job.status] ?? pipeline.job.status) : "未実施"}</p><p>文書ID：{accepted.documentId} ／ 版：{accepted.version}</p>
+      {pipeline && <div><p>{pipeline.processingMode === "live" ? "実AI処理" : pipeline.processingMode === "fixture" ? "fixture（fake AI）" : "処理方式未確定"} ／ 抽出版：{pipeline.sourceVersion}</p>
+        <p>構造化・分類ジョブ：{pipeline.job?.id} ／ 結果：{pipeline.resultId || "未確定"}</p>
+        {pipeline.runs && pipeline.runs.length > 0 && <details><summary>各段階の成否・根拠・モデル版</summary>{pipeline.runs.map(run => <p key={run.id}>{run.operation === "structure" ? "構造化" : "分類"}：{run.status} {run.errorCode} ／ モデル：{run.trace.modelId ?? "未呼出し"} ／ プロンプト：{run.trace.promptVersion} ／ 分類体系：{run.trace.taxonomyVersion} ／ データ版：{run.trace.dataVersion} ／ 試行：{run.trace.attemptCount} ／ tokens：{run.trace.inputTokens}/{run.trace.outputTokens} ／ 根拠：{run.trace.evidenceIds.join("、")}</p>)}{pipeline.moreRuns && <p>最初の100件を表示しています。</p>}</details>}
+        {pipeline.job?.lastErrorCode && <p>AI処理詳細：{pipeline.job.lastErrorCode}</p>}
+        {pipeline.job && ["failed", "needs_review", "budget_stopped", "queued", "cancelled"].includes(pipeline.job.status) && <button disabled={busy} onClick={async () => {
+          setBusy(true); try { await request(`/api/v1/jobs/${pipeline.job!.id}/retry`, { method: "POST", headers: { "Content-Type": "application/json", "If-Match": pipeline.job!.etag, "Idempotency-Key": crypto.randomUUID() }, body: JSON.stringify({ reason: "構造化・分類の手動再実行" }) }); await refresh(); } catch (e) { setError(String(e)); } finally { setBusy(false); }
+        }}>構造化・分類を再実行</button>}
+      </div>}
       {job?.lastErrorCode && <p>詳細：{job.lastErrorCode}</p>}
       <button onClick={() => refresh()}>進捗を更新</button> <button onClick={original}>原本を取得</button>
       {job && ["failed", "needs_review", "queued", "budget_stopped"].includes(job.status) && <button disabled={busy} onClick={retry}>再実行・再通知</button>}

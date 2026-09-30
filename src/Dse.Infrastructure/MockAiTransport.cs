@@ -39,7 +39,8 @@ public sealed class MockAiTransport : IAiTransport
         else
         {
             var item = new JsonObject { ["text"] = "Dummy fixture", ["evidenceIds"] = Dse.Domain.RecordJson.Array(evidenceIds) };
-            content = operation == "summarize" ? item : new() { ["items"] = new JsonArray(item) };
+            content = operation == "summarize" ? item : new() { ["items"] = new JsonArray(input["evidence"]!.AsArray().Select(e => (JsonNode)new JsonObject
+            { ["text"] = e!["text"]!.DeepClone(), ["evidenceIds"] = Dse.Domain.RecordJson.Array([e["id"]!.GetValue<string>()]) }).ToArray()) };
         }
         return Task.FromResult(new AiWireResponse(new()
         {

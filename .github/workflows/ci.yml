@@ -38,7 +38,7 @@ jobs:
       fail-fast: false
       # Each suite gets a fresh API and rate-limit budget, as well as fresh data.
       matrix:
-        suite: [conversations, documents, search]
+        suite: [conversations, documents, profiles, search]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v6

@@ -86,6 +86,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var partition = context.SessionId is null ? RecordPartition.Catalog(actor.TenantId) : RecordPartition.Conversation(actor.TenantId, context.SessionId);
         var run = RecordJson.New("aiRun", runId, actor.TenantId, actor.PrincipalId, actor.ScopeIds, clock.GetUtcNow());
         run["container"] = partition.Container; run["sessionId"] = context.SessionId; run["jobId"] = context.JobId;
+        run["operation"] = operation;
         run["status"] = "not_evaluated"; run["errorCode"] = null;
         run["inputSnapshots"] = AiCodecs.Node(snapshots.Distinct().ToArray());
         var trace = new JsonObject

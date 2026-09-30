@@ -29,11 +29,11 @@ public sealed record ExperiencePeriod(string? Start, string? End, string Precisi
     }
 }
 public sealed record ExperienceEdit(string ExperienceId, string Description, ExperiencePeriod Period);
-public sealed record ProfileUpdate([property: JsonRequired] string DisplayName, [property: JsonRequired] bool Available, [property: JsonRequired] string Action, [property: JsonRequired] ExperienceEdit[] ExperienceEdits)
+public sealed record ProfileUpdate([property: JsonRequired] string DisplayName, [property: JsonRequired] bool Available, [property: JsonRequired] string Action, [property: JsonRequired] ExperienceEdit[] ExperienceEdits, string? PublicationState = null)
 {
     public void Validate()
     {
-        if (string.IsNullOrWhiteSpace(DisplayName) || DisplayName.EnumerateRunes().Count() > 100 ||
+        if (PublicationState is not (null or "published" or "withdrawn") || string.IsNullOrWhiteSpace(DisplayName) || DisplayName.EnumerateRunes().Count() > 100 ||
             Action is not ("correct" or "confirm") || ExperienceEdits is null || ExperienceEdits.Length > 20 ||
             ExperienceEdits.Any(e => e is null || (e.ExperienceId is null || !RecordJson.IsId(e.ExperienceId)) || string.IsNullOrWhiteSpace(e.Description) ||
                 e.Description.EnumerateRunes().Count() > 8000 || e.Period is null) ||

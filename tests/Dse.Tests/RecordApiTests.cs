@@ -41,6 +41,25 @@ public class RecordApiTests
         var result = await (await client.PostAsJsonAsync("/api/search", new SearchRequest([], [], ["引き継ぎ"]))).Content.ReadFromJsonAsync<SearchResult>();
         Assert.DoesNotContain(result!.Candidates, x => x.EntityId == "demo-person-01");
     }
+    [Fact]
+    public async Task Pipeline_trace_is_owner_only_and_withdrawal_remains_readable_to_self()
+    {
+        using var factory = Factory().WithWebHostBuilder(b => { b.UseSetting("Ai:Mode", "Mock"); b.UseSetting("AiUsage:Stopped", "false"); b.UseSetting("AiUsage:MaxOutputTokens", "3000"); });
+        using var client = factory.CreateClient();
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/v1/documents/demo-person-02-document/pipeline")).StatusCode);
+        var upload = await factory.Services.GetRequiredService<DocumentUploads>().UploadAsync(IdentityResolver.Demo, "API統合", "profile", "x.docx", OfficeExtractor.WordMime, OfficeFixtures.Package(), "api-profile-upload-01", default);
+        var worker = factory.Services.GetRequiredService<IngestionProcessor>();
+        await worker.RunOnceAsync(default); await worker.RunOnceAsync(default);
+        var status = await client.GetFromJsonAsync<JsonObject>("/api/v1/documents/" + upload.Body!["documentId"]!.GetValue<string>() + "/pipeline");
+        Assert.Equal("ready", status!["job"]!["status"]!.GetValue<string>()); Assert.NotEmpty(status["runs"]!.AsArray());
+        Assert.Contains(status["runs"]!.AsArray(), r => r!["operation"]!.GetValue<string>() == "structure");
+        var before = await client.GetAsync("/api/v1/people/demo-person-01");
+        var response = await client.SendAsync(Patch("demo-person-01", before.Headers.ETag!.ToString(), "api-withdraw-key-01", new ProfileUpdate("非公開本人", true, "correct", [], "withdrawn")));
+        response.EnsureSuccessStatusCode();
+        var person = (await client.GetFromJsonAsync<JsonObject>("/api/v1/people/demo-person-01"))!;
+        Assert.Equal("withdrawn", person.Text("publicationState"));
+        Assert.False(AccessPolicy.CanRead(IdentityResolver.DemoPerson("demo-person-02")!, person));
+    }
     [Theory]
     [InlineData("tenantId", "other")]
     [InlineData("scopeIds", "other")]

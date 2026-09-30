@@ -93,6 +93,7 @@ public sealed class ProfileService(IPrimaryRepository repository, AccessFence fe
                     var updated = person.Value.Copy();
                     var oldVersion = updated.Number("sourceVersion");
                     updated["displayName"] = input.DisplayName; updated["available"] = input.Available;
+                    if (input.PublicationState is not null) updated["publicationState"] = input.PublicationState;
                     updated["sourceVersion"] = oldVersion + 1;
                     // Old projections must stop immediately, including when a person opts out.
                     updated["activeVersion"] = null; updated["accessVersion"] = updated.Number("accessVersion") + 1;
@@ -111,6 +112,7 @@ public sealed class ProfileService(IPrimaryRepository repository, AccessFence fe
                         value["period"] = JsonSerializer.SerializeToNode(edit.Period, ProjectionRules.Json);
                         value["sourceVersion"] = value.Number("sourceVersion") + 1;
                         Correct(value, input.Action, actor, now);
+                        value["pendingExtraction"] = null; value["pendingAiVersion"] = null; value["correctionState"] = "none";
                         writes.Add(RecordWrite.Replace(value, experience.ETag));
                     }
                     var audit = RecordJson.New("audit", "audit-" + Guid.NewGuid().ToString("N"), actor.TenantId, actor.PrincipalId, actor.ScopeIds, now);
@@ -118,7 +120,9 @@ public sealed class ProfileService(IPrimaryRepository repository, AccessFence fe
                     audit["experienceBefore"] = experienceBefore;
                     audit["before"] = person.Value.Copy(); audit["changes"] = JsonSerializer.SerializeToNode(input, ProjectionRules.Json);
                     writes.Add(RecordWrite.Create(audit));
-                    writes.Add(RecordWrite.Create(Jobs.Create(updated, "projection", now)));
+                    var projectionJob = Jobs.Create(updated, "projection", now);
+                    updated["projectionJobId"] = projectionJob.Text("id");
+                    writes.Add(RecordWrite.Create(projectionJob));
                     return new(writes.ToArray(), id, new(200, null, null, null));
                 }, token);
         }, ct);

@@ -38,6 +38,8 @@ public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence f
                 }
                 var now = clock.GetUtcNow();
                 var doc = RecordJson.New("document", documentId, actor.TenantId, actor.PrincipalId, person.Strings("scopeIds"), now);
+                var importKey = OfficeExtractor.Hash(Encoding.UTF8.GetBytes(type + "\n" + title));
+                doc["importKey"] = importKey;
                 doc["title"] = title; doc["documentType"] = type; doc["status"] = "queued"; doc["accessVersion"] = 1;
                 doc["personId"] = actor.PersonId; doc["departmentId"] = person.Text("departmentId"); doc["extractionState"] = "pending"; doc["aiState"] = "not_started";
                 var version = RecordJson.New("documentVersion", documentId + "-v1", actor.TenantId, actor.PrincipalId, doc.Strings("scopeIds"), now);
@@ -45,7 +47,9 @@ public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence f
                 var job = Jobs.Create(doc, "ingestion", now);
                 version["documentId"] = documentId; version["blobKey"] = blobKey; version["sha256"] = hash; version["mediaType"] = mime;
                 version["bytes"] = bytes.Length; version["status"] = "queued"; version["jobId"] = job.Text("id"); version["processorVersion"] = IngestionOptions.ProcessorVersion;
-                return new MutationPlan([RecordWrite.Create(doc), RecordWrite.Create(version), RecordWrite.Create(job)], null, Accepted(doc, job.Text("id")));
+                person["documentHeads"] ??= new JsonObject();
+                person["documentHeads"]![importKey] = documentId;
+                return new MutationPlan([RecordWrite.Create(doc), RecordWrite.Create(version), RecordWrite.Create(job), RecordWrite.Replace(person, person.Text("etag"))], null, Accepted(doc, job.Text("id")));
             }, token);
         }, ct);
         // Best effort after commit. Pending remains recoverable if the queue or response is lost.
@@ -72,7 +76,7 @@ public sealed class JobNotifications(IPrimaryRepository repository, IIngestionQu
         {
             var partition = RecordPartition.Catalog(tenant);
             var job = await repository.ReadAsync(partition, id, ct);
-            if (job is null || job.Value.Text("jobType") != "ingestion" || job.Value.Text("status") is not ("queued" or "processing")) return true;
+            if (job is null || job.Value.Text("jobType") is not ("ingestion" or "enrichment" or "projection") || job.Value.Text("status") is not ("queued" or "processing")) return true;
             await queue.SendAsync(new(tenant, id, job.Value.Number("aggregateVersion")), ct);
             job.Value["notificationState"] = "sent";
             await repository.CommitAsync(partition, [RecordWrite.Replace(job.Value, job.ETag)], ct);
@@ -86,7 +90,7 @@ public sealed class JobNotifications(IPrimaryRepository repository, IIngestionQu
         do
         {
             var page = await repository.QueryAsync(RecordPartition.Catalog(tenant), "job", null, null, 100, cursor, ct);
-            foreach (var job in page.Items.Where(j => j.Value.Text("jobType") == "ingestion" &&
+            foreach (var job in page.Items.Where(j => j.Value.Text("jobType") is ("ingestion" or "enrichment" or "projection") &&
                 (j.Value.Text("status") == "queued" || j.Value.Text("status") == "processing" && j.Value["leaseUntil"]!.Deserialize<DateTimeOffset>() <= clock.GetUtcNow())))
                 if (await TrySendAsync(tenant, job.Value.Text("id"), ct)) count++;
             cursor = page.ContinuationToken;
@@ -106,15 +110,33 @@ public sealed class IngestionRetry(IPrimaryRepository repository, AccessFence fe
             var partition = RecordPartition.Catalog(actor.TenantId);
             var job = await repository.ReadAsync(partition, id, token) ?? throw new DomainException(404, "NOT_FOUND");
             AccessPolicy.RequireRead(actor, job.Value);
-            if (job.Value.Text("jobType") != "ingestion") throw new DomainException(409, "INVALID_TRANSITION");
+            if (job.Value.Text("jobType") is not ("ingestion" or "enrichment" or "projection")) throw new DomainException(409, "INVALID_TRANSITION");
             return await idempotency.ExecuteAsync(partition, actor, "POST", $"/api/v1/jobs/{id}/retry", key, etag, new JsonObject { ["reason"] = reason }, async () =>
             {
                 if (job.ETag != etag) throw new DomainException(412, "STALE_VERSION");
                 var now = clock.GetUtcNow();
                 var doc = await repository.ReadAsync(partition, job.Value.Text("aggregateId"), token) ?? throw new DomainException(404, "NOT_FOUND");
                 if (doc.Value.Number("sourceVersion") != job.Value.Number("aggregateVersion")) throw new DomainException(409, "SOURCE_REVOKED");
-                if (job.Value.Text("status") == "ready" || job.Value.Text("status") == "cancelled") throw new DomainException(409, "INVALID_TRANSITION");
+                if (job.Value.Text("status") == "ready" || job.Value.Text("status") == "cancelled" && job.Value.Text("jobType") == "ingestion") throw new DomainException(409, "INVALID_TRANSITION");
                 if (job.Value.Text("status") == "processing" && (job.Value["leaseUntil"]!.Deserialize<DateTimeOffset>() > now || !actor.HasRole("operator"))) throw new DomainException(409, "INVALID_TRANSITION");
+                if (job.Value.Text("jobType") is "enrichment" or "projection")
+                {
+                    if (job.Value.Text("ownerId") != actor.PrincipalId && !actor.HasRole("operator")) throw new DomainException(403, "FORBIDDEN");
+                    if (job.Value.Text("jobType") == "enrichment" && doc.Value.Text("enrichmentJobId") != id) throw new DomainException(409, "SOURCE_REVOKED");
+                    if (job.Value.Text("status") == "queued")
+                        return new MutationPlan([], null, new(202, new JsonObject { ["jobId"] = id, ["status"] = "queued", ["statusUrl"] = "/api/v1/jobs/" + id }, "/api/v1/jobs/" + id, null));
+                    var next = Jobs.Create(doc.Value, job.Value.Text("jobType"), now); next["supersedesJobId"] = id;
+                    var recoveredId = next.Text("id");
+                    doc.Value[job.Value.Text("jobType") == "enrichment" ? "enrichmentJobId" : "projectionJobId"] = recoveredId;
+                    List<RecordWrite> recovery = [RecordWrite.Create(next), RecordWrite.Replace(doc.Value, doc.ETag)];
+                    if (job.Value.Text("status") == "processing")
+                    {
+                        job.Value["status"] = "cancelled"; job.Value["leaseOwner"] = null; job.Value["leaseUntil"] = null;
+                        recovery.Add(RecordWrite.Replace(job.Value, job.ETag));
+                    }
+                    return new MutationPlan(recovery.ToArray(), null,
+                        new(202, new JsonObject { ["jobId"] = recoveredId, ["status"] = "queued", ["statusUrl"] = "/api/v1/jobs/" + recoveredId }, "/api/v1/jobs/" + recoveredId, null));
+                }
                 var version = await repository.ReadAsync(partition, doc.Value.Text("currentVersionId"), token) ?? throw new DomainException(404, "NOT_FOUND");
                 if (version.Value.Text("jobId") != id) throw new DomainException(409, "INVALID_TRANSITION");
                 List<RecordWrite> writes = [];

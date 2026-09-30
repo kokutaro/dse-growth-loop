@@ -14,7 +14,13 @@
     }
   ],
   "signalIds": [
-    "handover"
+    "handover",
+    "mechanical",
+    "software",
+    "sales",
+    "manufacturing",
+    "operations",
+    "unknown"
   ],
   "unknownPolicy": {
     "unknownText": "map_to_unknown",
