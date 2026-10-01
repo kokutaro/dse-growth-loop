@@ -30,6 +30,16 @@ class InfrastructureTests(unittest.TestCase):
         self.assertEqual({p['httpGet']['path'] for p in probes}, {'/health/live'})
         self.assertIn('Startup', [p['type'] for p in probes])
 
+    def test_redeploy_preserves_omitted_resources_and_limits_public_demo_to_one_user(self):
+        for module in self.modules.values():
+            self.assertEqual(module['properties']['mode'], 'Incremental')
+        self.assertEqual(self.template['parameters']['allowedObjectIds']['maxLength'], 1)
+        self.assertEqual(self.modules['dse-apps']['properties']['template']['parameters']['allowedObjectIds']['maxLength'], 1)
+        model = next(r for r in self.modules['dse-foundation']['properties']['template']['resources']
+                     if r['type'] == 'Microsoft.CognitiveServices/accounts/deployments')
+        self.assertIn('condition', model)
+        self.assertEqual(model['properties']['versionUpgradeOption'], 'NoAutoUpgrade')
+
     def test_worker_opt_in_has_queue_identity_trigger(self):
         self.assertFalse(self.template['parameters']['deployIngestionWorker']['defaultValue'])
         self.assertEqual(self.apps['dse-worker']['condition'], "[parameters('deployIngestionWorker')]")

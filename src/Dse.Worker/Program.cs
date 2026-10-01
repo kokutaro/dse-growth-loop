@@ -20,7 +20,8 @@ switch (command)
     case "--ai-smoke":
         if (!await AiSmoke.RunAsync(builder.Configuration, host.Services.GetRequiredService<IdentityResolver>(),
             host.Services.GetRequiredService<IPrimaryRepository>(), host.Services.GetRequiredService<IDecisionProvider>(),
-            host.Services.GetRequiredService<ITextStructurer>(), ct)) Environment.ExitCode = 1;
+            host.Services.GetRequiredService<ITextStructurer>(), host.Services.GetRequiredService<IReranker>(),
+            host.Services.GetRequiredService<IProjectionRepository>(), ct)) Environment.ExitCode = 1;
         break;
     case "--recover-ai-slot":
         var reservationId = builder.Configuration["Recovery:AiReservationId"];

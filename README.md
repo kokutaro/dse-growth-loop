@@ -40,6 +40,8 @@ npm --prefix web run dev
 
 RGは **`dse-growth-loop-rg`** 固定。[Azure展開手順](docs/deployment.md)を参照。APIはHTTP起動の最小0／最大1、WorkerはQueue消費を明示opt-inし、手動seed／フェンス回復／通知回復を提供する。ビルドはローカル既定で、有料操作には承認予算と明示フラグが必要。[費用ガードとAI上限契約](docs/development-cost-controls.md)を参照。実際のAzure展開・有料API呼出しはまだ実施していない。
 
+[Azure接続検証](docs/azure-validation.md)では、読み取り専用の事前点検とレプリカ記録、許可ユーザー1名の配置ガード、件数承認付きのJev Choice/Noul・Foundry構造化/再順位付けスモーク、復旧・image復帰・停止の手順を提供する。実環境での接続・RBAC・0→1→0・請求照合は承認待ちで未完了。
+
 ## 検証
 
 ```sh

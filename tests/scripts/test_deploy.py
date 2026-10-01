@@ -10,6 +10,17 @@ import deploy
 
 
 class DeploymentTests(unittest.TestCase):
+    def test_apps_reject_multiple_allowed_users_before_cloud_operation(self):
+        env = {"AZURE_SUBSCRIPTION_ID": "test-subscription", "APPROVED_MONTHLY_BUDGET_JPY": "10000",
+               "AZURE_BUDGET_EMAILS": "dummy@example.com", "AZURE_BUDGET_START_DATE": "2026-10-01",
+               "Auth__TenantId": "dummy-tenant", "Auth__ClientId": "dummy-client",
+               "Auth__AllowedObjectIds__0": "dummy-user-1", "Auth__AllowedObjectIds__1": "dummy-user-2"}
+        with patch.object(sys, "argv", ["deploy.py", "apps", "--confirm-cost"]), \
+                patch.object(deploy, "load_env", return_value=env), patch.object(deploy.subprocess, "run") as run, \
+                patch("sys.stderr"), self.assertRaises(SystemExit):
+            deploy.main()
+        run.assert_not_called()
+
     def test_validate_only_compiles_without_subscription_or_cloud_deployment(self):
         with patch.object(sys, "argv", ["deploy.py", "validate"]), patch.object(deploy, "load_env", return_value={}), \
                 patch.object(deploy.subprocess, "run") as run:

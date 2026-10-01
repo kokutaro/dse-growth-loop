@@ -4,6 +4,8 @@
 
 Issue #8追加：AIは既定で停止し、実送信には別のopt-inが必要。モデル/単価/Key Vault固定版、使用量台帳、#9承認後の専用コマンドは[AIアダプター運用手順](ai-adapters.md)を参照。
 
+Issue #9追加：[Azure接続・RBAC・ゼロスケール検証](azure-validation.md)に読み取り点検、実トークン／MI試験、実測証跡、image復帰と停止の手順を定義した。初期apps配置の許可ユーザーは1名に限定する。配置・有料推論の承認とライブ検証は未完了。
+
 ## 設定の注入
 
 `.env.example` を `.env` へコピーし、`python3 scripts/run-env.py -- <command>` で起動する。既存の環境変数がファイルより優先される。`.NET` 単体では `.env` を自動読込しない。
@@ -26,7 +28,7 @@ Issue #8追加：AIは既定で停止し、実送信には別のopt-inが必要�
 | `FOUNDRY_MODEL_SKU` / `FOUNDRY_MODEL_CAPACITY` | 配置方式と割当容量。利用可能地域・契約・クォータを確認して指定 |
 | `IMAGE_TAG` | 更新ごとに一意なイメージタグを指定 |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Azure Monitor接続先。AzureではBicepが注入 |
-| `Storage__*` / `KeyVault__Uri` / `Foundry__Endpoint` / `Jev__*` | 次工程のアダプター用設定枠。現在は保存・推論処理で使用しない |
+| `Storage__*` / `KeyVault__Uri` / `Foundry__Endpoint` / `Jev__*` | Office取込のBlob/Queue接続、AIのKey Vault固定版取得／Foundry/Jev呼出し。推論は停止・opt-inと承認ゲートで制御 |
 
 AppHostはDemoを明示する。Azureデータへの接続検証は個別起動し、`Data__Mode=Azure`、接続先、認証設定を指定する。ローカルの `DefaultAzureCredential` には `az login` 等の資格情報とcatalogのCosmosデータプレーン権限が必要。一般のContributorだけではデータ読取権限にならない。
 

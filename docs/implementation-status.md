@@ -147,3 +147,13 @@ UTC日次の回数/トークン/推定円と実行枠を送信前に同一パー
 - JSON Schema/OpenAPI・実生成レコードの契約テスト13件成功。契約不変条件の行カバレッジ100%。
 - React型検査・Vite build成功。Playwrightはプロフィール3、文書4、検索3、会話4の計14件成功。
 - 設定・Bicep関連テスト26件、評価fixtureテスト4件、ローカルBicep検証、`git diff --check` 成功。Azure展開・有料呼出しは実施していない。
+
+## Issue #9 実行準備・一部読み取り点検（2026-10-01、ライブ未完了）
+
+[Azure接続検証手順](azure-validation.md)と、配置／秘密取得／推論をしない`azure_validation.py`を追加。明示subscriptionでRG／Provider／ARM permissions／モデル一覧／地域quotaを読み、全active revisionのレプリカ数をアプリへのHTTP要求なしで記録する。日時・commit・コマンド・合否を保存し、ライブscenarioはnot_run、欠測値はnullとする。失敗時のstdout／stderrを記録せず、既存runを上書きしない。apps／Bicepの許可ユーザーを1名に制限した。
+
+AIスモークは既存basicの2呼出しを維持し、connectionsの3件承認でChoice/Noul 1リクエスト＋Foundry構造化1＋再順位付け1を確認できる。再順位付けは固定ダミーの最新認可・正本・根拠を照合し、欠落／変更／撤回時は全推論前に拒否する。自動seedやJob retryを許可しない運用手順を定義した。再配置、旧image復帰、全revision／Job停止、消費停止、請求後日照合の手順も追加した。
+
+今回の[検証記録とTodo照合](validation-results/20261001-issue-9-preparation/results.md)：.NET196件、設定／Bicep38件、契約13件、評価fixture4件が成功。locked restore／Releaseビルド／React型検査・Vite build／Bicep構文・差分／相対リンク確認が成功。AiSmoke行カバレッジ100%、記録ツール90%、契約不変条件100%。既存ASPIRE010警告1件。ローカルPlaywrightは今回未実行。
+
+現在のCLI選択subscriptionを読み取った結果、対象RG不存在と必要Provider6種の未登録を確認した。要求モデル／SKUの確定・quota照合、対象環境・予算・実行者・操作範囲の承認が残る。Provider登録、Azure配置、Entra変更、秘密投入、外部推論は0回。Entra実トークン、MIのデータ権限、0→1→0、実障害回復、実請求は未検証。Issue #9はopenを維持し、手順作成と未承認を未完了として記録する項目以外をチェックしない。ローカル結果でG1完了を代替しない。
