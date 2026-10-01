@@ -9,7 +9,11 @@ export type AppConfig = {
   scope: string;
 };
 let instance: PublicClientApplication | undefined;
+let ended = false;
+let pendingToken: Promise<string> | undefined;
 export async function initializeAuth(config: AppConfig) {
+  ended = false;
+  pendingToken = undefined;
   if (config.mode === "Demo") return;
   instance = new PublicClientApplication({
     auth: {
@@ -22,15 +26,40 @@ export async function initializeAuth(config: AppConfig) {
   await instance.initialize();
 }
 export async function getToken(config: AppConfig) {
+  if (ended) throw new Error("接続を終了しました。再ログインしてください。");
   if (!instance) throw new Error("認証を初期化できませんでした。");
-  const account = instance.getAllAccounts()[0];
+  // Initial panels can request credentials together; MSAL permits one interaction.
+  if (!pendingToken) pendingToken = acquireToken(config).finally(() => { pendingToken = undefined; });
+  const token = await pendingToken;
+  if (ended) throw new Error("接続を終了しました。再ログインしてください。");
+  return token;
+}
+async function acquireToken(config: AppConfig) {
+  const client = instance!;
+  const account = client.getAllAccounts()[0];
   const request = { scopes: [config.scope], account };
-  if (!account) return (await instance.loginPopup(request)).accessToken;
+  let token: string;
+  if (!account) token = (await client.loginPopup(request)).accessToken;
+  else {
+    try {
+      token = (await client.acquireTokenSilent(request)).accessToken;
+    } catch (error) {
+      if (error instanceof InteractionRequiredAuthError)
+        token = (await client.acquireTokenPopup(request)).accessToken;
+      else throw error;
+    }
+  }
+  if (ended) throw new Error("接続を終了しました。再ログインしてください。");
+  return token;
+}
+export async function endAuth() {
+  ended = true;
+  if (!instance) return;
+  const client = instance;
+  const account = client.getAllAccounts()[0];
   try {
-    return (await instance.acquireTokenSilent(request)).accessToken;
-  } catch (error) {
-    if (error instanceof InteractionRequiredAuthError)
-      return (await instance.acquireTokenPopup(request)).accessToken;
-    throw error;
+    await client.logoutPopup({ account, postLogoutRedirectUri: `${location.origin}/redirect.html` });
+  } finally {
+    await client.clearCache();
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { initializeAuth, getToken, type AppConfig } from "./auth";
+import { initializeAuth, getToken, endAuth, type AppConfig } from "./auth";
 import "./style.css";
 import { Conversations } from "./conversations";
 import { Profiles } from "./profiles";
@@ -39,6 +39,14 @@ function App() {
   const [result, setResult] = useState<SearchResult>();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sessionEnded, setSessionEnded] = useState(false);
+  const [logoutError, setLogoutError] = useState(false);
+  async function logout() {
+    setSessionEnded(true);
+    setResult(undefined);
+    try { await endAuth(); }
+    catch { setLogoutError(true); }
+  }
   useEffect(() => {
     fetch("/api/config")
       .then(async (response) => {
@@ -105,8 +113,14 @@ function App() {
             ? "ローカル・ダミーデータ"
             : "ダミーデータ検証"}
         </span>
+        {config?.mode === "Azure" && !sessionEnded && <button onClick={() => { void logout(); }}>ログアウト</button>}
       </header>
-      <main>
+      {sessionEnded ? <main>
+        <h1>接続を終了しました</h1>
+        <p>この画面の会話接続と認証情報を解除しました。</p>
+        {logoutError && <p role="alert">Microsoftのログアウトを完了できませんでした。再ログイン時にアカウントを確認してください。</p>}
+        <button onClick={() => location.reload()}>ログインし直す</button>
+      </main> : <main>
         <div className="intro">
           <p className="eyebrow">経験をつなぐ。解決を次へ。</p>
           <h1>
@@ -241,7 +255,7 @@ function App() {
         {config && <Conversations config={config} candidates={result?.candidates ?? []} />}
         {config && <Documents config={config} />}
         {config && <Profiles config={config} />}
-      </main>
+      </main>}
       <footer>
         人の優劣ではなく、経験との接点を探す。DSE Growth Loop / 開発初期版
       </footer>

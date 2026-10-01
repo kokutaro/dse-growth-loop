@@ -67,6 +67,14 @@ python3 scripts/run-env.py -- dotnet run --project src/Dse.Worker -- --ai-smoke
 
 Container Apps上で実行する場合は専用の一時Manual Jobを使い、Worker imageとMI、対象接続先、上記設定を固定し、`args: ['--ai-smoke']`、`replicaRetryLimit: 0`、`parallelism: 1`、`replicaCompletionCount: 1`、timeoutを明示して配置内容をレビューする。通常のseed Jobのretry=1のままargsだけ差し替えると、最大件数を超えるため使わない。Job作成も承認対象。キー本文をenvや標準出力へ渡さない。Key Vault固定版はMIで取得する。終了後はAI停止／opt-in無効へ戻し、全execution終了を確認する。
 
+### MI接続だけのスモーク
+
+`--connection-smoke`は推論をせず、API用／Worker用MIのデータ権限を専用Manual Jobから点検する。`Data__Mode=Azure`、`ConnectionSmoke__Approved=true`、`ConnectionSmoke__DummyOnly=true`、承認参照、`ConnectionSmoke__RunId=issue9-<unique-id>`、`ConnectionSmoke__Role=api|worker`、`AZURE_CLIENT_ID`、tenant、Cosmos／Blob／Queue／Key Vault接続先、固定Jev秘密版が必須。4分で打切り、Blob／Queue SDK retryは0、JobもreplicaRetryLimit 0／並列1にする。
+
+隔離されたダミー環境でのみ使う。取込Workerを停止し、ingestion Queueが空であることを確認してAPI試験→同じrun IDのWorker試験を順に行う。API試験のダミー通知をWorker試験が受信・不可視延長・削除する。既存通知が混在すると不一致で失敗し、その通知の不可視時間が変わるため、共有運用Queueで実行しない。Cosmosにはrun IDごとのダミーをcreate/readし、既存IDを上書きしない。originals／extractedへダミーを保存し、poisonにもダミー通知を残す。生成物の削除は別操作であり、このコマンドは削除しない。
+
+出力は各操作の合否、期待した403、実RU、経過msのみ。キー値、MIトークン、秘密を含む例外本文は出力しない。Foundryは別の承認済み3件AI suiteで確認し、この試験の成功だけで推論成功としない。
+
 ## 再配置・ロールバック・停止
 
 実行前にrevision、参照imageのtag/digest、Job image、model name/version、runtime設定を保管する。公開・処理中の資料や旧imageは保護する。次の変更操作は**対象・停止影響を承認してから**実行する。`$DSE_SUBSCRIPTION`等は実行者が確認した値を設定する。秘密値のシェル展開は使わない。
@@ -94,9 +102,9 @@ az containerapp job stop --name dse-seed-demo --job-execution-name "$DSE_EXECUTI
 
 ## 費用の後日照合とTodoの更新
 
-見積もりは単価版／為替版、3推論試行、RU・Blob・Queue操作、Container Apps時間、ログ収集／保持、既存ストレージ量を分離する。今回は単価未確定のため見積額を作らない。Cost ManagementとJevの反映時刻・対象期間を記録し、請求未反映を0円としない。停止直後と後日の請求照合を別runにし、固定費／保存費／残存ログ量も残す。
+見積もりは単価版／為替版、3推論試行、RU・Blob・Queue操作、Container Apps時間、ログ収集／保持、既存ストレージ量を分離する。単価・仮為替が確定した今回の推定は[実環境記録](validation-results/20261001-issue-9-live/results.md)を参照。Cost ManagementとJevの反映時刻・対象期間を記録し、請求未反映を0円としない。停止直後と後日の請求照合を別runにし、固定費／保存費／残存ログ量も残す。
 
-Issueの各Todoは、その行の全要件を満たす証拠があるときだけチェックする。ローカル検証・読み取り点検だけでEntra／MI／推論／ゼロスケール／復旧／請求照合をチェックしない。未承認が残る間はIssueをopenに保ち、PRは`Refs #9`とし、自動closeを指定しない。今回の記録は[検証結果](validation-results/20261001-issue-9-preparation/results.md)。
+Issueの各Todoは、その行の全要件を満たす証拠があるときだけチェックする。ローカル検証・読み取り点検だけでEntra／MI／推論／ゼロスケール／復旧／請求照合をチェックしない。未実施・失敗・請求照合待ちが残る間はIssueをopenに保ち、PRは`Refs #9`とし、自動closeを指定しない。[承認前の準備結果](validation-results/20261001-issue-9-preparation/results.md)と[承認後の実環境結果](validation-results/20261001-issue-9-live/results.md)を分けて記録する。
 
 ## 確認した公式仕様
 

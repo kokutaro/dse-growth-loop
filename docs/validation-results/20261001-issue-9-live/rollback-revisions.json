@@ -1,0 +1,16 @@
+[
+  {
+    "active": true,
+    "health": "Healthy",
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-api:issue9-logout4",
+    "name": "dse-api--probe-restored9",
+    "state": "Deprovisioning"
+  },
+  {
+    "active": true,
+    "health": "Healthy",
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-api:issue9-eea1df3",
+    "name": "dse-api--rollback9",
+    "state": "RunningAtMaxScale"
+  }
+]

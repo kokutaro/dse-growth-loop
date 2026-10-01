@@ -106,7 +106,7 @@ class ValidationTests(unittest.TestCase):
             elif command[1:3] == ["group", "exists"]: value = True
             elif command[1:3] == ["provider", "show"]: value = {"namespace": command[command.index("--namespace") + 1], "registrationState": "Registered"}
             elif command[1:3] == ["resource", "list"]: value = [{"name": "dummy", "type": "dummy", "location": "japaneast"}]
-            elif command[1] == "rest": value = {"value": []} if "/usages?" in command[command.index("--url") + 1] else {"value": [{"actions": ["*"], "notActions": [], "dataActions": [], "notDataActions": []}]}
+            elif command[1] == "rest": value = {"value": [{"name": {"value": "ManagedEnvironmentCount"}, "currentValue": 0, "limit": 5}]} if "/usages?" in command[command.index("--url") + 1] else {"value": [{"actions": ["*"], "notActions": [], "dataActions": [], "notDataActions": []}]}
             elif "usage" in command: value = [{"name": {"value": "quota"}, "currentValue": 1, "limit": 10, "unit": "Count"}]
             else: value = [{"kind": "OpenAI", "model": {"name": "dummy", "version": "v1", "skus": [{"name": "Standard"}]}}]
             return subprocess.CompletedProcess(command, 0, json.dumps(value), "")
@@ -114,6 +114,30 @@ class ValidationTests(unittest.TestCase):
             checks = validation.preflight("sub", "japaneast", "japaneast")
         self.assertTrue(all(c["status"] == "passed" for c in checks))
         self.assertIn("resource-inventory", [c["id"] for c in checks])
+
+    def test_new_environment_requires_known_positive_quota_headroom(self):
+        for current, limit, expected in ((0, 0, False), (1, 1, False), (0, 1, True),
+                                         (None, 1, False), (0, None, False), (0, "1", False),
+                                         (0, float("inf"), False), (True, 2, False)):
+            with self.subTest(current=current, limit=limit):
+                data = [{"name": {"value": "ManagedEnvironmentCount"}, "currentValue": current, "limit": limit}]
+                self.assertEqual(validation.environment_quota_available(data, False), expected)
+        self.assertFalse(validation.environment_quota_available([], False))
+        self.assertTrue(validation.environment_quota_available([], True))
+
+    def test_zero_quota_fails_preflight_but_full_quota_allows_reusing_existing_environment(self):
+        for existing, expected in ((False, "failed"), (True, "passed")):
+            def run(command, **kwargs):
+                if command[1:3] == ["account", "show"]: value = {"id": "sub", "state": "Enabled"}
+                elif command[1:3] == ["group", "exists"]: value = existing
+                elif command[1:3] == ["resource", "list"]: value = [{"name": "dse-environment", "type": "Microsoft.App/managedEnvironments"}]
+                elif command[1] == "rest": value = {"value": [{"name": {"value": "ManagedEnvironmentCount"}, "currentValue": 0, "limit": 0}]} if "/usages?" in command[command.index("--url") + 1] else {"value": []}
+                elif command[1:3] == ["provider", "show"]: value = {"registrationState": "Registered"}
+                else: value = []
+                return subprocess.CompletedProcess(command, 0, json.dumps(value), "")
+            with self.subTest(existing=existing), patch.object(validation.subprocess, "run", side_effect=run):
+                checks = validation.preflight("sub", "japaneast", "japaneast")
+            self.assertEqual(next(c for c in checks if c["id"] == "app-quota")["status"], expected)
 
     def test_bad_json_is_failed_without_echoing_payload(self):
         with patch.object(validation.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "secret-token", "")):

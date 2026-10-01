@@ -68,6 +68,25 @@ public static class AiSmoke
         await repository.CommitAsync(RecordPartition.Catalog(tenant), [RecordWrite.Replace(job, stored.ETag)], ct);
         Console.WriteLine($"Jev {jev.Status} {jev.Failure} run={jev.RunId}; Foundry {foundry.Status} {foundry.Failure} run={foundry.RunId}");
         if (ranking is not null) Console.WriteLine($"Foundry rerank {ranking.Status} {ranking.Failure} run={ranking.RunId}");
+        foreach (var runId in new[] { jev.RunId, foundry.RunId, ranking?.RunId }.Where(x => x is not null))
+        {
+            var row = await repository.ReadAsync(RecordPartition.Catalog(tenant), runId!, ct);
+            if (row?.Value.Text("kind") != "aiRun") continue;
+            Console.WriteLine(Measurement(row.Value).ToJsonString());
+        }
         return ok;
+    }
+
+    public static System.Text.Json.Nodes.JsonObject Measurement(System.Text.Json.Nodes.JsonObject run)
+    {
+        // Provider usage and ledger estimates are distinct. Never export prompts, identities or credentials.
+        var result = new System.Text.Json.Nodes.JsonObject();
+        foreach (var key in new[] { "id", "operation", "status", "errorCode" }) result[key] = run[key]?.DeepClone();
+        var trace = run["trace"] as System.Text.Json.Nodes.JsonObject;
+        foreach (var key in new[] { "modelId", "modelVersion", "region", "sku",
+                     "inputTokens", "outputTokens", "usageEstimated", "attemptCount", "retryCount", "durationMs",
+                     "estimatedCostJpy", "pricingVersion", "fxVersion" })
+            result[key] = trace?[key]?.DeepClone();
+        return result;
     }
 }

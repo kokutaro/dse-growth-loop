@@ -1,0 +1,142 @@
+{
+  "startedAt": "2026-10-01T11:53:54.702607+00:00",
+  "apps": [
+    {
+      "name": "dse-api",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "image": "dseacrypbunss3xh66m.azurecr.io/dse-api:issue9-final5",
+      "revisions": [
+        {
+          "active": false,
+          "name": "dse-api--final5",
+          "replicas": 0,
+          "state": "Stopped"
+        }
+      ]
+    },
+    {
+      "name": "dse-worker",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "image": "dseacrypbunss3xh66m.azurecr.io/dse-worker:issue9-logout4",
+      "revisions": [
+        {
+          "active": false,
+          "name": "dse-worker--wql4iqz",
+          "replicas": 0,
+          "state": "Stopped"
+        }
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "name": "dse-validation-api",
+      "triggerType": "Manual",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "executions": [
+        {
+          "name": "dse-validation-api-qx63ygs",
+          "status": "Succeeded",
+          "startTime": "2026-10-01T10:38:34+00:00",
+          "endTime": "2026-10-01T10:39:04+00:00"
+        }
+      ]
+    },
+    {
+      "name": "dse-validation-worker",
+      "triggerType": "Manual",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "executions": [
+        {
+          "name": "dse-validation-worker-qrhxdar",
+          "status": "Succeeded",
+          "startTime": "2026-10-01T10:40:08+00:00",
+          "endTime": "2026-10-01T10:40:45+00:00"
+        }
+      ]
+    },
+    {
+      "name": "dse-seed-demo",
+      "triggerType": "Manual",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "executions": [
+        {
+          "name": "dse-seed-demo-tqadeb0",
+          "status": "Succeeded",
+          "startTime": "2026-10-01T10:41:25+00:00",
+          "endTime": "2026-10-01T10:42:01+00:00"
+        }
+      ]
+    },
+    {
+      "name": "dse-validation-ai",
+      "triggerType": "Manual",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "executions": [
+        {
+          "name": "dse-validation-ai-32icu3d",
+          "status": "Succeeded",
+          "startTime": "2026-10-01T10:55:21+00:00",
+          "endTime": "2026-10-01T10:55:56+00:00"
+        }
+      ]
+    },
+    {
+      "name": "dse-validation-reconcile",
+      "triggerType": "Manual",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "executions": [
+        {
+          "name": "dse-validation-reconcile-rnch5y8",
+          "status": "Succeeded",
+          "startTime": "2026-10-01T11:21:58+00:00",
+          "endTime": "2026-10-01T11:22:31+00:00"
+        }
+      ]
+    },
+    {
+      "name": "dse-validation-once",
+      "triggerType": "Manual",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "executions": [
+        {
+          "name": "dse-validation-once-1biipik",
+          "status": "Succeeded",
+          "startTime": "2026-10-01T11:17:44+00:00",
+          "endTime": "2026-10-01T11:18:22+00:00"
+        }
+      ]
+    },
+    {
+      "name": "dse-validation-jobs",
+      "triggerType": "Manual",
+      "aiStopped": true,
+      "liveOptIn": false,
+      "executions": [
+        {
+          "name": "dse-validation-jobs-ru9tciz",
+          "status": "Succeeded",
+          "startTime": "2026-10-01T11:26:04+00:00",
+          "endTime": "2026-10-01T11:26:36+00:00"
+        },
+        {
+          "name": "dse-validation-jobs-kx86lf2",
+          "status": "Succeeded",
+          "startTime": "2026-10-01T11:05:23+00:00",
+          "endTime": "2026-10-01T11:05:57+00:00"
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-10-01T11:54:10.751161+00:00",
+  "status": "passed",
+  "lastVerifiedAt": "2026-10-01T11:58:53.189624+00:00"
+}

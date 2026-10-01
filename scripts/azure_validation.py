@@ -3,6 +3,7 @@
 import argparse
 from datetime import datetime, timezone
 import json
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -79,6 +80,15 @@ def quotas(value):
     return [dict(fields(r, ("currentValue", "limit", "unit")), name=fields(r.get("name") or {}, ("value",))) for r in rows(value)]
 
 
+def environment_quota_available(value, existing):
+    if existing:
+        return True
+    meter = next((r for r in value if r.get("name", {}).get("value") == "ManagedEnvironmentCount"), {})
+    current, limit = meter.get("currentValue"), meter.get("limit")
+    return (type(current) in (int, float) and type(limit) in (int, float)
+            and math.isfinite(current) and math.isfinite(limit) and current >= 0 and limit - current >= 1)
+
+
 def check_command(check_id, command, project=None, acceptable=lambda data: True):
     check = {"id": check_id, "command": command, "startedAt": utc_now(), "status": "failed"}
     start = time.monotonic()
@@ -117,9 +127,13 @@ def preflight(subscription, location, foundry_location):
     if account["status"] != "passed":
         return checks
     group = read("resource-group", ["group", "exists", "--name", RG], boolean)
+    existing_environment = False
     if group.get("data") is True:
-        read("resource-inventory", ["resource", "list", "--resource-group", RG,
-                                   "--query", "[].{name:name,type:type,location:location,sku:sku}"], inventory)
+        resources = read("resource-inventory", ["resource", "list", "--resource-group", RG,
+                                              "--query", "[].{name:name,type:type,location:location,sku:sku}"], inventory)
+        existing_environment = resources["status"] == "passed" and any(
+            r.get("type", "").lower() == "microsoft.app/managedenvironments" and r.get("name") == "dse-environment"
+            for r in resources.get("data", []))
     for provider in PROVIDERS:
         read("provider-" + provider, ["provider", "show", "--namespace", provider,
                                      "--query", "{namespace:namespace,registrationState:registrationState}"],
@@ -132,7 +146,7 @@ def preflight(subscription, location, foundry_location):
     read("foundry-quota", ["cognitiveservices", "usage", "list", "--location", foundry_location], quotas)
     read("app-quota", ["rest", "--method", "get", "--url",
          f"https://management.azure.com/subscriptions/{subscription}/providers/Microsoft.App/locations/{location}/usages?api-version=2025-07-01"],
-         lambda v: quotas(v["value"]))
+         lambda v: quotas(v["value"]), lambda v: environment_quota_available(v, existing_environment))
     return checks
 
 

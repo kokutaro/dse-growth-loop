@@ -4,7 +4,7 @@
 
 Issue #8追加：AIは既定で停止し、実送信には別のopt-inが必要。モデル/単価/Key Vault固定版、使用量台帳、#9承認後の専用コマンドは[AIアダプター運用手順](ai-adapters.md)を参照。
 
-Issue #9追加：[Azure接続・RBAC・ゼロスケール検証](azure-validation.md)に読み取り点検、実トークン／MI試験、実測証跡、image復帰と停止の手順を定義した。初期apps配置の許可ユーザーは1名に限定する。配置・有料推論の承認とライブ検証は未完了。
+Issue #9追加：[Azure接続・RBAC・ゼロスケール検証](azure-validation.md)に読み取り点検、実トークン／MI試験、実測証跡、image復帰と停止の手順を定義した。初期apps配置の許可ユーザーは1名に限定する。承認済みダミー配置と3推論試行を実施した。[実環境結果](validation-results/20261001-issue-9-live/results.md)に未完了の拒否ケース・プローブ原因確定・請求照合と停止証跡を残す。
 
 ## 設定の注入
 
@@ -115,7 +115,7 @@ az containerapp job execution list --name dse-seed-demo --resource-group dse-gro
 - `/health/live` はプロセス稼働、`/health/ready` は手動のcatalog読取可否。配置プローブは `/health/live` を使いDB定期照会をしない。
 - `/api/config` はブラウザ用の公開認証設定のみ。
 - `/api/search` はJWT必須（Development＋Demoのみ省略）。30回/分、JSON最大32KiB。
-- コンパイルではSKU利用可否、クォータ、権限伝播、モデル利用権限を保証できない。Azureでのwhat-if・展開・動作確認は未実施。
+- コンパイルではSKU利用可否、クォータ、権限伝播、モデル利用権限を保証できない。初回ローカル検証当時はAzure展開未実施。Issue #9でwhat-if・展開・主要動作を実測したが、残条件の合否は上記実環境結果を参照。
 - Jev秘密値のKey Vault格納、実AI接続、手動の事業分析は次工程。WorkerはQueue消費と手動ダミー投入・フェンス回復・通知回復を提供。定期ジョブは配置しない。
 
 ## 確認した公式仕様
@@ -125,7 +125,7 @@ az containerapp job execution list --name dse-seed-demo --resource-group dse-gro
 - [MSALログインとredirect bridge](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/login-user)
 - [Aspire AppHost SDK](https://aspire.dev/get-started/aspire-sdk/)
 
-Issue #5でcatalog／conversationsの書込とコンテナ・Queue単位のRBACを定義した。[API／Workerの操作表と旧付与の扱い](persistence.md#apiworkerのrbac)を参照。実Azureの適用・許可／拒否検証は未実施。
+Issue #5でcatalog／conversationsの書込とコンテナ・Queue単位のRBACを定義した。[API／Workerの操作表と旧付与の扱い](persistence.md#apiworkerのrbac)を参照。Issue #9で主要なMI許可／403拒否経路を実測。未測定の範囲は実環境結果に残す。
 
 ## Office取込Worker
 

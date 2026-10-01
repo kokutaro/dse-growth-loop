@@ -50,6 +50,11 @@ class InfrastructureTests(unittest.TestCase):
         self.assertEqual(trigger['identity'], "[parameters('workerIdentityId')]")
         self.assertEqual(trigger['metadata']['queueName'], 'ingestion')
 
+    def test_foundry_child_writes_are_serialized_to_avoid_request_conflict(self):
+        foundation = self.modules['dse-foundation']['properties']['template']['resources']
+        model = next(r for r in foundation if r['type'] == 'Microsoft.CognitiveServices/accounts/deployments')
+        self.assertTrue(any('Microsoft.CognitiveServices/accounts/projects' in dep for dep in model['dependsOn']))
+
     def test_only_manual_jobs_and_no_cleanup_resources(self):
         jobs = [r for r in self.apps.values() if r['type'] == 'Microsoft.App/jobs']
         self.assertEqual(len(jobs), 1)

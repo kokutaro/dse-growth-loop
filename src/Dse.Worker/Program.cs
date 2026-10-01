@@ -2,10 +2,16 @@ using Dse.Infrastructure;
 using Dse.Domain;
 
 var command = args.Length == 0 ? "--consume" : args[0];
-if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--recover-ai-slot"))
-    throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --recover-ai-slot");
+if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--connection-smoke" or "--recover-ai-slot"))
+    throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --connection-smoke / --recover-ai-slot");
 var builder = Host.CreateApplicationBuilder([]);
 if (command == "--ai-smoke") AiSmoke.Validate(builder.Configuration);
+if (command == "--connection-smoke")
+{
+    using var deadline = new CancellationTokenSource(TimeSpan.FromMinutes(4));
+    if (!await ConnectionSmoke.RunAsync(builder.Configuration, deadline.Token)) Environment.ExitCode = 1;
+    return;
+}
 builder.Services.AddCatalog(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddIngestion(builder.Configuration);
 if (command == "--consume") builder.Services.AddHostedService<IngestionBackgroundService>();

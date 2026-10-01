@@ -1,0 +1,8 @@
+[
+  {
+    "Log_s": "Deactivated apps/v1.Deployment k8se-apps/dse-api--probe-restored9 from 1 to 0",
+    "RevisionName_s": "dse-api--probe-restored9",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:45:07.8000688Z"
+  }
+]

@@ -165,6 +165,8 @@ resource project 'Microsoft.CognitiveServices/accounts/projects@2025-06-01' = {
 }
 resource model 'Microsoft.CognitiveServices/accounts/deployments@2025-06-01' = if (!empty(modelDeploymentName)) {
   parent: foundry
+  // Foundry rejects concurrent project/deployment writes on the same account.
+  dependsOn: [project]
   name: modelDeploymentName
   sku: { name: modelSku, capacity: modelCapacity }
   properties: { model: { format: 'OpenAI', name: modelName, version: modelVersion }, versionUpgradeOption: 'NoAutoUpgrade' }

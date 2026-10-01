@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "runId": "20261001-issue-9-live",
+  "dateUtc": "2026-10-01",
+  "baseCommit": "eea1df3dc4267dd8d002e0a399405c70a787d398",
+  "worktreeDirtyAtBuild": true,
+  "sourceFingerprint": "source-sha256.json",
+  "resourceGroup": "dse-growth-loop-rg",
+  "location": "japaneast",
+  "approval": {
+    "reference": "User replies in this conversation on 2026-10-01",
+    "monthlyBudgetJpy": 8000,
+    "validationLimitJpy": 4000,
+    "maxInferenceAttempts": 3
+  },
+  "liveAcceptance": "incomplete",
+  "scenarioStatus": {
+    "environment-review": "passed",
+    "deployment": "passed",
+    "entra": "partial",
+    "managed-identity": "partial",
+    "live-ai": "passed-issue-todo-usage-only",
+    "zero-scale": "passed",
+    "recovery": "partial",
+    "redeploy-rollback-stop": "passed",
+    "cost-reconciliation": "pending"
+  },
+  "measurements": {
+    "directConnectionSmokeRu": 32.96,
+    "cosmosMetricRu": 6390.713489688621,
+    "inputTokens": 882,
+    "outputTokens": 216,
+    "inferenceAttempts": 3,
+    "coldRequestMs": 35750.99,
+    "warmRequestMs": 62.8,
+    "apiReturnToZeroAt": "2026-10-01T11:45:07.8000688Z",
+    "workerReturnToZeroAt": "2026-10-01T11:27:44.7211415Z",
+    "manualExecutionSeconds": 275.0,
+    "estimatedAiCostJpy": 0.0642368,
+    "actualBilledCostJpy": null,
+    "logIngestBytesObserved": 2030875.0
+  },
+  "evidence": {
+    "managedIdentity": [
+      "api-mi-results.json",
+      "worker-mi-results.json"
+    ],
+    "ai": "ai-results.json",
+    "notificationRecovery": "jobs-retained-final.json",
+    "workerScale": "worker-scale-events.json",
+    "apiScale": "api-return-zero-events.json",
+    "stop": "final-stop.json",
+    "cost": "cost-metrics.json"
+  }
+}

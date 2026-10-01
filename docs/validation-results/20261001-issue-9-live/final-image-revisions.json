@@ -1,0 +1,9 @@
+[
+  {
+    "active": true,
+    "health": "Healthy",
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-api:issue9-final5",
+    "name": "dse-api--final5",
+    "state": "RunningAtMaxScale"
+  }
+]

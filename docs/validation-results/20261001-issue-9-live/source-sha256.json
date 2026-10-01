@@ -1,0 +1,10 @@
+{
+  "infra/modules/foundation.bicep": "04470479b978640f9936ceeb0506fc1c27da2ae40c671f43bb8faf435e4ae586",
+  "scripts/azure_validation.py": "7aa843a877d4b0adc68941d34971b2498dc8e7b97b20ab06844b8b8c2c8a6566",
+  "src/Dse.Infrastructure/AiSmoke.cs": "f2ed77fe30367cede525206db7025bc0456751a8283d26617a617bb00ce4f1a1",
+  "src/Dse.Infrastructure/ConnectionSmoke.cs": "2747545708e70cad4ebf00af7dd0f979f9b7c7bc0c5228a4a94b1fca59662a3b",
+  "src/Dse.Worker/Program.cs": "512365b030ce50b272d9c3e08eb6662fed54026ad14040058981378242172778",
+  "web/src/auth.ts": "01fe5d46181b757a3d2efbb151029c05f515535e15c16761d121f81172ef8277",
+  "web/src/main.tsx": "73c6d1008367866f73ff66dd9668e662765bd65e762e76dff302c664a0519422",
+  "web/package.json": "5fdcd03c8c6c3bc54201d42d12047ad075be144050b5a2d7e609cfd0b1b9334e"
+}

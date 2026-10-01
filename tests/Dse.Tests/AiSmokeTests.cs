@@ -7,6 +7,15 @@ namespace Dse.Tests;
 
 public class AiSmokeTests
 {
+    [Fact]
+    public void Measurements_do_not_export_credentials_personal_ids_or_prompts()
+    {
+        var row = new System.Text.Json.Nodes.JsonObject { ["id"] = "ai-run-dummy", ["trace"] = new System.Text.Json.Nodes.JsonObject { ["inputTokens"] = 11, ["usageEstimated"] = true, ["inputHash"] = "private" },
+            ["prompt"] = "private", ["tenantId"] = "private", ["principalId"] = "private", ["secret"] = "private" };
+        var report = AiSmoke.Measurement(row);
+        Assert.Equal(11, report["inputTokens"]!.GetValue<int>()); Assert.True(report["usageEstimated"]!.GetValue<bool>());
+        Assert.DoesNotContain("private", report.ToJsonString()); Assert.False(report.ContainsKey("prompt"));
+    }
     private const string Tenant = "11111111-1111-1111-1111-111111111111";
     private static IConfigurationRoot Config() => new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
     {
