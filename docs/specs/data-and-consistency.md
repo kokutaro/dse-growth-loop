@@ -94,3 +94,7 @@ Issue #7の保存先・冪等性・再接続の実装詳細は[会話手順](../
 ## 検索監査の互換性
 
 Issue #11のRetrievalRunは`contractVersion=search-v2`で判別する。共通保存メタデータ`schemaVersion=1.0`は維持し、RetrievalRun契約は従来の計画形状と新監査形状のoneOfとして保存・検証する。自然文本文を保存せず、変換済み条件・各集約の独立した版・経路/統合/上限ID・実測RU・切詰め・AiRun参照を保存する。異なる集約の版の最大値をデータセット版として扱わない。[v2検索契約](openapi-search-v2.json)と[自然文検索](../natural-search.md)を参照。
+
+## Issue #12の公開正本と投影
+
+会話由来知識は`knowledgeDraft`をconversationsへ置き、catalogの`knowledge`は承認要約だけの投影とする（`contractVersion=knowledge-v1`）。原会話の私的根拠ID・参加者ID・同意記録をcatalogへ投影しない。旧Knowledge fixtureは互換検証として保持する。承認正本＋公開Job、catalog知識＋分類＋SearchUnit、会話Job完了の三段階で回復し、各読取境界は会話正本の承認版・同意・参加者版を照合する。[公開・撤回と復旧](../knowledge-publication.md)を参照。

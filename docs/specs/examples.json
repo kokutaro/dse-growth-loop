@@ -1604,5 +1604,83 @@
       "membershipVersion": 1,
       "payloadVersion": "1.0"
     }
+  },
+  {
+    "name": "knowledge-draft-v1",
+    "schema": "KnowledgeDraft",
+    "value": {
+      "id": "knowledge-draft-example",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "kind": "knowledgeDraft",
+      "contractVersion": "knowledge-v1",
+      "sessionId": "session-01",
+      "title": "架空相談",
+      "status": "draft",
+      "sections": [
+        {
+          "field": "challenge",
+          "text": "不明",
+          "basis": "unknown",
+          "evidenceIds": []
+        },
+        {
+          "field": "assumptions",
+          "text": "不明",
+          "basis": "unknown",
+          "evidenceIds": []
+        },
+        {
+          "field": "attempts",
+          "text": "不明",
+          "basis": "unknown",
+          "evidenceIds": []
+        },
+        {
+          "field": "result",
+          "text": "不明",
+          "basis": "unknown",
+          "evidenceIds": []
+        },
+        {
+          "field": "reuseConditions",
+          "text": "不明",
+          "basis": "unknown",
+          "evidenceIds": []
+        },
+        {
+          "field": "unresolvedPoints",
+          "text": "不明",
+          "basis": "unknown",
+          "evidenceIds": []
+        }
+      ],
+      "evidenceIds": [
+        "message-example"
+      ],
+      "participantIds": [
+        "person-example"
+      ],
+      "consents": {},
+      "accessVersion": 1,
+      "approvedBy": null,
+      "analysisConsent": "not_granted",
+      "draftRunId": "ai-run-example",
+      "processingMode": "fixture"
+    }
   }
 ]

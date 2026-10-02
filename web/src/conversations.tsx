@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HubConnectionBuilder, HttpTransportType, LogLevel } from "@microsoft/signalr";
+import { Knowledge } from "./knowledge";
 import { getToken, type AppConfig } from "./auth";
 
 type Row = { id: string; etag: string; sessionId: string; title: string; summary: string; ownerId: string;
@@ -72,6 +73,7 @@ function Workspace({ config, person, candidates }: { config: AppConfig; person: 
 type Pending = { clientMessageId: string; body: string; key: string; state: "saving" | "save_failed" };
 function Chat({ challenge, principal, api, config, person, candidates }: { challenge: Row; principal: string; api: Api; config: AppConfig; person: string; candidates: { entityId: string; title: string; entityType: string }[] }) {
   const sid = challenge.sessionId, path = `/sessions/${sid}`;
+  const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   const [session, setSession] = useState<Row>(), [participations, setParticipations] = useState<Row[]>([]);
   const [messages, setMessages] = useState<Row[]>([]), [text, setText] = useState(""), [target, setTarget] = useState("");
   const [error, setError] = useState(""), [connection, setConnection] = useState("未接続"), [busy, setBusy] = useState(false);
@@ -197,6 +199,8 @@ function Chat({ challenge, principal, api, config, person, candidates }: { chall
       </form>
       {!owner && own?.status === "accepted" && <button disabled={busy} onClick={() => void act(() => api(`${path}/participation`, "PATCH", { decision: "left" }, crypto.randomUUID(), own.etag))}>退会する</button>}
       {owner && session.status === "open" && <button disabled={busy} onClick={() => void act(() => api(path, "PATCH", { aiAssistance: "stopped", status: "closed" }, crypto.randomUUID(), session.etag))}>相談を終了</button>}
+      <button onClick={() => setKnowledgeOpen(open => !open)}>{knowledgeOpen ? "評価と知識化を閉じる" : "評価と知識化を開く"}</button>
+      {knowledgeOpen && <Knowledge api={api} sid={sid} owner={owner} sessionEtag={session.etag} />}
       {session.status === "closed" && <p>この相談は終了しました。</p>}
     </>}
     <ul aria-label="未保存のメッセージ">{pending.map(item => <li key={item.clientMessageId}><p className="message-body">{item.body}</p>

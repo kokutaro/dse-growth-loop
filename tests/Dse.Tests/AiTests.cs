@@ -440,4 +440,43 @@ public class AiTests
         var result = await service.RerankAsync(Context() with { Candidates = [unit, other] }, "Dummy", default);
         Assert.Equal(AiFailure.InventedId, result.Failure); Assert.Null(result.Value); Assert.Equal(1, handler.Calls);
     }
+    [Theory]
+    [InlineData("valid")]
+    [InlineData("invented")]
+    [InlineData("missing-evidence")]
+    [InlineData("duplicate-field")]
+    public async Task Knowledge_draft_uses_authoritative_conversation_evidence_and_rejects_bad_sections(string mode)
+    {
+        var store = new MemoryRecordStore(); var config = Config(); var repo = new PrimaryRepository(store);
+        var chat = new ConversationService(repo, new(), new(config), TimeProvider.System);
+        var challenge = await chat.CreateAsync(IdentityResolver.Demo, "knowledge-draft-0001", new("架空", "ダミー"), default);
+        var sid = challenge.Text("sessionId"); var session = await chat.SessionAsync(IdentityResolver.Demo, sid, default);
+        var message = await chat.SendAsync(IdentityResolver.Demo, sid, "knowledge-message-01", session.ETag, new("message-test", "前提は不明"), default);
+        session = await chat.SessionAsync(IdentityResolver.Demo, sid, default);
+        var handler = new Handler(async (request, ct) =>
+        {
+            var body = JsonNode.Parse(await request.Content!.ReadAsStringAsync(ct))!;
+            Assert.Equal("knowledgeDraft", body["response_format"]!["json_schema"]!["name"]!.GetValue<string>());
+            Assert.Contains("reuseConditions", body["messages"]![0]!["content"]!.GetValue<string>());
+            var input = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!;
+            Assert.Equal("前提は不明", input["evidence"]![0]!["text"]!.GetValue<string>());
+            var content = new JsonObject { ["sections"] = new JsonArray(KnowledgeSummary.Fields.Select((f, i) => (JsonNode)new JsonObject
+            { ["field"] = mode == "duplicate-field" && i == 5 ? "challenge" : f, ["text"] = "前提は不明", ["basis"] = "participant_report",
+              ["evidenceIds"] = RecordJson.Array(mode == "missing-evidence" ? [] : [mode == "invented" ? "invented-id" : message.Text("id")]) }).ToArray()) };
+            return Response(Foundry(content.ToJsonString()));
+        });
+        using var service = Service(config, store, handler);
+        var context = new AiContext(IdentityResolver.Demo, "draft-job-0001", "knowledge-draft-v1", Retriever.TaxonomyVersion, session.Value.Number("sourceVersion"), [], [], sid) { ConversationEvidenceIds = [message.Text("id")] };
+        var result = await service.DraftAsync(context, default);
+        Assert.Equal(mode == "valid" ? AiStatus.Succeeded : AiStatus.Failed, result.Status);
+        if (mode == "valid") Assert.Equal(6, result.Value!.Sections.Length);
+        else { Assert.Null(result.Value); Assert.Equal(mode == "duplicate-field" ? AiFailure.SchemaMismatch : AiFailure.InventedId, result.Failure); }
+        Assert.Equal(1, handler.Calls);
+        var run = (await repo.ReadAsync(RecordPartition.Conversation("demo", sid), result.RunId, default))!.Value;
+        Assert.Equal("knowledge-draft-v1", run["trace"]!["promptVersion"]!.GetValue<string>());
+        Assert.DoesNotContain("前提は不明", run.ToJsonString());
+        await Assert.ThrowsAsync<DomainException>(() => service.DraftAsync(context with { Actor = IdentityResolver.DemoPerson("demo-person-02")! }, default));
+        await Assert.ThrowsAsync<DomainException>(() => service.DraftAsync(context with { ConversationEvidenceIds = ["forged-message-id"] }, default));
+        Assert.Equal(1, handler.Calls);
+    }
 }

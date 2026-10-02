@@ -1,0 +1,813 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DSE knowledge runtime API",
+    "version": "knowledge-v1"
+  },
+  "paths": {
+    "/api/v1/sessions/{sid}/knowledge": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge/draft": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge/outcome": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "resolution": {
+                    "enum": [
+                      "resolved",
+                      "partial",
+                      "unresolved"
+                    ]
+                  },
+                  "result": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "resolution",
+                  "result"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge/feedback": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 5
+                  },
+                  "comment": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 2000
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge/edit": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "enum": [
+                            "challenge",
+                            "assumptions",
+                            "attempts",
+                            "result",
+                            "reuseConditions",
+                            "unresolvedPoints"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1500
+                        },
+                        "basis": {
+                          "enum": [
+                            "participant_report",
+                            "inference",
+                            "unknown"
+                          ]
+                        },
+                        "evidenceIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                          },
+                          "uniqueItems": true,
+                          "maxItems": 20
+                        }
+                      },
+                      "required": [
+                        "field",
+                        "text",
+                        "basis",
+                        "evidenceIds"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 6,
+                    "maxItems": 6
+                  },
+                  "scopeIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "sections",
+                  "scopeIds"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge/consent": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "publication": {
+                    "type": "boolean"
+                  },
+                  "analysis": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "version",
+                  "publication",
+                  "analysis"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge/approve": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge/request-review": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge/withdraw": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sid}/knowledge-recovery": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "保存／再取得成功"
+          },
+          "400": {
+            "description": "不正入力"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "操作権限なし"
+          },
+          "404": {
+            "description": "現在の会話参加者ではない"
+          },
+          "409": {
+            "description": "承認版／同意／状態競合"
+          },
+          "412": {
+            "description": "ETag不一致"
+          },
+          "413": {
+            "description": "入力上限"
+          },
+          "429": {
+            "description": "要求数制限"
+          },
+          "503": {
+            "description": "依存障害／フェンス閉鎖"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "主体・メソッド・正規化パス・キー単位で24時間保持。同一body hashは同一結果、異なるbodyは409。",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "GETで取得した強いETag。欠落400、不一致412。*は不可。",
+        "schema": {
+          "type": "string",
+          "pattern": "^\"[^\"\\r\\n]+\"$"
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

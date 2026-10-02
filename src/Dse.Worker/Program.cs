@@ -2,8 +2,8 @@ using Dse.Infrastructure;
 using Dse.Domain;
 
 var command = args.Length == 0 ? "--consume" : args[0];
-if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--connection-smoke" or "--recover-ai-slot"))
-    throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --connection-smoke / --recover-ai-slot");
+if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--connection-smoke" or "--recover-ai-slot" or "--publish-knowledge"))
+    throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --connection-smoke / --recover-ai-slot / --publish-knowledge");
 var builder = Host.CreateApplicationBuilder([]);
 if (command == "--ai-smoke") AiSmoke.Validate(builder.Configuration);
 if (command == "--connection-smoke")
@@ -23,6 +23,12 @@ using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(4));
 var ct = timeout.Token;
 switch (command)
 {
+    case "--publish-knowledge":
+        var publicationSessions = builder.Configuration.GetSection("Recovery:ConversationIds").Get<string[]>() ?? [];
+        if (publicationSessions.Length == 0) throw new ArgumentException("Recovery__ConversationIds required");
+        foreach (var sid in publicationSessions)
+            Console.WriteLine($"Recovered: {await host.Services.GetRequiredService<KnowledgeService>().RecoverAsync(tenant, sid, ct)}");
+        break;
     case "--ai-smoke":
         if (!await AiSmoke.RunAsync(builder.Configuration, host.Services.GetRequiredService<IdentityResolver>(),
             host.Services.GetRequiredService<IPrimaryRepository>(), host.Services.GetRequiredService<IDecisionProvider>(),

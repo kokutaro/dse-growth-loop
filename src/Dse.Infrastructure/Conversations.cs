@@ -18,7 +18,7 @@ public sealed class ConversationLocks
     }
 }
 
-public sealed class ConversationService(IPrimaryRepository repository, ConversationLocks locks, IdentityResolver identities, TimeProvider clock)
+public sealed class ConversationService(IPrimaryRepository repository, ConversationLocks locks, IdentityResolver identities, TimeProvider clock, AccessFence? accessFence = null)
 {
     public static string Hash(string value) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(value)));
     private static string HashParts(params string[] parts) => Hash(JsonSerializer.Serialize(parts));
@@ -94,6 +94,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
             var session = RecordJson.New("session", sid, challenge.Text("tenantId"), challenge.Text("ownerId"), challenge.Strings("scopeIds"), now);
             session["sessionId"] = sid; session["challengeId"] = challenge.Text("id");
             session["participantIds"] = RecordJson.Array([job.Value.Text("ownerPersonId")]);
+            session["originalParticipantIds"] = session["participantIds"]!.DeepClone();
             session["membershipVersion"] = 1; session["status"] = "open"; session["aiAssistance"] = "stopped"; session["lastSequence"] = 0;
             try { await repository.CommitAsync(partition, [RecordWrite.Create(session)], ct); }
             catch (StoreConflictException) { if (await repository.ReadAsync(partition, sid, ct) is null) throw; }
@@ -192,7 +193,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
     public Task<JsonObject> DecideAsync(ActorAccess actor, string sid, string key, string etag, ParticipationDecision input, CancellationToken ct)
     {
         if (input.Decision is not ("accepted" or "declined" or "left")) throw new ArgumentException("Invalid decision");
-        return Mutate(actor, sid, "decision", key, etag, new() { ["decision"] = input.Decision }, async session =>
+        return (accessFence ?? new AccessFence(repository)).RunAsync(actor.TenantId, token => Mutate(actor, sid, "decision", key, etag, new() { ["decision"] = input.Decision }, async session =>
         {
             var row = await repository.ReadAsync(Partition(actor, sid), ParticipationId(actor.PersonId), ct) ?? throw new DomainException(404, "NOT_FOUND");
             Match(row, etag); Open(session.Value);
@@ -202,12 +203,16 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
             if (input.Decision is "accepted" or "left")
             {
                 var participants = session.Value.Strings("participantIds").Where(x => x != actor.PersonId).ToList();
-                if (input.Decision == "accepted") participants.Add(actor.PersonId);
+                if (input.Decision == "accepted")
+                {
+                    participants.Add(actor.PersonId);
+                    session.Value["originalParticipantIds"] = RecordJson.Array(session.Value.Strings("originalParticipantIds").Concat(participants).Distinct());
+                }
                 session.Value["participantIds"] = RecordJson.Array(participants);
                 session.Value["membershipVersion"] = session.Value.Number("membershipVersion") + 1;
             }
             return ([RecordWrite.Replace(row.Value, row.ETag), RecordWrite.Replace(session.Value, session.ETag)], row.Value);
-        }, true, ct);
+        }, true, token), ct);
     }
     public Task<JsonObject> UpdateAsync(ActorAccess actor, string sid, string key, string etag, SessionUpdate input, CancellationToken ct)
     {
@@ -275,6 +280,15 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         {
             var sequence = after + offset;
             var message = await repository.ReadAsync(Partition(actor, sid), MessageId(sid, sequence), ct) ?? throw new DomainException(503, "HISTORY_INCOMPLETE");
+            if (message.Value.Text("authorType") == "ai" && message.Value["sourceSnapshots"] is JsonArray { Count: > 0 })
+            {
+                try { await new SourceGuard(repository).RequireSnapshotsAsync(actor, message.Value["sourceSnapshots"]!.Deserialize<SourceSnapshot[]>(ProjectionRules.Json)!, ct); }
+                catch (DomainException e) when (e.Code == "SOURCE_REVOKED")
+                {
+                    message.Value["body"] = "参照知識が撤回または変更されたため、この引用は表示できません。";
+                    message.Value["sourceSnapshots"] = new JsonArray(); message.Value["retrievalRunId"] = null; message.Value["citationState"] = "revoked";
+                }
+            }
             messages.Add(message.Value);
         }
         return (messages.ToArray(), end, end < last);

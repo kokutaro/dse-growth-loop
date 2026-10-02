@@ -279,7 +279,7 @@ function App() {
                     </div>)}
                     {candidate.entityType === "person" && <small>相談する人物ID：{candidate.entityId}</small>}
                     <p>{candidate.units[0].summary}</p>
-                    <small>{candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>
+                    <small>{candidate.units.some(u => u.confirmationState === "reviewed") ? "参加者確認・公開承認済み" : candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>
                     <div className="routes">
                       {candidate.routes.map((route) => (
                         <span key={route}>{routeNames[route] ?? route}</span>

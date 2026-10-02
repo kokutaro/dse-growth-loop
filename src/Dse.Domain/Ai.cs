@@ -7,6 +7,8 @@ public sealed record AiResult<T>(AiStatus Status, T? Value, string RunId, AiFail
 public sealed record AiContext(ActorAccess Actor, string JobId, string PromptVersion, string TaxonomyVersion,
     int DataVersion, EvidenceReference[] Evidence, SearchUnit[] Candidates, string? SessionId = null)
 {
+    public string[]? ConversationEvidenceIds { get; init; }
+    public int? KnowledgeVersion { get; init; }
     public int? EvidenceBytesPerCandidate { get; init; }
 }
 public sealed record ChoiceQuestion(string Id, string Instructions, IReadOnlyDictionary<string, string> Options);

@@ -19,7 +19,7 @@ public static partial class RecordJson
         ["classificationResult"] = "ClassificationResult", ["experienceSignal"] = "ExperienceSignal",
         ["searchUnit"] = "SearchUnit", ["challenge"] = "Challenge", ["participation"] = "Participation",
         ["session"] = "Session", ["message"] = "Message", ["outcome"] = "Outcome", ["feedback"] = "Feedback",
-        ["knowledge"] = "Knowledge", ["opportunity"] = "Opportunity", ["retrievalRun"] = "RetrievalRun",
+        ["knowledgeDraft"] = "KnowledgeDraft", ["knowledge"] = "Knowledge", ["opportunity"] = "Opportunity", ["retrievalRun"] = "RetrievalRun",
         ["job"] = "Job", ["aiRun"] = "AiRun"
     };
     public static string Text(this JsonObject value, string key) => value[key]?.GetValue<string>() ?? "";
@@ -72,7 +72,7 @@ public sealed record RecordPartition(string Container, string TenantId, string K
     public static RecordPartition For(JsonObject value)
     {
         var kind = value.Text("kind");
-        var conversation = kind is "session" or "message" or "outcome" or "feedback" || (kind == "participation" && value.Text("sessionId") != "") ||
+        var conversation = kind is "session" or "message" or "outcome" or "feedback" or "knowledgeDraft" || (kind == "participation" && value.Text("sessionId") != "") ||
             (kind is "job" or "aiRun" && value.Text("container") == "conversations");
         return conversation ? Conversation(value.Text("tenantId"), value.Text("sessionId")) : Catalog(value.Text("tenantId"));
     }

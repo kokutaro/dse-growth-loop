@@ -52,12 +52,12 @@ def validate_invariants(name, value, taxonomy):
     if name == "Message" and value["authorType"] == "ai":
         require(bool(value["sourceSnapshots"]) and value["retrievalRunId"] is not None,
                 "AI post requires sources and retrieval run")
-    if name in ("Knowledge", "Challenge"):
+    if name in ("Knowledge", "Challenge") and value.get("contractVersion") != "knowledge-v1":
         require((value["analysisConsent"] == "granted") == (value["consentedVersion"] is not None),
                 "analysis consent must bind an explicit version")
         if value["analysisConsent"] == "granted":
             require(value["consentedVersion"] == value["sourceVersion"], "analysis consent is stale")
-    if name == "Knowledge":
+    if name == "Knowledge" and value.get("contractVersion") != "knowledge-v1":
         if value["analysisConsent"] == "granted":
             approvals = value["analysisConfirmations"]
             require(value["status"] == "published" and len(approvals) == len(value["participantIds"]) and
@@ -77,6 +77,16 @@ def validate_invariants(name, value, taxonomy):
                     "confirmation version or scope differs")
         else:
             require(value["activeVersion"] is None, "unpublished knowledge cannot be active")
+    if name == "KnowledgeDraft":
+        sections = value["sections"]
+        require({s["field"] for s in sections} == {"challenge", "assumptions", "attempts", "result", "reuseConditions", "unresolvedPoints"}, "six distinct summary fields required")
+        require(all(set(s["evidenceIds"]) <= set(value["evidenceIds"]) and (s["basis"] == "unknown" or s["evidenceIds"]) for s in sections), "invented or missing summary evidence")
+        if value["status"] == "published":
+            require(value["activeVersion"] == value["sourceVersion"] and value["approvedBy"]["version"] == value["sourceVersion"], "publication requires current approval")
+            require(all(p in value["consents"] and value["consents"][p]["version"] == value["sourceVersion"] and value["consents"][p]["publication"] and set(value["consents"][p]["scopeIds"]) == set(value["scopeIds"]) for p in value["participantIds"]), "all original participants must confirm this scope and version")
+    if name == "Knowledge" and value.get("contractVersion") == "knowledge-v1":
+        require(value["approvedBy"] is not None and value["approvedBy"]["version"] == value["sourceVersion"], "catalog summary requires versioned approval")
+        require(not any(k in value for k in ("participantIds", "evidenceMessageIds", "consents", "messages")), "catalog must not leak conversation data")
     if name == "SearchResponse":
         require((value["status"] == "no_match") == (value["code"] == "NO_MATCH"),
                 "no match must be distinguishable from failure")
