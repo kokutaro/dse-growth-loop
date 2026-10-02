@@ -60,3 +60,7 @@ warm-2では、同じ低容量の固定Foundryデプロイへ短時間に続け�
 Issue #13の残り2Todoは、不要20例の暫定目安評価（0/20）と、fake/liveを区別したwarm/cold計測を確認した上でチェックする。ローカルの重複/権限外/撤回試験をライブで再実測したと主張しない。現在の固定ダミー4件に対する検証であり、全体の検索品質は #14 の評価範囲に残る。
 
 [停止確認](stopped.json)：API/Workerの全active revisionが0件、AI stopped=true/liveOptIn=false、Worker日次予算0、評価JobにRunningなし、ChatSmoke承認=false。停止用設定の新リビジョンもinactiveにした。元のQueueスケール（min0/max1・poll60/cooldown300）を保持。既存モデル・基盤・検証データは削除せず、ACRの一時ログイントークンファイルを除去した。
+
+## PR CIの初回失敗と再確認
+
+commit `b86a7ce` のpush CIは成功したが、PR CIの検索UI1件が503で失敗した。失敗トレースでは、初期 `/api/v1/upload-context` の認可読取（tenant AccessFenceを保持）と最初の `/api/search` が重なっていた。検索試験で初期認可応答の完了を待つよう同期し、検索6件がローカルで成功した。待機時間の引き延ばしや失敗の自動retryではなく、試験開始条件を揃えた。測定時のWorker/AI実装は変更していない。
