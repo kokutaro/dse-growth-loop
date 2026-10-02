@@ -1491,7 +1491,8 @@
             "fixture",
             "ai_unconfirmed",
             "self_corrected",
-            "self_confirmed"
+            "self_confirmed",
+            "reviewed"
           ]
         },
         "projectionVersion": {
@@ -1605,7 +1606,8 @@
             "notification_recovery",
             "sessionInitialization",
             "messageCommitted",
-            "enrichment"
+            "enrichment",
+            "knowledgePublication"
           ]
         },
         "aggregateId": {
@@ -1835,7 +1837,8 @@
             "structure",
             "decide",
             "rerank",
-            "summarize"
+            "summarize",
+            "knowledgeDraft"
           ]
         }
       },
@@ -2462,6 +2465,16 @@
         "lastSequence": {
           "type": "integer",
           "minimum": 0
+        },
+        "originalParticipantIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "uniqueItems": true,
+          "maxItems": 20,
+          "minItems": 1
         }
       },
       "required": [
@@ -2554,157 +2567,40 @@
       ]
     },
     "Outcome": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "const": "outcome"
+      "if": {
+        "properties": {
+          "contractVersion": {
+            "const": "knowledge-v1"
+          }
         },
-        "sessionId": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-        },
-        "resolution": {
-          "enum": [
-            "open",
-            "partially_resolved",
-            "resolved",
-            "unresolved_closed"
-          ]
-        },
-        "summary": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 8000,
-          "pattern": "\\S"
-        },
-        "evidenceMessageIds": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-          },
-          "minItems": 0,
-          "maxItems": 100,
-          "uniqueItems": true
-        }
+        "required": [
+          "contractVersion"
+        ]
       },
-      "required": [
-        "kind",
-        "sessionId",
-        "resolution",
-        "summary",
-        "evidenceMessageIds"
-      ],
-      "unevaluatedProperties": false,
-      "allOf": [
-        {
-          "$ref": "#/$defs/PersistedMetadata"
-        }
-      ]
+      "then": {
+        "$ref": "#/$defs/OutcomeV1"
+      },
+      "else": {
+        "$ref": "#/$defs/OutcomeLegacy"
+      }
     },
     "Feedback": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "const": "feedback"
-        },
-        "sessionId": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-        },
-        "targetId": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-        },
-        "feedbackType": {
-          "enum": [
-            "session",
-            "ai_message"
-          ]
-        },
-        "rating": {
-          "anyOf": [
-            {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 5
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "reaction": {
-          "anyOf": [
-            {
-              "enum": [
-                "helpful",
-                "unnecessary"
-              ]
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "comment": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000,
-              "pattern": "\\S"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      },
-      "required": [
-        "kind",
-        "sessionId",
-        "targetId",
-        "feedbackType",
-        "rating",
-        "reaction",
-        "comment"
-      ],
-      "allOf": [
-        {
-          "$ref": "#/$defs/PersistedMetadata"
-        },
-        {
-          "if": {
-            "properties": {
-              "feedbackType": {
-                "const": "session"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "reaction": {
-                "type": "null"
-              }
-            }
-          },
-          "else": {
-            "properties": {
-              "rating": {
-                "type": "null"
-              },
-              "reaction": {
-                "enum": [
-                  "helpful",
-                  "unnecessary"
-                ]
-              }
-            }
+      "if": {
+        "properties": {
+          "contractVersion": {
+            "const": "knowledge-v1"
           }
-        }
-      ],
-      "unevaluatedProperties": false
+        },
+        "required": [
+          "contractVersion"
+        ]
+      },
+      "then": {
+        "$ref": "#/$defs/FeedbackV1"
+      },
+      "else": {
+        "$ref": "#/$defs/FeedbackLegacy"
+      }
     },
     "ParticipantConfirmation": {
       "type": "object",
@@ -2741,132 +2637,22 @@
       "additionalProperties": false
     },
     "Knowledge": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "const": "knowledge"
+      "if": {
+        "properties": {
+          "contractVersion": {
+            "const": "knowledge-v1"
+          }
         },
-        "sessionId": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-        },
-        "title": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 300,
-          "pattern": "\\S"
-        },
-        "summary": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 8000,
-          "pattern": "\\S"
-        },
-        "status": {
-          "enum": [
-            "draft",
-            "review_requested",
-            "published",
-            "withdrawn"
-          ]
-        },
-        "publicationVersion": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "participantIds": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-          },
-          "minItems": 1,
-          "maxItems": 20,
-          "uniqueItems": true
-        },
-        "confirmations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ParticipantConfirmation"
-          },
-          "minItems": 0,
-          "maxItems": 20,
-          "uniqueItems": true
-        },
-        "approvedBy": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Actor"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "analysisConsent": {
-          "enum": [
-            "not_granted",
-            "granted",
-            "revoked"
-          ]
-        },
-        "consentedVersion": {
-          "anyOf": [
-            {
-              "type": "integer",
-              "minimum": 1
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "accessVersion": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "evidenceMessageIds": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-          },
-          "minItems": 1,
-          "maxItems": 100,
-          "uniqueItems": true
-        },
-        "analysisConfirmations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ParticipantConfirmation"
-          },
-          "minItems": 0,
-          "maxItems": 20,
-          "uniqueItems": true
-        }
+        "required": [
+          "contractVersion"
+        ]
       },
-      "required": [
-        "kind",
-        "sessionId",
-        "title",
-        "summary",
-        "status",
-        "publicationVersion",
-        "participantIds",
-        "confirmations",
-        "approvedBy",
-        "analysisConsent",
-        "consentedVersion",
-        "accessVersion",
-        "evidenceMessageIds",
-        "analysisConfirmations"
-      ],
-      "unevaluatedProperties": false,
-      "allOf": [
-        {
-          "$ref": "#/$defs/PersistedMetadata"
-        }
-      ]
+      "then": {
+        "$ref": "#/$defs/KnowledgeV1"
+      },
+      "else": {
+        "$ref": "#/$defs/KnowledgeLegacy"
+      }
     },
     "Opportunity": {
       "type": "object",
@@ -4235,6 +4021,731 @@
           "$ref": "#/$defs/PersistedMetadata"
         }
       ]
+    },
+    "OutcomeLegacy": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "outcome"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "resolution": {
+          "enum": [
+            "open",
+            "partially_resolved",
+            "resolved",
+            "unresolved_closed"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "evidenceMessageIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "resolution",
+        "summary",
+        "evidenceMessageIds"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "OutcomeV1": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "outcome"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "resolution": {
+          "enum": [
+            "resolved",
+            "partial",
+            "unresolved"
+          ]
+        },
+        "result": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "reportedBy": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "contractVersion": {
+          "const": "knowledge-v1"
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "resolution",
+        "result",
+        "reportedBy",
+        "contractVersion"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "FeedbackLegacy": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "feedback"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "targetId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "feedbackType": {
+          "enum": [
+            "session",
+            "ai_message"
+          ]
+        },
+        "rating": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reaction": {
+          "anyOf": [
+            {
+              "enum": [
+                "helpful",
+                "unnecessary"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "comment": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "targetId",
+        "feedbackType",
+        "rating",
+        "reaction",
+        "comment"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        },
+        {
+          "if": {
+            "properties": {
+              "feedbackType": {
+                "const": "session"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reaction": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "rating": {
+                "type": "null"
+              },
+              "reaction": {
+                "enum": [
+                  "helpful",
+                  "unnecessary"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "FeedbackV1": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "feedback"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "evaluatorId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "scaleVersion": {
+          "const": "usefulness-v1"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "comment": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contractVersion": {
+          "const": "knowledge-v1"
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "evaluatorId",
+        "scaleVersion",
+        "value",
+        "comment",
+        "contractVersion"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "KnowledgeLegacy": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "knowledge"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000,
+          "pattern": "\\S"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "review_requested",
+            "published",
+            "withdrawn"
+          ]
+        },
+        "publicationVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "confirmations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParticipantConfirmation"
+          },
+          "minItems": 0,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "approvedBy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Actor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analysisConsent": {
+          "enum": [
+            "not_granted",
+            "granted",
+            "revoked"
+          ]
+        },
+        "consentedVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "evidenceMessageIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "analysisConfirmations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParticipantConfirmation"
+          },
+          "minItems": 0,
+          "maxItems": 20,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "title",
+        "summary",
+        "status",
+        "publicationVersion",
+        "participantIds",
+        "confirmations",
+        "approvedBy",
+        "analysisConsent",
+        "consentedVersion",
+        "accessVersion",
+        "evidenceMessageIds",
+        "analysisConfirmations"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "KnowledgeV1": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "knowledge"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": {
+                "enum": [
+                  "challenge",
+                  "assumptions",
+                  "attempts",
+                  "result",
+                  "reuseConditions",
+                  "unresolvedPoints"
+                ]
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1500
+              },
+              "basis": {
+                "enum": [
+                  "participant_report",
+                  "inference",
+                  "unknown"
+                ]
+              }
+            },
+            "required": [
+              "field",
+              "text",
+              "basis"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "status": {
+          "enum": [
+            "published",
+            "withdrawn"
+          ]
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approvedBy": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "version",
+                "at"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        },
+        "contractVersion": {
+          "const": "knowledge-v1"
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "title",
+        "summary",
+        "sections",
+        "status",
+        "accessVersion",
+        "approvedBy",
+        "processingMode",
+        "contractVersion"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "KnowledgeDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "knowledgeDraft"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "review_requested",
+            "published",
+            "withdrawn"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": {
+                "enum": [
+                  "challenge",
+                  "assumptions",
+                  "attempts",
+                  "result",
+                  "reuseConditions",
+                  "unresolvedPoints"
+                ]
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1500
+              },
+              "basis": {
+                "enum": [
+                  "participant_report",
+                  "inference",
+                  "unknown"
+                ]
+              },
+              "evidenceIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                },
+                "uniqueItems": true,
+                "maxItems": 20
+              }
+            },
+            "required": [
+              "field",
+              "text",
+              "basis",
+              "evidenceIds"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "uniqueItems": true,
+          "maxItems": 100
+        },
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "uniqueItems": true,
+          "maxItems": 20,
+          "minItems": 1
+        },
+        "membershipVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "consents": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "scopeIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                },
+                "uniqueItems": true,
+                "maxItems": 100
+              },
+              "publication": {
+                "type": "boolean"
+              },
+              "analysis": {
+                "type": "boolean"
+              },
+              "principalId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "confirmedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "version",
+              "scopeIds",
+              "publication",
+              "analysis",
+              "principalId",
+              "confirmedAt"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approvedBy": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "version",
+                "at"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analysisConsent": {
+          "enum": [
+            "granted",
+            "not_granted"
+          ]
+        },
+        "draftRunId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        },
+        "contractVersion": {
+          "const": "knowledge-v1"
+        }
+      },
+      "required": [
+        "kind",
+        "sessionId",
+        "title",
+        "status",
+        "sections",
+        "evidenceIds",
+        "participantIds",
+        "consents",
+        "accessVersion",
+        "approvedBy",
+        "analysisConsent",
+        "draftRunId",
+        "processingMode",
+        "contractVersion"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
     }
   },
   "oneOf": [

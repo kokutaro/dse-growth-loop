@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR;
 
 public sealed class ConversationResult(ConversationService service, ActorAccess actor, string sid,
-    Func<CancellationToken, Task<IResult>> build) : IResult
+    Func<CancellationToken, Task<IResult>> build, bool fenced = false) : IResult
 {
-    public Task ExecuteAsync(HttpContext context) => service.LockedAsync(actor, sid, async () =>
+    public Task ExecuteAsync(HttpContext context)
     {
-        await (await build(context.RequestAborted)).ExecuteAsync(context);
-        return true;
-    }, context.RequestAborted);
+        Task<bool> Read(CancellationToken token) => service.LockedAsync(actor, sid, async () =>
+        { await (await build(token)).ExecuteAsync(context); return true; }, token);
+        return fenced ? context.RequestServices.GetRequiredService<AccessFence>().RunAsync(actor.TenantId, Read, context.RequestAborted) : Read(context.RequestAborted);
+    }
 }
 
 public sealed class ConversationHub(ConversationService service, IdentityResolver identities, IConfiguration config, IHostEnvironment environment) : Hub
@@ -103,7 +104,7 @@ public static class ConversationEndpoints
             var page = await service.MessagesAsync(actor, sid, start, size, ct);
             return Results.Ok(new { items = page.Items, lastSequence = page.Next,
                 continuationToken = tokens.Encode(actor, filter, page.More ? page.Next.ToString() : null) });
-        }));
+        }, true));
         api.MapPost("/sessions/{sid}/messages", async (string sid, MessageCreate input, HttpContext context,
             ConversationService service, IHubContext<ConversationHub> hub, CancellationToken ct) =>
         {
@@ -126,6 +127,6 @@ public static class ConversationEndpoints
     }
     private static string Key(HttpContext context) => context.Request.Headers["Idempotency-Key"].ToString();
     private static string Match(HttpContext context) => context.Request.Headers.IfMatch.ToString();
-    private static ConversationResult Read(ConversationService service, HttpContext context, string sid, Func<CancellationToken, Task<IResult>> build)
-        => new(service, RecordEndpoints.Actor(context), sid, build);
+    private static ConversationResult Read(ConversationService service, HttpContext context, string sid, Func<CancellationToken, Task<IResult>> build, bool fenced = false)
+        => new(service, RecordEndpoints.Actor(context), sid, build, fenced);
 }

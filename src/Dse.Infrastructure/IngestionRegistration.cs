@@ -19,6 +19,9 @@ public static class IngestionRegistration
             services.AddSingleton<IIngestionBlobs, AzureIngestionBlobs>(); services.AddSingleton<IIngestionQueue, AzureIngestionQueue>();
         }
         services.AddSingleton<ProfilePipeline>();
+        services.AddSingleton<KnowledgeService>();
+        services.AddSingleton<ConversationLocks>();
+        services.AddSingleton<ConversationService>();
         services.AddSingleton<DocumentUploads>(); services.AddSingleton<JobNotifications>();
         services.AddSingleton<IngestionRetry>(); services.AddSingleton<IngestionProcessor>();
         return services;

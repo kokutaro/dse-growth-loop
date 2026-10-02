@@ -103,3 +103,7 @@ PATCH Personは任意の`publicationState: published|withdrawn`を追加する�
 ## Issue #11の実装経路
 
 自然文の条件生成・編集、人物/事例別の一次取得、根拠引用による再順位付けと失敗時の表示を`/api/v2`で追加した。既存の手動`/api/search`を維持し、v1の自然文検索は計画契約として区別する。同期APIなので202/pollは使わない。版付き設定・候補上限・根拠予算・検索履歴と再現の範囲は[自然文検索手順](../natural-search.md)を参照。fixture試験はライブRecall/順位品質の合否ではなく、ライブ評価はIssue #14で行う。
+
+## Issue #12の実行API
+
+知識化は会話認可の下で`/api/v1/sessions/{sid}/knowledge`配下に実装する。操作別入力・ETag・承認版・復旧境界は[公開手順](../knowledge-publication.md)および[実行契約](openapi-knowledge-v1.json)を参照。先行契約にあるKnowledgeの単一catalog正本案は、私的`knowledgeDraft`正本と公開catalog投影へ具体化した。

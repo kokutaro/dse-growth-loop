@@ -31,7 +31,9 @@ public sealed class MockAiTransport : IAiTransport
         var input = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!;
         var evidenceIds = input["evidence"]!.AsArray().Select(x => x!["id"]!.GetValue<string>()).ToArray();
         JsonObject content;
-        if (operation == "rerank") content = new() { ["items"] = new JsonArray(input["candidates"]!.AsArray().Select(x => (JsonNode)new JsonObject
+        if (operation == "knowledgeDraft") content = new() { ["sections"] = new JsonArray(Dse.Domain.KnowledgeSummary.Fields.Select(f => (JsonNode)new JsonObject
+        { ["field"] = f, ["text"] = f == "attempts" ? input["evidence"]![0]!["text"]!.DeepClone() : "不明（ダミー下書き・要確認）", ["basis"] = f == "attempts" ? "participant_report" : "unknown", ["evidenceIds"] = Dse.Domain.RecordJson.Array(f == "attempts" ? evidenceIds.Take(1) : []) }).ToArray()) };
+        else if (operation == "rerank") content = new() { ["items"] = new JsonArray(input["candidates"]!.AsArray().Select(x => (JsonNode)new JsonObject
         {
             ["candidateId"] = x!["id"]!.DeepClone(), ["reason"] = input["groundingPolicy"] is null ? "Dummy fixture" : x["evidence"]![0]!["text"]!.DeepClone(),
             ["evidenceIds"] = new JsonArray(x["evidence"]!.AsArray().Select(e => e!["id"]!.DeepClone()).ToArray())

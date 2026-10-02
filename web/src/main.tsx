@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { initializeAuth, getToken, endAuth, type AppConfig } from "./auth";
 import "./style.css";
@@ -49,7 +49,14 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [sessionEnded, setSessionEnded] = useState(false);
   const [logoutError, setLogoutError] = useState(false);
+  const searchGeneration = useRef(0);
+  function invalidateKnowledge() {
+    searchGeneration.current++;
+    setResult(undefined); setBusy(false);
+    setStage("知識の公開状態が変わりました。検索結果を再取得してください。");
+  }
   async function logout() {
+    searchGeneration.current++;
     setSessionEnded(true);
     setResult(undefined);
     try { await endAuth(); }
@@ -91,6 +98,7 @@ function App() {
   }
   async function search(event: React.SubmitEvent) {
     event.preventDefault();
+    const generation = ++searchGeneration.current;
     setError("");
     setResult(undefined);
     setBusy(true);
@@ -110,6 +118,7 @@ function App() {
         headers,
         body: JSON.stringify(query.trim() ? { query, ...(conditionsReady ? { conditions } : {}) } : conditions),
       });
+      if (generation !== searchGeneration.current) return;
       if (response.status === 422) {
         setConditionsReady(true);
         throw new Error("自動分類を利用できません。手動で条件を編集して検索してください。");
@@ -123,6 +132,7 @@ function App() {
               : `検索に失敗しました（${response.status}）。時間をおいて再実行してください。`,
         );
       const value = await response.json();
+      if (generation !== searchGeneration.current) return;
       if (value.conditions) {
         setCategoryIds(value.conditions.categories.map((c: { categoryId: string }) => c.categoryId).join(" "));
         setSignalIds(value.conditions.signalIds.join(" "));
@@ -132,10 +142,11 @@ function App() {
       setResult(value.primary ? { ...value.primary, assessments: value.assessments, runId: value.runId } : value);
       setStage("完了・表示前の権限確認済み");
     } catch (e) {
+      if (generation !== searchGeneration.current) return;
       setError(e instanceof Error ? e.message : "検索に失敗しました。");
       setStage("検索失敗");
     } finally {
-      setBusy(false);
+      if (generation === searchGeneration.current) setBusy(false);
     }
   }
   return (
@@ -279,7 +290,7 @@ function App() {
                     </div>)}
                     {candidate.entityType === "person" && <small>相談する人物ID：{candidate.entityId}</small>}
                     <p>{candidate.units[0].summary}</p>
-                    <small>{candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>
+                    <small>{candidate.units.some(u => u.confirmationState === "reviewed") ? "参加者確認・公開承認済み" : candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>
                     <div className="routes">
                       {candidate.routes.map((route) => (
                         <span key={route}>{routeNames[route] ?? route}</span>
@@ -308,7 +319,7 @@ function App() {
             )}
           </section>
         </div>
-        {config && <Conversations config={config} candidates={result?.candidates ?? []} />}
+        {config && <Conversations config={config} candidates={result?.candidates ?? []} onKnowledgeChanged={invalidateKnowledge} />}
         {config && <Documents config={config} />}
         {config && <Profiles config={config} />}
       </main>}

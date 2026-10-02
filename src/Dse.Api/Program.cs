@@ -17,8 +17,6 @@ if (!demo && (!Guid.TryParse(tenantId, out _) || !Guid.TryParse(clientId, out _)
 
 builder.Services.AddCatalog(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddIngestion(builder.Configuration);
-builder.Services.AddSingleton<ConversationLocks>();
-builder.Services.AddSingleton<ConversationService>();
 // Do not export URLs from the hub transport; tokens are header-only and query tokens are rejected.
 builder.Services.Configure<OpenTelemetry.Instrumentation.AspNetCore.AspNetCoreTraceInstrumentationOptions>(o =>
     o.Filter = context => !context.Request.Path.StartsWithSegments("/api/hubs"));
@@ -127,6 +125,7 @@ var records = app.MapGroup("/api/v1").RequireRateLimiting("records");
 records.MapRecords();
 records.MapDocuments();
 records.MapConversations(demo);
+records.MapKnowledge();
 var naturalSearch = app.MapGroup("/api/v2").RequireRateLimiting("search");
 naturalSearch.MapNaturalSearch();
 var chatHub = app.MapHub<ConversationHub>("/api/hubs/conversations", options =>

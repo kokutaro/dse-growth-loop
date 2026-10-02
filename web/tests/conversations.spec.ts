@@ -93,3 +93,19 @@ test("通知なしでも履歴をページング回復し、画面の開き直�
   await expect(page.getByRole("list", { name: "保存済みの会話" }).locator("li")).toHaveCount(1);
   await expect(page.getByTestId("chat-connection")).toContainText("接続済み", { timeout: 15000 });
 });
+
+test("表示済みAI引用は新着なしでも履歴を再照合して撤回表示へ更新する（応答fixture）", async ({ page }) => {
+  let withdrawn = false;
+  await page.route("**/api/v1/sessions/*/messages?**", route => {
+    const after = new URL(route.request().url()).searchParams.get("afterSequence");
+    return route.fulfill({ json: { items: after === "0" ? [{ id: "fixture-ai-message", sessionId: "fixture", ownerId: "ai", sequence: 1,
+      authorType: "ai", body: withdrawn ? "参照知識が撤回されたため表示できません。" : "公開済み知識の引用", createdAt: "2026-10-02T00:00:00Z" }] : [], lastSequence: 1, continuationToken: null } });
+  });
+  await create(page, `引用再照合 ${Date.now()}`);
+  const history = page.getByRole("list", { name: "保存済みの会話" });
+  await expect(history).toContainText("公開済み知識の引用");
+  withdrawn = true;
+  await page.getByRole("button", { name: "会話を更新", exact: true }).click();
+  await expect(history).toContainText("参照知識が撤回されたため表示できません。");
+  await expect(history).not.toContainText("公開済み知識の引用");
+});
