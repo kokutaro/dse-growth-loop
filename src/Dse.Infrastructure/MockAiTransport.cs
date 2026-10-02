@@ -33,7 +33,7 @@ public sealed class MockAiTransport : IAiTransport
         JsonObject content;
         if (operation == "rerank") content = new() { ["items"] = new JsonArray(input["candidates"]!.AsArray().Select(x => (JsonNode)new JsonObject
         {
-            ["candidateId"] = x!["id"]!.DeepClone(), ["reason"] = "Dummy fixture",
+            ["candidateId"] = x!["id"]!.DeepClone(), ["reason"] = input["groundingPolicy"] is null ? "Dummy fixture" : x["evidence"]![0]!["text"]!.DeepClone(),
             ["evidenceIds"] = new JsonArray(x["evidence"]!.AsArray().Select(e => e!["id"]!.DeepClone()).ToArray())
         }).ToArray()) };
         else

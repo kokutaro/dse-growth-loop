@@ -99,3 +99,7 @@ Issue #7のメッセージは`afterSequence`＋署名付きtokenでページン�
 ### Issue #10 のプロフィール・管理表示
 
 PATCH Personは任意の`publicationState: published|withdrawn`を追加する（省略時は維持）。撤回はactiveVersionをNULLにし、通常メンバーへのGET Personと検索利用を拒否する。本人・operatorは読取可能。`GET /api/v1/documents/{documentId}/pipeline`は所有者またはoperatorに抽出・AI段階、Job、AiRunの根拠・版・使用量を返す。詳細と初期入力上限は[プロフィール処理](../profile-pipeline.md)を参照。
+
+## Issue #11の実装経路
+
+自然文の条件生成・編集、人物/事例別の一次取得、根拠引用による再順位付けと失敗時の表示を`/api/v2`で追加した。既存の手動`/api/search`を維持し、v1の自然文検索は計画契約として区別する。同期APIなので202/pollは使わない。版付き設定・候補上限・根拠予算・検索履歴と再現の範囲は[自然文検索手順](../natural-search.md)を参照。fixture試験はライブRecall/順位品質の合否ではなく、ライブ評価はIssue #14で行う。

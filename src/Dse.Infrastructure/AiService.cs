@@ -57,13 +57,26 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         List<SourceSnapshot> snapshots = [];
         var candidateEvidence = new Dictionary<string, HashSet<string>>();
         var candidates = new JsonArray();
+        List<EvidenceCut> cuts = [];
         foreach (var unit in context.Candidates)
         {
             var validated = await guard.RequireAsync(actor, unit, ct);
             snapshots.AddRange(validated.Snapshots);
-            if (!candidateEvidence.TryAdd(unit.Id, validated.Unit.SourceRefs.Select(x => x.Id).ToHashSet())) throw new ArgumentException("Duplicate candidate");
+            var bounded = EvidenceBudget.Trim(validated.Unit.SourceRefs, context.EvidenceBytesPerCandidate, unit.Id, cuts);
+            if (context.PromptVersion == "search-rerank-v1")
+                foreach (var source in validated.Unit.SourceRefs)
+                {
+                    SearchInput.RequireSafe(source.Text);
+                    SearchInput.RequireSafe(source.DocumentTitle);
+                    SearchInput.RequireSafe(source.Location);
+                }
+            if (!candidateEvidence.TryAdd(unit.Id, bounded.Select(x => x.Id).ToHashSet())) throw new ArgumentException("Duplicate candidate");
             // Use authoritative evidence text, never the projection's cached summary.
-            candidates.Add(new JsonObject { ["id"] = unit.Id, ["evidence"] = AiCodecs.Node(validated.Unit.SourceRefs) });
+            var fragment = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), unit.UnitId, ct))?.Value;
+            var role = fragment?.Text("role");
+            if (context.PromptVersion == "search-rerank-v1" && role is not null) SearchInput.RequireSafe(role);
+            candidates.Add(new JsonObject { ["id"] = unit.Id, ["evidence"] = AiCodecs.Node(bounded),
+                ["role"] = string.IsNullOrWhiteSpace(role) ? null : role, ["period"] = fragment?["period"]?.DeepClone() });
         }
         var evidence = new JsonArray();
         foreach (var reference in context.Evidence.Distinct())
@@ -77,6 +90,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var evidenceIds = context.Evidence.Select(x => x.Id).Concat(candidateEvidence.Values.SelectMany(x => x)).ToHashSet();
         if (evidenceIds.Count > 100 || snapshots.Distinct().Count() > 100) throw new ArgumentException("Too many AI sources");
         var input = new JsonObject { ["text"] = text, ["evidence"] = evidence, ["candidates"] = candidates };
+        if (context.PromptVersion == "search-rerank-v1") input["groundingPolicy"] = "Reason must be an exact contiguous quotation from one cited evidence text. Omit unsuitable candidates; an empty items array means all unsuitable. Do not infer missing role or dates.";
         var hashMaterial = new JsonObject { ["input"] = input.DeepClone(), ["choices"] = AiCodecs.Node(choices), ["nouls"] = AiCodecs.Node(nouls),
             ["snapshots"] = AiCodecs.Node(snapshots.Distinct().ToArray()), ["operation"] = operation, ["prompt"] = context.PromptVersion,
             ["taxonomy"] = context.TaxonomyVersion, ["dataVersion"] = context.DataVersion };
@@ -99,6 +113,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             ["providerRequestIds"] = new JsonArray()
         };
         run["trace"] = trace;
+        trace["evidenceCuts"] = AiCodecs.Node(cuts);
+        trace["evidenceBytesPerCandidate"] = context.EvidenceBytesPerCandidate;
         await repository.CommitAsync(partition, [RecordWrite.Create(run)], ct);
         async Task Save(CancellationToken token)
         {

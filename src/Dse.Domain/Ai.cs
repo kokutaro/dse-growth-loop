@@ -5,7 +5,10 @@ public enum AiFailure { Stopped, Budget, Busy, InputLimit, OutputLimit, Configur
 public enum NoulState { Supported, Unknown, NotEvaluated }
 public sealed record AiResult<T>(AiStatus Status, T? Value, string RunId, AiFailure? Failure, bool Cached = false);
 public sealed record AiContext(ActorAccess Actor, string JobId, string PromptVersion, string TaxonomyVersion,
-    int DataVersion, EvidenceReference[] Evidence, SearchUnit[] Candidates, string? SessionId = null);
+    int DataVersion, EvidenceReference[] Evidence, SearchUnit[] Candidates, string? SessionId = null)
+{
+    public int? EvidenceBytesPerCandidate { get; init; }
+}
 public sealed record ChoiceQuestion(string Id, string Instructions, IReadOnlyDictionary<string, string> Options);
 public sealed record NoulQuestion(string Id, string Instructions, bool HasEvidence);
 public sealed record ChoiceAnswer(string Choice, IReadOnlyDictionary<string, double> Probabilities, double Confidence);

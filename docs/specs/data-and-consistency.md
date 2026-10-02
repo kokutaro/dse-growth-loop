@@ -90,3 +90,7 @@ Issue #7の保存先・冪等性・再接続の実装詳細は[会話手順](../
 ### Issue #10 の同一パーティション公開
 
 現在のプロフィール処理は新経験・分類・全SearchUnit・親の有効版・完了Jobを単一catalogトランザクションで公開する。部分版は保存しない。本文・根拠・断片数上限内で完結し、上限超過は保留する。PersonのdocumentHeadsが同名/同種資料の最新受付を指定し、古い原本の通知を排除する。本人訂正を保持し、競合候補はpendingExtractionへ保存する。[操作・復旧](../profile-pipeline.md)を参照。
+
+## 検索監査の互換性
+
+Issue #11のRetrievalRunは`contractVersion=search-v2`で判別する。共通保存メタデータ`schemaVersion=1.0`は維持し、RetrievalRun契約は従来の計画形状と新監査形状のoneOfとして保存・検証する。自然文本文を保存せず、変換済み条件・各集約の独立した版・経路/統合/上限ID・実測RU・切詰め・AiRun参照を保存する。異なる集約の版の最大値をデータセット版として扱わない。[v2検索契約](openapi-search-v2.json)と[自然文検索](../natural-search.md)を参照。

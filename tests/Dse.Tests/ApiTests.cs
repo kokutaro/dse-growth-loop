@@ -141,6 +141,9 @@ public class ApiTests
     }
     [Theory]
     [InlineData("/api/v1/documents", "POST")]
+    [InlineData("/api/v2/search/conditions", "POST")]
+    [InlineData("/api/v2/search", "POST")]
+    [InlineData("/api/v2/retrieval-runs/unknown", "GET")]
     [InlineData("/api/v1/documents/unknown/original", "GET")]
     [InlineData("/api/v1/jobs/unknown/retry", "POST")]
     public async Task Ingestion_routes_require_authentication(string path, string method)

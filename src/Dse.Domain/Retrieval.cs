@@ -42,7 +42,10 @@ public sealed record SearchRequest(CategoryKey[] Categories, string[] SignalIds,
 public sealed record Candidate(string EntityId, string EntityType, string Title, string[] Routes, SearchUnit[] Units,
     int CategoryMatches, double MaxProbability, int TermMatches);
 public sealed record SearchResult(Candidate[] Candidates, int MatchedUnits, int BeforeLimit,
-    string RuleVersion = "retrieval-v1", string RerankingStatus = "not_configured");
+    string RuleVersion = "retrieval-v1", string RerankingStatus = "not_configured")
+{
+    [JsonIgnore] public Candidate[] MergedCandidates { get; init; } = [];
+}
 
 public static class Retriever
 {
@@ -52,9 +55,10 @@ public static class Retriever
         "引継ぎ" or "引継" => "引き継ぎ", "software" => "ソフトウェア", var term => term
     };
 
-    public static SearchResult Search(IEnumerable<SearchUnit> source, SearchRequest request, SearchAccess access)
+    public static SearchResult Search(IEnumerable<SearchUnit> source, SearchRequest request, SearchAccess access, RetrievalRules? rules = null)
     {
         request.Validate();
+        rules?.Validate();
         var terms = request.Terms.Select(Normalize).ToHashSet(StringComparer.Ordinal);
         var hits = source.Where(u => u.TenantId == access.TenantId && u.ScopeIds.Intersect(access.ScopeIds).Any()
                 && u.Status == "active" && u.Available && u.TaxonomyVersion == TaxonomyVersion)
@@ -82,9 +86,15 @@ public static class Retriever
             .ThenByDescending(c => c.TermMatches).ThenBy(c => c.EntityId, StringComparer.Ordinal)
             .ThenBy(c => c.EntityType, StringComparer.Ordinal).ToArray();
         // 上限の約20%（最低1件）をNoul/語一致のみの救済候補へ予約する。
-        var rescued = candidates.Where(c => !c.Routes.Contains("probability"))
-            .Take(Math.Max(1, request.Limit / 5)).ToArray();
-        var selected = candidates.Except(rescued).Take(request.Limit - rescued.Length).Concat(rescued).ToHashSet();
-        return new(candidates.Where(selected.Contains).ToArray(), hits.Length, candidates.Length);
+        Candidate[] Select(Candidate[] values, int limit, int reserve)
+        {
+            var rescued = values.Where(c => !c.Routes.Contains("probability")).Take(Math.Min(limit, reserve)).ToArray();
+            var selected = values.Except(rescued).Take(limit - rescued.Length).Concat(rescued).ToHashSet();
+            return values.Where(selected.Contains).ToArray();
+        }
+        var chosen = rules is null ? Select(candidates, request.Limit, Math.Max(1, request.Limit / 5)) :
+            Select(candidates.Where(c => c.EntityType == "person").ToArray(), Math.Min(request.Limit, rules.PersonLimit), rules.RescueSlots)
+                .Concat(Select(candidates.Where(c => c.EntityType != "person").ToArray(), Math.Min(request.Limit, rules.CaseLimit), rules.RescueSlots)).ToArray();
+        return new(chosen, hits.Length, candidates.Length, rules?.Version ?? "retrieval-v1") { MergedCandidates = candidates };
     }
 }

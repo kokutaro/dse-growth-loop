@@ -127,6 +127,8 @@ var records = app.MapGroup("/api/v1").RequireRateLimiting("records");
 records.MapRecords();
 records.MapDocuments();
 records.MapConversations(demo);
+var naturalSearch = app.MapGroup("/api/v2").RequireRateLimiting("search");
+naturalSearch.MapNaturalSearch();
 var chatHub = app.MapHub<ConversationHub>("/api/hubs/conversations", options =>
 {
     options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
@@ -138,6 +140,7 @@ if (!demo)
     chatHub.RequireAuthorization("DemoUsers");
     search.RequireAuthorization("DemoUsers");
     records.RequireAuthorization("DemoUsers");
+    naturalSearch.RequireAuthorization("DemoUsers");
 }
 app.MapFallback("/api/{**path}", () => Results.NotFound());
 app.MapFallbackToFile("index.html");

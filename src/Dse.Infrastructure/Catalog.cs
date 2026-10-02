@@ -127,6 +127,7 @@ public static class InfrastructureRegistration
         services.AddSingleton<DocumentAcceptance>();
         services.AddSingleton<ProjectionActivation>();
         services.AddSingleton<SourceUseService>();
+        services.AddSingleton<NaturalSearchService>();
         services.AddAi(configuration);
         if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
         {
