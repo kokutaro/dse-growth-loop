@@ -4938,6 +4938,49 @@
             "enum": [
               "skipped"
             ]
+          },
+          "assistanceDecision": {
+            "type": "object",
+            "properties": {
+              "runId": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "BudgetStopped",
+                  "NotEvaluated"
+                ]
+              },
+              "state": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "yesProbability": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              },
+              "threshold": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "runId",
+              "status",
+              "state",
+              "yesProbability",
+              "threshold"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [

@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-10-02T16:35:53.553781+00:00",
+  "revisions": [
+    {
+      "name": "dse-worker--issue13-keda",
+      "replicas": 1,
+      "state": "RunningAtMaxScale"
+    }
+  ]
+}

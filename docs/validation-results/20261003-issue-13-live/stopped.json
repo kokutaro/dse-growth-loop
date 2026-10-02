@@ -1,0 +1,48 @@
+{
+  "dse-api": {
+    "stopped": "true",
+    "liveOptIn": "false",
+    "activeRevisions": [],
+    "scale": {
+      "minReplicas": 0,
+      "maxReplicas": 1,
+      "pollingInterval": 30,
+      "cooldownPeriod": 300
+    }
+  },
+  "dse-worker": {
+    "stopped": "true",
+    "liveOptIn": "false",
+    "activeRevisions": [],
+    "scale": {
+      "minReplicas": 0,
+      "maxReplicas": 1,
+      "pollingInterval": 60,
+      "cooldownPeriod": 300
+    }
+  },
+  "executions": [
+    {
+      "name": "dse-validation-chat13-w2ruyb8",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-chat13-1zsrvwu",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-chat13-pjec308",
+      "status": "Failed"
+    },
+    {
+      "name": "dse-validation-chat13-cjhdsve",
+      "status": "Failed"
+    }
+  ],
+  "jobGuard": {
+    "AiUsage__Stopped": "true",
+    "AiUsage__LiveOptIn": "false",
+    "ChatSmoke__Approved": "false"
+  },
+  "observedAt": "2026-10-02T16:42:59.439488+00:00"
+}

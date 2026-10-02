@@ -1,0 +1,109 @@
+{
+  "version": "issue13-chat-smoke-v1",
+  "negativeCases": [
+    {
+      "id": "negative-01",
+      "body": "おはようございます。今日はよろしくお願いします。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-02",
+      "body": "ありがとうございます。助かりました。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-03",
+      "body": "昼食は何にしましょうか。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-04",
+      "body": "本日の会議は15時からです。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-05",
+      "body": "資料を受け取りました。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-06",
+      "body": "今日はよい天気ですね。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-07",
+      "body": "引き継ぎの課題は解決済みです。追加の支援や事例は不要です。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-08",
+      "body": "担当変更の対策は実施済みで、確認漏れもなくなりました。相談はありません。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-09",
+      "body": "改善報告を提出しました。これは完了の連絡だけです。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-10",
+      "body": "引き継ぎ会議の予定は明日10時です。事例の提示は不要です。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-11",
+      "body": "困っていた件は自分で解決しました。追加提案は不要です。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-12",
+      "body": "事例資料のファイル名はhandover.pdfです。受領の連絡だけです。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-13",
+      "body": "相談の予約をキャンセルしました。相談内容はありません。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-14",
+      "body": "課題という単語の文字数は2文字です。業務相談ではありません。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-15",
+      "body": "helpという文字列のテストです。業務の問題はありません。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-16",
+      "body": "引き継ぎチェックリストを読み終えました。疑問や困り事はありません。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-17",
+      "body": "解決済みの案件を閉じました。事例は必要ありません。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-18",
+      "body": "改善会議は中止です。これは予定変更のお知らせだけです。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-19",
+      "body": "対策済みで良好に運用できています。新たな課題はありません。",
+      "expectedPost": false
+    },
+    {
+      "id": "negative-20",
+      "body": "『どうすればよいか』は例文です。実際の相談ではなく、支援不要です。",
+      "expectedPost": false
+    }
+  ],
+  "positiveControl": {
+    "body": "営業案件の担当変更時に引き継ぎの確認漏れが起きて困っています。窓口と未完了事項を明確にする改善事例を教えてください。",
+    "expectedCaseId": "demo-knowledge-01"
+  }
+}

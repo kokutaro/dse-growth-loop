@@ -110,6 +110,10 @@ public class ChatAssistanceTests
     {
         var r = await Setup(); r.Ai.Unknown = unknown; r.Ai.Useful = unknown; var e = await Send(r); r.Time.Now += TimeSpan.FromSeconds(6);
         Assert.Equal("skipped", await r.Assist.ProcessAsync(e, default)); Assert.Equal(0, r.Ai.Rankings);
+        var job = (await r.Repo.ReadAsync(RecordPartition.Conversation("demo", r.Sid), e.EventId, default))!;
+        Assert.Equal(unknown ? .9 : .01, job.Value["assistanceDecision"]!["yesProbability"]!.GetValue<double>());
+        Assert.Equal(.7, job.Value["assistanceDecision"]!["threshold"]!.GetValue<double>());
+        Assert.DoesNotContain("引き継ぎ", job.Value["assistanceDecision"]!.ToJsonString());
     }
     [Fact]
     public async Task Withdrawal_before_input_or_before_commit_prevents_publication()

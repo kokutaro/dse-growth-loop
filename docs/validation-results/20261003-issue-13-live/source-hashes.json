@@ -1,0 +1,5 @@
+{
+  "src/Dse.Infrastructure/ChatSmoke.cs": "e47c071edcc9f53f8be4dda9710c904ee8b930f0de9fd6ea0aa5dcd2e04511f1",
+  "src/Dse.Infrastructure/ChatAssistanceService.cs": "f3acffd7241a8ebfc83fc4ca984fba15b89bccde5d2642b98daaf3f980dc9073",
+  "src/Dse.Worker/Program.cs": "4d61922622a05cf7b94f3e8a531dd3d5c9f6330f6b6fda5a0e68ed126f7b93be"
+}
