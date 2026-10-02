@@ -299,3 +299,5 @@ footer {
 .profile-experience textarea { display: block; width: 100%; min-height: 6rem; padding: .75rem; font: inherit; border: 1px solid #c6d8cf; border-radius: .4rem; box-sizing: border-box; }
 .profiles p, .documents p { overflow-wrap: anywhere; }
 .profiles button + button, .documents button + button { margin-top: .5rem; }
+
+textarea { width: 100%; min-height: 100px; padding: 10px; font: inherit; border: 1px solid #a8b3af; border-radius: 8px; box-sizing: border-box; }

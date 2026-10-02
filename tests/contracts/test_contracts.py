@@ -78,6 +78,7 @@ class ContractsTests(unittest.TestCase):
         for name, schema in self.schema["$defs"].items():
             expected = json.loads(json.dumps(schema).replace("#/$defs/", "#/components/schemas/"))
             self.assertEqual(api["components"]["schemas"][name], expected)
+
         for path, methods in api["paths"].items():
             for method, operation in methods.items():
                 with self.subTest(path=path, method=method):
@@ -89,6 +90,16 @@ class ContractsTests(unittest.TestCase):
                         self.assertIn("#/components/parameters/IdempotencyKey", refs)
                         if operation["x-requires-current-version"]:
                             self.assertIn("#/components/parameters/IfMatch", refs)
+
+    def test_natural_search_v2_contract_and_generated_audit(self):
+        api = read("openapi-search-v2.json")
+        validate(api)
+        path = ROOT / "tests/Dse.Tests/TestResults/natural-search-contract.json"
+        if not path.exists():
+            self.skipTest("Run NaturalSearchTests first")
+        self.validator("RetrievalRun").validate(json.loads(path.read_text()))
+        response = json.loads(path.with_name("natural-search-response.json").read_text())
+        Draft202012Validator({"$ref": "#/components/schemas/Response", "components": api["components"]}).validate(response)
 
     def test_transition_contract_rejects_forbidden_actors_and_edges(self):
         transitions = read("transitions.json")

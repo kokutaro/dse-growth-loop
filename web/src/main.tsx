@@ -24,6 +24,8 @@ type SearchResult = {
   matchedUnits: number;
   beforeLimit: number;
   rerankingStatus: string;
+  assessments?: { entityId: string; entityType: string; reason: string; evidenceIds: string[]; missingInformation: string[] }[];
+  runId?: string;
 };
 const routeNames: Record<string, string> = {
   probability: "分類一致",
@@ -33,6 +35,12 @@ const routeNames: Record<string, string> = {
 
 function App() {
   const [config, setConfig] = useState<AppConfig>();
+  const [conditionsReady, setConditionsReady] = useState(false);
+  const [query, setQuery] = useState("");
+  const [categoryIds, setCategoryIds] = useState("operations");
+  const [signalIds, setSignalIds] = useState("handover");
+  const [conversionStatus, setConversionStatus] = useState("");
+  const [stage, setStage] = useState("");
   const [category, setCategory] = useState("operations");
   const [terms, setTerms] = useState("引き継ぎ");
   const [noul, setNoul] = useState(true);
@@ -61,11 +69,32 @@ function App() {
         ),
       );
   }, []);
+  async function convert() {
+    if (!config) return;
+    setBusy(true); setError(""); setResult(undefined); setStage("質問の分類中");
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (config.mode === "Azure") headers.Authorization = `Bearer ${await getToken(config)}`;
+      const response = await fetch("/api/v2/search/conditions", { method: "POST", headers, body: JSON.stringify({ query }) });
+      if (!response.ok) throw new Error("条件の生成に失敗しました。機密ログイン情報を除き、手動条件を確認してください。");
+      const value = await response.json();
+      setConditionsReady(true);
+      if (value.conditions) {
+        setCategoryIds(value.conditions.categories.map((c: { categoryId: string }) => c.categoryId).join(" "));
+        setSignalIds(value.conditions.signalIds.join(" "));
+        setTerms(value.conditions.terms.join(" "));
+        setConversionStatus("条件を生成しました。複数分野・技術要素・経験条件を編集できます。");
+      } else setConversionStatus("分類できませんでした。手動で条件を入力してください（" + value.status + "）。");
+      setStage("条件の確認待ち");
+    } catch (e) { setError(e instanceof Error ? e.message : "条件の生成に失敗しました。"); setStage("条件生成失敗"); }
+    finally { setBusy(false); }
+  }
   async function search(event: React.SubmitEvent) {
     event.preventDefault();
     setError("");
     setResult(undefined);
     setBusy(true);
+    setStage(query.trim() ? "一次取得・根拠確認・再順位付け中" : "一次取得中");
     try {
       if (!config) throw new Error("設定を読み込み中です。");
       const headers: Record<string, string> = {
@@ -73,31 +102,38 @@ function App() {
       };
       if (config.mode === "Azure")
         headers.Authorization = `Bearer ${await getToken(config)}`;
-      const response = await fetch("/api/search", {
+      const conditions = { categories: query.trim() ? categoryIds.split(/[\s、,]+/u).filter(Boolean).map(categoryId => ({ axis: "domain", categoryId })) : category ? [{ axis: "domain", categoryId: category }] : [],
+        signalIds: query.trim() ? signalIds.split(/[\s、,]+/u).filter(Boolean) : noul ? ["handover"] : [],
+        terms: terms.split(/[\s、,]+/u).filter(Boolean), probabilityThreshold: 0.2, noulThreshold: 0.5, limit: 20 };
+      const response = await fetch(query.trim() ? "/api/v2/search" : "/api/search", {
         method: "POST",
         headers,
-        body: JSON.stringify({
-          categories: category
-            ? [{ axis: "domain", categoryId: category }]
-            : [],
-          signalIds: noul ? ["handover"] : [],
-          terms: terms.split(/[\s、,]+/u).filter(Boolean),
-          probabilityThreshold: 0.2,
-          noulThreshold: 0.5,
-          limit: 20,
-        }),
+        body: JSON.stringify(query.trim() ? { query, ...(conditionsReady ? { conditions } : {}) } : conditions),
       });
+      if (response.status === 422) {
+        setConditionsReady(true);
+        throw new Error("自動分類を利用できません。手動で条件を編集して検索してください。");
+      }
       if (!response.ok)
         throw new Error(
           response.status === 403
             ? "このデモへの参加権限がありません。"
             : response.status === 400
-              ? "分野・検索語・経験のいずれかを指定してください。"
+              ? "分野・検索語・経験の条件を確認し、機密ログイン情報を除いてください。"
               : `検索に失敗しました（${response.status}）。時間をおいて再実行してください。`,
         );
-      setResult(await response.json());
+      const value = await response.json();
+      if (value.conditions) {
+        setCategoryIds(value.conditions.categories.map((c: { categoryId: string }) => c.categoryId).join(" "));
+        setSignalIds(value.conditions.signalIds.join(" "));
+        setTerms(value.conditions.terms.join(" "));
+        setConditionsReady(true);
+      }
+      setResult(value.primary ? { ...value.primary, assessments: value.assessments, runId: value.runId } : value);
+      setStage("完了・表示前の権限確認済み");
     } catch (e) {
       setError(e instanceof Error ? e.message : "検索に失敗しました。");
+      setStage("検索失敗");
     } finally {
       setBusy(false);
     }
@@ -138,6 +174,19 @@ function App() {
             <p className="eyebrow">01 / 相談先を探す</p>
             <h2 id="search-title">探したい経験は？</h2>
             <form onSubmit={search}>
+              <label htmlFor="query">自然文の課題</label>
+              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
+              <small>ダミーの課題を入力してください。パスワード・キーなどのログイン情報は入力できません。</small>
+              <button type="button" disabled={busy || !config || !query.trim()} onClick={() => { void convert(); }}>自然文から条件を生成</button>
+              {conversionStatus && <p role="status">{conversionStatus}</p>}
+              {query.trim() && <>
+                <label htmlFor="category-ids">複数分野・技術要素の分類ID</label>
+                <input id="category-ids" disabled={busy} value={categoryIds} onChange={e => { setCategoryIds(e.target.value); setConditionsReady(true); }} />
+                <small>operations sales manufacturing software mechanical（スペース区切り）</small>
+                <label htmlFor="signal-ids">補助経験条件ID</label>
+                <input id="signal-ids" disabled={busy} value={signalIds} onChange={e => { setSignalIds(e.target.value); setConditionsReady(true); }} />
+              </>}
+              {!query.trim() && <>
               <label htmlFor="category">分野</label>
               <select
                 id="category"
@@ -151,32 +200,34 @@ function App() {
                 <option value="software">ソフトウェア</option>
                 <option value="mechanical">機械設計</option>
               </select>
+              </>}
               <label htmlFor="terms">検索語</label>
               <input
                 id="terms"
                 value={terms}
                 maxLength={500}
-                onChange={(e) => setTerms(e.target.value)}
+                onChange={(e) => { setTerms(e.target.value); setConditionsReady(true); }}
                 placeholder="例：引き継ぎ 標準化"
               />
               <small>複数の語はスペースで区切ってください。</small>
-              <label className="checkbox">
+              {!query.trim() && <label className="checkbox">
                 <input
                   type="checkbox"
                   checked={noul}
                   onChange={(e) => setNoul(e.target.checked)}
                 />
                 引き継ぎ経験の補助判定を加える
-              </label>
+              </label>}
               <button disabled={busy || !config}>
                 {busy ? "検索中…" : "相談候補を探す"}
               </button>
             </form>
             <p className="note">
-              現段階は手動の条件指定による一次検索です。人物・経験・分類値はすべて架空の検証用データです。
+              自然文は条件を確認・編集して検索できます。人物・経験・分類値はすべて架空の検証用データです。
             </p>
           </section>
           <section aria-labelledby="results-title" aria-live="polite">
+            {stage && <p role="status">処理段階：{stage}</p>}
             <div className="results-heading">
               <h2 id="results-title">相談候補と参考事例</h2>
               {result && <span>{result.candidates.length}件</span>}
@@ -200,9 +251,10 @@ function App() {
             {result && (
               <>
                 <p className="notice">
-                  <strong>再順位付け未実施</strong>
+                  <strong>{result.rerankingStatus === "succeeded" ? "根拠に基づく再順位付け済み" : result.rerankingStatus === "all_unsuitable" ? "全件不適合" : "再順位付け未実施"}</strong>
                   <br />
-                  AIによる適合性の評価前です。表示順は能力の順位ではありません。
+                  表示順は能力の順位ではありません。根拠と不足情報を確認してください。
+                  {result.runId && <small>検索履歴：{result.runId} ／ {result.rerankingStatus}</small>}
                 </p>
                 {result.candidates.length === 0 && (
                   <p>条件に合う候補はありません。</p>
@@ -221,6 +273,10 @@ function App() {
                       <span className="fixture">架空データ</span>
                     </div>
                     <h3>{candidate.title}</h3>
+                    {result.assessments?.filter(a => a.entityId === candidate.entityId && a.entityType === candidate.entityType).map(a => <div key={a.entityId}>
+                      <p>適合理由（根拠引用）：{a.reason}</p>
+                      <small>不足情報：{a.missingInformation.join(" ")}</small>
+                    </div>)}
                     {candidate.entityType === "person" && <small>相談する人物ID：{candidate.entityId}</small>}
                     <p>{candidate.units[0].summary}</p>
                     <small>{candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>

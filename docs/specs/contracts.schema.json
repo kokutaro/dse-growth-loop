@@ -369,6 +369,46 @@
           "minLength": 1,
           "maxLength": 80,
           "pattern": "\\S"
+        },
+        "evidenceCuts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "candidateId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "evidenceId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "originalBytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sentBytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "candidateId",
+              "evidenceId",
+              "originalBytes",
+              "sentBytes"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 5000
+        },
+        "evidenceBytesPerCandidate": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 64,
+          "maximum": 8000
         }
       },
       "required": [
@@ -1817,108 +1857,439 @@
       ]
     },
     "RetrievalRun": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "const": "retrievalRun"
-        },
-        "query": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 2000,
-          "pattern": "\\S"
-        },
-        "ruleVersion": {
-          "const": "retrieval-v1"
-        },
-        "taxonomyVersion": {
-          "enum": [
-            "taxonomy-v1"
-          ]
-        },
-        "dictionaryVersion": {
-          "const": "normalization-v1"
-        },
-        "dataVersion": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "candidateIds": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-          },
-          "minItems": 0,
-          "maxItems": 100,
-          "uniqueItems": true
-        },
-        "evidenceIds": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-          },
-          "minItems": 0,
-          "maxItems": 100,
-          "uniqueItems": true
-        },
-        "matchedUnits": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "requestUnits": {
-          "type": "number",
-          "minimum": 0
-        },
-        "status": {
-          "enum": [
-            "complete",
-            "no_match",
-            "degraded",
-            "budget_stopped",
-            "failed"
-          ]
-        },
-        "rerankingStatus": {
-          "enum": [
-            "completed",
-            "not_configured",
-            "failed",
-            "budget_stopped"
-          ]
-        },
-        "aiRunId": {
-          "anyOf": [
-            {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "retrievalRun"
             },
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "\\S"
+            },
+            "ruleVersion": {
+              "const": "retrieval-v1"
+            },
+            "taxonomyVersion": {
+              "enum": [
+                "taxonomy-v1"
+              ]
+            },
+            "dictionaryVersion": {
+              "const": "normalization-v1"
+            },
+            "dataVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "candidateIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "minItems": 0,
+              "maxItems": 100,
+              "uniqueItems": true
+            },
+            "evidenceIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "minItems": 0,
+              "maxItems": 100,
+              "uniqueItems": true
+            },
+            "matchedUnits": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "requestUnits": {
+              "type": "number",
+              "minimum": 0
+            },
+            "status": {
+              "enum": [
+                "complete",
+                "no_match",
+                "degraded",
+                "budget_stopped",
+                "failed"
+              ]
+            },
+            "rerankingStatus": {
+              "enum": [
+                "completed",
+                "not_configured",
+                "failed",
+                "budget_stopped"
+              ]
+            },
+            "aiRunId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "query",
+            "ruleVersion",
+            "taxonomyVersion",
+            "dictionaryVersion",
+            "dataVersion",
+            "candidateIds",
+            "evidenceIds",
+            "matchedUnits",
+            "requestUnits",
+            "status",
+            "rerankingStatus",
+            "aiRunId"
+          ],
+          "unevaluatedProperties": false,
+          "allOf": [
             {
-              "type": "null"
+              "$ref": "#/$defs/PersistedMetadata"
             }
           ]
-        }
-      },
-      "required": [
-        "kind",
-        "query",
-        "ruleVersion",
-        "taxonomyVersion",
-        "dictionaryVersion",
-        "dataVersion",
-        "candidateIds",
-        "evidenceIds",
-        "matchedUnits",
-        "requestUnits",
-        "status",
-        "rerankingStatus",
-        "aiRunId"
-      ],
-      "unevaluatedProperties": false,
-      "allOf": [
+        },
         {
-          "$ref": "#/$defs/PersistedMetadata"
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "retrievalRun"
+            },
+            "contractVersion": {
+              "const": "search-v2"
+            },
+            "rules": {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string"
+                },
+                "questionTopCategories": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "questionThreshold": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "documentThreshold": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "noulThreshold": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "rescueSlots": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "personLimit": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "caseLimit": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "evidenceBytesPerCandidate": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "version",
+                "questionTopCategories",
+                "questionThreshold",
+                "documentThreshold",
+                "noulThreshold",
+                "rescueSlots",
+                "personLimit",
+                "caseLimit",
+                "evidenceBytesPerCandidate"
+              ],
+              "additionalProperties": false
+            },
+            "conditions": {
+              "type": "object",
+              "properties": {
+                "categories": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "axis": {
+                        "type": "string"
+                      },
+                      "categoryId": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "axis",
+                      "categoryId"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 10
+                },
+                "signalIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 10
+                },
+                "terms": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 20
+                },
+                "probabilityThreshold": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "noulThreshold": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "categories",
+                "signalIds",
+                "terms",
+                "probabilityThreshold",
+                "noulThreshold",
+                "limit"
+              ],
+              "additionalProperties": false
+            },
+            "taxonomyVersion": {
+              "const": "taxonomy-v1"
+            },
+            "normalizationVersion": {
+              "const": "normalization-v1"
+            },
+            "dataVersions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "entityId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "sourceVersion": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "accessVersion": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "projectionVersion": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "id",
+                  "entityId",
+                  "sourceVersion",
+                  "accessVersion",
+                  "projectionVersion"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 5000
+            },
+            "routes": {
+              "type": "object",
+              "properties": {
+                "probability": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "maxItems": 5000
+                },
+                "noul": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "maxItems": 5000
+                },
+                "terms": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "maxItems": 5000
+                }
+              },
+              "required": [
+                "probability",
+                "noul",
+                "terms"
+              ],
+              "additionalProperties": false
+            },
+            "matchedUnits": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mergedBeforeLimit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "beforeMergeIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "maxItems": 5000
+            },
+            "mergedIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "maxItems": 5000
+            },
+            "selectedIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "maxItems": 100
+            },
+            "rerankInputIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "maxItems": 100
+            },
+            "evidenceCuts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "candidateId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "evidenceId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "originalBytes": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "sentBytes": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "candidateId",
+                  "evidenceId",
+                  "originalBytes",
+                  "sentBytes"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 5000
+            },
+            "requestUnits": {
+              "type": "number",
+              "minimum": 0
+            },
+            "ruMeasured": {
+              "type": "boolean"
+            },
+            "durationMs": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "rerankingStatus": {
+              "type": "string"
+            },
+            "aiRunId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "contractVersion",
+            "rules",
+            "conditions",
+            "taxonomyVersion",
+            "normalizationVersion",
+            "dataVersions",
+            "routes",
+            "matchedUnits",
+            "mergedBeforeLimit",
+            "beforeMergeIds",
+            "mergedIds",
+            "selectedIds",
+            "rerankInputIds",
+            "evidenceCuts",
+            "requestUnits",
+            "ruMeasured",
+            "durationMs",
+            "rerankingStatus",
+            "aiRunId"
+          ],
+          "unevaluatedProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/PersistedMetadata"
+            }
+          ]
         }
       ]
     },
