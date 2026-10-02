@@ -174,4 +174,4 @@ AIスモークは既存basicの2呼出しを維持し、connectionsの3件承認
 
 [解決評価・六項目要約・版指定承認・撤回](knowledge-publication.md)をAPI/UIに追加した。Outcomeと評価者ごとのFeedback（1〜5/null、尺度版、任意コメント）、私的要約正本、版/scope付き公開・分析同意、publisher承認、公開Jobをconversationsに保存する。既存のJev分類とSearchUnitで承認要約だけをcatalogへ投影し、新規質問の事例検索へ再利用する。公開撤回・編集・参加者変更は正本照合で検索/AI/引用から遮断する。旧会話の退会者も確認対象から落とさず、DB間の確定前/後障害から冪等に回復する。
 
-[今回のTodo照合・検証記録](validation-results/20261002-issue-12-local/results.md)：.NET256件、Playwright19件、契約16件、設定/Bicep41件、評価fixture4件、認証4件が成功。全体行カバレッジ89.76%、KnowledgeService98.19%、API95.83%。ソリューション/UIビルド、JSON・相対リンク・差分検査成功。既存ASPIRE010とVite bundleサイズ警告あり。実AI応答は固定HTTP/Mock検証で、ライブ品質・クラウド展開・有料呼出しは未実行。公開責任者・尺度・分析方針の運用承認は[決定ログ](specs/decisions.md)に暫定として残す。
+[今回のTodo照合・検証記録](validation-results/20261002-issue-12-local/results.md)：.NET256件、Playwright20件、契約16件、設定/Bicep41件、評価fixture4件、認証4件が成功。全体行カバレッジ89.76%、KnowledgeService98.19%、API95.83%。ソリューション/UIビルド、JSON・相対リンク・差分検査成功。既存ASPIRE010とVite bundleサイズ警告あり。実AI応答は固定HTTP/Mock検証で、ライブ品質・クラウド展開・有料呼出しは未実行。公開責任者・尺度・分析方針の運用承認は[決定ログ](specs/decisions.md)に暫定として残す。

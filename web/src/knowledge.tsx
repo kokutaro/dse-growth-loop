@@ -7,7 +7,7 @@ type State = { etag: string; sessionEtag: string; status: string; sourceVersion:
   outcome?: { resolution: string; result: string }; feedback: { evaluatorId: string; value: number | null }[] };
 const names: Record<string, string> = { challenge: '課題の要約', assumptions: '前提', attempts: '試したこと', result: '結果の要約', reuseConditions: '再利用条件', unresolvedPoints: '未解決点' };
 
-export function Knowledge({ api, sid, owner, sessionEtag }: { api: Api; sid: string; owner: boolean; sessionEtag: string }) {
+export function Knowledge({ api, sid, owner, sessionEtag, onChanged }: { onChanged?: () => void; api: Api; sid: string; owner: boolean; sessionEtag: string }) {
   const path = `/sessions/${sid}/knowledge`;
   const [state, setState] = useState<State>(), [sections, setSections] = useState<Section[]>([]);
   const [resolution, setResolution] = useState('unresolved'), [result, setResult] = useState(''), [value, setValue] = useState(''), [comment, setComment] = useState('');
@@ -24,6 +24,7 @@ export function Knowledge({ api, sid, owner, sessionEtag }: { api: Api; sid: str
     try {
       const current = state.status === 'absent' ? await api<State>(path) : state;
       await api(`${operation === 'recover' ? `/sessions/${sid}/knowledge-recovery` : `${path}/${operation}`}`, 'POST', body, crypto.randomUUID(), operation === 'draft' ? current.sessionEtag : current.etag);
+      if (['outcome', 'edit', 'consent', 'approve', 'withdraw'].includes(operation)) onChanged?.();
       await load(true);
     } catch (e) { setError(`保存・操作が完了していません。状態を再読込して再試行してください。${e instanceof Error ? e.message : ''}`); }
     finally { setBusy(false); }

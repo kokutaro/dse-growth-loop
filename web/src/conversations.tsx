@@ -5,12 +5,12 @@ import { getToken, type AppConfig } from "./auth";
 
 type Row = { id: string; etag: string; sessionId: string; title: string; summary: string; ownerId: string;
   personId: string; status: string; aiAssistance: string; membershipVersion: number; lastSequence: number;
-  sequence: number; clientMessageId: string; body: string; createdAt: string; participantIds: string[] };
+  sequence: number; clientMessageId: string; body: string; createdAt: string; participantIds: string[]; authorType?: string };
 type Page = { items: Row[]; continuationToken: string | null; lastSequence?: number };
 type Api = <T>(path: string, method?: string, body?: unknown, key?: string, etag?: string) => Promise<T>;
 class ApiError extends Error { constructor(public status: number, public code: string) { super(code); } }
 
-export function Conversations({ config, candidates }: { config: AppConfig; candidates: { entityId: string; title: string; entityType: string }[] }) {
+export function Conversations({ config, candidates, onKnowledgeChanged }: { onKnowledgeChanged?: () => void; config: AppConfig; candidates: { entityId: string; title: string; entityType: string }[] }) {
   const [person, setPerson] = useState("demo-person-01");
   return <section className="panel conversations" aria-labelledby="conversations-title">
     <h2 id="conversations-title">課題と相談チャット</h2>
@@ -20,10 +20,10 @@ export function Conversations({ config, candidates }: { config: AppConfig; candi
         {["01", "02", "03"].map(id => <option key={id} value={`demo-person-${id}`}>架空人物 {id}</option>)}
       </select>
     </label>}
-    <Workspace key={person} config={config} person={person} candidates={candidates} />
+    <Workspace key={person} config={config} person={person} candidates={candidates} onKnowledgeChanged={onKnowledgeChanged} />
   </section>;
 }
-function Workspace({ config, person, candidates }: { config: AppConfig; person: string; candidates: { entityId: string; title: string; entityType: string }[] }) {
+function Workspace({ config, person, candidates, onKnowledgeChanged }: { onKnowledgeChanged?: () => void; config: AppConfig; person: string; candidates: { entityId: string; title: string; entityType: string }[] }) {
   const [principal, setPrincipal] = useState("");
   const [rows, setRows] = useState<Row[]>([]), [selected, setSelected] = useState<Row>();
   const [title, setTitle] = useState(""), [summary, setSummary] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
@@ -67,11 +67,11 @@ function Workspace({ config, person, candidates }: { config: AppConfig; person: 
     {error && <p role="alert">{error}</p>}
     <ul className="challenge-list">{rows.map(row => <li key={row.id}><button type="button" onClick={() => setSelected(row)}>{row.title}</button></li>)}</ul>
     {selected && principal && <><button type="button" onClick={() => setSelected(undefined)}>相談画面を閉じる</button>
-      <Chat key={selected.sessionId} challenge={selected} principal={principal} api={api} config={config} person={person} candidates={candidates} /></>}
+      <Chat key={selected.sessionId} challenge={selected} principal={principal} api={api} config={config} person={person} candidates={candidates} onKnowledgeChanged={onKnowledgeChanged} /></>}
   </>;
 }
 type Pending = { clientMessageId: string; body: string; key: string; state: "saving" | "save_failed" };
-function Chat({ challenge, principal, api, config, person, candidates }: { challenge: Row; principal: string; api: Api; config: AppConfig; person: string; candidates: { entityId: string; title: string; entityType: string }[] }) {
+function Chat({ challenge, principal, api, config, person, candidates, onKnowledgeChanged }: { onKnowledgeChanged?: () => void; challenge: Row; principal: string; api: Api; config: AppConfig; person: string; candidates: { entityId: string; title: string; entityType: string }[] }) {
   const sid = challenge.sessionId, path = `/sessions/${sid}`;
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   const [session, setSession] = useState<Row>(), [participations, setParticipations] = useState<Row[]>([]);
@@ -82,6 +82,7 @@ function Chat({ challenge, principal, api, config, person, candidates }: { chall
     try { return (JSON.parse(sessionStorage.getItem(storageKey) ?? "[]") as Pending[]).map(x => ({ ...x, state: "save_failed" })); } catch { return []; }
   });
   useEffect(() => { sessionStorage.setItem(storageKey, JSON.stringify(pending)); }, [pending, storageKey]);
+  const hasAiCitations = useRef(false);
   const last = useRef(0), generation = useRef(0), resync = useRef(false);
   const syncing = useRef<Promise<void> | undefined>(undefined);
   const hub = useRef<ReturnType<HubConnectionBuilder["build"]>>(undefined);
@@ -99,10 +100,11 @@ function Chat({ challenge, principal, api, config, person, candidates }: { chall
         try { await hub.current.invoke("Join", sid); }
         catch { setConnection("通知接続を回復中・履歴はDBから取得します"); }
       }
-      const after = last.current; let token: string | null = null;
+      const after = hasAiCitations.current ? 0 : last.current; let token: string | null = null;
       do {
         const page: Page = await api(`${path}/messages?afterSequence=${after}&pageSize=100${token ? `&continuationToken=${encodeURIComponent(token)}` : ""}`);
         if (run !== generation.current) return;
+        if (page.items.some(message => message.authorType === "ai")) hasAiCitations.current = true;
         setMessages(previous => [...new Map([...previous, ...page.items].map(x => [x.sequence, x])).values()].sort((a, b) => a.sequence - b.sequence));
         last.current = page.lastSequence ?? last.current;
         // Only DB history acknowledges pending sends, never a hint or local storage.
@@ -112,7 +114,7 @@ function Chat({ challenge, principal, api, config, person, candidates }: { chall
     } catch (e) {
       if (run !== generation.current) return;
       if (e instanceof ApiError && [401, 403, 404].includes(e.status)) {
-        setSession(undefined); setMessages([]); last.current = 0;
+        setSession(undefined); setMessages([]); last.current = 0; hasAiCitations.current = false;
         setConnection("参加承諾待ち、または閲覧権限がありません");
       } else setConnection("履歴を取得できません。再接続時に再取得します");
     }
@@ -200,7 +202,7 @@ function Chat({ challenge, principal, api, config, person, candidates }: { chall
       {!owner && own?.status === "accepted" && <button disabled={busy} onClick={() => void act(() => api(`${path}/participation`, "PATCH", { decision: "left" }, crypto.randomUUID(), own.etag))}>退会する</button>}
       {owner && session.status === "open" && <button disabled={busy} onClick={() => void act(() => api(path, "PATCH", { aiAssistance: "stopped", status: "closed" }, crypto.randomUUID(), session.etag))}>相談を終了</button>}
       <button onClick={() => setKnowledgeOpen(open => !open)}>{knowledgeOpen ? "評価と知識化を閉じる" : "評価と知識化を開く"}</button>
-      {knowledgeOpen && <Knowledge api={api} sid={sid} owner={owner} sessionEtag={session.etag} />}
+      {knowledgeOpen && <Knowledge api={api} sid={sid} owner={owner} sessionEtag={session.etag} onChanged={() => { onKnowledgeChanged?.(); void sync(); }} />}
       {session.status === "closed" && <p>この相談は終了しました。</p>}
     </>}
     <ul aria-label="未保存のメッセージ">{pending.map(item => <li key={item.clientMessageId}><p className="message-body">{item.body}</p>

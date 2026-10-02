@@ -10,7 +10,7 @@
 | 行カバレッジ | 全体89.76%、KnowledgeService 98.19%、KnowledgeEndpoints 95.83%、KnowledgeSummary 100%。`TestResults/075bff55-2451-46b4-a0b9-f007bb3d7e92/coverage.cobertura.xml`から集計 |
 | ソリューションビルド | 成功。既存ASPIRE010警告1件 |
 | React型検査・Vite本番ビルド | 成功。500 kB超のbundleサイズ警告あり |
-| Playwright Chromium | 19件成功。知識化1・会話4・検索6・プロフィール3・Office取込4・ログアウト1。スイートごとにAPIを起動してレート枠とデータを分離 |
+| Playwright Chromium | 20件成功。知識化1・会話5・検索6・プロフィール3・Office取込4・ログアウト1。スイートごとにAPIを起動してレート枠とデータを分離 |
 | Python契約 | 16件成功。保存した知識・評価・分類・投影・Jobの実出力をSchema検証 |
 | 設定・Bicepテスト | 41件成功。Bicepローカルコンパイルを含む。外部展開なし |
 | 評価fixture / 認証単体 | 各4件成功 |
@@ -27,7 +27,7 @@
 | 3 編集・レビュー・版指定承認 | `edit/request-review/approve`、版・ETag照合、編集時の全同意消去、新規質問へのE2E |
 | 4 公開先・同意分離 | 元参加者全員の版/scope確認。会話認可、公開同意、分析同意を別保存。旧会話の退会者もParticipation履歴から復元。publisherは暫定条件に従う |
 | 5 分類・投影・事例検索 | 既存Jev/正規化/スキル/分類体系/SourceGuardを利用。catalogへ承認要約・分類・SearchUnitを原子的保存。生チャット・私的根拠ID・参加者IDは検索対象へコピーしない |
-| 6 撤回の即時遮断 | `PublishedAsync`とSourceGuardがconversationsを再照合。検索、AI入力、キャッシュと引用表示を遮断。保存済みAI引用は次回履歴取得で置換し、物理削除を待たない |
+| 6 撤回の即時遮断 | `PublishedAsync`とSourceGuardがconversationsを再照合。検索、AI入力、キャッシュと引用表示を遮断。保存済みAI引用は次回履歴取得で置換し、物理削除を待たない。AI引用が表示中の会話は新着なしでも再照合し、公開更新時の画面内検索キャッシュと遅れて到着した旧検索応答も失効させる |
 | 7 冪等なDB間Job | 承認と公開Jobを同じ会話パーティションで確定。決定論的知識/版ID、catalog確定後のJob完了再開。DB停止と確定後応答消失の両方を障害注入で確認 |
 | 8 未解決要約の分析許可 | 全員分析同意と公開承認版の再照合。未解決/低評価/未評価を対象から除外しない。`AnalyzeAndConsumeAsync`が後続分析の利用境界 |
 | 9 解決から事例再検索E2E | `web/tests/knowledge.spec.ts`とAPI結合試験成功 |

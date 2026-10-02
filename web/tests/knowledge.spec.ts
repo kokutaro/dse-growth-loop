@@ -34,8 +34,26 @@ test('resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy 
   expect(search.ok()).toBeTruthy();
   const result = await search.json();
   expect(result.primary.candidates.some((x: { entityType: string; title: string }) => x.entityType === 'knowledge' && x.title === '相談からの知識')).toBeTruthy();
-  await panel.getByRole('button', { name: '公開を撤回', exact: true }).click();
-  await expect(panel.getByTestId('knowledge-status')).toContainText('withdrawn');
+  await page.getByLabel('自然文の課題').fill('ソフトウェア 引き継ぎ');
+  await page.getByRole('button', { name: '相談候補を探す', exact: true }).click();
+  await expect(page.getByText('相談からの知識', { exact: true })).toBeVisible();
+  let started!: () => void, release!: () => void;
+  const fetching = new Promise<void>(resolve => { started = resolve; });
+  const delayed = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/v2/search', async route => {
+    const response = await route.fetch(); started(); await delayed; await route.fulfill({ response });
+  });
+  await page.getByRole('button', { name: '相談候補を探す', exact: true }).click();
+  await fetching;
+  const delayedResponse = page.waitForResponse(response => response.url().endsWith('/api/v2/search'));
+  try {
+    await panel.getByRole('button', { name: '公開を撤回', exact: true }).click();
+    await expect(panel.getByTestId('knowledge-status')).toContainText('withdrawn');
+  } finally { release(); }
+  await (await delayedResponse).finished();
+  await page.evaluate(() => new Promise(requestAnimationFrame));
+  await expect(page.getByText('処理段階：知識の公開状態が変わりました。検索結果を再取得してください。', { exact: true })).toBeVisible();
+  await expect(page.getByText('相談からの知識', { exact: true })).toHaveCount(0);
   const after = await request.post('http://127.0.0.1:5180/api/search', { data: { categories: [], signalIds: [], terms: ['ソフトウェア'] } });
   const body = await after.json();
   expect(body.candidates.some((x: { title: string }) => x.title === '相談からの知識')).toBeFalsy();
