@@ -267,6 +267,42 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         catch (Exception e) when (e is not ArgumentException && e is not StoreConflictException && (e is not DomainException de || de.Status >= 500))
         { throw new DomainException(503, "SAVE_FAILED"); }
     }
+    public Task<JsonObject> FeedbackAsync(ActorAccess actor, string sid, string messageId, string key, string etag, MessageFeedback input, CancellationToken ct)
+    {
+        Id(messageId);
+        if (input.Decision is not ("helpful" or "unnecessary")) throw new ArgumentException("Invalid feedback");
+        return Mutate(actor, sid, "ai-feedback", key, etag, new() { ["messageId"] = messageId, ["decision"] = input.Decision }, async session =>
+        {
+            Match(session, etag);
+            var partition = Partition(actor, sid);
+            var message = await repository.ReadAsync(partition, messageId, ct);
+            if (message?.Value.Text("authorType") != "ai" || message.Value.Text("messageKind") != "ai_case") throw new DomainException(404, "NOT_FOUND");
+            var id = "feedback-" + HashParts(actor.PrincipalId, messageId);
+            var existing = await repository.ReadAsync(partition, id, ct);
+            var row = existing?.Value.Copy() ?? RecordJson.New("feedback", id, actor.TenantId, actor.PrincipalId, session.Value.Strings("scopeIds"), clock.GetUtcNow());
+            row["sessionId"] = sid; row["messageId"] = messageId; row["targetId"] = messageId; row["authorPersonId"] = actor.PersonId;
+            row["contractVersion"] = "chat-assistance-v1"; row["feedbackType"] = "ai_case"; row["decision"] = input.Decision; row["status"] = "saved"; Touch(row); Touch(session.Value);
+            return ([new RecordWrite(row, existing?.ETag), RecordWrite.Replace(session.Value, session.ETag)], row);
+        }, false, ct);
+    }
+    public async Task<JsonObject> CaseSourcesAsync(ActorAccess actor, string sid, string messageId, CancellationToken ct)
+    {
+        await SessionAsync(actor, sid, ct); Id(messageId);
+        var message = await repository.ReadAsync(Partition(actor, sid), messageId, ct);
+        if (message?.Value.Text("authorType") != "ai" || message.Value.Text("messageKind") != "ai_case") throw new DomainException(404, "NOT_FOUND");
+        var guard = new SourceGuard(repository);
+        var snapshots = message.Value["sourceSnapshots"]!.Deserialize<SourceSnapshot[]>(ProjectionRules.Json)!;
+        await guard.RequireSnapshotsAsync(actor, snapshots, ct);
+        var knowledge = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), message.Value.Text("caseId"), ct))!.Value;
+        var citations = new JsonArray();
+        foreach (var reference in message.Value["citations"]!.Deserialize<EvidenceReference[]>(ProjectionRules.Json)!)
+        {
+            var evidence = await guard.EvidenceAsync(actor, reference, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
+            citations.Add(new JsonObject { ["id"] = reference.Id, ["sourceVersion"] = reference.SourceVersion, ["title"] = evidence.Document.Text("title"),
+                ["location"] = evidence.Span["location"]!.DeepClone(), ["text"] = evidence.Span.Text("text") });
+        }
+        return new JsonObject { ["id"] = knowledge.Text("id"), ["title"] = knowledge.Text("title"), ["summary"] = knowledge.Text("summary"), ["activeVersion"] = knowledge.Number("activeVersion"), ["citations"] = citations };
+    }
     // Sequence is an immutable zero-padded ID; point reads avoid cross-partition scans and opaque Cosmos cursor gaps.
     public async Task<(JsonObject[] Items, int Next, bool More)> MessagesAsync(ActorAccess actor, string sid, int after, int size, CancellationToken ct)
     {
@@ -287,6 +323,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
                 {
                     message.Value["body"] = "参照知識が撤回または変更されたため、この引用は表示できません。";
                     message.Value["sourceSnapshots"] = new JsonArray(); message.Value["retrievalRunId"] = null; message.Value["citationState"] = "revoked";
+                    message.Value["citations"] = new JsonArray(); message.Value["retrievalReason"] = null; message.Value["caseId"] = null;
                 }
             }
             messages.Add(message.Value);

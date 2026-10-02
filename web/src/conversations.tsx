@@ -5,7 +5,7 @@ import { getToken, type AppConfig } from "./auth";
 
 type Row = { id: string; etag: string; sessionId: string; title: string; summary: string; ownerId: string;
   personId: string; status: string; aiAssistance: string; membershipVersion: number; lastSequence: number;
-  sequence: number; clientMessageId: string; body: string; createdAt: string; participantIds: string[]; authorType?: string };
+  sequence: number; clientMessageId: string; body: string; createdAt: string; participantIds: string[]; authorType?: string; messageKind?: string; citationState?: string; retrievalReason?: string; aiRunId?: string };
 type Page = { items: Row[]; continuationToken: string | null; lastSequence?: number };
 type Api = <T>(path: string, method?: string, body?: unknown, key?: string, etag?: string) => Promise<T>;
 class ApiError extends Error { constructor(public status: number, public code: string) { super(code); } }
@@ -191,9 +191,10 @@ function Chat({ challenge, principal, api, config, person, candidates, onKnowled
       </form>}
       <label className="checkbox"><input type="checkbox" checked={session.aiAssistance === "enabled"} disabled={busy || session.status !== "open"}
         onChange={e => void act(() => api(path, "PATCH", { aiAssistance: e.target.checked ? "enabled" : "stopped", status: session.status }, crypto.randomUUID(), session.etag))} />自動支援 ON</label>
-      <p className="note">AI投稿は今後実装します。この設定は保存され、人同士の会話には影響しません。</p>
+      <p className="note">共有可能な事例を自動提示します。不要な場合は停止できます。ONにしても会話全体の外部公開は許可されません。</p>
       <ol aria-label="保存済みの会話">{messages.map(message => <li key={message.sequence}>
         <small>#{message.sequence} · {message.ownerId} · {new Date(message.createdAt).toLocaleString()} · 保存済み</small><p className="message-body">{message.body}</p>
+        {message.messageKind === "ai_case" && <CaseAssistance message={message} api={api} path={path} busy={busy} session={session} act={act} />}
       </li>)}</ol>
       <form onSubmit={e => { e.preventDefault(); if (!text.trim()) return; const item: Pending = { clientMessageId: crypto.randomUUID(), key: crypto.randomUUID(), body: text, state: "saving" }; setPending(previous => [...previous, item]); setText(""); void send(item); }}>
         <label>メッセージ<textarea maxLength={8000} required value={text} onChange={e => setText(e.target.value)} disabled={session.status !== "open"} /></label>
@@ -210,4 +211,28 @@ function Chat({ challenge, principal, api, config, person, candidates, onKnowled
       {item.state === "save_failed" && <button onClick={() => void send(item)}>同じIDで再送</button>}</li>)}</ul>
     <p className="note">接続中はAPIの稼働時間に含まれます。相談画面を閉じると切断します。未保存の再送待ちはこのタブに保持されます。</p>
   </article>;
+}
+
+function CaseAssistance({ message, api, path, busy, session, act }: { message: Row; api: Api; path: string; busy: boolean; session: Row; act: (action: () => Promise<unknown>) => Promise<void> }) {
+  const [source, setSource] = useState<{ title: string; summary: string; activeVersion: number; citations: { id: string; sourceVersion: number; title: string; text: string; location: { label: string } }[] }>();
+  const [error, setError] = useState(""), [feedback, setFeedback] = useState("");
+  useEffect(() => { if (message.citationState === "revoked") setSource(undefined); }, [message.citationState]);
+  async function openSource() {
+    setError(""); setSource(undefined);
+    try { setSource(await api(`${path}/messages/${encodeURIComponent(message.id)}/sources`)); }
+    catch { setError("事例が変更・撤回されたか、取得できません。会話を更新してください。"); }
+  }
+  return <div className="ai-case">
+    <small>AIによる参考事例</small>
+    {message.citationState !== "revoked" && <button type="button" onClick={() => void openSource()}>事例本文と出典を確認</button>}
+    {source && message.citationState !== "revoked" && <section aria-label="引用した事例と出典">
+      <h4>{source.title}（有効版 {source.activeVersion}）</h4><p>{source.summary}</p>
+      {source.citations.map(c => <blockquote key={c.id}><p>{c.text}</p><small>{c.title} · {c.location.label} · 版 {c.sourceVersion}</small></blockquote>)}
+      <button type="button" onClick={() => setSource(undefined)}>出典を閉じる</button>
+    </section>}
+    {error && <p role="alert">{error}</p>}
+    {([ ["helpful", "役立った"], ["unnecessary", "不要"] ] as const).map(([decision, label]) => <button key={decision} type="button" disabled={busy}
+      onClick={() => void act(async () => { await api(`${path}/messages/${encodeURIComponent(message.id)}/feedback`, "POST", { decision }, crypto.randomUUID(), session.etag); setFeedback(label); })}>{label}</button>)}
+    {feedback && <span role="status">「{feedback}」を保存しました</span>}
+  </div>;
 }

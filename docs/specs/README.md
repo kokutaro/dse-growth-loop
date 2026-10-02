@@ -43,3 +43,5 @@ CIでは検証器だけを対象にカバレッジをレポートする。`.NET`
 - #4/#14/#16：正常・不正例を再利用し、認可・障害・実サービスの試験へ拡張する。
 
 追加フィールドや状態を無断で意味変更しない。破壊的変更は`schemaVersion`とAPIメジャー版を更新し、移行・旧版読取・再投影方針を同じPRに記載する。
+
+Issue #13のMessageサブタイプ `messageKind=ai_case`、`ChatAssistanceRules`、事例ごとの評価、出典・評価APIを正本Schema/OpenAPIへ追加した。`kind=message` は既存Messageの識別子として維持する。[設定と検証境界](../chat-assistance.md)を参照。

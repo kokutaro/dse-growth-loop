@@ -29,6 +29,14 @@ class ContractsTests(unittest.TestCase):
             format_checker=FormatChecker(),
         )
 
+    def test_generated_chat_assistance_contracts(self):
+        path = ROOT / "tests/Dse.Tests/TestResults/chat-assistance-contract.json"
+        self.assertTrue(path.exists(), "Run ChatAssistanceTests first")
+        rows = json.loads(path.read_text())
+        self.assertTrue(any(row["value"].get("messageKind") == "ai_case" for row in rows))
+        for row in rows:
+            self.validator(row["schema"]).validate(row["value"])
+
     def test_generated_profile_pipeline_contracts(self):
         path = ROOT / "tests/Dse.Tests/TestResults/profile-contract-fixture.json"
         if not path.exists():

@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-03",
+  "data": "dummy only",
+  "ai": "fake/Mock only",
+  "dotnet_tests": 279,
+  "chat_tests": 22,
+  "playwright_tests": 21,
+  "contract_tests": 17,
+  "script_tests": 41,
+  "evaluation_fixture_tests": 4,
+  "auth_tests": 4,
+  "unnecessary_fixture_examples": 20,
+  "fixture_false_posts": 0,
+  "duplicate_delivery_count": 11,
+  "duplicate_posts": 0,
+  "new_chat_line_coverage": {
+    "Dse.Infrastructure/ChatAccess.cs": {
+      "covered": 31,
+      "total": 31,
+      "percent": 100.0
+    },
+    "Dse.Infrastructure/ChatAssistanceService.cs": {
+      "covered": 126,
+      "total": 127,
+      "percent": 99.21
+    }
+  },
+  "live_ai": "not run",
+  "warm_15_seconds": "not measured",
+  "azure_cold_start": "not measured",
+  "cloud_deployment": "not run"
+}

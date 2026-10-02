@@ -70,14 +70,20 @@ public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence f
 
 public sealed class JobNotifications(IPrimaryRepository repository, IIngestionQueue queue, TimeProvider clock)
 {
-    public async Task<bool> TrySendAsync(string tenant, string id, CancellationToken ct)
+    public async Task<bool> TrySendAsync(string tenant, string id, CancellationToken ct, string? sessionId = null)
     {
         try
         {
-            var partition = RecordPartition.Catalog(tenant);
+            var partition = sessionId is null ? RecordPartition.Catalog(tenant) : RecordPartition.Conversation(tenant, sessionId);
             var job = await repository.ReadAsync(partition, id, ct);
-            if (job is null || job.Value.Text("jobType") is not ("ingestion" or "enrichment" or "projection") || job.Value.Text("status") is not ("queued" or "processing")) return true;
-            await queue.SendAsync(new(tenant, id, job.Value.Number("aggregateVersion")), ct);
+            if (job is null || job.Value.Text("jobType") is not ("ingestion" or "enrichment" or "projection" or "messageCommitted") || job.Value.Text("status") is not ("queued" or "processing")) return true;
+            await queue.SendAsync(new(tenant, id, job.Value.Number("aggregateVersion"), sessionId), ct);
+            // A fast chat consumer can claim/complete between send and acknowledgment. Never invalidate its ETag.
+            if (sessionId is not null)
+            {
+                var current = await repository.ReadAsync(partition, id, ct);
+                if (current?.ETag != job.ETag || current.Value.Text("status") != "queued") return true;
+            }
             job.Value["notificationState"] = "sent";
             await repository.CommitAsync(partition, [RecordWrite.Replace(job.Value, job.ETag)], ct);
             return true;
@@ -93,6 +99,27 @@ public sealed class JobNotifications(IPrimaryRepository repository, IIngestionQu
             foreach (var job in page.Items.Where(j => j.Value.Text("jobType") is ("ingestion" or "enrichment" or "projection") &&
                 (j.Value.Text("status") == "queued" || j.Value.Text("status") == "processing" && j.Value["leaseUntil"]!.Deserialize<DateTimeOffset>() <= clock.GetUtcNow())))
                 if (await TrySendAsync(tenant, job.Value.Text("id"), ct)) count++;
+            cursor = page.ContinuationToken;
+        } while (cursor is not null);
+        // Session initialization already stores a catalog challenge; page it to locate durable outboxes.
+        cursor = null;
+        do
+        {
+            var challenges = await repository.QueryAsync(RecordPartition.Catalog(tenant), "challenge", null, null, 100, cursor, ct);
+            foreach (var challenge in challenges.Items) count += await ReconcileConversationAsync(tenant, challenge.Value.Text("sessionId"), ct);
+            cursor = challenges.ContinuationToken;
+        } while (cursor is not null);
+        return count;
+    }
+    public async Task<int> ReconcileConversationAsync(string tenant, string sid, CancellationToken ct)
+    {
+        int count = 0; string? cursor = null;
+        do
+        {
+            var page = await repository.QueryAsync(RecordPartition.Conversation(tenant, sid), "job", null, null, 100, cursor, ct);
+            foreach (var job in page.Items.Where(j => j.Value.Text("jobType") == "messageCommitted" &&
+                (j.Value.Text("status") == "queued" || j.Value.Text("status") == "processing" && j.Value["leaseUntil"]?.Deserialize<DateTimeOffset>() <= clock.GetUtcNow())))
+                if (await TrySendAsync(tenant, job.Value.Text("id"), ct, sid)) count++;
             cursor = page.ContinuationToken;
         } while (cursor is not null);
         return count;

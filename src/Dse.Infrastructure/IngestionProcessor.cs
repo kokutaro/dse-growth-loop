@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Dse.Infrastructure;
 
 public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestionBlobs blobs, IIngestionQueue queue,
-    OfficeExtractor extractor, IngestionOptions options, AccessFence fence, TimeProvider clock, ILogger<IngestionProcessor> logger, ProfilePipeline? profiles = null, JobNotifications? notifications = null)
+    OfficeExtractor extractor, IngestionOptions options, AccessFence fence, TimeProvider clock, ILogger<IngestionProcessor> logger, ProfilePipeline? profiles = null, JobNotifications? notifications = null, ChatAssistanceService? assistance = null)
 {
     private static readonly TimeSpan Visibility = TimeSpan.FromSeconds(60);
     public async Task<bool> RunOnceAsync(CancellationToken ct)
@@ -20,12 +20,23 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
         try
         {
             notice = JsonSerializer.Deserialize<QueueNotice>(delivery.Body) ?? throw new JsonException();
-            if (!RecordJson.IsId(notice.TenantId) || !RecordJson.IsId(notice.JobId) || notice.Version < 1) throw new JsonException();
+            if (!RecordJson.IsId(notice.TenantId) || !RecordJson.IsId(notice.JobId) || notice.Version < 1 || notice.SessionId is not null && !RecordJson.IsId(notice.SessionId)) throw new JsonException();
         }
         catch (Exception e) when (e is JsonException or ArgumentException)
         {
             // Queue has no text-bearing business payload; malformed notifications cannot authorize a job.
             logger.LogWarning("Discarding invalid ingestion notification {MessageId}", delivery.Id);
+            await queue.DeleteAsync(delivery, ct); return true;
+        }
+        if (notice.SessionId is not null)
+        {
+            var chatJob = await repository.ReadAsync(RecordPartition.Conversation(notice.TenantId, notice.SessionId), notice.JobId, ct);
+            if (chatJob?.Value.Text("jobType") == "messageCommitted" && chatJob.Value.Number("aggregateVersion") == notice.Version && assistance is not null)
+            {
+                var committed = chatJob.Value["event"]!.Deserialize<MessageCommitted>(new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+                var outcome = await assistance.ProcessAsync(committed, ct);
+                if (outcome == "deferred") { await queue.RenewAsync(delivery, TimeSpan.FromSeconds(5), ct); return true; }
+            }
             await queue.DeleteAsync(delivery, ct); return true;
         }
         var partition = RecordPartition.Catalog(notice.TenantId);

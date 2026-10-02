@@ -22,6 +22,7 @@ public static class IngestionRegistration
         services.AddSingleton<KnowledgeService>();
         services.AddSingleton<ConversationLocks>();
         services.AddSingleton<ConversationService>();
+        services.AddSingleton<ChatAssistanceService>();
         services.AddSingleton<DocumentUploads>(); services.AddSingleton<JobNotifications>();
         services.AddSingleton<IngestionRetry>(); services.AddSingleton<IngestionProcessor>();
         return services;

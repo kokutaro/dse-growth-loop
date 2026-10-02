@@ -17,7 +17,7 @@ public sealed class MockAiTransport : IAiTransport
             foreach (var pair in body["questions"]!.AsObject())
             {
                 var q = pair.Value!.AsObject();
-                if (q["type"]!.GetValue<string>() == "noul") answers[pair.Key] = new JsonObject { ["type"] = "noul", ["noul"] = 0.5 };
+                if (q["type"]!.GetValue<string>() == "noul") answers[pair.Key] = new JsonObject { ["type"] = "noul", ["noul"] = pair.Key == "assistance" ? 0.9 : 0.5 };
                 else
                 {
                     var keys = q["criteria"]!.AsObject().Select(x => x.Key).ToArray();

@@ -94,6 +94,10 @@ public static class ConversationEndpoints
             Results.Ok(await service.DecideAsync(RecordEndpoints.Actor(context), sid, Key(context), Match(context), input, ct)));
         api.MapPatch("/sessions/{sid}", async (string sid, SessionUpdate input, HttpContext context, ConversationService service, CancellationToken ct) =>
             Results.Ok(await service.UpdateAsync(RecordEndpoints.Actor(context), sid, Key(context), Match(context), input, ct)));
+        api.MapPost("/sessions/{sid}/messages/{messageId}/feedback", async (string sid, string messageId, MessageFeedback input, HttpContext context, ConversationService service, CancellationToken ct) =>
+            Results.Ok(await service.FeedbackAsync(RecordEndpoints.Actor(context), sid, messageId, Key(context), Match(context), input, ct)));
+        api.MapGet("/sessions/{sid}/messages/{messageId}/sources", (string sid, string messageId, HttpContext context, ConversationService service) =>
+            Read(service, context, sid, async ct => Results.Ok(await service.CaseSourcesAsync(RecordEndpoints.Actor(context), sid, messageId, ct)), true));
         api.MapGet("/sessions/{sid}/messages", (string sid, int? afterSequence, int? pageSize, string? continuationToken,
             HttpContext context, ConversationService service, PageTokens tokens) => Read(service, context, sid, async ct =>
         {
@@ -106,10 +110,16 @@ public static class ConversationEndpoints
                 continuationToken = tokens.Encode(actor, filter, page.More ? page.Next.ToString() : null) });
         }, true));
         api.MapPost("/sessions/{sid}/messages", async (string sid, MessageCreate input, HttpContext context,
-            ConversationService service, IHubContext<ConversationHub> hub, CancellationToken ct) =>
+            ConversationService service, IHubContext<ConversationHub> hub, JobNotifications notifications, CancellationToken ct) =>
         {
             var actor = RecordEndpoints.Actor(context);
             var result = await service.SendAsync(actor, sid, Key(context), Match(context), input, ct);
+            using (var notification = CancellationTokenSource.CreateLinkedTokenSource(ct))
+            {
+                notification.CancelAfter(TimeSpan.FromSeconds(2));
+                try { await notifications.TrySendAsync(actor.TenantId, $"{sid}:committed:{result.Number("sequence"):D10}", notification.Token, sid); }
+                catch (OperationCanceledException) { /* Durable outbox recovery must not turn a saved human message into failure. */ }
+            }
             // Save has already committed. A failed/lost hint must never change the saved response into a save failure.
             try
             {
