@@ -16,6 +16,7 @@ param entraTenantId string
 @minLength(36)
 param entraClientId string
 @minLength(1)
+@maxLength(1)
 param allowedObjectIds array
 param modelDeploymentName string
 // Queue消費Workerは明示opt-in。実Azure起動停止検証は #9。

@@ -83,6 +83,8 @@ python3 scripts/run-env.py -- dotnet run --project src/Dse.Worker -- --ai-smoke
 
 5. AiRun・予約・プロバイダーusageを照合して結果を#9に記録し、停止とopt-in無効へ戻す。401/403なら認証/RBAC、429なら待機/クォータ、model/schema不一致なら固定設定/契約を調査する。未承認の別モデル・別APIへ切り替えない。
 
+Issue #9追加：`AiSmoke__Suite=connections`、`AiSmoke__Count=3`を明示すると、Jev Choice＋Noul 1リクエスト、Foundry構造化1、固定ダミー根拠の再順位付け1を検証する。既存basicの2件承認を3件承認として使わない。固定fixtureの変更／撤回は全推論前に拒否し、自動seedしない。最大3試行分の日次予約枠と、一時Manual Jobの自動retry=0を確認する。[Azure接続検証の実行手順](azure-validation.md#ai接続suite)を参照。ライブ実行は未実施。
+
 ## 公式契約の確認元
 
 2026-09-28確認：[Jev API](https://docs.typesafe.ai/api)、[固定モデル](https://docs.typesafe.ai/models)、[Noul](https://docs.typesafe.ai/primitives/noul)、[Foundry Chat Completions](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/chatgpt?view=foundry-classic)、[構造化出力](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/structured-outputs?view=foundry-classic)、[Key Vault Get Secret](https://learn.microsoft.com/en-us/rest/api/keyvault/secrets/get-secret/get-secret?view=rest-keyvault-secrets-2025-07-01)。公開資料の応答fixtureは実契約の接続成功やAI品質測定を意味しない。

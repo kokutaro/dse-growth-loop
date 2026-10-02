@@ -1,0 +1,16 @@
+[
+  {
+    "path": "/api/config",
+    "authorization": "none",
+    "startedAt": "2026-10-01T11:53:00.146790+00:00",
+    "status": 200,
+    "elapsedMs": 77.03
+  },
+  {
+    "path": "/api/v1/people/demo-person-01",
+    "authorization": "none",
+    "startedAt": "2026-10-01T11:53:00.223830+00:00",
+    "status": 401,
+    "elapsedMs": 77.93
+  }
+]

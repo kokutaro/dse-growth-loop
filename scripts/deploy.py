@@ -102,6 +102,8 @@ def main():
     if include_apps:
         if not all(values[key] for key in ("entraTenantId", "entraClientId", "allowedObjectIds")):
             parser.error("apps には Auth__TenantId、Auth__ClientId、Auth__AllowedObjectIds__0 以降が必要です。")
+        if len(values["allowedObjectIds"]) != 1:
+            parser.error("初期のAzure検証環境は許可ユーザー1名に限定してください。")
     if values["modelDeploymentName"] and not (values["modelName"] and values["modelVersion"]):
         parser.error("モデル配置時は FOUNDRY_MODEL_NAME と FOUNDRY_MODEL_VERSION が必要です。")
     parameters = {"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",

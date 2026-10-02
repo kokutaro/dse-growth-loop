@@ -26,7 +26,7 @@ jobs:
       - run: python -m unittest discover -s tests/evaluation
       - run: dotnet run --project src/Dse.Evaluation --no-build -c Release -- --out .artifacts/evaluation-smoke
       - run: python -m coverage report --include="*/contract_rules.py" --fail-under=80
-      - run: npm ci && npm run build
+      - run: npm ci && npm run test:auth && npm run build
         working-directory: web
       - run: az bicep install --version v0.47.16
       - run: python3 scripts/deploy.py validate
@@ -38,7 +38,7 @@ jobs:
       fail-fast: false
       # Each suite gets a fresh API and rate-limit budget, as well as fresh data.
       matrix:
-        suite: [conversations, documents, profiles, search]
+        suite: [conversations, documents, profiles, search, logout]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v6

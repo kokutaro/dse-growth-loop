@@ -1,6 +1,6 @@
 # 初期実装の状況
 
-更新日：2026-09-30。設計版0.2の実装着手分＋Issue #2〜#8の基盤・契約・評価・Office取込・会話・AIアダプター、およびIssue #10のプロフィール処理。Azure展開と有料AI呼出しは未実施。
+更新日：2026-10-01。設計版0.2の実装着手分＋Issue #2〜#8の基盤・契約・評価・Office取込・会話・AIアダプター、およびIssue #10のプロフィール処理。Issue #9で承認済みの固定ダミーAzure展開と3推論試行を実施した。[実環境結果](validation-results/20261001-issue-9-live/results.md)の未実施・失敗・費用照合待ちは残る。以下の各Issue当時の検証記録は履歴として区別する。
 
 ## 実装した範囲
 
@@ -29,7 +29,7 @@
 
 後続Issueは[実装契約 v1](specs/README.md)を共有する。公開承認者・保持期限・評価尺度・承認予算は[決定ログ](specs/decisions.md)に未承認として残しており、この仕様PRによって運用承認されたとは扱わない。
 
-1. 実AzureのBlob/Queue/Cosmos/RBAC・Worker 0→1→0と強制停止の結合検証（#9）。
+1. 初期Azure接続の残りの拒否ケース、プローブ原因確定、請求照合（#9）。Blob/Queue/Cosmos/RBACの主要経路、3推論試行、Worker 0→1→0は実測済み。
 2. 質問のJev分類、Foundry再順位付けと画面統合（#11）。#8の候補／根拠ID検証、有効版・認可照合を利用する。
 3. 事例自動投稿、公開承認、解決評価（依頼・参加承諾・SignalR会話は#7で実装）。
 4. 事業仮説生成と通知漏れ回復の手動実行。日次スケジュールは配置しない。
@@ -147,3 +147,19 @@ UTC日次の回数/トークン/推定円と実行枠を送信前に同一パー
 - JSON Schema/OpenAPI・実生成レコードの契約テスト13件成功。契約不変条件の行カバレッジ100%。
 - React型検査・Vite build成功。Playwrightはプロフィール3、文書4、検索3、会話4の計14件成功。
 - 設定・Bicep関連テスト26件、評価fixtureテスト4件、ローカルBicep検証、`git diff --check` 成功。Azure展開・有料呼出しは実施していない。
+
+## Issue #9 承認前の実行準備（2026-10-01）
+
+[Azure接続検証手順](azure-validation.md)と、配置／秘密取得／推論をしない`azure_validation.py`を追加。明示subscriptionでRG／Provider／ARM permissions／モデル一覧／地域quotaを読み、全active revisionのレプリカ数をアプリへのHTTP要求なしで記録する。日時・commit・コマンド・合否を保存し、ライブscenarioはnot_run、欠測値はnullとする。失敗時のstdout／stderrを記録せず、既存runを上書きしない。apps／Bicepの許可ユーザーを1名に制限した。
+
+AIスモークは既存basicの2呼出しを維持し、connectionsの3件承認でChoice/Noul 1リクエスト＋Foundry構造化1＋再順位付け1を確認できる。再順位付けは固定ダミーの最新認可・正本・根拠を照合し、欠落／変更／撤回時は全推論前に拒否する。自動seedやJob retryを許可しない運用手順を定義した。再配置、旧image復帰、全revision／Job停止、消費停止、請求後日照合の手順も追加した。
+
+今回の[検証記録とTodo照合](validation-results/20261001-issue-9-preparation/results.md)：.NET196件、設定／Bicep38件、契約13件、評価fixture4件が成功。locked restore／Releaseビルド／React型検査・Vite build／Bicep構文・差分／相対リンク確認が成功。AiSmoke行カバレッジ100%、記録ツール90%、契約不変条件100%。既存ASPIRE010警告1件。ローカルPlaywrightは今回未実行。
+
+現在のCLI選択subscriptionを読み取った結果、対象RG不存在と必要Provider6種の未登録を確認した。要求モデル／SKUの確定・quota照合、対象環境・予算・実行者・操作範囲の承認が残る。Provider登録、Azure配置、Entra変更、秘密投入、外部推論は0回。Entra実トークン、MIのデータ権限、0→1→0、実障害回復、実請求は未検証。Issue #9はopenを維持し、手順作成と未承認を未完了として記録する項目以外をチェックしない。ローカル結果でG1完了を代替しない。
+
+## Issue #9 承認後の実環境検証（2026-10-01）
+
+[実環境結果](validation-results/20261001-issue-9-live/results.md)に対象・承認・image digest・実コマンド・MI21件・提供元usage付き3推論試行・API/Worker縮退・通知再送・再起動後の正本／会話再読取・停止・費用照合待ちを記録した。Foundryのproject/model同時更新競合を直列化し、地域quotaの残量ガード、MI専用接続診断、秘密を除くAiRun測定、ログアウトと初回認証要求の共有を追加した。
+
+ローカル.NET215件、設定/Bicep41件、契約13件、評価fixture4件、認証4件、ログアウトPlaywright1件、ビルド成功。別テナント／許可外ユーザー等の実拒否、MIの未測定範囲、プローブ失敗原因、実請求の差分は未完了。全体受入／実AI検索品質を完了とせず、#9はopenを維持する。

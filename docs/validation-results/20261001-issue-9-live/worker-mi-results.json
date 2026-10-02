@@ -1,0 +1,95 @@
+{
+  "runId": "issue9-live-1014",
+  "role": "worker",
+  "inferenceAttempts": 0,
+  "results": [
+    {
+      "name": "catalog-create",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": 7.24,
+      "elapsedMs": 1787.5394
+    },
+    {
+      "name": "catalog-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": 1,
+      "elapsedMs": 159.6827
+    },
+    {
+      "name": "conversations-create",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": 7.24,
+      "elapsedMs": 69.5011
+    },
+    {
+      "name": "conversations-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": 1,
+      "elapsedMs": 43.3165
+    },
+    {
+      "name": "originals-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 311.2084
+    },
+    {
+      "name": "extracted-upload",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 36.6342
+    },
+    {
+      "name": "extracted-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 10.1828
+    },
+    {
+      "name": "ingestion-receive-extend-delete",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 110.6778
+    },
+    {
+      "name": "poison-send",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 19.4022
+    },
+    {
+      "name": "originals-upload-denied",
+      "expected": "denied-403",
+      "status": "passed",
+      "httpStatus": 403,
+      "requestCharge": null,
+      "elapsedMs": 14.7859
+    },
+    {
+      "name": "key-vault-fixed-version-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 710.7498
+    }
+  ]
+}

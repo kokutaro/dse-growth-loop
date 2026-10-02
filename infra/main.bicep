@@ -8,6 +8,7 @@ param deployApplications bool = false
 param imageTag string = 'initial'
 param entraTenantId string = ''
 param entraClientId string = ''
+@maxLength(1)
 param allowedObjectIds array = []
 param modelName string = ''
 param modelVersion string = ''

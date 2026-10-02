@@ -1,0 +1,32 @@
+[
+  {
+    "Log_s": "Scaler azure-queue is built",
+    "Reason_s": "KEDAScalersStarted",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:11:44.7374082Z"
+  },
+  {
+    "Log_s": "KEDA is starting a watch for revision 'dse-worker--wql4iqz' to monitor scale operations for this revision",
+    "Reason_s": "KEDAScalersStarted",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:11:44.7374082Z"
+  },
+  {
+    "Log_s": "Deactivated apps/v1.Deployment k8se-apps/dse-worker--wql4iqz from 1 to 0",
+    "Reason_s": "KEDAScaleTargetDeactivated",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:16:44.7853131Z"
+  },
+  {
+    "Log_s": "Scaled apps/v1.Deployment k8se-apps/dse-worker--wql4iqz from 0 to 1, triggered by ingestion-queue",
+    "Reason_s": "KEDAScaleTargetActivated",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:22:44.7897103Z"
+  },
+  {
+    "Log_s": "Deactivated apps/v1.Deployment k8se-apps/dse-worker--wql4iqz from 1 to 0",
+    "Reason_s": "KEDAScaleTargetDeactivated",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:27:44.7211415Z"
+  }
+]

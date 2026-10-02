@@ -1,0 +1,67 @@
+{
+  "observedAt": "2026-10-01T11:55:50.226268+00:00",
+  "period": {
+    "from": "2026-10-01T10:13:00Z",
+    "to": "2026-10-01T11:55:50.226268+00:00"
+  },
+  "cosmosMetric": "TotalRequestUnits",
+  "cosmosRequestUnits": 6390.713489688621,
+  "cosmosNonNullSamples": 102,
+  "cosmosDirectSmokeRu": 32.96,
+  "logs": [
+    {
+      "Bytes": "100470",
+      "Rows": "364",
+      "TableName": "ContainerAppSystemLogs_CL"
+    },
+    {
+      "Bytes": "144511",
+      "Rows": "150",
+      "TableName": "AppRequests"
+    },
+    {
+      "Bytes": "1762296",
+      "Rows": "4585",
+      "TableName": "ContainerAppConsoleLogs_CL"
+    },
+    {
+      "Bytes": "23598",
+      "Rows": "30",
+      "TableName": "AppTraces"
+    }
+  ],
+  "logIngestBytesObserved": 2030875.0,
+  "logMetricsMayArriveLate": true,
+  "billing": {
+    "observedAt": "2026-10-01T11:46:45.692059+00:00",
+    "period": {
+      "from": "2026-10-01T00:00:00Z",
+      "to": "2026-10-02T00:00:00Z"
+    },
+    "querySucceeded": true,
+    "currency": "JPY",
+    "status": "pending",
+    "columns": [
+      {
+        "name": "PreTaxCost",
+        "type": "Number"
+      },
+      {
+        "name": "UsageDate",
+        "type": "Number"
+      },
+      {
+        "name": "ResourceType",
+        "type": "String"
+      },
+      {
+        "name": "Currency",
+        "type": "String"
+      }
+    ],
+    "rows": [],
+    "billedCostJpy": null
+  },
+  "jevInvoiceStatus": "not_observed",
+  "actualBilledCostJpy": null
+}

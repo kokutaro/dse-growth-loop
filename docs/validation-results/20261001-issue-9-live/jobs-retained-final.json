@@ -1,0 +1,27 @@
+[
+  {
+    "Log_s": "ai-smoke-790cc0e4e9b1467ab11850e1eac3132d projection ready attempt=1 code= notification=sent",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:05:51.6706625Z"
+  },
+  {
+    "Log_s": "job-5d3e202bad9c49a8bc52727acbbed2ba ingestion queued attempt=0 code= notification=pending",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:05:51.6706625Z"
+  },
+  {
+    "Log_s": "ai-smoke-790cc0e4e9b1467ab11850e1eac3132d projection ready attempt=1 code= notification=sent",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:26:32.4551088Z"
+  },
+  {
+    "Log_s": "job-358ff20832ac4a5fa42350c79fa3dd26 enrichment budget_stopped attempt=1 code=AI_BUDGET_STOPPED notification=pending",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:26:32.4551088Z"
+  },
+  {
+    "Log_s": "job-5d3e202bad9c49a8bc52727acbbed2ba ingestion ready attempt=1 code= notification=sent",
+    "TableName": "PrimaryResult",
+    "TimeGenerated": "2026-10-01T11:26:32.4551088Z"
+  }
+]

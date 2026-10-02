@@ -30,6 +30,16 @@ class InfrastructureTests(unittest.TestCase):
         self.assertEqual({p['httpGet']['path'] for p in probes}, {'/health/live'})
         self.assertIn('Startup', [p['type'] for p in probes])
 
+    def test_redeploy_preserves_omitted_resources_and_limits_public_demo_to_one_user(self):
+        for module in self.modules.values():
+            self.assertEqual(module['properties']['mode'], 'Incremental')
+        self.assertEqual(self.template['parameters']['allowedObjectIds']['maxLength'], 1)
+        self.assertEqual(self.modules['dse-apps']['properties']['template']['parameters']['allowedObjectIds']['maxLength'], 1)
+        model = next(r for r in self.modules['dse-foundation']['properties']['template']['resources']
+                     if r['type'] == 'Microsoft.CognitiveServices/accounts/deployments')
+        self.assertIn('condition', model)
+        self.assertEqual(model['properties']['versionUpgradeOption'], 'NoAutoUpgrade')
+
     def test_worker_opt_in_has_queue_identity_trigger(self):
         self.assertFalse(self.template['parameters']['deployIngestionWorker']['defaultValue'])
         self.assertEqual(self.apps['dse-worker']['condition'], "[parameters('deployIngestionWorker')]")
@@ -39,6 +49,11 @@ class InfrastructureTests(unittest.TestCase):
         self.assertEqual(trigger['type'], 'azure-queue')
         self.assertEqual(trigger['identity'], "[parameters('workerIdentityId')]")
         self.assertEqual(trigger['metadata']['queueName'], 'ingestion')
+
+    def test_foundry_child_writes_are_serialized_to_avoid_request_conflict(self):
+        foundation = self.modules['dse-foundation']['properties']['template']['resources']
+        model = next(r for r in foundation if r['type'] == 'Microsoft.CognitiveServices/accounts/deployments')
+        self.assertTrue(any('Microsoft.CognitiveServices/accounts/projects' in dep for dep in model['dependsOn']))
 
     def test_only_manual_jobs_and_no_cleanup_resources(self):
         jobs = [r for r in self.apps.values() if r['type'] == 'Microsoft.App/jobs']

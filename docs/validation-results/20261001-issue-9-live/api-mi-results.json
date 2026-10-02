@@ -1,0 +1,87 @@
+{
+  "runId": "issue9-live-1014",
+  "role": "api",
+  "inferenceAttempts": 0,
+  "results": [
+    {
+      "name": "catalog-create",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": 7.24,
+      "elapsedMs": 1564.2277
+    },
+    {
+      "name": "catalog-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": 1,
+      "elapsedMs": 273.2296
+    },
+    {
+      "name": "conversations-create",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": 7.24,
+      "elapsedMs": 158.1594
+    },
+    {
+      "name": "conversations-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": 1,
+      "elapsedMs": 155.3471
+    },
+    {
+      "name": "originals-upload",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 570.4603
+    },
+    {
+      "name": "originals-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 27.2627
+    },
+    {
+      "name": "ingestion-send",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 56.2512
+    },
+    {
+      "name": "extracted-read-denied",
+      "expected": "denied-403",
+      "status": "passed",
+      "httpStatus": 403,
+      "requestCharge": null,
+      "elapsedMs": 12.3562
+    },
+    {
+      "name": "ingestion-receive-denied",
+      "expected": "denied-403",
+      "status": "passed",
+      "httpStatus": 403,
+      "requestCharge": null,
+      "elapsedMs": 12.8668
+    },
+    {
+      "name": "key-vault-fixed-version-read",
+      "expected": "allowed",
+      "status": "passed",
+      "httpStatus": null,
+      "requestCharge": null,
+      "elapsedMs": 363.5004
+    }
+  ]
+}

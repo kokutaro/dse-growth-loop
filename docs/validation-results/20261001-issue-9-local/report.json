@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "runId": "20261001-issue-9-local",
+  "startedAt": "2026-10-01T04:00:17.088316+00:00",
+  "commit": "ecb6a766c07b2d82416a27ed97bbb17ed0073493",
+  "worktreeDirty": true,
+  "mode": "local",
+  "liveAcceptance": "not_run",
+  "approval": "pending",
+  "checks": [
+    {
+      "id": "bicep",
+      "command": [
+        "az",
+        "bicep",
+        "build",
+        "--file",
+        "infra/main.bicep",
+        "--outfile",
+        "/var/folders/f0/nxrvswyn3x18n3q90kg8kzmm0000gn/T/dse-validation-yx_bobcs/main.json"
+      ],
+      "startedAt": "2026-10-01T04:00:17.088926+00:00",
+      "status": "passed",
+      "data": null,
+      "elapsedMs": 1547
+    },
+    {
+      "id": "whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "startedAt": "2026-10-01T04:00:18.636390+00:00",
+      "status": "passed",
+      "data": null,
+      "elapsedMs": 11
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "environment-review",
+      "status": "not_run"
+    },
+    {
+      "id": "deployment",
+      "status": "not_run"
+    },
+    {
+      "id": "entra",
+      "status": "not_run"
+    },
+    {
+      "id": "managed-identity",
+      "status": "not_run"
+    },
+    {
+      "id": "live-ai",
+      "status": "not_run"
+    },
+    {
+      "id": "zero-scale",
+      "status": "not_run"
+    },
+    {
+      "id": "recovery",
+      "status": "not_run"
+    },
+    {
+      "id": "redeploy-rollback-stop",
+      "status": "not_run"
+    },
+    {
+      "id": "cost-reconciliation",
+      "status": "not_run"
+    }
+  ],
+  "measurements": {
+    "requestUnits": null,
+    "inputTokens": null,
+    "outputTokens": null,
+    "coldStartMs": null,
+    "warmRequestMs": null,
+    "returnToZeroSeconds": null,
+    "billedCost": null,
+    "retainedStorageCost": null,
+    "logIngestBytes": null
+  },
+  "target": {
+    "subscription": null,
+    "resourceGroup": "dse-growth-loop-rg",
+    "location": "japaneast",
+    "foundryLocation": "japaneast"
+  },
+  "finishedAt": "2026-10-01T04:00:18.648110+00:00"
+}

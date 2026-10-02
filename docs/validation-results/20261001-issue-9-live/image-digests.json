@@ -1,0 +1,18 @@
+{
+  "issue9-eea1df3": [
+    "sha256:4512f28da2b515c4cfac8cb3eaff135eb25413433f8198315543dbc7fd2ec087",
+    "sha256:ea960ea30e3188daa021c04531faebbd817cf8c1e94c6e49bc604cdb9e0cddd4"
+  ],
+  "issue9-live3": [
+    "sha256:7853825d147eeae489ba13a570b0ed7aa3004a646b382e1bb41ab6f934e6c8f3",
+    "sha256:bafeb58d5acf7353e971a8a32f010d03203fdee1101a79a4cc9988a54aa84a70"
+  ],
+  "issue9-logout4": [
+    "sha256:6be565fb8b072b942faba7c8fbd11ac11917d2aeb4d526406967c61992017663",
+    "sha256:bafeb58d5acf7353e971a8a32f010d03203fdee1101a79a4cc9988a54aa84a70"
+  ],
+  "issue9-final5": [
+    "sha256:534d5d8c2f0d66ca9fafad3f7d96f14e70cd55d29110239945c0f5054da726e3",
+    "sha256:bafeb58d5acf7353e971a8a32f010d03203fdee1101a79a4cc9988a54aa84a70"
+  ]
+}
