@@ -10,3 +10,5 @@ public sealed record MessageCreate([property: JsonRequired] string ClientMessage
 // Durable outbox payload; no message text or credentials. The future consumer re-reads membership and AI settings.
 public sealed record MessageCommitted(string EventId, string TenantId, string SessionId, string MessageId,
     int Sequence, int MembershipVersion, string PayloadVersion = "1.0");
+
+public sealed record MessageFeedback([property: JsonRequired] string Decision);

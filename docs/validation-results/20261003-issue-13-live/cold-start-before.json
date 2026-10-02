@@ -1,0 +1,7 @@
+{
+  "observedAt": "2026-10-02T16:34:09.827085+00:00",
+  "revision": "dse-worker--issue13-keda",
+  "activeRevisionCount": 1,
+  "physicalReplicaCount": 0,
+  "runningState": "ScaledToZero"
+}

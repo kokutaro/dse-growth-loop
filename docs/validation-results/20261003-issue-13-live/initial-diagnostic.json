@@ -1,0 +1,61 @@
+{
+  "runId": "20261003-probe1",
+  "suite": "probe",
+  "fixtureVersion": "issue13-chat-smoke-v1",
+  "startedAt": "2026-10-02T16:18:16.8872395+00:00",
+  "rules": {
+    "Version": "chat-assistance-v1",
+    "DebounceSeconds": 5,
+    "CooldownSeconds": 120,
+    "ContextMessages": 6,
+    "EventLimit": 1,
+    "SessionLimit": 10,
+    "DailyLimit": 20,
+    "Attempts": 3,
+    "UsefulThreshold": 0.7
+  },
+  "cases": [
+    {
+      "id": "control",
+      "mode": "direct",
+      "expectedPost": true,
+      "localGate": true,
+      "outcome": "skipped",
+      "postCount": 0,
+      "observedMs": 7235.1055,
+      "decision": {
+        "runId": "ai-run-8e1b25e0c3a1466e9898ed22cfcc03b0",
+        "status": "Succeeded",
+        "state": "Supported",
+        "yesProbability": 0.6,
+        "threshold": 0.7
+      },
+      "humanCommittedAt": "2026-10-02T16:18:17.5197497+00:00",
+      "aiCommittedAt": null,
+      "runs": [
+        {
+          "id": "ai-run-8e1b25e0c3a1466e9898ed22cfcc03b0",
+          "operation": "decide",
+          "status": "succeeded",
+          "errorCode": null,
+          "modelId": "jev-1.13.0",
+          "modelVersion": "jev-1.13.0",
+          "region": "typesafe",
+          "sku": "input-token",
+          "inputTokens": 406,
+          "outputTokens": 22,
+          "usageEstimated": false,
+          "attemptCount": 1,
+          "retryCount": 0,
+          "durationMs": 1584,
+          "estimatedCostJpy": 0.0034104,
+          "pricingVersion": "azure-blog-20260730-typesafe-20261003",
+          "fxVersion": "validation-planning-ceiling-200JPY-per-USD"
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-10-02T16:18:25.3646416+00:00",
+  "controlPassed": false,
+  "falsePosts": 0
+}

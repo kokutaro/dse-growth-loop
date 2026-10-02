@@ -49,6 +49,14 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         Func<JsonObject, AiModel, HashSet<string>, IReadOnlyDictionary<string, HashSet<string>>, T> parse, CancellationToken ct)
     {
         var actor = context.Actor;
+        ChatAccess? chat = null;
+        ActorAccess[] sharedActors = [];
+        if (context.ChatMembershipVersion is not null)
+        {
+            chat = new(repository, guard, new IdentityResolver(config), config);
+            (_, sharedActors) = await chat.RequireAsync(context, ct);
+            if (text != await chat.ContextTextAsync(context, ct)) throw new DomainException(409, "SOURCE_REVOKED");
+        }
         var conversationEvidence = new JsonArray();
         if (context.SessionId is not null)
         {
@@ -80,6 +88,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         foreach (var unit in context.Candidates)
         {
             var validated = await guard.RequireAsync(actor, unit, ct);
+            foreach (var participant in sharedActors) await guard.RequireAsync(participant, unit, ct);
+            if (chat is not null && unit.EntityType != "knowledge") throw new DomainException(409, "SOURCE_REVOKED");
             snapshots.AddRange(validated.Snapshots);
             var bounded = EvidenceBudget.Trim(validated.Unit.SourceRefs, context.EvidenceBytesPerCandidate, unit.Id, cuts);
             if (context.PromptVersion == "search-rerank-v1")
@@ -101,6 +111,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         foreach (var reference in context.Evidence.Distinct())
         {
             var source = await guard.EvidenceAsync(actor, reference, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
+            foreach (var participant in sharedActors)
+                if (await guard.EvidenceAsync(participant, reference, ct) is null) throw new DomainException(409, "SOURCE_REVOKED");
             var doc = source.Document;
             snapshots.Add(new(doc.Text("id"), doc.Number("sourceVersion"), doc.Number("activeVersion"), doc.Number("accessVersion")));
             evidence.Add(new JsonObject { ["id"] = reference.Id, ["documentVersionId"] = reference.DocumentVersionId,
@@ -112,7 +124,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         if (context.PromptVersion == "search-rerank-v1") input["groundingPolicy"] = "Reason must be an exact contiguous quotation from one cited evidence text. Omit unsuitable candidates; an empty items array means all unsuitable. Do not infer missing role or dates.";
         var hashMaterial = new JsonObject { ["input"] = input.DeepClone(), ["choices"] = AiCodecs.Node(choices), ["nouls"] = AiCodecs.Node(nouls),
             ["snapshots"] = AiCodecs.Node(snapshots.Distinct().ToArray()), ["operation"] = operation, ["prompt"] = context.PromptVersion,
-            ["taxonomy"] = context.TaxonomyVersion, ["dataVersion"] = context.DataVersion };
+            ["taxonomy"] = context.TaxonomyVersion, ["dataVersion"] = context.DataVersion, ["membershipVersion"] = context.ChatMembershipVersion, ["lastSequence"] = context.ChatLastSequence };
         var inputHash = Hash(RecordJson.Canonical(hashMaterial));
         var limits = AiLimits.Read(config);
         var runId = "ai-run-" + Guid.NewGuid().ToString("N");

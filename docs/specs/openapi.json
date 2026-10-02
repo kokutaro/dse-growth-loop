@@ -3,7 +3,7 @@
   "info": {
     "title": "DSE Growth Loop implementation contract",
     "version": "1.0.0",
-    "description": "全件ダミー用の実装・後続仕様。実装範囲はimplementation-status.md参照。Issue #7で会話APIを更新。"
+    "description": "全件ダミー用の実装・後続仕様。実装範囲はimplementation-status.md参照。Issue #13でAI事例・出典・評価APIを追加。"
   },
   "servers": [
     {
@@ -3046,6 +3046,164 @@
           }
         }
       }
+    },
+    "/api/v1/sessions/{sessionId}/messages/{messageId}/feedback": {
+      "post": {
+        "operationId": "sendAiCaseFeedback",
+        "summary": "AI事例の役立った・不要を保存",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-requires-current-version": true,
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "保存済みフィードバック"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "decision": {
+                    "enum": [
+                      "helpful",
+                      "unnecessary"
+                    ]
+                  }
+                },
+                "required": [
+                  "decision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sessionId}/messages/{messageId}/sources": {
+      "get": {
+        "operationId": "getAiCaseSources",
+        "summary": "現在の権限と有効版で事例本文と引用出典を表示",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-requires-current-version": false,
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "事例本文と出典（撤回後は拒否）"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4775,6 +4933,54 @@
           },
           "event": {
             "$ref": "#/components/schemas/MessageCommitted"
+          },
+          "assistanceOutcome": {
+            "enum": [
+              "skipped"
+            ]
+          },
+          "assistanceDecision": {
+            "type": "object",
+            "properties": {
+              "runId": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "BudgetStopped",
+                  "NotEvaluated"
+                ]
+              },
+              "state": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "yesProbability": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              },
+              "threshold": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "runId",
+              "status",
+              "state",
+              "yesProbability",
+              "threshold"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -5529,6 +5735,14 @@
             "uniqueItems": true,
             "maxItems": 20,
             "minItems": 1
+          },
+          "aiPostCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lastAiPostAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "required": [
@@ -5600,6 +5814,69 @@
                 "type": "null"
               }
             ]
+          },
+          "messageKind": {
+            "enum": [
+              "human",
+              "ai_case"
+            ]
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EvidenceReference"
+            },
+            "maxItems": 100
+          },
+          "caseId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "retrievalReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "aiRunId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "decisionRunId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "dedupKey": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/ChatAssistanceRules"
+          },
+          "contextMessageIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "minItems": 1,
+            "maxItems": 10
+          },
+          "citationState": {
+            "enum": [
+              "revoked"
+            ]
           }
         },
         "required": [
@@ -5617,6 +5894,35 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/PersistedMetadata"
+          },
+          {
+            "if": {
+              "properties": {
+                "messageKind": {
+                  "const": "ai_case"
+                }
+              },
+              "required": [
+                "messageKind"
+              ]
+            },
+            "then": {
+              "properties": {
+                "authorType": {
+                  "const": "ai"
+                }
+              },
+              "required": [
+                "citations",
+                "caseId",
+                "retrievalReason",
+                "aiRunId",
+                "decisionRunId",
+                "dedupKey",
+                "rules",
+                "contextMessageIds"
+              ]
+            }
           }
         ]
       },
@@ -5642,7 +5948,7 @@
         "if": {
           "properties": {
             "contractVersion": {
-              "const": "knowledge-v1"
+              "const": "chat-assistance-v1"
             }
           },
           "required": [
@@ -5650,10 +5956,25 @@
           ]
         },
         "then": {
-          "$ref": "#/components/schemas/FeedbackV1"
+          "$ref": "#/components/schemas/ChatAssistanceFeedback"
         },
         "else": {
-          "$ref": "#/components/schemas/FeedbackLegacy"
+          "if": {
+            "properties": {
+              "contractVersion": {
+                "const": "knowledge-v1"
+              }
+            },
+            "required": [
+              "contractVersion"
+            ]
+          },
+          "then": {
+            "$ref": "#/components/schemas/FeedbackV1"
+          },
+          "else": {
+            "$ref": "#/components/schemas/FeedbackLegacy"
+          }
         }
       },
       "ParticipantConfirmation": {
@@ -7800,6 +8121,146 @@
           }
         ],
         "unevaluatedProperties": false
+      },
+      "ChatAssistanceRules": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "debounceSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 60
+          },
+          "cooldownSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 86400
+          },
+          "contextMessages": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "eventLimit": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "sessionLimit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "dailyLimit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "usefulThreshold": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "debounceSeconds",
+          "cooldownSeconds",
+          "contextMessages",
+          "eventLimit",
+          "sessionLimit",
+          "dailyLimit",
+          "attempts",
+          "usefulThreshold"
+        ]
+      },
+      "ChatAssistanceFeedback": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "feedback"
+          },
+          "contractVersion": {
+            "const": "chat-assistance-v1"
+          },
+          "sessionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "messageId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "targetId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "authorPersonId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "feedbackType": {
+            "const": "ai_case"
+          },
+          "decision": {
+            "enum": [
+              "helpful",
+              "unnecessary"
+            ]
+          },
+          "status": {
+            "const": "saved"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PersistedMetadata"
+          }
+        ],
+        "unevaluatedProperties": false,
+        "required": [
+          "kind",
+          "contractVersion",
+          "sessionId",
+          "messageId",
+          "targetId",
+          "authorPersonId",
+          "feedbackType",
+          "decision",
+          "status"
+        ]
+      },
+      "EvidenceReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "documentVersionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "documentVersionId",
+          "sourceVersion"
+        ],
+        "additionalProperties": false
       }
     },
     "parameters": {

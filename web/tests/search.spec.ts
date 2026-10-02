@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
 
 test("ダミーの相談候補と根拠を検索できる", async ({ page }) => {
+  // Initial upload authorization holds the tenant fence. Wait for that read before searching.
+  const uploadContext = page.waitForResponse(response => response.url().endsWith("/api/v1/upload-context") && response.ok());
   await page.goto("/");
+  await (await uploadContext).finished();
   await expect(page.getByText("ローカル・ダミーデータ")).toBeVisible();
   await page.getByRole("button", { name: "相談候補を探す" }).click();
   await expect(

@@ -7,6 +7,8 @@ using Dse.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace Dse.Tests;
@@ -257,4 +259,25 @@ public class ConversationTests
         Assert.Equal(HttpStatusCode.BadRequest, (await owner.GetAsync("/api/hubs/conversations?access_token=dummy")).StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, (await Write(owner, "/api/v1/challenges", new { title = "forged", summary = "test", tenantId = "another" })).StatusCode);
     }
+    private sealed class CancelledQueue : IIngestionQueue
+    {
+        public Task SendAsync(QueueNotice n, CancellationToken ct, bool poison = false) => throw new OperationCanceledException("Queue timed out");
+        public Task<QueueDelivery?> ReceiveAsync(TimeSpan visibility, CancellationToken ct) => Task.FromResult<QueueDelivery?>(null);
+        public Task<QueueDelivery> RenewAsync(QueueDelivery d, TimeSpan visibility, CancellationToken ct) => Task.FromResult(d);
+        public Task DeleteAsync(QueueDelivery d, CancellationToken ct) => Task.CompletedTask;
+    }
+    [Fact]
+    public async Task Queue_timeout_after_human_commit_still_returns_saved_response_and_replay()
+    {
+        using var factory = Factory().WithWebHostBuilder(b => b.ConfigureServices(s => { s.RemoveAll<IIngestionQueue>(); s.AddSingleton<IIngestionQueue, CancelledQueue>(); }));
+        using var client = factory.CreateClient();
+        var challenge = await Json(await Write(client, "/api/v1/challenges", new { title = "架空", summary = "Queue停止中" }));
+        var path = "/api/v1/sessions/" + challenge.Text("sessionId");
+        var session = await Json(await client.GetAsync(path));
+        var saved = await Json(await Write(client, path + "/messages", new { clientMessageId = "message-queue-timeout", body = "AIのQueueが停止しても保存" }, session.Text("etag")));
+        Assert.Equal("saved", saved.Text("deliveryState"));
+        var history = await Json(await client.GetAsync(path + "/messages"));
+        Assert.Single(history["items"]!.AsArray());
+    }
+
 }

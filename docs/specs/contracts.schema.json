@@ -1721,6 +1721,54 @@
         },
         "event": {
           "$ref": "#/$defs/MessageCommitted"
+        },
+        "assistanceOutcome": {
+          "enum": [
+            "skipped"
+          ]
+        },
+        "assistanceDecision": {
+          "type": "object",
+          "properties": {
+            "runId": {
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "Succeeded",
+                "Failed",
+                "BudgetStopped",
+                "NotEvaluated"
+              ]
+            },
+            "state": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "yesProbability": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "threshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "runId",
+            "status",
+            "state",
+            "yesProbability",
+            "threshold"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -2475,6 +2523,14 @@
           "uniqueItems": true,
           "maxItems": 20,
           "minItems": 1
+        },
+        "aiPostCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lastAiPostAt": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": [
@@ -2546,6 +2602,69 @@
               "type": "null"
             }
           ]
+        },
+        "messageKind": {
+          "enum": [
+            "human",
+            "ai_case"
+          ]
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceReference"
+          },
+          "maxItems": 100
+        },
+        "caseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retrievalReason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "aiRunId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "decisionRunId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "dedupKey": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "rules": {
+          "$ref": "#/$defs/ChatAssistanceRules"
+        },
+        "contextMessageIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "citationState": {
+          "enum": [
+            "revoked"
+          ]
         }
       },
       "required": [
@@ -2563,6 +2682,35 @@
       "allOf": [
         {
           "$ref": "#/$defs/PersistedMetadata"
+        },
+        {
+          "if": {
+            "properties": {
+              "messageKind": {
+                "const": "ai_case"
+              }
+            },
+            "required": [
+              "messageKind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "authorType": {
+                "const": "ai"
+              }
+            },
+            "required": [
+              "citations",
+              "caseId",
+              "retrievalReason",
+              "aiRunId",
+              "decisionRunId",
+              "dedupKey",
+              "rules",
+              "contextMessageIds"
+            ]
+          }
         }
       ]
     },
@@ -2588,7 +2736,7 @@
       "if": {
         "properties": {
           "contractVersion": {
-            "const": "knowledge-v1"
+            "const": "chat-assistance-v1"
           }
         },
         "required": [
@@ -2596,10 +2744,25 @@
         ]
       },
       "then": {
-        "$ref": "#/$defs/FeedbackV1"
+        "$ref": "#/$defs/ChatAssistanceFeedback"
       },
       "else": {
-        "$ref": "#/$defs/FeedbackLegacy"
+        "if": {
+          "properties": {
+            "contractVersion": {
+              "const": "knowledge-v1"
+            }
+          },
+          "required": [
+            "contractVersion"
+          ]
+        },
+        "then": {
+          "$ref": "#/$defs/FeedbackV1"
+        },
+        "else": {
+          "$ref": "#/$defs/FeedbackLegacy"
+        }
       }
     },
     "ParticipantConfirmation": {
@@ -4746,6 +4909,146 @@
         }
       ],
       "unevaluatedProperties": false
+    },
+    "ChatAssistanceRules": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "debounceSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60
+        },
+        "cooldownSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "contextMessages": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "eventLimit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "sessionLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "dailyLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "usefulThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "debounceSeconds",
+        "cooldownSeconds",
+        "contextMessages",
+        "eventLimit",
+        "sessionLimit",
+        "dailyLimit",
+        "attempts",
+        "usefulThreshold"
+      ]
+    },
+    "ChatAssistanceFeedback": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "feedback"
+        },
+        "contractVersion": {
+          "const": "chat-assistance-v1"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "messageId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "targetId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "authorPersonId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "feedbackType": {
+          "const": "ai_case"
+        },
+        "decision": {
+          "enum": [
+            "helpful",
+            "unnecessary"
+          ]
+        },
+        "status": {
+          "const": "saved"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": [
+        "kind",
+        "contractVersion",
+        "sessionId",
+        "messageId",
+        "targetId",
+        "authorPersonId",
+        "feedbackType",
+        "decision",
+        "status"
+      ]
+    },
+    "EvidenceReference": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "documentVersionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sourceVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "documentVersionId",
+        "sourceVersion"
+      ],
+      "additionalProperties": false
     }
   },
   "oneOf": [
