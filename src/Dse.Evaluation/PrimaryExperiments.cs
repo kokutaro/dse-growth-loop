@@ -6,7 +6,7 @@ namespace Dse.Evaluation;
 public sealed record ExperimentSetting(string Variant, double DocumentThreshold, int QuestionTop, double NoulThreshold, int N);
 public sealed record ExperimentInputs(string Version, string Origin, string DatasetSha256,
     EvaluationUnit[] OverallUnits, QueryDistribution[] Queries);
-public sealed record QueryDistribution(string QuestionId, CategoryProbability[] Distribution, string[] Terms);
+public sealed record QueryDistribution(string QuestionId, CategoryProbability[] Distribution, string[] Terms, ExperienceSignal[]? Signals = null);
 public sealed record PrimaryRow(string QuestionId, string EntityType, ExperimentSetting Setting,
     string[] BeforeLimit, string[] WithoutNoul, Candidate[] Candidates, string CandidateSha256, Scores Scores);
 public sealed record PrimarySummary(string EntityType, ExperimentSetting Setting, int Questions,
@@ -28,7 +28,7 @@ public static class PrimaryExperiments
     public static SearchResult Search(SearchUnit[] fragments, SearchUnit[] overall, CategoryProbability[] distribution,
         SearchRequest template, SearchAccess access, ExperimentSetting setting, int maximumAllCandidates = 200)
     {
-        if (setting.Variant is not ("A" or "B" or "C" or "D" or "E" or "F") ||
+        if (setting.Variant is not ("A" or "B" or "C" or "D" or "E" or "F" or "L") ||
             setting.QuestionTop is not (1 or 3 or 5) || setting.N is not (20 or 50 or 100) ||
             maximumAllCandidates is < 1 or > 1000)
             throw new ArgumentException("実験構成・件数上限が不正です。");
@@ -64,8 +64,8 @@ public static class PrimaryExperiments
         var categories = distribution.Where(p => p.CategoryId is not ("unknown" or "other") && p.Probability >= .1)
             .OrderByDescending(p => p.Probability).ThenBy(p => p.Axis, StringComparer.Ordinal).ThenBy(p => p.CategoryId, StringComparer.Ordinal)
             .Take(setting.Variant == "A" ? 1 : setting.QuestionTop).Select(p => new CategoryKey(p.Axis, p.CategoryId)).ToArray();
-        request = request with { Categories = categories,
-            SignalIds = setting.Variant is "D" or "E" ? template.SignalIds : [], Terms = setting.Variant == "E" ? template.Terms : [] };
+        request = request with { Categories = setting.Variant == "L" ? [] : categories,
+            SignalIds = setting.Variant is "D" or "E" ? template.SignalIds : [], Terms = setting.Variant is "E" or "L" ? template.Terms : [] };
         if (request.Categories.Length + request.SignalIds.Length + request.Terms.Length == 0)
             return new([], 0, 0, Version) { MergedCandidates = [] };
         return Retriever.Search(source, request, access);
@@ -76,7 +76,7 @@ public static class PrimaryExperiments
     {
         Runner.Validate(fixture, replay);
         if (split is not ("tuning" or "final") || inputs.Version != Version ||
-            inputs.Origin != "synthetic-experiment-inputs" || inputs.DatasetSha256 != Runner.Hash(datasetPath) ||
+            inputs.Origin is not ("synthetic-experiment-inputs" or "recorded-jev-experiment-inputs") || inputs.DatasetSha256 != Runner.Hash(datasetPath) ||
             inputs.Queries.Select(q => q.QuestionId).Distinct().Count() != inputs.Queries.Length)
             throw new ArgumentException("実験入力の版・出所・hash・質問IDを確認してください。");
         var rows = new List<PrimaryRow>();
@@ -90,7 +90,8 @@ public static class PrimaryExperiments
                 && u.SourceVersion == u.CurrentActiveVersion && u.Search.EntityType == q.EntityType).Select(u => u.Search).ToArray();
             foreach (var setting in settings ?? Settings())
             {
-                var request = q.Request with { Terms = query.Terms };
+                var request = q.Request with { Terms = query.Terms, SignalIds = query.Signals is null ? q.Request.SignalIds :
+                    query.Signals.Where(s => s.EvidenceState == "supported" && s.YesProbability >= setting.NoulThreshold).Select(s => s.SignalId).ToArray() };
                 var result = Search(units, overall, query.Distribution, request, new("demo-tenant", ["demo"]), setting);
                 var without = setting.Variant is "D" or "E" ? Search(units, overall, query.Distribution,
                     request with { SignalIds = [] }, new("demo-tenant", ["demo"]), setting).MergedCandidates : result.MergedCandidates;

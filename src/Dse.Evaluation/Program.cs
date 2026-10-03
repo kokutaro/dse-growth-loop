@@ -12,11 +12,17 @@ try
     var k = 5;
     var matrix = false;
     string? comparisonPath = null;
+    string? writeJevPlan = null;
+    string? jevPlanPath = null;
+    string? jevCapturePath = null;
     for (var i = 0; i < args.Length; i++)
     {
         string Value() => ++i < args.Length ? args[i] : throw new ArgumentException("引数の値がありません。");
         switch (args[i])
         {
+            case "--write-jev-plan": writeJevPlan = Value(); break;
+            case "--jev-plan": jevPlanPath = Value(); break;
+            case "--jev-capture": jevCapturePath = Value(); matrix = true; break;
             case "--matrix": matrix = true; break;
             case "--comparisons": comparisonPath = Value(); break;
             case "--large": large = true; break;
@@ -32,6 +38,17 @@ try
     var replayPath = Path.Combine(data, "saved-responses.json");
     var fixture = Runner.Load<Fixture>(fixturePath);
     var replay = Runner.Load<Replay>(replayPath);
+    if (writeJevPlan is not null)
+    {
+        Runner.Validate(fixture, replay);
+        if (File.Exists(writeJevPlan)) throw new ArgumentException("既存JEV送信計画は上書きできません。");
+        var specRoot = Path.Combine(data, "..", "docs", "specs");
+        var plan = JevEvaluation.Plan(fixture, fixturePath, Path.Combine(specRoot, "taxonomy-v1.json"), Path.Combine(specRoot, "normalization-v1.json"));
+        File.WriteAllText(writeJevPlan, JsonSerializer.Serialize(plan, Runner.Json) + "\n");
+        Console.WriteLine($"JEV計画を保存: {plan.Requests.Length}回、最大$1、モデル{plan.ModelVersion}。まだ送信していません。");
+        return 0;
+    }
+    if (jevCapturePath is null && jevPlanPath is not null) throw new ArgumentException("--jev-planには--jev-captureが必要です。");
     if (split == "final")
     {
         if (gatesPath is null) throw new ArgumentException("最終確認には --gates で固定済みゲートが必要です。");
@@ -42,13 +59,25 @@ try
     if (matrix)
     {
         var inputsPath = Path.Combine(data, "experiment-inputs.json");
-        if (split == "final")
+        JevApplied? live = null;
+        JevPlan? livePlan = null;
+        ExperimentInputs inputs;
+        if (jevCapturePath is not null)
         {
-            var gate = Runner.Load<Gate>(gatesPath!);
-            gate.ValidateExperiments(inputsPath, comparisonPath);
+            if (jevPlanPath is null) throw new ArgumentException("--jev-captureには--jev-planが必要です。");
+            livePlan = Runner.Load<JevPlan>(jevPlanPath);
+            if (livePlan.DatasetSha256 != Runner.Hash(fixturePath)) throw new ArgumentException("JEV計画のdataset hash不一致。");
+            if (split == "final") Runner.Load<Gate>(gatesPath!).ValidateJev(jevPlanPath);
+            live = JevEvaluation.Apply(fixture, livePlan, Runner.Load<JevCapture>(jevCapturePath), Runner.Hash(jevPlanPath));
+            fixture = live.Fixture; inputs = live.Inputs;
         }
-        var inputs = Runner.Load<ExperimentInputs>(inputsPath);
-        var primary = PrimaryExperiments.Run(fixture, replay, inputs, fixturePath, large, split);
+        else
+        {
+            if (split == "final") Runner.Load<Gate>(gatesPath!).ValidateExperiments(inputsPath, comparisonPath);
+            inputs = Runner.Load<ExperimentInputs>(inputsPath);
+        }
+        var settings = live is null ? null : PrimaryExperiments.Settings().Concat(new[] {20,50,100}.Select(n => new ExperimentSetting("L", .2, 3, .5, n))).ToArray();
+        var primary = PrimaryExperiments.Run(fixture, replay, inputs, fixturePath, large, split, settings);
         var summaries = PrimaryExperiments.Summarize(primary);
         var frozenGate = gatesPath is null ? null : Runner.Load<Gate>(gatesPath);
         var primaryChecks = summaries.Select(s => new { s.EntityType, s.Setting,
@@ -61,14 +90,21 @@ try
         Directory.CreateDirectory(output);
         File.WriteAllText(Path.Combine(output, "report.json"), JsonSerializer.Serialize(new {
             RunId = Path.GetFileName(Path.GetFullPath(output)), CreatedAt = DateTimeOffset.UtcNow,
-            fixture.Version, fixture.Origin, fixture.HumanReviewStatus, QualityClaim = false, AiEnabled = false,
+            fixture.Version, fixture.Origin, fixture.HumanReviewStatus, QualityClaim = false, AiEnabled = live is not null,
+            ClassificationOrigin = inputs.Origin, ModelVersion = livePlan?.ModelVersion,
+            DocumentPromptVersion = livePlan?.DocumentPromptVersion, QueryPromptVersion = livePlan?.QueryPromptVersion,
+            JevPlanSha256 = jevPlanPath is null ? null : Runner.Hash(jevPlanPath),
+            JevCaptureSha256 = jevCapturePath is null ? null : Runner.Hash(jevCapturePath),
+            RecordedJevUsage = live is null ? null : new { Calls = livePlan!.Requests.Length, live.InputTokens, live.OutputTokens, Retries = 0,
+                EstimatedCostUsd = live.InputTokens * .042m / 1000000m, PricingCheckedAt = "2026-10-03", FxDate = (string?)null },
             EvaluatorSha256 = Runner.Hash(typeof(Runner).Assembly.Location),
             RuleVersion = PrimaryExperiments.Version, TaxonomyVersion = Retriever.TaxonomyVersion,
             NormalizationVersion = "normalization-v1", DatasetSha256 = Runner.Hash(fixturePath),
-            ExperimentInputsSha256 = Runner.Hash(inputsPath), ReplaySha256 = Runner.Hash(replayPath),
+            ExperimentInputsSha256 = live is null ? Runner.Hash(inputsPath) : null, ReplaySha256 = Runner.Hash(replayPath),
             ComparisonsSha256 = comparisonPath is null ? null : Runner.Hash(comparisonPath),
             GatesSha256 = gatesPath is null ? null : Runner.Hash(gatesPath),
             Usage = new { Calls = 0, Tokens = 0, Retries = 0, Ru = 0, LiveLatencyMs = (double?)null },
+            MeasurementScope = "Primary ranking over dummy data; no reranking or Cosmos latency",
             AdoptionStatus = "pending_live_measurement_and_approval", Summary = summaries, PrimaryChecks = primaryChecks, Comparisons = comparisons, Variations = RerankComparisons.Variations(comparisons)
         }, Runner.Json) + "\n");
         File.WriteAllText(Path.Combine(output, "primary.json"), JsonSerializer.Serialize(primary, Runner.Json) + "\n");
@@ -93,7 +129,7 @@ try
             r.QuestionId, r.EntityType, r.ModelVersion, r.PromptVersion, r.EvidenceBytes, r.IncludeProbabilities,
             r.Order, r.Attempt, r.K, r.Status, r.FailureCause, r.CandidateSha256,
             r.Scores.Recall, r.Scores.Precision, r.Scores.Ndcg, r.Scores.FinalHitRate }));
-        Console.WriteLine($"{primary.Length}行の一次比較を保存: {output}。実AI評価・採用判定ではありません。");
+        Console.WriteLine($"{primary.Length}行の一次比較を保存: {output}。分類の実測と再順位品質・採用判定は区別してください。");
         return 0;
     }
     var rows = Runner.Run(fixture, replay, large, split, k);
