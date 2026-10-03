@@ -15,11 +15,15 @@ try
     string? writeJevPlan = null;
     string? jevPlanPath = null;
     string? jevCapturePath = null;
+    string? specsPath = null;
+    string? settingsPath = null;
     for (var i = 0; i < args.Length; i++)
     {
         string Value() => ++i < args.Length ? args[i] : throw new ArgumentException("引数の値がありません。");
         switch (args[i])
         {
+            case "--specs": specsPath = Value(); break;
+            case "--settings": settingsPath = Value(); matrix = true; break;
             case "--write-jev-plan": writeJevPlan = Value(); break;
             case "--jev-plan": jevPlanPath = Value(); break;
             case "--jev-capture": jevCapturePath = Value(); matrix = true; break;
@@ -42,7 +46,7 @@ try
     {
         Runner.Validate(fixture, replay);
         if (File.Exists(writeJevPlan)) throw new ArgumentException("既存JEV送信計画は上書きできません。");
-        var specRoot = Path.Combine(data, "..", "docs", "specs");
+        var specRoot = specsPath ?? Path.Combine(data, "..", "docs", "specs");
         var plan = JevEvaluation.Plan(fixture, fixturePath, Path.Combine(specRoot, "taxonomy-v1.json"), Path.Combine(specRoot, "normalization-v1.json"));
         File.WriteAllText(writeJevPlan, JsonSerializer.Serialize(plan, Runner.Json) + "\n");
         Console.WriteLine($"JEV計画を保存: {plan.Requests.Length}回、最大$1、モデル{plan.ModelVersion}。まだ送信していません。");
@@ -76,7 +80,9 @@ try
             if (split == "final") Runner.Load<Gate>(gatesPath!).ValidateExperiments(inputsPath, comparisonPath);
             inputs = Runner.Load<ExperimentInputs>(inputsPath);
         }
-        var settings = live is null ? null : PrimaryExperiments.Settings().Concat(new[] {20,50,100}.Select(n => new ExperimentSetting("L", .2, 3, .5, n))).ToArray();
+        var settings = settingsPath is null ? (live is null ? null : PrimaryExperiments.Settings().Concat(new[] {20,50,100}.Select(n => new ExperimentSetting("L", .2, 3, .5, n))).ToArray()) : Runner.Load<ExperimentSetting[]>(settingsPath);
+        if (settings is not null && (settings.Length == 0 || settings.Distinct().Count() != settings.Length)) throw new ArgumentException("比較条件は空/重複にできません。");
+        if (split == "final") Runner.Load<Gate>(gatesPath!).ValidateSettings(settingsPath);
         var primary = PrimaryExperiments.Run(fixture, replay, inputs, fixturePath, large, split, settings);
         var summaries = PrimaryExperiments.Summarize(primary);
         var frozenGate = gatesPath is null ? null : Runner.Load<Gate>(gatesPath);
@@ -95,6 +101,7 @@ try
             DocumentPromptVersion = livePlan?.DocumentPromptVersion, QueryPromptVersion = livePlan?.QueryPromptVersion,
             JevPlanSha256 = jevPlanPath is null ? null : Runner.Hash(jevPlanPath),
             JevCaptureSha256 = jevCapturePath is null ? null : Runner.Hash(jevCapturePath),
+            SelectedSettingsSha256 = settingsPath is null ? null : Runner.Hash(settingsPath),
             RecordedJevUsage = live is null ? null : new { Calls = live.AttemptCount == 0 ? livePlan!.Requests.Length : live.AttemptCount, live.InputTokens, live.OutputTokens, Retries = live.RetryCount, live.UncertainInputTokens,
                 EstimatedCostUsd = live.InputTokens * .042m / 1000000m, ConservativeCostUsd = (live.InputTokens + live.UncertainInputTokens) * .042m / 1000000m, PricingCheckedAt = "2026-10-03", FxDate = (string?)null },
             EvaluatorSha256 = Runner.Hash(typeof(Runner).Assembly.Location),

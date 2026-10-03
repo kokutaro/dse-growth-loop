@@ -1,0 +1,15 @@
+{
+  "status": "frozen",
+  "approvedBy": "repository-owner-user (追加ラベル承認と継続済み合否基準, 2026-10-03)",
+  "frozenAt": "2026-10-03T02:41:47.090762+00:00",
+  "datasetSha256": "6e9724acadf1d9c7dff61531f5e02df4c1bd3543c451e785f237e693356b437d",
+  "replaySha256": "e7c8db3196f6ebfaba41f182f1a585a64389ec8334334ae3654ae1be734f6724",
+  "experimentInputsSha256": null,
+  "comparisonsSha256": null,
+  "primaryRecallMinimum": 0.9,
+  "structuredAccuracyMinimum": 0.9,
+  "warmP95MsMaximum": 15000,
+  "coldP95MsMaximum": null,
+  "aiBudgetYenMaximum": 8000,
+  "jevPlanSha256": "4f546cd7bb2699123bdabbc11b4a2a6c66d3bb312141f4f17f9685ad25a625be"
+}

@@ -1,7 +1,7 @@
 {
-  "version": "evaluation-v2-draft",
+  "version": "evaluation-v2",
   "origin": "synthetic",
-  "humanReviewStatus": "pending",
+  "humanReviewStatus": "human-approved",
   "labelAuthor": "AI agent; repository owner review required",
   "baseVersion": "evaluation-v1 (unchanged)",
   "units": [
@@ -31,7 +31,7 @@
             "text": "通知APIの開発で、一過性の通信エラーを識別し、指数バックオフと送信回数上限を実装した。失敗を再現するテストも作成した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-01",
       "split": "tuning",
@@ -67,7 +67,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。通知APIの開発で、一過性の通信エラーを識別し、指数バックオフと送信回数上限を実装した。失敗を再現するテストも作成した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-01",
       "split": "tuning",
@@ -103,7 +103,7 @@
             "text": "ソフトウェアの資料に「外部通知が一時的に失敗しても、時間を空けて再送できる仕組みを作った人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-01",
       "split": "tuning",
@@ -139,7 +139,7 @@
             "text": "ソフトウェア開発で、新旧両方の列へ書き込み、既存データの移行後に読み取り先を切り替えた。稼働中の業務システムを停止せずテーブルを変更した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-02",
       "split": "tuning",
@@ -175,7 +175,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、新旧両方の列へ書き込み、既存データの移行後に読み取り先を切り替えた。稼働中の業務システムを停止せずテーブルを変更した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-02",
       "split": "tuning",
@@ -211,7 +211,7 @@
             "text": "ソフトウェアの資料に「サービスを止めずにデータベースの構造を変更した経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-02",
       "split": "tuning",
@@ -247,7 +247,7 @@
             "text": "ソフトウェア運用の解決事例。認証状態が端末間で上書きされる不具合を調査し、セッション識別子を端末ごとに分離して再ログイン要求を解消した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-03",
       "split": "tuning",
@@ -283,7 +283,7 @@
             "text": "類似課題に対する補助的な参考事例。ソフトウェア運用の解決事例。認証状態が端末間で上書きされる不具合を調査し、セッション識別子を端末ごとに分離して再ログイン要求を解消した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-03",
       "split": "tuning",
@@ -319,7 +319,7 @@
             "text": "ソフトウェアの資料に「同じ人が複数回ログインすると認証状態が消える問題を解決した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-03",
       "split": "tuning",
@@ -355,7 +355,7 @@
             "text": "ソフトウェア開発の事例。過去に使用した認証秘密のハッシュ履歴を照合し、同一の秘密への変更を拒否する処理と検証手順を追加した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-04",
       "split": "tuning",
@@ -391,7 +391,7 @@
             "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。過去に使用した認証秘密のハッシュ履歴を照合し、同一の秘密への変更を拒否する処理と検証手順を追加した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-04",
       "split": "tuning",
@@ -409,7 +409,7 @@
         "tenantId": "demo-tenant",
         "unitId": "v2t-software-04-knowledge-negative-unit",
         "title": "架空v2t-software-04-knowledge-negative",
-        "summary": "ソフトウェアの資料に「一度変えたパスワードにすぐ戻せないようにした実装例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。",
+        "summary": "ソフトウェアの資料に「一度変えた認証用の文字列にすぐ戻せないようにした実装例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。",
         "scopeIds": [
           "demo"
         ],
@@ -424,10 +424,10 @@
             "id": "v2t-software-04-knowledge-negative-evidence",
             "documentTitle": "sources.md",
             "location": "#v2t-software-04-knowledge-negative-evidence",
-            "text": "ソフトウェアの資料に「一度変えたパスワードにすぐ戻せないようにした実装例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            "text": "ソフトウェアの資料に「一度変えた認証用の文字列にすぐ戻せないようにした実装例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-software-04",
       "split": "tuning",
@@ -463,7 +463,7 @@
             "text": "機械設計で、回転体の偏心と支持剛性を測定した。軸受間隔と支持部の寸法を変更し、振動耐久試験で寿命改善を確認した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-05",
       "split": "tuning",
@@ -499,7 +499,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、回転体の偏心と支持剛性を測定した。軸受間隔と支持部の寸法を変更し、振動耐久試験で寿命改善を確認した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-05",
       "split": "tuning",
@@ -535,7 +535,7 @@
             "text": "機械設計の資料に「ポンプの軸がぶれて短期間で壊れる問題を、設計変更で直した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-05",
       "split": "tuning",
@@ -571,7 +571,7 @@
             "text": "機械設計で、シール溝の加工公差と温度による膨張を解析した。溝寸法と密封材を変更し、高温での漏洩試験に合格した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-06",
       "split": "tuning",
@@ -607,7 +607,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、シール溝の加工公差と温度による膨張を解析した。溝寸法と密封材を変更し、高温での漏洩試験に合格した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-06",
       "split": "tuning",
@@ -643,7 +643,7 @@
             "text": "機械設計の資料に「油圧機器の継ぎ目から液体が漏れる問題を解決した経験者に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-06",
       "split": "tuning",
@@ -679,7 +679,7 @@
             "text": "機械設計の解決事例。締結部の疲労亀裂を破面観察で特定し、初期締付力と荷重経路を見直した。繰り返し負荷による破断が再発しなかった。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-07",
       "split": "tuning",
@@ -715,7 +715,7 @@
             "text": "類似課題に対する補助的な参考事例。機械設計の解決事例。締結部の疲労亀裂を破面観察で特定し、初期締付力と荷重経路を見直した。繰り返し負荷による破断が再発しなかった。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-07",
       "split": "tuning",
@@ -751,7 +751,7 @@
             "text": "機械設計の資料に「繰り返し荷重でボルトが折れる問題の対策事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-07",
       "split": "tuning",
@@ -787,7 +787,7 @@
             "text": "機械設計の事例。公差の累積による摺動部の干渉を解析し、基準面と逃げ寸法を改訂した。量産前の組立検証で干渉を検出しないことを確認した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-08",
       "split": "tuning",
@@ -823,7 +823,7 @@
             "text": "類似課題に対する補助的な参考事例。機械設計の事例。公差の累積による摺動部の干渉を解析し、基準面と逃げ寸法を改訂した。量産前の組立検証で干渉を検出しないことを確認した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-08",
       "split": "tuning",
@@ -859,7 +859,7 @@
             "text": "機械設計の資料に「組み付けると部品同士が当たって動かない問題を、図面段階で防いだ事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-mechanical-08",
       "split": "tuning",
@@ -895,7 +895,7 @@
             "text": "営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め、見積の利益率を維持した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-09",
       "split": "tuning",
@@ -931,7 +931,7 @@
             "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め、見積の利益率を維持した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-09",
       "split": "tuning",
@@ -967,7 +967,7 @@
             "text": "営業の資料に「案件ごとに値引きの判断がばらつく問題を改善した担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-09",
       "split": "tuning",
@@ -1003,7 +1003,7 @@
             "text": "営業で、代理店向けの製品説明研修を企画し、実演と理解度確認を行った。商談同席で説明内容を確認し、担当者へ営業資料を引き継いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-10",
       "split": "tuning",
@@ -1039,7 +1039,7 @@
             "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、代理店向けの製品説明研修を企画し、実演と理解度確認を行った。商談同席で説明内容を確認し、担当者へ営業資料を引き継いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-10",
       "split": "tuning",
@@ -1075,7 +1075,7 @@
             "text": "営業の資料に「販売代理店が新製品を説明できない状況を改善した経験者に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-10",
       "split": "tuning",
@@ -1111,7 +1111,7 @@
             "text": "営業の解決事例。更新失注を顧客別に分析し、利用低下と未解決の問い合わせを早期に検知した。更新前の面談を実施して継続率を改善した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-11",
       "split": "tuning",
@@ -1147,7 +1147,7 @@
             "text": "類似課題に対する補助的な参考事例。営業の解決事例。更新失注を顧客別に分析し、利用低下と未解決の問い合わせを早期に検知した。更新前の面談を実施して継続率を改善した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-11",
       "split": "tuning",
@@ -1183,7 +1183,7 @@
             "text": "営業の資料に「契約更新直前に顧客が離れてしまう問題を減らした事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-11",
       "split": "tuning",
@@ -1219,7 +1219,7 @@
             "text": "営業の事例。提案段階で顧客要件と対象外範囲を一覧にし、技術担当と顧客が共同確認した。合意書を納入担当へ引き継ぎ、追加要求の扱いを明確にした。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-12",
       "split": "tuning",
@@ -1255,7 +1255,7 @@
             "text": "類似課題に対する補助的な参考事例。営業の事例。提案段階で顧客要件と対象外範囲を一覧にし、技術担当と顧客が共同確認した。合意書を納入担当へ引き継ぎ、追加要求の扱いを明確にした。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-12",
       "split": "tuning",
@@ -1291,7 +1291,7 @@
             "text": "営業の資料に「受注後に仕様の認識違いが判明する問題を防いだ商談事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-sales-12",
       "split": "tuning",
@@ -1327,7 +1327,7 @@
             "text": "製造で、外観が似た二種類の部品の取り違えを分析した。専用治具と部品照合の工程を導入し、誤組立を検出できるようにした。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-13",
       "split": "tuning",
@@ -1363,7 +1363,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観が似た二種類の部品の取り違えを分析した。専用治具と部品照合の工程を導入し、誤組立を検出できるようにした。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-13",
       "split": "tuning",
@@ -1399,7 +1399,7 @@
             "text": "製造の資料に「似た部品を取り違えて組み立てるミスを防いだ担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-13",
       "split": "tuning",
@@ -1435,7 +1435,7 @@
             "text": "製造で、梱包対象の識別番号と印字内容を読み合わせる工程を設計した。照合不一致では印刷を止め、誤表示による出荷を防いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-14",
       "split": "tuning",
@@ -1471,7 +1471,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、梱包対象の識別番号と印字内容を読み合わせる工程を設計した。照合不一致では印刷を止め、誤表示による出荷を防いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-14",
       "split": "tuning",
@@ -1507,7 +1507,7 @@
             "text": "製造の資料に「出荷時に別の製品のラベルを貼ってしまう問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-14",
       "split": "tuning",
@@ -1543,7 +1543,7 @@
             "text": "製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-15",
       "split": "tuning",
@@ -1579,7 +1579,7 @@
             "text": "類似課題に対する補助的な参考事例。製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-15",
       "split": "tuning",
@@ -1615,7 +1615,7 @@
             "text": "製造の資料に「工程の間に仕掛品が積み上がって納期が延びる問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-15",
       "split": "tuning",
@@ -1651,7 +1651,7 @@
             "text": "製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-16",
       "split": "tuning",
@@ -1687,7 +1687,7 @@
             "text": "類似課題に対する補助的な参考事例。製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-16",
       "split": "tuning",
@@ -1723,7 +1723,7 @@
             "text": "製造の資料に「塗装後に表面が剥がれる不良を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-manufacturing-16",
       "split": "tuning",
@@ -1759,7 +1759,7 @@
             "text": "業務運用で、受付した依頼に担当者と回答期限を付与する手順を設計した。未割当の一覧を毎日確認し、代理担当への振り分けを導入した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-17",
       "split": "tuning",
@@ -1795,7 +1795,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、受付した依頼に担当者と回答期限を付与する手順を設計した。未割当の一覧を毎日確認し、代理担当への振り分けを導入した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-17",
       "split": "tuning",
@@ -1831,7 +1831,7 @@
             "text": "業務運用の資料に「問い合わせが誰にも割り当てられず放置される状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-17",
       "split": "tuning",
@@ -1867,7 +1867,7 @@
             "text": "業務運用で、月次締めの作業順、照合方法、例外時の連絡先を手順書へ記載した。後任と並走して処理し、単独で実施できることを確認して引き継いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-18",
       "split": "tuning",
@@ -1903,7 +1903,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、月次締めの作業順、照合方法、例外時の連絡先を手順書へ記載した。後任と並走して処理し、単独で実施できることを確認して引き継いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-18",
       "split": "tuning",
@@ -1939,7 +1939,7 @@
             "text": "業務運用の資料に「担当者の異動後も毎月の締め処理を継続できるようにした経験者に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-18",
       "split": "tuning",
@@ -1975,7 +1975,7 @@
             "text": "業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-19",
       "split": "tuning",
@@ -2011,7 +2011,7 @@
             "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-19",
       "split": "tuning",
@@ -2047,7 +2047,7 @@
             "text": "業務運用の資料に「倉庫の帳簿にある数量と実際の在庫が合わない問題を直した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-19",
       "split": "tuning",
@@ -2083,7 +2083,7 @@
             "text": "業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-20",
       "split": "tuning",
@@ -2119,7 +2119,7 @@
             "text": "類似課題に対する補助的な参考事例。業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-20",
       "split": "tuning",
@@ -2155,7 +2155,7 @@
             "text": "業務運用の資料に「複数の拠点で同じ設備点検を重複して予約する問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2t-operations-20",
       "split": "tuning",
@@ -2191,7 +2191,7 @@
             "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-01",
       "split": "final",
@@ -2227,7 +2227,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-01",
       "split": "final",
@@ -2263,7 +2263,7 @@
             "text": "ソフトウェアの資料に「利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-01",
       "split": "final",
@@ -2299,7 +2299,7 @@
             "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-02",
       "split": "final",
@@ -2335,7 +2335,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-02",
       "split": "final",
@@ -2371,7 +2371,7 @@
             "text": "ソフトウェアの資料に「通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-02",
       "split": "final",
@@ -2407,7 +2407,7 @@
             "text": "ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-03",
       "split": "final",
@@ -2443,7 +2443,7 @@
             "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-03",
       "split": "final",
@@ -2479,7 +2479,7 @@
             "text": "ソフトウェアの資料に「分析用データから個人を特定できる情報を消した実装事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-03",
       "split": "final",
@@ -2515,7 +2515,7 @@
             "text": "ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-04",
       "split": "final",
@@ -2551,7 +2551,7 @@
             "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-04",
       "split": "final",
@@ -2587,7 +2587,7 @@
             "text": "ソフトウェアの資料に「同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-software-04",
       "split": "final",
@@ -2623,7 +2623,7 @@
             "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-05",
       "split": "final",
@@ -2659,7 +2659,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-05",
       "split": "final",
@@ -2695,7 +2695,7 @@
             "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-05",
       "split": "final",
@@ -2731,7 +2731,7 @@
             "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-06",
       "split": "final",
@@ -2767,7 +2767,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-06",
       "split": "final",
@@ -2803,7 +2803,7 @@
             "text": "機械設計の資料に「重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-06",
       "split": "final",
@@ -2839,7 +2839,7 @@
             "text": "機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-07",
       "split": "final",
@@ -2875,7 +2875,7 @@
             "text": "類似課題に対する補助的な参考事例。機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-07",
       "split": "final",
@@ -2911,7 +2911,7 @@
             "text": "機械設計の資料に「配管が共振して大きな音が出る問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-07",
       "split": "final",
@@ -2947,7 +2947,7 @@
             "text": "機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-08",
       "split": "final",
@@ -2983,7 +2983,7 @@
             "text": "類似課題に対する補助的な参考事例。機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-08",
       "split": "final",
@@ -3019,7 +3019,7 @@
             "text": "機械設計の資料に「カバーの縁で作業者がけがをする危険を、形状変更で減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-mechanical-08",
       "split": "final",
@@ -3055,7 +3055,7 @@
             "text": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-09",
       "split": "final",
@@ -3091,7 +3091,7 @@
             "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-09",
       "split": "final",
@@ -3127,7 +3127,7 @@
             "text": "営業の資料に「顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-09",
       "split": "final",
@@ -3163,7 +3163,7 @@
             "text": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-10",
       "split": "final",
@@ -3199,7 +3199,7 @@
             "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-10",
       "split": "final",
@@ -3235,7 +3235,7 @@
             "text": "営業の資料に「既存顧客の別部署へ製品を広げた経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-10",
       "split": "final",
@@ -3271,7 +3271,7 @@
             "text": "営業の解決事例。稼働停止と保守作業の削減量を顧客と確認し、購入費用だけでなく運用費用を含めた比較資料を作成した。効果の根拠を説明して受注した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-11",
       "split": "final",
@@ -3307,7 +3307,7 @@
             "text": "類似課題に対する補助的な参考事例。営業の解決事例。稼働停止と保守作業の削減量を顧客と確認し、購入費用だけでなく運用費用を含めた比較資料を作成した。効果の根拠を説明して受注した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-11",
       "split": "final",
@@ -3343,7 +3343,7 @@
             "text": "営業の資料に「顧客が価格だけで比較する入札で、提案の価値を伝えた事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-11",
       "split": "final",
@@ -3379,7 +3379,7 @@
             "text": "営業の事例。意思決定者と調達時期を再確認し、導入計画が消えた案件を見込みから除外した。継続する案件には次回判断日を合意し、予測を更新した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-12",
       "split": "final",
@@ -3415,7 +3415,7 @@
             "text": "類似課題に対する補助的な参考事例。営業の事例。意思決定者と調達時期を再確認し、導入計画が消えた案件を見込みから除外した。継続する案件には次回判断日を合意し、予測を更新した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-12",
       "split": "final",
@@ -3451,7 +3451,7 @@
             "text": "営業の資料に「長く返事がない商談について、失注か継続かを判断した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-sales-12",
       "split": "final",
@@ -3487,7 +3487,7 @@
             "text": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-13",
       "split": "final",
@@ -3523,7 +3523,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-13",
       "split": "final",
@@ -3559,7 +3559,7 @@
             "text": "製造の資料に「生産する品種が変わるたびに長く機械を止める問題を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-13",
       "split": "final",
@@ -3595,7 +3595,7 @@
             "text": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-14",
       "split": "final",
@@ -3631,7 +3631,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-14",
       "split": "final",
@@ -3667,7 +3667,7 @@
             "text": "製造の資料に「検査員ごとに良品と不良品の判断が変わる問題を直した担当者に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-14",
       "split": "final",
@@ -3703,7 +3703,7 @@
             "text": "製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-15",
       "split": "final",
@@ -3739,7 +3739,7 @@
             "text": "類似課題に対する補助的な参考事例。製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-15",
       "split": "final",
@@ -3775,7 +3775,7 @@
             "text": "製造の資料に「加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-15",
       "split": "final",
@@ -3811,7 +3811,7 @@
             "text": "製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-16",
       "split": "final",
@@ -3847,7 +3847,7 @@
             "text": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-16",
       "split": "final",
@@ -3883,7 +3883,7 @@
             "text": "製造の資料に「包装機で製品が詰まって停止する問題を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-manufacturing-16",
       "split": "final",
@@ -3919,7 +3919,7 @@
             "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-17",
       "split": "final",
@@ -3955,7 +3955,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-17",
       "split": "final",
@@ -3991,7 +3991,7 @@
             "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-17",
       "split": "final",
@@ -4027,7 +4027,7 @@
             "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-18",
       "split": "final",
@@ -4063,7 +4063,7 @@
             "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-18",
       "split": "final",
@@ -4099,7 +4099,7 @@
             "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-18",
       "split": "final",
@@ -4135,7 +4135,7 @@
             "text": "業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-19",
       "split": "final",
@@ -4171,7 +4171,7 @@
             "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-19",
       "split": "final",
@@ -4207,7 +4207,7 @@
             "text": "業務運用の資料に「災害時に一つの拠点が使えなくても業務を続けた事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-19",
       "split": "final",
@@ -4243,7 +4243,7 @@
             "text": "業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-20",
       "split": "final",
@@ -4279,7 +4279,7 @@
             "text": "類似課題に対する補助的な参考事例。業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-20",
       "split": "final",
@@ -4315,7 +4315,7 @@
             "text": "業務運用の資料に「請求書と入金の突合せに時間がかかる問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
           }
         ],
-        "confirmationState": "draft"
+        "confirmationState": "fixture"
       },
       "groupId": "v2f-operations-20",
       "split": "final",
@@ -5229,7 +5229,7 @@
     },
     {
       "id": "v2t-software-04-query",
-      "text": "一度変えたパスワードにすぐ戻せないようにした実装例を探したい。",
+      "text": "一度変えた認証用の文字列にすぐ戻せないようにした実装例を探したい。",
       "entityType": "knowledge",
       "difficulty": "lexical-variation",
       "split": "tuning",
@@ -18695,5 +18695,10 @@
         }
       ]
     }
-  ]
+  ],
+  "labelApproval": {
+    "approvedBy": "repository-owner-user",
+    "approvedAt": "2026-10-03",
+    "reference": "追加質問レビュー票の質問・正解ラベル案をレビュー済みとして承認"
+  }
 }

@@ -1,0 +1,38 @@
+{
+  "version": "selection-policy-v1",
+  "targetVariant": "E",
+  "sourceSplit": "tuning",
+  "minimumRecallPerEntityType": 0.9,
+  "passingOrder": [
+    "N ascending",
+    "sum(meanCandidates) ascending including zero-gold queries",
+    "capLoss ascending",
+    "documentThreshold descending",
+    "questionTop ascending",
+    "noulThreshold descending"
+  ],
+  "fallbackOrder": [
+    "minimumRecall descending",
+    "meanRecall descending",
+    "then passingOrder"
+  ],
+  "finalVariants": [
+    "L",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "sameSettingsAcrossLAndAtoE": true,
+  "allAuthorizedF": {
+    "documentThreshold": 0.2,
+    "questionTop": 3,
+    "noulThreshold": 0.5,
+    "n": 100
+  },
+  "finalSweep": false,
+  "finalTuning": false,
+  "qualityScope": "primary retrieval only; no LLM reranking"
+}
