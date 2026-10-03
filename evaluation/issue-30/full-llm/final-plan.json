@@ -1,0 +1,3124 @@
+{
+  "modelVersion": "gpt-6-luna-2026-09-22",
+  "promptVersion": "rerank-eval-v1",
+  "parseRetries": 3,
+  "captureCodeSha256": "b6e44f5b3b957aff7b5f4f10fed103a942e9b5d27c63be208c499f1997590168",
+  "minimumRequestIntervalSeconds": 1,
+  "stopOnHttp429": true,
+  "requests": [
+    {
+      "id": "v2f-software-01-query-original-1",
+      "questionId": "v2f-software-01-query",
+      "candidateSha256": "3d6858a175e9b3f7ed77af2fcd3068881cb14931cbd3cccd40f85aa35a637a8a",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-negative-evidence",
+                "text": "ソフトウェアの資料に「利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-negative-evidence",
+                "text": "ソフトウェアの資料に「通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-software-01-query-reversed-1",
+      "questionId": "v2f-software-01-query",
+      "candidateSha256": "3d6858a175e9b3f7ed77af2fcd3068881cb14931cbd3cccd40f85aa35a637a8a",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-software-02-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-negative-evidence",
+                "text": "ソフトウェアの資料に「通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-negative-evidence",
+                "text": "ソフトウェアの資料に「利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-software-01-query-original-2",
+      "questionId": "v2f-software-01-query",
+      "candidateSha256": "3d6858a175e9b3f7ed77af2fcd3068881cb14931cbd3cccd40f85aa35a637a8a",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-negative-evidence",
+                "text": "ソフトウェアの資料に「利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-negative-evidence",
+                "text": "ソフトウェアの資料に「通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-software-02-query-original-1",
+      "questionId": "v2f-software-02-query",
+      "candidateSha256": "ea07a0bf59cdc176a99dbb7775180bb4f4db1ddb27bd9e8ef2ae032c03ee5295",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-negative-evidence",
+                "text": "ソフトウェアの資料に「利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-negative-evidence",
+                "text": "ソフトウェアの資料に「通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-software-02-query-reversed-1",
+      "questionId": "v2f-software-02-query",
+      "candidateSha256": "ea07a0bf59cdc176a99dbb7775180bb4f4db1ddb27bd9e8ef2ae032c03ee5295",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-software-02-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-negative-evidence",
+                "text": "ソフトウェアの資料に「通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-negative-evidence",
+                "text": "ソフトウェアの資料に「利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-software-02-query-original-2",
+      "questionId": "v2f-software-02-query",
+      "candidateSha256": "ea07a0bf59cdc176a99dbb7775180bb4f4db1ddb27bd9e8ef2ae032c03ee5295",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-negative-evidence",
+                "text": "ソフトウェアの資料に「利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-negative-evidence",
+                "text": "ソフトウェアの資料に「通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-mechanical-05-query-original-1",
+      "questionId": "v2f-mechanical-05-query",
+      "candidateSha256": "03381f40f333a7db1dce5b4928356cdc45c1b7e18cf74464cfeaef9fc9dfb423",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-negative-evidence",
+                "text": "機械設計の資料に「重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-mechanical-05-query-reversed-1",
+      "questionId": "v2f-mechanical-05-query",
+      "candidateSha256": "03381f40f333a7db1dce5b4928356cdc45c1b7e18cf74464cfeaef9fc9dfb423",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-negative-evidence",
+                "text": "機械設計の資料に「重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-mechanical-05-query-original-2",
+      "questionId": "v2f-mechanical-05-query",
+      "candidateSha256": "03381f40f333a7db1dce5b4928356cdc45c1b7e18cf74464cfeaef9fc9dfb423",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-negative-evidence",
+                "text": "機械設計の資料に「重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-mechanical-06-query-original-1",
+      "questionId": "v2f-mechanical-06-query",
+      "candidateSha256": "f5ccf77015ce8fc7163fe8796a970dccefa4834aad9ce6514af702becf92e16f",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-negative-evidence",
+                "text": "機械設計の資料に「重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-mechanical-06-query-reversed-1",
+      "questionId": "v2f-mechanical-06-query",
+      "candidateSha256": "f5ccf77015ce8fc7163fe8796a970dccefa4834aad9ce6514af702becf92e16f",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-negative-evidence",
+                "text": "機械設計の資料に「重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-mechanical-06-query-original-2",
+      "questionId": "v2f-mechanical-06-query",
+      "candidateSha256": "f5ccf77015ce8fc7163fe8796a970dccefa4834aad9ce6514af702becf92e16f",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-negative-evidence",
+                "text": "機械設計の資料に「重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-sales-09-query-original-1",
+      "questionId": "v2f-sales-09-query",
+      "candidateSha256": "063e076efaa96640425c08e9f71633161c2933bdd42d322c190b58ee433790fa",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-sales-09-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-direct-evidence",
+                "text": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-direct-evidence",
+                "text": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-negative-evidence",
+                "text": "営業の資料に「既存顧客の別部署へ製品を広げた経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-negative-evidence",
+                "text": "営業の資料に「顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-sales-09-query-reversed-1",
+      "questionId": "v2f-sales-09-query",
+      "candidateSha256": "063e076efaa96640425c08e9f71633161c2933bdd42d322c190b58ee433790fa",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-negative-evidence",
+                "text": "営業の資料に「顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-negative-evidence",
+                "text": "営業の資料に「既存顧客の別部署へ製品を広げた経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-direct-evidence",
+                "text": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-direct-evidence",
+                "text": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-sales-09-query-original-2",
+      "questionId": "v2f-sales-09-query",
+      "candidateSha256": "063e076efaa96640425c08e9f71633161c2933bdd42d322c190b58ee433790fa",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-sales-09-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-direct-evidence",
+                "text": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-direct-evidence",
+                "text": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-negative-evidence",
+                "text": "営業の資料に「既存顧客の別部署へ製品を広げた経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-negative-evidence",
+                "text": "営業の資料に「顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-sales-10-query-original-1",
+      "questionId": "v2f-sales-10-query",
+      "candidateSha256": "063e076efaa96640425c08e9f71633161c2933bdd42d322c190b58ee433790fa",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "既存顧客の別部署へ製品を広げた経験がある人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-sales-09-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-direct-evidence",
+                "text": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-direct-evidence",
+                "text": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-negative-evidence",
+                "text": "営業の資料に「既存顧客の別部署へ製品を広げた経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-negative-evidence",
+                "text": "営業の資料に「顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-sales-10-query-reversed-1",
+      "questionId": "v2f-sales-10-query",
+      "candidateSha256": "063e076efaa96640425c08e9f71633161c2933bdd42d322c190b58ee433790fa",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "既存顧客の別部署へ製品を広げた経験がある人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-negative-evidence",
+                "text": "営業の資料に「顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-negative-evidence",
+                "text": "営業の資料に「既存顧客の別部署へ製品を広げた経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-direct-evidence",
+                "text": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-direct-evidence",
+                "text": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-sales-10-query-original-2",
+      "questionId": "v2f-sales-10-query",
+      "candidateSha256": "063e076efaa96640425c08e9f71633161c2933bdd42d322c190b58ee433790fa",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "既存顧客の別部署へ製品を広げた経験がある人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-sales-09-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-direct-evidence",
+                "text": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-direct-evidence",
+                "text": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-10-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-10-person-negative-evidence",
+                "text": "営業の資料に「既存顧客の別部署へ製品を広げた経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-negative-evidence",
+                "text": "営業の資料に「顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-sales-09-person-support",
+            "evidence": [
+              {
+                "id": "v2f-sales-09-person-support-evidence",
+                "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-support",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-13-query-original-1",
+      "questionId": "v2f-manufacturing-13-query",
+      "candidateSha256": "c180f090b7bc6d403323b85e6af1fa04b88883354e1d996ea0a6bacfb59bcd97",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "生産する品種が変わるたびに長く機械を止める問題を改善した人を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-direct-evidence",
+                "text": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-direct-evidence",
+                "text": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-13-query-reversed-1",
+      "questionId": "v2f-manufacturing-13-query",
+      "candidateSha256": "c180f090b7bc6d403323b85e6af1fa04b88883354e1d996ea0a6bacfb59bcd97",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "生産する品種が変わるたびに長く機械を止める問題を改善した人を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-direct-evidence",
+                "text": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-direct-evidence",
+                "text": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-13-query-original-2",
+      "questionId": "v2f-manufacturing-13-query",
+      "candidateSha256": "c180f090b7bc6d403323b85e6af1fa04b88883354e1d996ea0a6bacfb59bcd97",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "生産する品種が変わるたびに長く機械を止める問題を改善した人を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-direct-evidence",
+                "text": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-direct-evidence",
+                "text": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-14-query-original-1",
+      "questionId": "v2f-manufacturing-14-query",
+      "candidateSha256": "c180f090b7bc6d403323b85e6af1fa04b88883354e1d996ea0a6bacfb59bcd97",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "検査員ごとに良品と不良品の判断が変わる問題を直した担当者に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-direct-evidence",
+                "text": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-direct-evidence",
+                "text": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-14-query-reversed-1",
+      "questionId": "v2f-manufacturing-14-query",
+      "candidateSha256": "c180f090b7bc6d403323b85e6af1fa04b88883354e1d996ea0a6bacfb59bcd97",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "検査員ごとに良品と不良品の判断が変わる問題を直した担当者に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-direct-evidence",
+                "text": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-direct-evidence",
+                "text": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-14-query-original-2",
+      "questionId": "v2f-manufacturing-14-query",
+      "candidateSha256": "c180f090b7bc6d403323b85e6af1fa04b88883354e1d996ea0a6bacfb59bcd97",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "検査員ごとに良品と不良品の判断が変わる問題を直した担当者に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-direct-evidence",
+                "text": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-direct-evidence",
+                "text": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-14-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-14-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-13-person-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-13-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-15-query-original-1",
+      "questionId": "v2f-manufacturing-15-query",
+      "candidateSha256": "2ebfb4affbfe801632fac892522e69d4e517eeb42f142e659881a9ab5a7ccb6a",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-direct-evidence",
+                "text": "製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-support-evidence",
+                "text": "類似課題に対する補助的な参考事例。製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-negative",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-negative-evidence",
+                "text": "製造の資料に「加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-negative",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-negative-evidence",
+                "text": "製造の資料に「包装機で製品が詰まって停止する問題を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-support-evidence",
+                "text": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-direct-evidence",
+                "text": "製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-15-query-reversed-1",
+      "questionId": "v2f-manufacturing-15-query",
+      "candidateSha256": "2ebfb4affbfe801632fac892522e69d4e517eeb42f142e659881a9ab5a7ccb6a",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-direct-evidence",
+                "text": "製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-support-evidence",
+                "text": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-negative",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-negative-evidence",
+                "text": "製造の資料に「包装機で製品が詰まって停止する問題を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-negative",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-negative-evidence",
+                "text": "製造の資料に「加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-support-evidence",
+                "text": "類似課題に対する補助的な参考事例。製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-direct-evidence",
+                "text": "製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-manufacturing-15-query-original-2",
+      "questionId": "v2f-manufacturing-15-query",
+      "candidateSha256": "2ebfb4affbfe801632fac892522e69d4e517eeb42f142e659881a9ab5a7ccb6a",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-direct-evidence",
+                "text": "製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-support-evidence",
+                "text": "類似課題に対する補助的な参考事例。製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-15-knowledge-negative",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-15-knowledge-negative-evidence",
+                "text": "製造の資料に「加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-negative",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-negative-evidence",
+                "text": "製造の資料に「包装機で製品が詰まって停止する問題を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-support",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-support-evidence",
+                "text": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-manufacturing-16-knowledge-direct",
+            "evidence": [
+              {
+                "id": "v2f-manufacturing-16-knowledge-direct-evidence",
+                "text": "製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-operations-17-query-original-1",
+      "questionId": "v2f-operations-17-query",
+      "candidateSha256": "12c2efcfac773a621c9df266ea7e88bc2b1820d7a95bf518692013d44b324860",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-operations-17-query-reversed-1",
+      "questionId": "v2f-operations-17-query",
+      "candidateSha256": "12c2efcfac773a621c9df266ea7e88bc2b1820d7a95bf518692013d44b324860",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-operations-17-query-original-2",
+      "questionId": "v2f-operations-17-query",
+      "candidateSha256": "12c2efcfac773a621c9df266ea7e88bc2b1820d7a95bf518692013d44b324860",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-operations-18-query-original-1",
+      "questionId": "v2f-operations-18-query",
+      "candidateSha256": "12c2efcfac773a621c9df266ea7e88bc2b1820d7a95bf518692013d44b324860",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-operations-18-query-reversed-1",
+      "questionId": "v2f-operations-18-query",
+      "candidateSha256": "12c2efcfac773a621c9df266ea7e88bc2b1820d7a95bf518692013d44b324860",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-operations-18-query-original-2",
+      "questionId": "v2f-operations-18-query",
+      "candidateSha256": "12c2efcfac773a621c9df266ea7e88bc2b1820d7a95bf518692013d44b324860",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-negative-evidence",
+                "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-negative-evidence",
+                "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-no-answer-01-original-1",
+      "questionId": "v2f-no-answer-01",
+      "candidateSha256": "038328720d25e9cd62cbbdb4189269a545099d75a590985da63b3ae1d2063a63",
+      "order": "original",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "宇宙機の姿勢制御を軌道上で検証した経験者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-no-answer-01-reversed-1",
+      "questionId": "v2f-no-answer-01",
+      "candidateSha256": "038328720d25e9cd62cbbdb4189269a545099d75a590985da63b3ae1d2063a63",
+      "order": "reversed",
+      "attempt": 1,
+      "skip": false,
+      "input": {
+        "question": "宇宙機の姿勢制御を軌道上で検証した経験者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2f-no-answer-01-original-2",
+      "questionId": "v2f-no-answer-01",
+      "candidateSha256": "038328720d25e9cd62cbbdb4189269a545099d75a590985da63b3ae1d2063a63",
+      "order": "original",
+      "attempt": 2,
+      "skip": false,
+      "input": {
+        "question": "宇宙機の姿勢制御を軌道上で検証した経験者を探したい。",
+        "candidates": [
+          {
+            "candidateId": "v2f-mechanical-05-person-negative",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-negative-evidence",
+                "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-direct-evidence",
+                "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-06-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-06-person-direct-evidence",
+                "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-direct-evidence",
+                "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-direct-evidence",
+                "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-01-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-01-person-direct-evidence",
+                "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-software-02-person-direct",
+            "evidence": [
+              {
+                "id": "v2f-software-02-person-direct-evidence",
+                "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-mechanical-05-person-support",
+            "evidence": [
+              {
+                "id": "v2f-mechanical-05-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-17-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-17-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+              }
+            ]
+          },
+          {
+            "candidateId": "v2f-operations-18-person-support",
+            "evidence": [
+              {
+                "id": "v2f-operations-18-person-support-evidence",
+                "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

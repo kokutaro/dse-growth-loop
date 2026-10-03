@@ -1,0 +1,1091 @@
+[
+  {
+    "id": "v2t-manufacturing-15-query-original-1",
+    "questionId": "v2t-manufacturing-15-query",
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "order": "original",
+    "attempt": 1,
+    "skip": false,
+    "input": {
+      "question": "工程の間に仕掛品が積み上がって納期が延びる問題を改善した事例がほしい。",
+      "candidates": [
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-direct-evidence",
+              "text": "製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-negative-evidence",
+              "text": "製造の資料に「塗装後に表面が剥がれる不良を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-direct-evidence",
+              "text": "業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-negative-evidence",
+              "text": "業務運用の資料に「倉庫の帳簿にある数量と実際の在庫が合わない問題を直した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-direct-evidence",
+              "text": "業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-negative-evidence",
+              "text": "業務運用の資料に「複数の拠点で同じ設備点検を重複して予約する問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-negative-evidence",
+              "text": "製造の資料に「工程の間に仕掛品が積み上がって納期が延びる問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-direct-evidence",
+              "text": "製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2t-manufacturing-15-query-reversed-1",
+    "questionId": "v2t-manufacturing-15-query",
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "order": "reversed",
+    "attempt": 1,
+    "skip": false,
+    "input": {
+      "question": "工程の間に仕掛品が積み上がって納期が延びる問題を改善した事例がほしい。",
+      "candidates": [
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-direct-evidence",
+              "text": "製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-negative-evidence",
+              "text": "製造の資料に「工程の間に仕掛品が積み上がって納期が延びる問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-negative-evidence",
+              "text": "業務運用の資料に「複数の拠点で同じ設備点検を重複して予約する問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-direct-evidence",
+              "text": "業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-negative-evidence",
+              "text": "業務運用の資料に「倉庫の帳簿にある数量と実際の在庫が合わない問題を直した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-direct-evidence",
+              "text": "業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-negative-evidence",
+              "text": "製造の資料に「塗装後に表面が剥がれる不良を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-direct-evidence",
+              "text": "製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2t-manufacturing-15-query-original-2",
+    "questionId": "v2t-manufacturing-15-query",
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "order": "original",
+    "attempt": 2,
+    "skip": false,
+    "input": {
+      "question": "工程の間に仕掛品が積み上がって納期が延びる問題を改善した事例がほしい。",
+      "candidates": [
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-direct-evidence",
+              "text": "製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-negative-evidence",
+              "text": "製造の資料に「塗装後に表面が剥がれる不良を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-16-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-16-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-direct-evidence",
+              "text": "業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-negative-evidence",
+              "text": "業務運用の資料に「倉庫の帳簿にある数量と実際の在庫が合わない問題を直した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-19-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-operations-19-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-direct-evidence",
+              "text": "業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-negative-evidence",
+              "text": "業務運用の資料に「複数の拠点で同じ設備点検を重複して予約する問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-operations-20-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-operations-20-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-negative-evidence",
+              "text": "製造の資料に「工程の間に仕掛品が積み上がって納期が延びる問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2t-manufacturing-15-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2t-manufacturing-15-knowledge-direct-evidence",
+              "text": "製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2f-software-04-query-original-1",
+    "questionId": "v2f-software-04-query",
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "order": "original",
+    "attempt": 1,
+    "skip": false,
+    "input": {
+      "question": "同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。",
+      "candidates": [
+        {
+          "candidateId": "v2f-operations-19-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-direct-evidence",
+              "text": "業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-19-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-direct-evidence",
+              "text": "業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-direct-evidence",
+              "text": "ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-04-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-direct-evidence",
+              "text": "ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-04-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-negative-evidence",
+              "text": "業務運用の資料に「請求書と入金の突合せに時間がかかる問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-negative-evidence",
+              "text": "ソフトウェアの資料に「分析用データから個人を特定できる情報を消した実装事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-19-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-negative-evidence",
+              "text": "業務運用の資料に「災害時に一つの拠点が使えなくても業務を続けた事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-04-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-negative-evidence",
+              "text": "ソフトウェアの資料に「同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2f-software-04-query-reversed-1",
+    "questionId": "v2f-software-04-query",
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "order": "reversed",
+    "attempt": 1,
+    "skip": false,
+    "input": {
+      "question": "同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。",
+      "candidates": [
+        {
+          "candidateId": "v2f-software-04-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-negative-evidence",
+              "text": "ソフトウェアの資料に「同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-19-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-negative-evidence",
+              "text": "業務運用の資料に「災害時に一つの拠点が使えなくても業務を続けた事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-negative-evidence",
+              "text": "ソフトウェアの資料に「分析用データから個人を特定できる情報を消した実装事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-negative-evidence",
+              "text": "業務運用の資料に「請求書と入金の突合せに時間がかかる問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-04-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-04-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-direct-evidence",
+              "text": "ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-direct-evidence",
+              "text": "ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-direct-evidence",
+              "text": "業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-19-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-19-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-direct-evidence",
+              "text": "業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2f-software-04-query-original-2",
+    "questionId": "v2f-software-04-query",
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "order": "original",
+    "attempt": 2,
+    "skip": false,
+    "input": {
+      "question": "同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。",
+      "candidates": [
+        {
+          "candidateId": "v2f-operations-19-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-direct-evidence",
+              "text": "業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-19-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-direct-evidence",
+              "text": "業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-direct-evidence",
+              "text": "ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-04-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-direct-evidence",
+              "text": "ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-04-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-20-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-operations-20-knowledge-negative-evidence",
+              "text": "業務運用の資料に「請求書と入金の突合せに時間がかかる問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-03-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-software-03-knowledge-negative-evidence",
+              "text": "ソフトウェアの資料に「分析用データから個人を特定できる情報を消した実装事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-operations-19-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-operations-19-knowledge-negative-evidence",
+              "text": "業務運用の資料に「災害時に一つの拠点が使えなくても業務を続けた事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-software-04-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-software-04-knowledge-negative-evidence",
+              "text": "ソフトウェアの資料に「同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2f-manufacturing-16-query-original-1",
+    "questionId": "v2f-manufacturing-16-query",
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "order": "original",
+    "attempt": 1,
+    "skip": false,
+    "input": {
+      "question": "包装機で製品が詰まって停止する問題を減らした事例を探したい。",
+      "candidates": [
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-direct-evidence",
+              "text": "製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-direct-evidence",
+              "text": "機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-direct-evidence",
+              "text": "機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-negative-evidence",
+              "text": "機械設計の資料に「カバーの縁で作業者がけがをする危険を、形状変更で減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-negative-evidence",
+              "text": "製造の資料に「加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-negative-evidence",
+              "text": "機械設計の資料に「配管が共振して大きな音が出る問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-negative-evidence",
+              "text": "製造の資料に「包装機で製品が詰まって停止する問題を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-direct-evidence",
+              "text": "製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2f-manufacturing-16-query-reversed-1",
+    "questionId": "v2f-manufacturing-16-query",
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "order": "reversed",
+    "attempt": 1,
+    "skip": false,
+    "input": {
+      "question": "包装機で製品が詰まって停止する問題を減らした事例を探したい。",
+      "candidates": [
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-direct-evidence",
+              "text": "製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-negative-evidence",
+              "text": "製造の資料に「包装機で製品が詰まって停止する問題を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-negative-evidence",
+              "text": "機械設計の資料に「配管が共振して大きな音が出る問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-negative-evidence",
+              "text": "製造の資料に「加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-negative-evidence",
+              "text": "機械設計の資料に「カバーの縁で作業者がけがをする危険を、形状変更で減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-direct-evidence",
+              "text": "機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-direct-evidence",
+              "text": "機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-direct-evidence",
+              "text": "製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2f-manufacturing-16-query-original-2",
+    "questionId": "v2f-manufacturing-16-query",
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "order": "original",
+    "attempt": 2,
+    "skip": false,
+    "input": {
+      "question": "包装機で製品が詰まって停止する問題を減らした事例を探したい。",
+      "candidates": [
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-direct-evidence",
+              "text": "製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-direct-evidence",
+              "text": "機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-direct-evidence",
+              "text": "機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-negative-evidence",
+              "text": "機械設計の資料に「カバーの縁で作業者がけがをする危険を、形状変更で減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-08-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-08-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-15-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-15-knowledge-negative-evidence",
+              "text": "製造の資料に「加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-mechanical-07-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-mechanical-07-knowledge-negative-evidence",
+              "text": "機械設計の資料に「配管が共振して大きな音が出る問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-negative",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-negative-evidence",
+              "text": "製造の資料に「包装機で製品が詰まって停止する問題を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-support",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-support-evidence",
+              "text": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+            }
+          ]
+        },
+        {
+          "candidateId": "v2f-manufacturing-16-knowledge-direct",
+          "evidence": [
+            {
+              "id": "v2f-manufacturing-16-knowledge-direct-evidence",
+              "text": "製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

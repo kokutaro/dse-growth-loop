@@ -1,0 +1,119 @@
+{
+  "setting": "production-fragments",
+  "scope": "candidate-hash comparison only; new reranking not executed",
+  "changed": [
+    {
+      "questionId": "v2f-software-01-query",
+      "candidateSha256": "f529bac0695bc7f2e12199d4f6af0281aa3e2a4687d9cfe1697f59af5fffeaac",
+      "candidates": 6,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-software-02-query",
+      "candidateSha256": "4e3355c0248678832e64838f1d148347f5d1dff08db9a736fcefff80b4b80ea6",
+      "candidates": 6,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-software-04-query",
+      "candidateSha256": "f7cbab01f0bf39534c076b85684afd936d694d76cfd3b12f220cd94f9a19838e",
+      "candidates": 10,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-mechanical-05-query",
+      "candidateSha256": "da00785473cb1e994355c6dd5c04371b6942a62b51f02f419d83cf4e7f2c039f",
+      "candidates": 8,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-mechanical-06-query",
+      "candidateSha256": "6dc06f8d86cbc3bd11e18de5d8deae22e9bc2b162ee977114a9917bc0d94342a",
+      "candidates": 8,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-sales-09-query",
+      "candidateSha256": "7ac05f454b3fc2e2ef7bef2048817a895f3e7ebc17e2f37b29e49168f879d385",
+      "candidates": 10,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-sales-10-query",
+      "candidateSha256": "7ac05f454b3fc2e2ef7bef2048817a895f3e7ebc17e2f37b29e49168f879d385",
+      "candidates": 10,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-sales-11-query",
+      "candidateSha256": "16c0579f3677da633ae283ad045f0ed7270c7dd4f051138a097fcf0135e4a568",
+      "candidates": 6,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-manufacturing-13-query",
+      "candidateSha256": "49c867990af182afb6bd52c821ea714aed74e7d3ee98a59a3526609fd2ddb9a6",
+      "candidates": 10,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-manufacturing-14-query",
+      "candidateSha256": "49c867990af182afb6bd52c821ea714aed74e7d3ee98a59a3526609fd2ddb9a6",
+      "candidates": 10,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-manufacturing-15-query",
+      "candidateSha256": "2ebfb4affbfe801632fac892522e69d4e517eeb42f142e659881a9ab5a7ccb6a",
+      "candidates": 6,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-manufacturing-16-query",
+      "candidateSha256": "6cd04cc130fe4714e4fc49f5ba5d57fdab2b9950a763d5aa01719c819534c901",
+      "candidates": 10,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-operations-17-query",
+      "candidateSha256": "963a453070e398f338cf5f1c2af9867cfc76b67b5e7d2535fa3807b4c41b42e1",
+      "candidates": 7,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-operations-18-query",
+      "candidateSha256": "963a453070e398f338cf5f1c2af9867cfc76b67b5e7d2535fa3807b4c41b42e1",
+      "candidates": 7,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-no-answer-01",
+      "candidateSha256": "4a33da6b41458cfa9c63b4ffb214404f6b747abedfab89e90e76d1eac2d3e8bc",
+      "candidates": 10,
+      "inferenceNeeded": true
+    },
+    {
+      "questionId": "v2f-no-answer-03",
+      "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "candidates": 0,
+      "inferenceNeeded": false
+    },
+    {
+      "questionId": "v2f-no-answer-04",
+      "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "candidates": 0,
+      "inferenceNeeded": false
+    }
+  ],
+  "unchanged": [
+    "v2f-software-03-query",
+    "v2f-mechanical-07-query",
+    "v2f-mechanical-08-query",
+    "v2f-sales-12-query",
+    "v2f-operations-19-query",
+    "v2f-operations-20-query",
+    "v2f-no-answer-02"
+  ],
+  "additionalCalls": 0,
+  "reuseConstraint": "Retain existing normal responses. Reuse requires matching model, prompt, evidence budget, probability visibility and order as well as candidate hash; production evidence budget 1200 differs from existing evaluation 1000."
+}

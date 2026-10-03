@@ -6,6 +6,8 @@ namespace Dse.Infrastructure;
 
 internal static class AiCodecs
 {
+    internal static string SerializeRequest(JsonObject body) => body["response_format"]?["json_schema"]?["name"]?.GetValue<string>() == "rerank"
+        ? SearchRerankBudget.Serialize(body) : body.ToJsonString();
     internal static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     internal static JsonNode Node<T>(T value) => JsonSerializer.SerializeToNode(value, Json)!;
     internal static void Require(bool condition, AiFailure failure = AiFailure.SchemaMismatch)

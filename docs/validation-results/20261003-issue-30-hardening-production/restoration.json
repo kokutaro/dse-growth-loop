@@ -1,0 +1,76 @@
+{
+  "verifiedAt": "2026-10-03T12:03:16.723574+00:00",
+  "checks": {
+    "apiImageRestored": true,
+    "apiAllEnvironmentRestored": true,
+    "apiScaleRestored": true,
+    "apiIdentityUnchanged": true,
+    "apiConfigurationUnchanged": true,
+    "workerImageUnchanged": true,
+    "workerAllEnvironmentUnchanged": true,
+    "workerConfigurationUnchanged": true,
+    "workerIdentityUnchanged": true,
+    "noActiveApiRevisions": true,
+    "noActiveWorkerRevisions": true,
+    "noRunningValidationExecutions": true,
+    "validationOptInDisabled": true,
+    "validationAiStopped": true,
+    "validationBudgetZero": true,
+    "apiPhysicalReplicasZero": true
+  },
+  "allChecksPass": true,
+  "apiImage": "dseacrypbunss3xh66m.azurecr.io/dse-api:issue9-final5",
+  "apiScope": "demo",
+  "apiReplicaCounts": {
+    "dse-api--issue30-hardening-auth1": 0,
+    "dse-api--issue30-hardening-restored1": 0,
+    "dse-api--issue30-hardening1": 0,
+    "dse-api--issue30-restored2": 0
+  },
+  "workerActiveRevisions": 0,
+  "validationExecutionStatuses": [
+    {
+      "name": "dse-validation-issue30-b16y4ye",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-issue30-x0a2coa",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-issue30-vi0vqiw",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-issue30-5j0c14p",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-issue30-cj0qkaa",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-issue30-3mr1zm6",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-issue30-ey120ac",
+      "status": "Succeeded"
+    },
+    {
+      "name": "dse-validation-issue30-38xajb8",
+      "status": "Stopped"
+    },
+    {
+      "name": "dse-validation-issue30-cms38f9",
+      "status": "Failed"
+    },
+    {
+      "name": "dse-validation-issue30-4ke93wi",
+      "status": "Failed"
+    }
+  ],
+  "rbacChanges": false,
+  "dummySourceAndLabelsChanged": false,
+  "newImagesRetainedInACR": true
+}

@@ -35,7 +35,7 @@ public static class SearchInput
 }
 public sealed record QueryConversion(SearchRequest? Conditions, CategoryProbability[] Distribution,
     string Status, string? AiRunId, RetrievalRules Rules);
-public sealed record NaturalSearchRequest(string Query, SearchRequest? Conditions = null);
+public sealed record NaturalSearchRequest(string Query, SearchRequest? Conditions = null, string Target = "all");
 public sealed record CandidateAssessment(string EntityId, string EntityType, string Reason, string[] EvidenceIds, string[] MissingInformation);
 public sealed record EvidenceCut(string CandidateId, string EvidenceId, int OriginalBytes, int SentBytes);
 public sealed record NaturalSearchResponse(string RunId, SearchRequest Conditions, SearchResult Primary,

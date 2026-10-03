@@ -1,0 +1,22 @@
+{
+  "aiAuditRows": 194,
+  "statusCounts": {
+    "succeeded": 130,
+    "not_evaluated": 30,
+    "failed": 33,
+    "budget_stopped": 1
+  },
+  "attempts": 131,
+  "inputTokens": 162624,
+  "outputTokens": 25378,
+  "conservativeEstimatedAiCostJpy": 2.9540984,
+  "estimatedUsageRows": 1,
+  "retrievalAuditRows": 44,
+  "retrievalScopedRu": 15215.010000000033,
+  "httpServerDurationP95Ms": 12305,
+  "feeScope": "AI traces include failed authorization reservation. RU only per-search observed work, excluding ingestion/classification audit, result export, storage and Container Apps; actual invoices not measured.",
+  "inputLimitAudits": 32,
+  "inputLimitAllBeforeInference": true,
+  "httpServerDurationMeasurementCount": 22,
+  "httpServerDurationP95Method": "nearest rank ceil(0.95*22)=21"
+}

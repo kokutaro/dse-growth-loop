@@ -1,0 +1,60 @@
+{
+  "createdAt": "2026-10-03T08:57:37.582773+00:00",
+  "liveRequests": 9,
+  "wireAttempts": 9,
+  "parseRetries": 0,
+  "checks": {
+    "fixedInputHashes": true,
+    "approvalAndPlanBinding": true,
+    "journalAndComparisonAgreement": true,
+    "rawModelAndSchemaAndGroundingResponses": 9,
+    "validatedItems": 18,
+    "deterministicScoringJsonFiles": 4,
+    "llmContractAndQualityTests": {
+      "passed": 20,
+      "failed": 0
+    },
+    "allScriptAndBicepTests": {
+      "passed": 67,
+      "failed": 0
+    },
+    "allGatesPassed": true,
+    "relativeLinks": true,
+    "gitDiffCheck": true
+  },
+  "commands": [
+    "python3 scripts/issue30_llm_evaluation.py prepare",
+    "python3 scripts/llm_rerank_evaluation.py --plan evaluation/issue-30/llm/plan.json --output docs/validation-results/20261003-issue-30-llm/capture --approval user-20261003-issue30-execute-llm --credit-usd 0.10 --live",
+    "python3 scripts/issue30_llm_evaluation.py score",
+    "python3 scripts/issue30_llm_evaluation.py score --output .artifacts/issue30-llm-verification",
+    "python3 -m unittest discover -s tests/scripts -p 'test*llm*evaluation.py'",
+    "python3 -m unittest discover -s tests/scripts"
+  ],
+  "scope": "Three observed changed positive questions; not independent or full production integration",
+  "initialSandboxTestAttempt": "60 tests passed; Bicep setup errored under sandbox. Full 67 tests passed outside sandbox.",
+  "sha256": {
+    "docs/validation-results/20261003-issue-30-llm/capture/43b7a1eb838e843db432d9a50557b7889f7f553d4fc63f2590984866944ab5c9.json": "b26f875570c9cfa0e093661356a7cacbb8b04b512c675ee25678c2da8d5626ec",
+    "docs/validation-results/20261003-issue-30-llm/capture/2e1ab5d1925c34533d5c5ab4bdb2ecafa4091bfe661a653a9cd7a7d41beb2db4.json": "49a14fd22549e1fc9d5c07b346ea9e86f73d4108ef518757b46d580de114e78b",
+    "docs/validation-results/20261003-issue-30-llm/capture/d2ef94981d1679b34f501a3a5c2eadcebdb69435aa504dbce7ce5f65aa39e1d5.json": "6ec2dfe015c7e7ebd271184e4ff4c658d369177edaa5a4b63e394f40f14ea342",
+    "docs/validation-results/20261003-issue-30-llm/capture/approval.json": "ec559b98d266ae315425819b13ff0d1f2e624026384fb0706e2f5187795c1ebc",
+    "docs/validation-results/20261003-issue-30-llm/capture/comparisons.json": "a4d089496db42ea1b69ab1a843b6324d5bff93698d7076cb87c3bf243f7d4bb9",
+    "docs/validation-results/20261003-issue-30-llm/capture/0bbf4ecaccf3e95f62bd2b0a0cd9f4e0a3d1b70565ed2f1ffed330abff15a27b.json": "4bd06822c7478bf72fff18b05fd37731270d78eb87c160953871d19e201dcf93",
+    "docs/validation-results/20261003-issue-30-llm/capture/8a9419dda1da14be65516cc21258a0029f243f5491b2da98ed4456dc6f65aa8c.json": "7dab78aed6e7c111126fc06e52d2ab11a6b47a3721c0f2b7fe33feb9f15d7ed8",
+    "docs/validation-results/20261003-issue-30-llm/capture/00fffced3889facffa1d360d6947e0fb92a31a6ef9e92709ee467609055e2db0.json": "59c3eeb32860377cd0751b3cadb55c1e87f7ce5d5d7dbab2b9fd36eb52ce8c65",
+    "docs/validation-results/20261003-issue-30-llm/capture/7cf372a69d6cbcd3e4f10a86b096e851b488a34494daaef8f4bc951eee5b8e0f.json": "9f870edd86ea571d95363b53e1ea1d3a741f18f7e61d49e7ef0bea00a363dfca",
+    "docs/validation-results/20261003-issue-30-llm/capture/8fd5d602bd1642092de61fc5f493c18dfa607bf96632e7881230dfce5901c67a.json": "8391a8c5422d541c52f3cb71cba5da283fe47e3064bbcaa0de557a24f9ded4ac",
+    "docs/validation-results/20261003-issue-30-llm/capture/763e99db85c58dd9534a489e522e266701a85f9557c3c0158a0df2bf218afff5.json": "f4f9d77c6f10cf0a24102b16ace9f2c71e5028727b89d168eb5bec499d5fcde4",
+    "docs/validation-results/20261003-issue-30-llm/scored/report.json": "88e2d7def6af5821d7adf42a09c7561501d478b4a924b55bd37405e83b1a686a",
+    "docs/validation-results/20261003-issue-30-llm/scored/questions.json": "ca35b6fb2cdb4be69f4003e9da073c5c70d930cb2b3edc47ac5f6dc532402e8f",
+    "docs/validation-results/20261003-issue-30-llm/scored/comparisons.json": "3888043092d8cb2b1ae4e3c575ddbe507196868658a13fc4814256e1dffd0130",
+    "docs/validation-results/20261003-issue-30-llm/scored/baseline.json": "a064acaf5707e43a1e45f1c344f9021754d725c09d1128838b59d895c19b5048",
+    "evaluation/issue-30/llm/plan.json": "826c51d7b7681f510c52169d95c251f516bb1e99658b904419718eeec0c20fc7",
+    "evaluation/issue-30/llm/all-tasks.json": "e9d3938fcb365bdce91a26b623f17881b10a5bc01be9957d2630524b671ea573",
+    "evaluation/issue-30/llm/manifest.json": "6fcb3369b5e4e93f8c799253a681f3ad40af857ae44aee0208064ba777c985b5",
+    "evaluation/issue-30/llm/reused.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/validation-results/20261003-issue-30-llm/results.md": "0b95fd5058d3512c197500a3ae9163d90a4ca62ecb9626df130dada6f7ff698a",
+    "evaluation/issue-30/llm/README.md": "4f20d34dc47ecd0d490bcc230012db2393733e4d2d53adc11f93c54954260c31",
+    "scripts/issue30_llm_evaluation.py": "549bf751415a0d32d92b98a8dac793a5760502a1a3d82ccd4021e2e4317a9dbd",
+    "tests/scripts/test_issue30_llm_evaluation.py": "2b8cbebd9f4149d67e0354ebb0c6faa47cce14cc4dec59309250a7d3bba03a54"
+  }
+}

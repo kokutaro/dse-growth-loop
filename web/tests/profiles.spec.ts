@@ -1,6 +1,32 @@
 import { test, expect } from "@playwright/test";
 import path from "node:path";
 
+test("副業務を原文付きの検索断片として追加し経験月数を重複加算しない", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("文書名", { exact: true }).fill("副業務を含む架空プロフィール");
+  await page.getByLabel("原本ファイル").setInputFiles(path.resolve("tests/fixtures/secondary-work.docx"));
+  const accepted = page.waitForResponse(r => r.url().endsWith("/api/v1/documents") && r.request().method() === "POST");
+  await page.getByRole("button", { name: "アップロード", exact: true }).click();
+  const { documentId } = await (await accepted).json();
+  await expect.poll(async () => {
+    await page.getByRole("button", { name: "プロフィールを更新", exact: true }).click();
+    return await page.getByTestId(documentId).count();
+  }, { timeout: 30000 }).toBe(1);
+  await expect(page.getByTestId(documentId).getByLabel("経験の説明")).toHaveCount(1);
+  await expect(page.locator(".profiles")).toContainText("日付から算出した経験月数（重複除外）：48");
+  await page.getByLabel("検索語", { exact: true }).fill("副業務として次の対応を共同実施した");
+  const searchResponse = page.waitForResponse(r => r.url().includes("/api/") && r.request().method() === "POST" && r.url().includes("search"));
+  await page.getByRole("button", { name: "相談候補を探す", exact: true }).click();
+  const response = await (await searchResponse).json();
+  const candidates = (response.primary ?? response).candidates;
+  const secondary = candidates.flatMap((candidate: { units: { summary: string; sourceRefs: { text: string }[] }[] }) => candidate.units)
+    .find((unit: { summary: string }) => unit.summary.startsWith("副業務として"));
+  expect(secondary).toBeDefined();
+  expect(secondary.summary).toContain("共同実施した");
+  expect(secondary.sourceRefs.some((source: { text: string }) => source.text.includes(secondary.summary))).toBe(true);
+  await expect(page.getByRole("region", { name: "相談候補と参考事例" })).toContainText("共同実施した");
+});
+
 for (const extension of ["docx", "xlsx"]) {
   test(`${extension}から本人訂正と手動一次検索までfake AIで通る`, async ({ page }) => {
     await page.goto("/");

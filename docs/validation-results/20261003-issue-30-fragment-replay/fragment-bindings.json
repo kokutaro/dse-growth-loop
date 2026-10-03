@@ -1,0 +1,162 @@
+[
+  {
+    "entityId": "v2t-software-01-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-5554ac2564d132a6ef83b20bb4760c0cd5505af8009b177bda2107ae6e14cf6e",
+    "reusedRequestId": "jev-86a2d10a081af99947ece852e9de54deec73a2758fe77cf80965fa74414badd3",
+    "reusedRequestSha256": "39f4ba2f1adbee56220a3acccd3e0c0563c4ab0f2b74956760b5a63d6520b340",
+    "exactSourceQuote": "\u901A\u77E5API\u306E\u958B\u767A\u3067\u3001\u4E00\u904E\u6027\u306E\u901A\u4FE1\u30A8\u30E9\u30FC\u3092\u8B58\u5225\u3057\u3001\u6307\u6570\u30D0\u30C3\u30AF\u30AA\u30D5\u3068\u9001\u4FE1\u56DE\u6570\u4E0A\u9650\u3092\u5B9F\u88C5\u3057\u305F\u3002\u5931\u6557\u3092\u518D\u73FE\u3059\u308B\u30C6\u30B9\u30C8\u3082\u4F5C\u6210\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2t-software-02-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-603643b6df8eb6f48e1ff2b1c9f8833c62f3be48ed12f9d3af40a4e80b168445",
+    "reusedRequestId": "jev-a6ba9c69ab1cdbb163f1cc3c7843260ef95cd0b26e4cf657b2ab11cf589e938e",
+    "reusedRequestSha256": "5eb20a066939030502c798ebda827bff615d237224818fb725b53aa7a66a510b",
+    "exactSourceQuote": "\u30BD\u30D5\u30C8\u30A6\u30A7\u30A2\u958B\u767A\u3067\u3001\u65B0\u65E7\u4E21\u65B9\u306E\u5217\u3078\u66F8\u304D\u8FBC\u307F\u3001\u65E2\u5B58\u30C7\u30FC\u30BF\u306E\u79FB\u884C\u5F8C\u306B\u8AAD\u307F\u53D6\u308A\u5148\u3092\u5207\u308A\u66FF\u3048\u305F\u3002\u7A3C\u50CD\u4E2D\u306E\u696D\u52D9\u30B7\u30B9\u30C6\u30E0\u3092\u505C\u6B62\u305B\u305A\u30C6\u30FC\u30D6\u30EB\u3092\u5909\u66F4\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2t-mechanical-05-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-52b2066aa940d962628fb187dc2d369f806a0cb42401032fac5d02b64fab4ab6",
+    "reusedRequestId": "jev-82262fcaf3b52036d53ebdf6233c7ccf4263c8b7860d17bf193532aa70a0e23b",
+    "reusedRequestSha256": "19d660b2ffc3086c571cb2ad514b7149d39ed23e095ee701766f1216b7c29a9f",
+    "exactSourceQuote": "\u6A5F\u68B0\u8A2D\u8A08\u3067\u3001\u56DE\u8EE2\u4F53\u306E\u504F\u5FC3\u3068\u652F\u6301\u525B\u6027\u3092\u6E2C\u5B9A\u3057\u305F\u3002\u8EF8\u53D7\u9593\u9694\u3068\u652F\u6301\u90E8\u306E\u5BF8\u6CD5\u3092\u5909\u66F4\u3057\u3001\u632F\u52D5\u8010\u4E45\u8A66\u9A13\u3067\u5BFF\u547D\u6539\u5584\u3092\u78BA\u8A8D\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2t-mechanical-06-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-c5b782adbf9e315041efcf91dd6697606e26e0c09004e5c25313ae9424641285",
+    "reusedRequestId": "jev-ef69ddcba979c273b527f0340065317ba5b465b6cb37c49df400711372f9c4a9",
+    "reusedRequestSha256": "3a3a6108d525024306ceb1638ca2e073d59c3ea7feabe9aac0dc99b516e9ec77",
+    "exactSourceQuote": "\u6A5F\u68B0\u8A2D\u8A08\u3067\u3001\u30B7\u30FC\u30EB\u6E9D\u306E\u52A0\u5DE5\u516C\u5DEE\u3068\u6E29\u5EA6\u306B\u3088\u308B\u81A8\u5F35\u3092\u89E3\u6790\u3057\u305F\u3002\u6E9D\u5BF8\u6CD5\u3068\u5BC6\u5C01\u6750\u3092\u5909\u66F4\u3057\u3001\u9AD8\u6E29\u3067\u306E\u6F0F\u6D29\u8A66\u9A13\u306B\u5408\u683C\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2t-sales-09-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-8438e9291ff8c990e00ad00f856095dc23338f4931a166d763b69cdca5b82148",
+    "reusedRequestId": "jev-a7acfd119d0f9e512ac9dbfa37d4523f932b24983fb6ad3144475072396c46c3",
+    "reusedRequestSha256": "cc37d927ff409a4ab6450f1ab354dd505443386b96b365fd09530fe5db56c534",
+    "exactSourceQuote": "\u55B6\u696D\u3067\u3001\u6848\u4EF6\u306E\u7C97\u5229\u3068\u5951\u7D04\u898F\u6A21\u306B\u57FA\u3065\u304F\u5272\u5F15\u627F\u8A8D\u8868\u3092\u4F5C\u6210\u3057\u305F\u3002\u627F\u8A8D\u8005\u3068\u4F8B\u5916\u6761\u4EF6\u3092\u5B9A\u3081\u3001\u898B\u7A4D\u306E\u5229\u76CA\u7387\u3092\u7DAD\u6301\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2t-sales-10-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-ca4dc50bfe8406aa72d42873858d325e5b29bf52625ac544276193644b954d5f",
+    "reusedRequestId": "jev-d920717023be40cc8103a4f6dc04c6ece39fd77c0e407885e0a93d6a49c626b4",
+    "reusedRequestSha256": "4019e198058f00829d2a91ded0d5f043f20b6597518a2a8a419aed795940d87d",
+    "exactSourceQuote": "\u55B6\u696D\u3067\u3001\u4EE3\u7406\u5E97\u5411\u3051\u306E\u88FD\u54C1\u8AAC\u660E\u7814\u4FEE\u3092\u4F01\u753B\u3057\u3001\u5B9F\u6F14\u3068\u7406\u89E3\u5EA6\u78BA\u8A8D\u3092\u884C\u3063\u305F\u3002\u5546\u8AC7\u540C\u5E2D\u3067\u8AAC\u660E\u5185\u5BB9\u3092\u78BA\u8A8D\u3057\u3001\u62C5\u5F53\u8005\u3078\u55B6\u696D\u8CC7\u6599\u3092\u5F15\u304D\u7D99\u3044\u3060\u3002"
+  },
+  {
+    "entityId": "v2t-manufacturing-13-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-0854ae7c6bc8c5a2a233a5eb312e169507931f86bb1e851b860eda544250d8e7",
+    "reusedRequestId": "jev-be550c54b7416a1316401a947f0a4b2d4722cb815ff8b790c2a27c3d48a1f212",
+    "reusedRequestSha256": "744831df4ec3232a9d443580fbb639acd848c31f7b73500030b3edf461388bb3",
+    "exactSourceQuote": "\u88FD\u9020\u3067\u3001\u5916\u89B3\u304C\u4F3C\u305F\u4E8C\u7A2E\u985E\u306E\u90E8\u54C1\u306E\u53D6\u308A\u9055\u3048\u3092\u5206\u6790\u3057\u305F\u3002\u5C02\u7528\u6CBB\u5177\u3068\u90E8\u54C1\u7167\u5408\u306E\u5DE5\u7A0B\u3092\u5C0E\u5165\u3057\u3001\u8AA4\u7D44\u7ACB\u3092\u691C\u51FA\u3067\u304D\u308B\u3088\u3046\u306B\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2t-manufacturing-14-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-b9651482f4cc02d99544a6547041621ae68ade69026b91be088801c31e658f66",
+    "reusedRequestId": "jev-f530f66f37ee09c6136710293cd161beb60bbac3366cffb0448b2e582daed1bc",
+    "reusedRequestSha256": "039628f5a1d28f5b9fc168a659d71a358bf3029724ab3e9eb58c04280d059480",
+    "exactSourceQuote": "\u88FD\u9020\u3067\u3001\u68B1\u5305\u5BFE\u8C61\u306E\u8B58\u5225\u756A\u53F7\u3068\u5370\u5B57\u5185\u5BB9\u3092\u8AAD\u307F\u5408\u308F\u305B\u308B\u5DE5\u7A0B\u3092\u8A2D\u8A08\u3057\u305F\u3002\u7167\u5408\u4E0D\u4E00\u81F4\u3067\u306F\u5370\u5237\u3092\u6B62\u3081\u3001\u8AA4\u8868\u793A\u306B\u3088\u308B\u51FA\u8377\u3092\u9632\u3044\u3060\u3002"
+  },
+  {
+    "entityId": "v2t-operations-17-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-962dec9a88f4326018dadb7aae473c3e28b4de416a2bb87bb2e8a66c82ba812c",
+    "reusedRequestId": "jev-91b5cdaf4640b9861c792c31338334a41e3c3c20329050030a11483ccf5496b4",
+    "reusedRequestSha256": "5694219b21868dd313cbccfc63d30adf2b89297c46312a1c187ebd197fc071d3",
+    "exactSourceQuote": "\u696D\u52D9\u904B\u7528\u3067\u3001\u53D7\u4ED8\u3057\u305F\u4F9D\u983C\u306B\u62C5\u5F53\u8005\u3068\u56DE\u7B54\u671F\u9650\u3092\u4ED8\u4E0E\u3059\u308B\u624B\u9806\u3092\u8A2D\u8A08\u3057\u305F\u3002\u672A\u5272\u5F53\u306E\u4E00\u89A7\u3092\u6BCE\u65E5\u78BA\u8A8D\u3057\u3001\u4EE3\u7406\u62C5\u5F53\u3078\u306E\u632F\u308A\u5206\u3051\u3092\u5C0E\u5165\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2t-operations-18-person-support",
+    "split": "tuning",
+    "originalRequestId": "jev-1d9bf63c50226aa1a58fffa671e8cf5f86e484fe80987645d38c3414ec0cdd91",
+    "reusedRequestId": "jev-0730dd6e5e1faa4461db5e8e2308deaf4126555555bcb69585f1ed22e3d5ba51",
+    "reusedRequestSha256": "bb83e8cbc79389cd3d4c7fa6a20ceaeb3355b4af88f95a0dad48a31ba947cc4b",
+    "exactSourceQuote": "\u696D\u52D9\u904B\u7528\u3067\u3001\u6708\u6B21\u7DE0\u3081\u306E\u4F5C\u696D\u9806\u3001\u7167\u5408\u65B9\u6CD5\u3001\u4F8B\u5916\u6642\u306E\u9023\u7D61\u5148\u3092\u624B\u9806\u66F8\u3078\u8A18\u8F09\u3057\u305F\u3002\u5F8C\u4EFB\u3068\u4E26\u8D70\u3057\u3066\u51E6\u7406\u3057\u3001\u5358\u72EC\u3067\u5B9F\u65BD\u3067\u304D\u308B\u3053\u3068\u3092\u78BA\u8A8D\u3057\u3066\u5F15\u304D\u7D99\u3044\u3060\u3002"
+  },
+  {
+    "entityId": "v2f-software-01-person-support",
+    "split": "final",
+    "originalRequestId": "jev-72b5b27ed27aa8daf219cfdc54e4d7b4ece3958cbc5709ee9240d70b48335c46",
+    "reusedRequestId": "jev-cf86f923fa8e2e598ef811a4b6656fc5620c0a9ee1fcb34557d846665aef471f",
+    "reusedRequestSha256": "fec02b6d3dfdc0aa14ee56b4a8e3dcc2d15dd5a82983c3da9899eea720992a98",
+    "exactSourceQuote": "\u30BD\u30D5\u30C8\u30A6\u30A7\u30A2\u958B\u767A\u3067\u3001\u691C\u7D22\u6642\u306B\u7D44\u7E54\u8B58\u5225\u5B50\u304C\u629C\u3051\u308B\u7D4C\u8DEF\u3092\u8ABF\u67FB\u3057\u305F\u3002\u5168\u53D6\u5F97\u51E6\u7406\u3067\u30C6\u30CA\u30F3\u30C8\u6761\u4EF6\u3092\u5FC5\u9808\u306B\u3057\u3001\u4ED6\u7D44\u7E54\u306E\u8A18\u9332\u304C\u8FD4\u3089\u306A\u3044\u56DE\u5E30\u8A66\u9A13\u3092\u8FFD\u52A0\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2f-software-02-person-support",
+    "split": "final",
+    "originalRequestId": "jev-b4e9456a5b1cd8aa3802d5eaa41257334abfe895eed0e809d59a750f2058268d",
+    "reusedRequestId": "jev-a3f59fde509df6072c89e968cd53f7db6c8ab110b3ab411334b589f9a563cdae",
+    "reusedRequestSha256": "76695fe600376877b59d24576d0cc185eac29b92f728193ad825ea6294970ebb",
+    "exactSourceQuote": "\u30BD\u30D5\u30C8\u30A6\u30A7\u30A2\u958B\u767A\u3067\u3001\u73FE\u5834\u7AEF\u672B\u306E\u5165\u529B\u3092\u30ED\u30FC\u30AB\u30EB\u306B\u6C38\u7D9A\u5316\u3057\u305F\u3002\u518D\u63A5\u7D9A\u6642\u306B\u672A\u9001\u4FE1\u30C7\u30FC\u30BF\u3092\u540C\u671F\u3057\u3001\u9001\u4FE1\u6E08\u307F\u72B6\u614B\u3092\u4FDD\u5B58\u3057\u3066\u8A18\u9332\u306E\u6B20\u843D\u3092\u9632\u3044\u3060\u3002"
+  },
+  {
+    "entityId": "v2f-mechanical-05-person-support",
+    "split": "final",
+    "originalRequestId": "jev-47064d14b055cc779277fd774affea9c61b827f1276d2e801f21dd86eff04335",
+    "reusedRequestId": "jev-7069b485278066323f16a7ef0fb15cea85f36c19cc15dd1c976ae867ac9b22a7",
+    "reusedRequestSha256": "3ae59ec4e3086ff84302805a858bfc281be8e3ddc7f5889c0d229e3ab68a011f",
+    "exactSourceQuote": "\u6A5F\u68B0\u8A2D\u8A08\u3067\u3001\u7B50\u4F53\u306E\u71B1\u81A8\u5F35\u3068\u6E29\u5EA6\u5206\u5E03\u3092\u8A55\u4FA1\u3057\u305F\u3002\u6750\u6599\u306E\u7D44\u5408\u305B\u3068\u56FA\u5B9A\u4F4D\u7F6E\u3092\u5909\u66F4\u3057\u3001\u9AD8\u6E29\u3067\u3082\u958B\u9589\u3067\u304D\u308B\u9699\u9593\u3092\u78BA\u4FDD\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2f-mechanical-06-person-support",
+    "split": "final",
+    "originalRequestId": "jev-cbbf056f6e707d617f3a309e0dad76a2b88f736a6c163f958b7c37e8239092d8",
+    "reusedRequestId": "jev-0d45051fbe0eff2af09cf20010162902dc30056f2ea9c010f77df2dce307b632",
+    "reusedRequestSha256": "0b21db6f98d705e5d1e5f3c990cd584237eecf35d5e6bdaab2270c21def9e6be",
+    "exactSourceQuote": "\u6A5F\u68B0\u8A2D\u8A08\u3067\u3001\u88C5\u7F6E\u306E\u91CD\u5FC3\u3068\u540A\u4E0A\u3052\u8377\u91CD\u3092\u8A08\u7B97\u3057\u305F\u3002\u5C02\u7528\u306E\u4FDD\u6301\u6CBB\u5177\u3092\u88FD\u4F5C\u3057\u3001\u843D\u4E0B\u9632\u6B62\u6A5F\u69CB\u3068\u8CA0\u8377\u8A66\u9A13\u3092\u542B\u3080\u79FB\u9001\u65B9\u6CD5\u3092\u5F15\u304D\u7D99\u3044\u3060\u3002"
+  },
+  {
+    "entityId": "v2f-sales-09-person-support",
+    "split": "final",
+    "originalRequestId": "jev-3d35cb17b92cd092a8699a16c620e80904629e2bdcd6094da7dfcada4a30ca43",
+    "reusedRequestId": "jev-220473bb4367bfe3dc5e7d770c9b77a98eb5def485320f923d30ba61bcb3687e",
+    "reusedRequestSha256": "3fb62ccdb880c80874423eb5c1569ae9931d1840266db8517379114d6b0bd53d",
+    "exactSourceQuote": "\u55B6\u696D\u3067\u3001\u9867\u5BA2\u306E\u8981\u6C42\u3092\u5FC5\u9808\u9805\u76EE\u3068\u5C06\u6765\u9805\u76EE\u306B\u5206\u3051\u305F\u3002\u4E88\u7B97\u3068\u7D0D\u671F\u306B\u5408\u3046\u63D0\u6848\u7BC4\u56F2\u3092\u5408\u610F\u3057\u3001\u5BFE\u8C61\u5916\u306E\u9805\u76EE\u3092\u5951\u7D04\u306B\u660E\u8A18\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2f-sales-10-person-support",
+    "split": "final",
+    "originalRequestId": "jev-d41d5bdcd29861a9dccbb1ff218e38a5f181d1f1d79200a45973efaf40abe15f",
+    "reusedRequestId": "jev-19b8e9ee23ecc28f82e1259e4dff49a8f82a7e60bd14f31d1ecee54d8c551130",
+    "reusedRequestSha256": "e260d02bd284ddc062c055af94f4bbb243f1ba62918e16ffb62622ff985e8b71",
+    "exactSourceQuote": "\u55B6\u696D\u3067\u3001\u65E2\u5B58\u90E8\u9580\u306E\u5229\u7528\u52B9\u679C\u3092\u805E\u304D\u53D6\u308A\u3001\u5225\u90E8\u9580\u306E\u696D\u52D9\u8AB2\u984C\u306B\u5408\u308F\u305B\u305F\u8A66\u884C\u63D0\u6848\u3092\u5B9F\u65BD\u3057\u305F\u3002\u5229\u7528\u90E8\u9580\u3092\u6A2A\u65AD\u3059\u308B\u62C5\u5F53\u8005\u3068\u8ABF\u6574\u3057\u3001\u8FFD\u52A0\u5C0E\u5165\u3092\u53D7\u6CE8\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2f-manufacturing-13-person-support",
+    "split": "final",
+    "originalRequestId": "jev-701711bba383a6bb81f08a129749414a2273338c485ed9b654da09fccc23e0fa",
+    "reusedRequestId": "jev-f6a0695ebf095a357bb54928934d8f0515dd0f912bccfaa28f25ab67974c6207",
+    "reusedRequestSha256": "de17ea33e2de42eb6f4dd6084b395f399870f218440e8872165c888fd26ceda9",
+    "exactSourceQuote": "\u88FD\u9020\u3067\u3001\u6BB5\u53D6\u308A\u66FF\u3048\u306E\u5404\u4F5C\u696D\u3092\u8A08\u6E2C\u3057\u305F\u3002\u6A5F\u68B0\u3092\u6B62\u3081\u305A\u306B\u3067\u304D\u308B\u6E96\u5099\u3092\u5916\u6BB5\u53D6\u308A\u306B\u5206\u3051\u3001\u5DE5\u5177\u3068\u6750\u6599\u3092\u4E8B\u524D\u914D\u7F6E\u3057\u3066\u505C\u6B62\u6642\u9593\u3092\u77ED\u7E2E\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2f-manufacturing-14-person-support",
+    "split": "final",
+    "originalRequestId": "jev-ecb15416968b65d96fdff539b2c99629f770b71894bd89b1496bf88bc3510682",
+    "reusedRequestId": "jev-9b94a2ab970ba778757d845222ec2cb6c56c1fe3df5aeaa5e6b4f112a0caa201",
+    "reusedRequestSha256": "c7c1d72e5d35242334189f0f5a003e232e9aee50cd256bf93548d332a9347cd8",
+    "exactSourceQuote": "\u88FD\u9020\u3067\u3001\u5916\u89B3\u691C\u67FB\u306E\u5883\u754C\u898B\u672C\u3092\u4F5C\u6210\u3057\u305F\u3002\u6B20\u9665\u306E\u5927\u304D\u3055\u3068\u4F4D\u7F6E\u306B\u3088\u308B\u5408\u5426\u57FA\u6E96\u3092\u5B9A\u3081\u3001\u691C\u67FB\u54E1\u306E\u4E00\u81F4\u7387\u3092\u78BA\u8A8D\u3057\u3066\u6559\u80B2\u5185\u5BB9\u3092\u6539\u8A02\u3057\u305F\u3002"
+  },
+  {
+    "entityId": "v2f-operations-17-person-support",
+    "split": "final",
+    "originalRequestId": "jev-6f45378619f10710dd8d7fae36ea23c49ae3de7941eb32c4227492429b905970",
+    "reusedRequestId": "jev-35e22790e5309d96e4818191d83d541a3e0676b945e93bd8261cf7ef26e93bba",
+    "reusedRequestSha256": "37d76aebf4deeda3e2e4c6fc34e482d1b7f9a739e9214f234f51aff0e52267d2",
+    "exactSourceQuote": "\u696D\u52D9\u904B\u7528\u3067\u3001\u969C\u5BB3\u7A2E\u5225\u3068\u5F71\u97FF\u5EA6\u3054\u3068\u306E\u9023\u7D61\u9806\u3092\u6574\u7406\u3057\u305F\u3002\u591C\u9593\u306E\u6A21\u64EC\u8A13\u7DF4\u3092\u884C\u3044\u3001\u5F53\u756A\u4EA4\u4EE3\u6642\u306B\u5224\u65AD\u8868\u3068\u672A\u89E3\u6C7A\u4E8B\u9805\u3092\u5F15\u304D\u7D99\u3044\u3060\u3002"
+  },
+  {
+    "entityId": "v2f-operations-18-person-support",
+    "split": "final",
+    "originalRequestId": "jev-0aeabe28e7c12abb701502a236a62925b1548e3769540998a9a04dee3bed7d5f",
+    "reusedRequestId": "jev-be3a990f1262f378c04d62b3547a7b56412963317119254948fc4356f9158ca0",
+    "reusedRequestSha256": "47b3326735c192a01dd0281af01c0fdd78ceb7a1556727a02ca93a3ee8504a08",
+    "exactSourceQuote": "\u696D\u52D9\u904B\u7528\u3067\u3001\u8CFC\u5165\u7533\u8ACB\u304B\u3089\u627F\u8A8D\u307E\u3067\u306E\u6EDE\u7559\u3092\u8ABF\u67FB\u3057\u305F\u3002\u91D1\u984D\u5225\u306E\u627F\u8A8D\u7D4C\u8DEF\u3068\u4EE3\u7406\u627F\u8A8D\u8005\u3092\u5B9A\u3081\u3001\u5DEE\u623B\u3057\u7406\u7531\u3092\u4E00\u89A7\u5316\u3057\u3066\u51E6\u7406\u671F\u9593\u3092\u77ED\u7E2E\u3057\u305F\u3002"
+  }
+]

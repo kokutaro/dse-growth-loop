@@ -1,0 +1,7 @@
+{
+  "version": "issue30-case-limits-v1",
+  "caseLimits": [10, 15, 20],
+  "personLimit": 10,
+  "rescueSlots": 2,
+  "liveCalls": 0
+}

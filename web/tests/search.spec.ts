@@ -77,3 +77,29 @@ test("自然文だけでも一度の検索で条件生成から結果へ進む",
   await page.getByText("根拠を見る").first().click();
   await expect(page.locator("blockquote cite").first()).toBeVisible();
 });
+
+
+test("リランク失敗を正解なしと区別し、未評価候補を推薦しない", async ({ page }) => {
+  await page.route("**/api/v2/search", route => route.fulfill({ json: {
+    runId: "failed-run", rerankingStatus: "not_performed:inputlimit", assessments: [],
+    primary: { candidates: [{ entityId: "unverified", entityType: "person", title: "未評価の人物", routes: [], units: [] }], rerankingStatus: "not_performed:inputlimit" }
+  } }));
+  await page.goto("/");
+  await page.getByLabel("自然文の課題").fill("運用改善を相談したい");
+  await page.getByRole("button", { name: "相談候補を探す" }).click();
+  await expect(page.getByText("候補の評価を完了できませんでした", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "未評価の人物" })).toHaveCount(0);
+  await expect(page.getByText("条件に合う候補はありません。", { exact: true })).toHaveCount(0);
+});
+
+test("事例の指定を検索APIへ送り、人物を混ぜずに取得する", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("自然文の課題").fill("引き継ぎ改善の事例を探したい");
+  await page.getByLabel("検索対象", { exact: true }).selectOption("knowledge");
+  const request = page.waitForRequest(r => r.url().endsWith("/api/v2/search"));
+  await page.getByRole("button", { name: "相談候補を探す" }).click();
+  expect((await request).postDataJSON().target).toBe("knowledge");
+  await expect(page.getByText("根拠に基づく再順位付け済み", { exact: true })).toBeVisible();
+  await expect(page.locator("article.candidate")).not.toHaveCount(0);
+  await expect(page.locator("article.candidate .kind").filter({ hasText: "相談候補" })).toHaveCount(0);
+});

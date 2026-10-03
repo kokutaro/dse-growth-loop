@@ -1,0 +1,224 @@
+[
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "order": "original",
+    "attempt": 1,
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ],
+    "displayed": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  },
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "order": "reversed",
+    "attempt": 1,
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ],
+    "displayed": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  },
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "order": "original",
+    "attempt": 2,
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ],
+    "displayed": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "order": "original",
+    "attempt": 1,
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "order": "reversed",
+    "attempt": 1,
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "order": "original",
+    "attempt": 2,
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "order": "original",
+    "attempt": 1,
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "order": "reversed",
+    "attempt": 1,
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "order": "original",
+    "attempt": 2,
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "origin": "new_live_capture",
+    "ranking": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "precisionAt5": 1.0,
+    "hitRateAt5": 1,
+    "recallAt5": 1.0,
+    "ndcgAt5": 1.0,
+    "addedGoldKept": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": []
+  }
+]

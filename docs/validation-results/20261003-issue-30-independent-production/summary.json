@@ -1,0 +1,112 @@
+{
+  "overallQualityGate": "failed",
+  "phase1ManagedIdentity": {
+    "person": {
+      "positiveQuestions": 10,
+      "primaryRecall": 0.9,
+      "visibleHitAt5": 1.0,
+      "visiblePrecisionAt5": 0.35000000000000003,
+      "typedHitAt5": 1.0,
+      "typedPrecisionAt5": 0.5
+    },
+    "knowledge": {
+      "positiveQuestions": 10,
+      "primaryRecall": 1,
+      "visibleHitAt5": 0.2,
+      "visiblePrecisionAt5": 0.1,
+      "typedHitAt5": 0.8,
+      "typedPrecisionAt5": 0.4
+    },
+    "noGoldQuestions": 4,
+    "noGoldFalseQuestions": 2,
+    "otherTypeQuestions": 22,
+    "statusCounts": {
+      "CLASSIFICATION_MANUAL_REQUIRED": 2,
+      "not_performed:inputlimit": 16,
+      "succeeded": 5,
+      "ungrounded_output": 1
+    }
+  },
+  "phase2AuthenticatedHttp": {
+    "person": {
+      "positiveQuestions": 10,
+      "primaryRecall": 0.95,
+      "visibleHitAt5": 1.0,
+      "visiblePrecisionAt5": 0.37,
+      "typedHitAt5": 1.0,
+      "typedPrecisionAt5": 0.52
+    },
+    "knowledge": {
+      "positiveQuestions": 10,
+      "primaryRecall": 1.0,
+      "visibleHitAt5": 0.3,
+      "visiblePrecisionAt5": 0.15,
+      "typedHitAt5": 0.8,
+      "typedPrecisionAt5": 0.48
+    },
+    "noGoldQuestions": 4,
+    "noGoldFalseQuestions": 2,
+    "otherTypeQuestions": 22,
+    "statusCounts": {
+      "CLASSIFICATION_MANUAL_REQUIRED": 2,
+      "not_performed:inputlimit": 16,
+      "succeeded": 6
+    }
+  },
+  "httpTiming": {
+    "measurement": "Submit action to UI completion observation, an upper bound including HTTP/UI/polling; not isolated network timing",
+    "measuredWarmQuestions": 23,
+    "firstUseMissing": 1,
+    "p50UpperBoundMs": 10988,
+    "p95UpperBoundMs": 12346,
+    "maxUpperBoundMs": 12554,
+    "full24HttpSloClaim": false,
+    "cold": {
+      "scope": "Unauthenticated production SPA index GET after verified zero replicas; scale-out/page serving, not JWT search/classification/rerank",
+      "zeroConfirmedAt": "2026-10-03T10:46:23.677023+00:00",
+      "startedAt": "2026-10-03T10:46:23.677023+00:00",
+      "durationMs": 33410.844,
+      "httpStatus": 200,
+      "bytesRead": 480,
+      "failure": null,
+      "httpAttempts": 1,
+      "inferenceSent": false,
+      "polls": [
+        {
+          "at": "2026-10-03T10:42:45.470073+00:00",
+          "replicaCount": 1
+        },
+        {
+          "at": "2026-10-03T10:43:16.733302+00:00",
+          "replicaCount": 1
+        },
+        {
+          "at": "2026-10-03T10:43:47.870886+00:00",
+          "replicaCount": 1
+        },
+        {
+          "at": "2026-10-03T10:44:19.041964+00:00",
+          "replicaCount": 1
+        },
+        {
+          "at": "2026-10-03T10:44:50.134960+00:00",
+          "replicaCount": 1
+        },
+        {
+          "at": "2026-10-03T10:45:21.250309+00:00",
+          "replicaCount": 1
+        },
+        {
+          "at": "2026-10-03T10:45:52.785492+00:00",
+          "replicaCount": 1
+        },
+        {
+          "at": "2026-10-03T10:46:23.677023+00:00",
+          "replicaCount": 0
+        }
+      ]
+    }
+  },
+  "independentSyntheticOnly": true,
+  "holdoutTuned": false
+}

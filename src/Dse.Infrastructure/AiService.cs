@@ -49,6 +49,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         Func<JsonObject, AiModel, HashSet<string>, IReadOnlyDictionary<string, HashSet<string>>, T> parse, CancellationToken ct)
     {
         var actor = context.Actor;
+        var searchRerank = operation == "rerank" && context.PromptVersion is "search-rerank-v1" or "search-rerank-v2";
         ChatAccess? chat = null;
         ActorAccess[] sharedActors = [];
         if (context.ChatMembershipVersion is not null)
@@ -92,7 +93,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             if (chat is not null && unit.EntityType != "knowledge") throw new DomainException(409, "SOURCE_REVOKED");
             snapshots.AddRange(validated.Snapshots);
             var bounded = EvidenceBudget.Trim(validated.Unit.SourceRefs, context.EvidenceBytesPerCandidate, unit.Id, cuts);
-            if (context.PromptVersion == "search-rerank-v1")
+            if (searchRerank)
                 foreach (var source in validated.Unit.SourceRefs)
                 {
                     SearchInput.RequireSafe(source.Text);
@@ -103,8 +104,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             // Use authoritative evidence text, never the projection's cached summary.
             var fragment = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), unit.UnitId, ct))?.Value;
             var role = fragment?.Text("role");
-            if (context.PromptVersion == "search-rerank-v1" && role is not null) SearchInput.RequireSafe(role);
-            candidates.Add(new JsonObject { ["id"] = unit.Id, ["evidence"] = AiCodecs.Node(bounded),
+            if (searchRerank && role is not null) SearchInput.RequireSafe(role);
+            candidates.Add(new JsonObject { ["id"] = unit.Id, ["entityType"] = unit.EntityType, ["evidence"] = searchRerank ? AiCodecs.Node(bounded.Select(e => new { e.Id, e.Text })) : AiCodecs.Node(bounded),
                 ["role"] = string.IsNullOrWhiteSpace(role) ? null : role, ["period"] = fragment?["period"]?.DeepClone() });
         }
         var evidence = conversationEvidence;
@@ -121,7 +122,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var evidenceIds = context.Evidence.Select(x => x.Id).Concat(conversationEvidence.Select(x => x!["id"]!.GetValue<string>())).Concat(candidateEvidence.Values.SelectMany(x => x)).ToHashSet();
         if (evidenceIds.Count > 100 || snapshots.Distinct().Count() > 100) throw new ArgumentException("Too many AI sources");
         var input = new JsonObject { ["text"] = text, ["evidence"] = evidence, ["candidates"] = candidates };
-        if (context.PromptVersion == "search-rerank-v1") input["groundingPolicy"] = "Reason must be an exact contiguous quotation from one cited evidence text. Omit unsuitable candidates; an empty items array means all unsuitable. Do not infer missing role or dates.";
+        if (searchRerank) input["groundingPolicy"] = "Reason must be an exact contiguous quotation from one cited evidence text. Omit unsuitable candidates; an empty items array means all unsuitable. Do not infer missing role or dates.";
         var hashMaterial = new JsonObject { ["input"] = input.DeepClone(), ["choices"] = AiCodecs.Node(choices), ["nouls"] = AiCodecs.Node(nouls),
             ["snapshots"] = AiCodecs.Node(snapshots.Distinct().ToArray()), ["operation"] = operation, ["prompt"] = context.PromptVersion,
             ["taxonomy"] = context.TaxonomyVersion, ["dataVersion"] = context.DataVersion, ["membershipVersion"] = context.ChatMembershipVersion, ["lastSequence"] = context.ChatLastSequence };
@@ -175,8 +176,27 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             {
                 var model = mock ? MockAiTransport.Model(operation) : AiModel.Read(config, operation == "decide" ? "Jev" : "Foundry", limits.OutputTokens);
                 var body = operation == "decide" ? AiCodecs.JevRequest(model, input, choices, nouls) : AiCodecs.FoundryRequest(model, operation, input, limits.OutputTokens);
+                if (searchRerank)
+                {
+                    List<EvidenceCut> plannedCuts = [];
+                    body = SearchRerankBudget.Prepare(model, input, limits.OutputTokens, limits.InputTokens,
+                        context.EvidenceBytesPerCandidate ?? 1200, plannedCuts);
+                    var sentBytes = plannedCuts.ToDictionary(c => (c.CandidateId, c.EvidenceId), c => c.SentBytes);
+                    cuts = cuts.Select(c => c with { SentBytes = sentBytes.GetValueOrDefault((c.CandidateId, c.EvidenceId)) }).ToList();
+                    candidateEvidence.Clear();
+                    foreach (var candidate in candidates)
+                        candidateEvidence.Add(candidate!["id"]!.GetValue<string>(), candidate!["evidence"]!.AsArray().Select(e => e!["id"]!.GetValue<string>()).ToHashSet());
+                    evidenceIds = context.Evidence.Select(e => e.Id).Concat(candidateEvidence.Values.SelectMany(ids => ids)).ToHashSet();
+                    hashMaterial["input"] = input.DeepClone();
+                    inputHash = Hash(RecordJson.Canonical(hashMaterial));
+                    trace["inputHash"] = inputHash;
+                    trace["evidenceIds"] = RecordJson.Array(evidenceIds.Order());
+                    trace["evidenceCuts"] = AiCodecs.Node(cuts);
+                    trace["inputBudgetVersion"] = "search-total-bytes-v1";
+                }
                 // UTF-8 byte count plus framing allowance is a conservative estimate, not measured tokens.
-                var inputBound = Encoding.UTF8.GetByteCount(body.ToJsonString()) + 256;
+                var inputBound = Encoding.UTF8.GetByteCount(AiCodecs.SerializeRequest(body)) + 256;
+                trace["inputByteBound"] = inputBound;
                 if (inputBound > limits.InputTokens) throw new AiException(AiFailure.InputLimit);
                 if (operation == "decide")
                 {
@@ -212,6 +232,13 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                             usage = response.Usage;
                             if (usage is not null && (usage.Input > limits.InputTokens || usage.Output > limits.OutputTokens)) throw new AiException(AiFailure.OutputLimit);
                             result = parse(response.Body, model, evidenceIds, candidateEvidence);
+                            if (searchRerank && result is Ranking ranking)
+                                foreach (var item in ranking.Items)
+                                {
+                                    var sent = candidates.Single(c => c!["id"]!.GetValue<string>() == item.CandidateId)!["evidence"]!.AsArray();
+                                    AiCodecs.Require(sent.Any(e => item.EvidenceIds.Contains(e!["id"]!.GetValue<string>()) &&
+                                        e!["text"]!.GetValue<string>().Contains(item.Reason, StringComparison.Ordinal)));
+                                }
                             status = AiStatus.Succeeded;
                         }
                         catch (AiException e)

@@ -1,0 +1,41 @@
+{
+  "method": "Each case starts a fresh local demo API; no external AI calls",
+  "firstCase": {
+    "file": "tests/conversations.spec.ts",
+    "pattern": "DB失敗と応答消失",
+    "exitCode": 0,
+    "passed": 1
+  },
+  "results": [
+    {
+      "file": "tests/conversations.spec.ts",
+      "pattern": "通知なしでも履歴",
+      "exitCode": 0,
+      "output": "\n> dse-growth-loop-web@0.1.0 test:e2e\n> playwright test tests/conversations.spec.ts --grep 通知なしでも履歴\n\n[WebServer] (node:46202) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 1 test using 1 worker\n\n(node:46203) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓  1 tests/conversations.spec.ts:85:1 › 通知なしでも履歴をページング回復し、画面の開き直しで重複しない (613ms)\n\n  1 passed (4.3s)\n"
+    },
+    {
+      "file": "tests/conversations.spec.ts",
+      "pattern": "表示済みAI引用",
+      "exitCode": 0,
+      "output": "\n> dse-growth-loop-web@0.1.0 test:e2e\n> playwright test tests/conversations.spec.ts --grep 表示済みAI引用\n\n[WebServer] (node:46489) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 1 test using 1 worker\n\n(node:46490) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓  1 tests/conversations.spec.ts:97:1 › 表示済みAI引用は新着なしでも履歴を再照合して撤回表示へ更新する（応答fixture） (395ms)\n\n  1 passed (3.0s)\n"
+    },
+    {
+      "file": "tests/documents.spec.ts",
+      "pattern": "docxをアップロード",
+      "exitCode": 0,
+      "output": "\n> dse-growth-loop-web@0.1.0 test:e2e\n> playwright test tests/documents.spec.ts --grep docxをアップロード\n\n[WebServer] (node:46774) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 1 test using 1 worker\n\n(node:46785) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓  1 tests/documents.spec.ts:5:3 › docxをアップロードして機械抽出結果と出典を確認できる (3.7s)\n\n  1 passed (6.3s)\n"
+    },
+    {
+      "file": "tests/profiles.spec.ts",
+      "pattern": "xlsxから本人訂正",
+      "exitCode": 0,
+      "output": "\n> dse-growth-loop-web@0.1.0 test:e2e\n> playwright test tests/profiles.spec.ts --grep xlsxから本人訂正\n\n[WebServer] (node:47080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 1 test using 1 worker\n\n(node:47081) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓  1 tests/profiles.spec.ts:31:3 › xlsxから本人訂正と手動一次検索までfake AIで通る (6.9s)\n\n  1 passed (9.5s)\n"
+    },
+    {
+      "file": "tests/profiles.spec.ts",
+      "pattern": "公開撤回を検索",
+      "exitCode": 0,
+      "output": "\n> dse-growth-loop-web@0.1.0 test:e2e\n> playwright test tests/profiles.spec.ts --grep 公開撤回を検索\n\n[WebServer] (node:47422) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 1 test using 1 worker\n\n(node:47423) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓  1 tests/profiles.spec.ts:57:1 › 公開撤回を検索に反映し、明示再公開で復旧する (6.8s)\n\n  1 passed (9.4s)\n"
+    }
+  ]
+}

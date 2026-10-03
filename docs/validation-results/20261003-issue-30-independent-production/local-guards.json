@@ -1,0 +1,12 @@
+[
+  {
+    "case": "no-opt-in",
+    "blockedBeforeNetwork": true,
+    "exitCode": 139
+  },
+  {
+    "case": "invalid-budget",
+    "blockedBeforeNetwork": true,
+    "exitCode": 139
+  }
+]

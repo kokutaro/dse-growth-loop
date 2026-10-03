@@ -1,0 +1,1334 @@
+[
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-manufacturing-15-knowledge-direct",
+        "reason": "工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。",
+        "evidenceIds": [
+          "v2t-manufacturing-15-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-manufacturing-15-knowledge-support",
+        "reason": "工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。",
+        "evidenceIds": [
+          "v2t-manufacturing-15-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1418,
+        "outputTokens": 172,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-manufacturing-15-knowledge-direct\",\"reason\":\"工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。\",\"evidenceIds\":[\"v2t-manufacturing-15-knowledge-direct-evidence\"]},{\"candidateId\":\"v2t-manufacturing-15-knowledge-support\",\"reason\":\"工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。\",\"evidenceIds\":[\"v2t-manufacturing-15-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017642,
+          "id": "chatcmpl-EUpnGRiHbzze77HyUQKBAoRXvzZix",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 172,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 70,
+              "engine_ttlt_ms": 635,
+              "pre_inference_ms": 92,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 696,
+              "service_ttlt_ms": 1255,
+              "user_visible_ttft_ms": 604
+            },
+            "prompt_tokens": 1418,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1415,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1590
+          }
+        },
+        "durationMs": 2163.546,
+        "costUsd": "0.0002278",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1418,
+    "outputTokens": 172,
+    "costUsd": "0.0002278"
+  },
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-manufacturing-15-knowledge-direct",
+        "reason": "投入量の上限を定め、滞留数と納期を短縮した。",
+        "evidenceIds": [
+          "v2t-manufacturing-15-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-manufacturing-15-knowledge-support",
+        "reason": "投入量の上限を定め、滞留数と納期を短縮した。",
+        "evidenceIds": [
+          "v2t-manufacturing-15-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1418,
+        "outputTokens": 128,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-manufacturing-15-knowledge-direct\",\"reason\":\"投入量の上限を定め、滞留数と納期を短縮した。\",\"evidenceIds\":[\"v2t-manufacturing-15-knowledge-direct-evidence\"]},{\"candidateId\":\"v2t-manufacturing-15-knowledge-support\",\"reason\":\"投入量の上限を定め、滞留数と納期を短縮した。\",\"evidenceIds\":[\"v2t-manufacturing-15-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017644,
+          "id": "chatcmpl-EUpnIKpshiUIhCMd9sLxSx7d5CR6R",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 128,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 65,
+              "engine_ttlt_ms": 455,
+              "pre_inference_ms": 103,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 699,
+              "service_ttlt_ms": 1087,
+              "user_visible_ttft_ms": 597
+            },
+            "prompt_tokens": 1418,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1415,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1546
+          }
+        },
+        "durationMs": 1577.427,
+        "costUsd": "0.0002058",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1418,
+    "outputTokens": 128,
+    "costUsd": "0.0002058"
+  },
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "candidateSha256": "6c08c010b4ea518060295a1cb831c104eee526e760471c24ab3706ad4dbf2ede",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-manufacturing-15-knowledge-direct",
+        "reason": "工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。",
+        "evidenceIds": [
+          "v2t-manufacturing-15-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-manufacturing-15-knowledge-support",
+        "reason": "工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。",
+        "evidenceIds": [
+          "v2t-manufacturing-15-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1418,
+        "outputTokens": 172,
+        "cachedTokens": 1415,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-manufacturing-15-knowledge-direct\",\"reason\":\"工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。\",\"evidenceIds\":[\"v2t-manufacturing-15-knowledge-direct-evidence\"]},{\"candidateId\":\"v2t-manufacturing-15-knowledge-support\",\"reason\":\"工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。\",\"evidenceIds\":[\"v2t-manufacturing-15-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017646,
+          "id": "chatcmpl-EUpnKVw5RSKpmkzeAidIaJQ7sx6zp",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 172,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 81,
+              "engine_ttlt_ms": 686,
+              "pre_inference_ms": 93,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 720,
+              "service_ttlt_ms": 1307,
+              "user_visible_ttft_ms": 626
+            },
+            "prompt_tokens": 1418,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1415
+            },
+            "total_tokens": 1590
+          }
+        },
+        "durationMs": 1701.958,
+        "costUsd": "0.00010045",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1418,
+    "outputTokens": 172,
+    "costUsd": "0.00010045"
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-software-04-knowledge-direct",
+        "reason": "並行した重複要求でも課金を一度だけ行うことを検証した。",
+        "evidenceIds": [
+          "v2f-software-04-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-software-04-knowledge-support",
+        "reason": "並行した重複要求でも課金を一度だけ行うことを検証した。",
+        "evidenceIds": [
+          "v2f-software-04-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1459,
+        "outputTokens": 126,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-software-04-knowledge-direct\",\"reason\":\"並行した重複要求でも課金を一度だけ行うことを検証した。\",\"evidenceIds\":[\"v2f-software-04-knowledge-direct-evidence\"]},{\"candidateId\":\"v2f-software-04-knowledge-support\",\"reason\":\"並行した重複要求でも課金を一度だけ行うことを検証した。\",\"evidenceIds\":[\"v2f-software-04-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017648,
+          "id": "chatcmpl-EUpnMvMeTiXn0fWETrHyjWhj4wl7t",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 126,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 52,
+              "engine_ttlt_ms": 468,
+              "pre_inference_ms": 92,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 675,
+              "service_ttlt_ms": 1085,
+              "user_visible_ttft_ms": 583
+            },
+            "prompt_tokens": 1459,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1456,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1585
+          }
+        },
+        "durationMs": 1502.506,
+        "costUsd": "0.0002089",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1459,
+    "outputTokens": 126,
+    "costUsd": "0.0002089"
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-software-04-knowledge-direct",
+        "reason": "並行した重複要求でも課金を一度だけ行うことを検証した。",
+        "evidenceIds": [
+          "v2f-software-04-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-software-04-knowledge-support",
+        "reason": "並行した重複要求でも課金を一度だけ行うことを検証した。",
+        "evidenceIds": [
+          "v2f-software-04-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1459,
+        "outputTokens": 126,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-software-04-knowledge-direct\",\"reason\":\"並行した重複要求でも課金を一度だけ行うことを検証した。\",\"evidenceIds\":[\"v2f-software-04-knowledge-direct-evidence\"]},{\"candidateId\":\"v2f-software-04-knowledge-support\",\"reason\":\"並行した重複要求でも課金を一度だけ行うことを検証した。\",\"evidenceIds\":[\"v2f-software-04-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017649,
+          "id": "chatcmpl-EUpnNGBOI3Qq187CyA6BfwnpaO28v",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 126,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 73,
+              "engine_ttlt_ms": 509,
+              "pre_inference_ms": 117,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 730,
+              "service_ttlt_ms": 1160,
+              "user_visible_ttft_ms": 613
+            },
+            "prompt_tokens": 1459,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1456,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1585
+          }
+        },
+        "durationMs": 1588.618,
+        "costUsd": "0.0002089",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1459,
+    "outputTokens": 126,
+    "costUsd": "0.0002089"
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "candidateSha256": "c863022672e5e1c864912a5a83ecb5bc0bcbbd81cd4eef2710cdf532299c4f3f",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-software-04-knowledge-direct",
+        "reason": "並行した重複要求でも課金を一度だけ行うことを検証した。",
+        "evidenceIds": [
+          "v2f-software-04-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-software-04-knowledge-support",
+        "reason": "並行した重複要求でも課金を一度だけ行うことを検証した。",
+        "evidenceIds": [
+          "v2f-software-04-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1459,
+        "outputTokens": 126,
+        "cachedTokens": 1456,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-software-04-knowledge-direct\",\"reason\":\"並行した重複要求でも課金を一度だけ行うことを検証した。\",\"evidenceIds\":[\"v2f-software-04-knowledge-direct-evidence\"]},{\"candidateId\":\"v2f-software-04-knowledge-support\",\"reason\":\"並行した重複要求でも課金を一度だけ行うことを検証した。\",\"evidenceIds\":[\"v2f-software-04-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017651,
+          "id": "chatcmpl-EUpnPtjfUpqPPwWtEBEH4n6itPWvL",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 126,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 51,
+              "engine_ttlt_ms": 457,
+              "pre_inference_ms": 93,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 551,
+              "service_ttlt_ms": 937,
+              "user_visible_ttft_ms": 458
+            },
+            "prompt_tokens": 1459,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1456
+            },
+            "total_tokens": 1585
+          }
+        },
+        "durationMs": 1427.466,
+        "costUsd": "0.00007786",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1459,
+    "outputTokens": 126,
+    "costUsd": "0.00007786"
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-16-knowledge-direct",
+        "reason": "搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。",
+        "evidenceIds": [
+          "v2f-manufacturing-16-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-16-knowledge-support",
+        "reason": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。",
+        "evidenceIds": [
+          "v2f-manufacturing-16-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1426,
+        "outputTokens": 209,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-16-knowledge-direct\",\"reason\":\"搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。\",\"evidenceIds\":[\"v2f-manufacturing-16-knowledge-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-16-knowledge-support\",\"reason\":\"類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。\",\"evidenceIds\":[\"v2f-manufacturing-16-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017652,
+          "id": "chatcmpl-EUpnQhbfdDpNJXzqZXIKgUdj5hKAA",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 209,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 59,
+              "engine_ttlt_ms": 693,
+              "pre_inference_ms": 93,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 683,
+              "service_ttlt_ms": 1312,
+              "user_visible_ttft_ms": 590
+            },
+            "prompt_tokens": 1426,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1423,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1635
+          }
+        },
+        "durationMs": 1672.467,
+        "costUsd": "0.0002471",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1426,
+    "outputTokens": 209,
+    "costUsd": "0.0002471"
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-16-knowledge-direct",
+        "reason": "整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。",
+        "evidenceIds": [
+          "v2f-manufacturing-16-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-16-knowledge-support",
+        "reason": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。",
+        "evidenceIds": [
+          "v2f-manufacturing-16-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1426,
+        "outputTokens": 182,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-16-knowledge-direct\",\"reason\":\"整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。\",\"evidenceIds\":[\"v2f-manufacturing-16-knowledge-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-16-knowledge-support\",\"reason\":\"類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。\",\"evidenceIds\":[\"v2f-manufacturing-16-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017654,
+          "id": "chatcmpl-EUpnS5SOXQblz8iDLeTGjAjUwJyIe",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 182,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 52,
+              "engine_ttlt_ms": 587,
+              "pre_inference_ms": 103,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 558,
+              "service_ttlt_ms": 1099,
+              "user_visible_ttft_ms": 455
+            },
+            "prompt_tokens": 1426,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1423,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1608
+          }
+        },
+        "durationMs": 1535.642,
+        "costUsd": "0.0002336",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1426,
+    "outputTokens": 182,
+    "costUsd": "0.0002336"
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "candidateSha256": "23fddc79fb808acc39956ceae6275b69c483aa547b7f6500636cc78de43a115a",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-16-knowledge-direct",
+        "reason": "搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。",
+        "evidenceIds": [
+          "v2f-manufacturing-16-knowledge-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-16-knowledge-support",
+        "reason": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。",
+        "evidenceIds": [
+          "v2f-manufacturing-16-knowledge-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1426,
+        "outputTokens": 209,
+        "cachedTokens": 1423,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-16-knowledge-direct\",\"reason\":\"搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。\",\"evidenceIds\":[\"v2f-manufacturing-16-knowledge-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-16-knowledge-support\",\"reason\":\"類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。\",\"evidenceIds\":[\"v2f-manufacturing-16-knowledge-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791017655,
+          "id": "chatcmpl-EUpnT360hzmIiEQHW8SXXQao4b4mS",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r1-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 209,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 73,
+              "engine_ttlt_ms": 704,
+              "pre_inference_ms": 99,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 700,
+              "service_ttlt_ms": 1326,
+              "user_visible_ttft_ms": 602
+            },
+            "prompt_tokens": 1426,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1423
+            },
+            "total_tokens": 1635
+          }
+        },
+        "durationMs": 1713.193,
+        "costUsd": "0.00011903",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1426,
+    "outputTokens": 209,
+    "costUsd": "0.00011903"
+  }
+]

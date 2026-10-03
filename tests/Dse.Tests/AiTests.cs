@@ -48,6 +48,51 @@ public class AiTests
     private static Task<AiResult<Decisions>> Decide(AiService service, AiContext? context = null, CancellationToken ct = default) =>
         service.DecideAsync(context ?? Context(), "Dummy billing request", Questions(), [], ct);
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Search_rerank_bounds_the_actual_HTTP_body_and_rejects_unsent_quotations(bool unsent)
+    {
+        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);
+        var unit = (await new MemoryProjectionRepository(store).FindAsync(new([], [], ["dummy"]), IdentityResolver.Demo.Search, default))[0];
+        var evidenceId = unit.EvidenceRefs![0].Id;
+        var partition = RecordPartition.Catalog("demo");
+        var span = (await store.ReadAsync(partition, evidenceId, default))!;
+        var original = string.Concat(Enumerable.Repeat("副業務の運用改善を共同実施した。😀", 100)) + "末尾の未送信情報";
+        span.Value["text"] = original;
+        await store.CommitAsync(partition, [RecordWrite.Replace(span.Value, span.ETag)], default);
+        var handler = new Handler(async (request, ct) =>
+        {
+            var wire = await request.Content!.ReadAsByteArrayAsync(ct);
+            Assert.True(wire.Length + 256 <= 3000);
+            var body = JsonNode.Parse(wire)!;
+            var input = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!;
+            var candidate = input["candidates"]![0]!;
+            Assert.Equal(unit.EntityType, candidate["entityType"]!.GetValue<string>());
+            var sent = candidate["evidence"]![0]!["text"]!.GetValue<string>();
+            Assert.StartsWith(sent, original); Assert.DoesNotContain("末尾の未送信情報", sent);
+            Assert.Null(candidate["evidence"]![0]!["documentTitle"]);
+            return Response(Foundry(JsonSerializer.Serialize(new { items = new[] { new {
+                candidateId = unit.Id, reason = unsent ? "末尾の未送信情報" : sent, evidenceIds = new[] { evidenceId }
+            } } })));
+        });
+        var config = Config(); config["AiUsage:MaxInputTokens"] = "3000";
+        using var service = Service(config, store, handler);
+        var result = await service.RerankAsync(Context() with { PromptVersion = "search-rerank-v2", Candidates = [unit], EvidenceBytesPerCandidate = 1200 }, "運用改善", default);
+        Assert.Equal(unsent ? AiStatus.Failed : AiStatus.Succeeded, result.Status);
+        Assert.Equal(1, handler.Calls);
+        var run = (await store.ReadAsync(partition, result.RunId, default))!.Value;
+        Assert.Equal("search-total-bytes-v1", run["trace"]!["inputBudgetVersion"]!.GetValue<string>());
+        var cut = run["trace"]!["evidenceCuts"]![0]!;
+        Assert.Equal(System.Text.Encoding.UTF8.GetByteCount(original), cut["originalBytes"]!.GetValue<int>());
+        Assert.True(cut["sentBytes"]!.GetValue<int>() < 1200);
+        if (!unsent)
+        {
+            Assert.True((await service.RerankAsync(Context() with { PromptVersion = "search-rerank-v2", Candidates = [unit], EvidenceBytesPerCandidate = 1200 }, "運用改善", default)).Cached);
+            Assert.Equal(1, handler.Calls);
+        }
+    }
+
     [Fact]
     public async Task Official_choice_keeps_distribution_confidence_usage_and_versioned_cache()
     {

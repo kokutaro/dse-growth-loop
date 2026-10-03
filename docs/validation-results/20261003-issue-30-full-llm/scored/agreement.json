@@ -1,0 +1,242 @@
+[
+  {
+    "questionId": "v2t-software-01-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-software-02-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-software-03-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-software-04-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-mechanical-05-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-mechanical-06-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-mechanical-07-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-mechanical-08-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-sales-11-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-sales-12-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-manufacturing-13-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-manufacturing-16-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-operations-17-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-operations-18-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-operations-19-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-operations-20-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-no-answer-01",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-no-answer-02",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-no-answer-03",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2t-no-answer-04",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-software-01-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-software-02-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-software-03-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-mechanical-05-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-mechanical-06-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-mechanical-07-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-mechanical-08-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-sales-11-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-sales-12-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-manufacturing-15-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-operations-17-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-operations-18-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-operations-19-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-operations-20-query",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-no-answer-02",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-no-answer-03",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  },
+  {
+    "questionId": "v2f-no-answer-04",
+    "sameOrderMatch": true,
+    "reverseOrderMatch": true
+  }
+]

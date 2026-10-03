@@ -111,10 +111,13 @@ public class NaturalSearchTests
     [InlineData(AiFailure.Truncated, "truncated")]
     [InlineData(AiFailure.Budget, "budget_stopped")]
     [InlineData(AiFailure.Stopped, "stopped")]
-    public async Task Failure_preserves_primary_candidates_with_distinct_status(AiFailure failure, string status)
+    [InlineData(AiFailure.InputLimit, "not_performed:inputlimit")]
+    public async Task Failure_hides_recommendations_but_preserves_primary_audit(AiFailure failure, string status)
     {
-        var (service, _, ai) = await Setup(); ai.Failure = failure; var result = await Search(service);
-        Assert.Equal(status, result.RerankingStatus); Assert.NotEmpty(result.Primary.Candidates); Assert.Empty(result.Assessments);
+        var (service, store, ai) = await Setup(); ai.Failure = failure; var result = await Search(service);
+        Assert.Equal(status, result.RerankingStatus); Assert.Empty(result.Primary.Candidates); Assert.Empty(result.Assessments);
+        var audit = (await store.ReadAsync(RecordPartition.Catalog("demo"), result.RunId, default))!.Value;
+        Assert.NotEmpty(audit["selectedIds"]!.AsArray());
     }
     [Theory]
     [InlineData(true)]
@@ -123,7 +126,7 @@ public class NaturalSearchTests
     {
         var (service, _, ai) = await Setup(); ai.Invent = invent; ai.Ungrounded = !invent;
         var result = await Search(service); Assert.Equal("ungrounded_output", result.RerankingStatus);
-        Assert.Empty(result.Assessments); Assert.NotEmpty(result.Primary.Candidates);
+        Assert.Empty(result.Assessments); Assert.Empty(result.Primary.Candidates);
     }
     [Fact]
     public async Task Empty_success_means_all_unsuitable_and_zero_primary_skips_AI()
@@ -148,6 +151,21 @@ public class NaturalSearchTests
         var result = await Search(service); Assert.Equal("source_revoked", result.RerankingStatus);
         Assert.DoesNotContain(result.Primary.Candidates, c => c.EntityId == revoked);
         Assert.DoesNotContain(result.Assessments, c => c.EntityId == revoked);
+    }
+    [Theory]
+    [InlineData("person")]
+    [InlineData("knowledge")]
+    public async Task Target_filters_before_reranking_and_is_audited(string target)
+    {
+        var (service, store, ai) = await Setup();
+        ai.BeforeRank = context => { Assert.All(context.Candidates, u => Assert.Equal(target == "person", u.EntityType == "person")); return Task.CompletedTask; };
+        NaturalSearchResponse? response = null;
+        await service.SearchAndConsumeAsync(Request with { Target = target }, IdentityResolver.Demo, (r, _) => { response = r; return Task.CompletedTask; }, default);
+        Assert.NotEmpty(response!.Primary.Candidates);
+        Assert.All(response.Primary.Candidates, c => Assert.Equal(target == "person", c.EntityType == "person"));
+        var audit = (await store.ReadAsync(RecordPartition.Catalog("demo"), response.RunId, default))!.Value;
+        Assert.Equal(target, audit.Text("target"));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.SearchAndConsumeAsync(Request with { Target = "invalid" }, IdentityResolver.Demo, (_, _) => Task.CompletedTask, default));
     }
     [Fact]
     public async Task Nonmember_cannot_call_conversion_or_search()
