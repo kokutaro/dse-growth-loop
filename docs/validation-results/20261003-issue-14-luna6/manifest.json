@@ -14,7 +14,7 @@
     "docs/validation-results/20261003-issue-14-luna6/final-summary.json": "734f356f842f49038784622870231aed9177de9b40dce787cb2d694eaf8afba5",
     "docs/validation-results/20261003-issue-14-luna6/comparisons.json": "b8f01d462db14645377d245e6e29b4c8cad003c189db8173d709f978a5da0c43",
     "docs/validation-results/20261003-issue-14-luna6/pilot-key.json": "b027e9d9e8577abd6722a884d8c33969c6aa611c2bb93f249a625592bc41ecd6",
-    "docs/validation-results/20261003-issue-14-luna6/results.md": "78de8194332c3f15cb10851e709a3f152896f92b3f338f402ea96a3f0eb28b06",
+    "docs/validation-results/20261003-issue-14-luna6/results.md": "4f579ba683e1d09d177eeef9873b41a13793ed74498c9cc00fae91535b959b28",
     "docs/validation-results/20261003-issue-14-luna6/scored-comparisons.csv": "8716a71d6b60aa3f7eda4cf91c038888f139b608cd1655cdfa7fd6d1b136624f",
     "docs/validation-results/20261003-issue-14-luna6/scored-report.json": "83ab8041e97758cac78d45899362a906834a08023d71c07cc205182fb3f64df4",
     "docs/validation-results/20261003-issue-14-luna6/all-comparisons.json": "4855ef83471a53a6cba04879f5edb66336940007e0e86aa49d31387e3d83268e",
@@ -235,6 +235,22 @@
     "evaluation/expansion-v2/luna6/recovery-verified-plan.json": "a4c9cd2c3afd820b3d8e3a45e67911355dcaa64f2329d0a75cb3a25d4e7f9d3f",
     "evaluation/expansion-v2/luna6/recovery-fast-plan.json": "eecb853007442af7c29c88a6fe41b41a77dbcd626f6a21a258d936d797c8043b",
     "scripts/llm_rerank_evaluation.py": "b6e44f5b3b957aff7b5f4f10fed103a942e9b5d27c63be208c499f1997590168",
-    "src/Dse.Evaluation/Program.cs": "eaacf38c7a002d6fa99494cf51460c7c9f2786452c506e588c30b677549da9b1"
-  }
+    "src/Dse.Evaluation/Program.cs": "eaacf38c7a002d6fa99494cf51460c7c9f2786452c506e588c30b677549da9b1",
+    "docs/validation-results/20261003-issue-14-luna6/figures.md": "cd8999cf43fcd8f9f8edd26b8939f8cedd4132e90106c26d454f5e75473a78c8",
+    "scripts/plot_luna6_evaluation.py": "00925784e7d7231222fd7c8db930628937bfeaf58b265d76f616e99d4ac323e7",
+    "docs/validation-results/20261003-issue-14-luna6/charts/01-quality-overview.png": "5f6539db905ad674ab338e0ab66589c05301a85898c07930780cd483a867b9e0",
+    "docs/validation-results/20261003-issue-14-luna6/charts/01-quality-overview.pdf": "15cbb9d83567dfd31dd2d47084d134ab743b8674694216bbef0cf3cba3d0afcb",
+    "docs/validation-results/20261003-issue-14-luna6/charts/chart-data.json": "56c353a5ceb06b51501243255a9c218d5d2375ddc22e963a1ca8b0b0b7be8129",
+    "docs/validation-results/20261003-issue-14-luna6/charts/01-quality-overview.svg": "62bc01dec30f56ba331318b6e0ff59da17d25eb4da5cc89fe7f37ca160c9da52",
+    "docs/validation-results/20261003-issue-14-luna6/charts/03-cost-and-budget.svg": "070f1625675b81a408d3b928d16c5a10507331a1e95ab4d5ba323b1e94b5b0b0",
+    "docs/validation-results/20261003-issue-14-luna6/charts/02-question-quality-and-stability.pdf": "b7552faafafb4b5e4970be1b445e5c9eb472ee633996fb8378e100d4e00fcd5f",
+    "docs/validation-results/20261003-issue-14-luna6/charts/02-question-quality-and-stability.png": "a337ae87437dd41f51c68f6e961e8d016d78ba021c006ca0fe67dfbb1e4f0f32",
+    "docs/validation-results/20261003-issue-14-luna6/charts/manifest.json": "8742bf311b0f95fcbe8ae294d5d8faf5054361a8b38392b88cec374e6843aaa3",
+    "docs/validation-results/20261003-issue-14-luna6/charts/02-question-quality-and-stability.svg": "2c91e7002bcd3b5fc8b17452ca4498496092c740c205415609d6e52c5b9ad56c",
+    "docs/validation-results/20261003-issue-14-luna6/charts/03-cost-and-budget.pdf": "c6d16813b9099e66940a094cb7b2d2ebd2fa5920ade60c342f7826cfce06e2db",
+    "docs/validation-results/20261003-issue-14-luna6/charts/03-cost-and-budget.png": "c074eed0a6544d74461081ba5f66f860afb3fb7895cf3a2e6a114022025480dd"
+  },
+  "previousManifestSha256": "72d0439ed743c3bef30063f7a0dc43b9563027ec9db6b91af334fa1f601978d7",
+  "visualizationRenderer": "Matplotlib 3.10.0",
+  "previousManifestGitRef": "15573c2"
 }

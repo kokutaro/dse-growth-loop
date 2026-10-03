@@ -1,0 +1,233 @@
+{
+  "scope": "Approved dummy final dataset; K=5; no new AI calls",
+  "conditions": [
+    {
+      "label": "一次候補の順序",
+      "positiveQuestions": 20,
+      "negativeQuestions": 4,
+      "hits": 19,
+      "ndcg": 0.6469021233555585,
+      "falseRecommendations": 3,
+      "displayedRelevant": 30,
+      "displayedIrrelevant": 85
+    },
+    {
+      "label": "Luna6 元順序",
+      "positiveQuestions": 20,
+      "negativeQuestions": 4,
+      "hits": 19,
+      "ndcg": 0.9393577301495486,
+      "falseRecommendations": 0,
+      "displayedRelevant": 37,
+      "displayedIrrelevant": 0
+    },
+    {
+      "label": "Luna6 逆順序",
+      "positiveQuestions": 20,
+      "negativeQuestions": 4,
+      "hits": 19,
+      "ndcg": 0.9393577301495486,
+      "falseRecommendations": 0,
+      "displayedRelevant": 37,
+      "displayedIrrelevant": 1
+    },
+    {
+      "label": "Luna6 再実行",
+      "positiveQuestions": 20,
+      "negativeQuestions": 4,
+      "hits": 19,
+      "ndcg": 0.9393577301495486,
+      "falseRecommendations": 0,
+      "displayedRelevant": 37,
+      "displayedIrrelevant": 0
+    }
+  ],
+  "questionNdcg": [
+    {
+      "questionId": "v2f-software-01-query",
+      "values": [
+        0.7871546029909718,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-software-02-query",
+      "values": [
+        0.6271448173568673,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-software-03-query",
+      "values": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-software-04-query",
+      "values": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "questionId": "v2f-mechanical-05-query",
+      "values": [
+        0.9176601606601069,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-mechanical-06-query",
+      "values": [
+        0.4966392596877323,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-mechanical-07-query",
+      "values": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-mechanical-08-query",
+      "values": [
+        0.469514592756915,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-sales-09-query",
+      "values": [
+        0.7871546029909718,
+        0.7871546029909718,
+        0.7871546029909718,
+        0.7871546029909718
+      ]
+    },
+    {
+      "questionId": "v2f-sales-10-query",
+      "values": [
+        0.4966392596877323,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-sales-11-query",
+      "values": [
+        0.30451296789464855,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-sales-12-query",
+      "values": [
+        0.5388668879616774,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-manufacturing-13-query",
+      "values": [
+        0.6419288461539238,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-manufacturing-14-query",
+      "values": [
+        0.7871546029909718,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-manufacturing-15-query",
+      "values": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-manufacturing-16-query",
+      "values": [
+        0.1305055576691351,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-operations-17-query",
+      "values": [
+        0.7871546029909718,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-operations-18-query",
+      "values": [
+        0.6271448173568673,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-operations-19-query",
+      "values": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "questionId": "v2f-operations-20-query",
+      "values": [
+        0.5388668879616774,
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "cost": {
+    "measuredUsageCostUsd": "0.01035188",
+    "unknownAndInterruptedReservationUsd": "0.2830",
+    "conservativeFullCostUsd": "0.29335188",
+    "approvedBudgetUsd": "0.75"
+  }
+}

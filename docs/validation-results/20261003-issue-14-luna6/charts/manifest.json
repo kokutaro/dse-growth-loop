@@ -1,0 +1,23 @@
+{
+  "renderer": "Matplotlib",
+  "matplotlibVersion": "3.10.0",
+  "fontFamily": "Hiragino Sans",
+  "scriptSha256": "00925784e7d7231222fd7c8db930628937bfeaf58b265d76f616e99d4ac323e7",
+  "sourceSha256": {
+    "docs/validation-results/20261003-issue-14-luna6/scored-report.json": "83ab8041e97758cac78d45899362a906834a08023d71c07cc205182fb3f64df4",
+    "docs/validation-results/20261003-issue-14-luna6/final-summary.json": "734f356f842f49038784622870231aed9177de9b40dce787cb2d694eaf8afba5",
+    "evaluation/expansion-v2/dataset.json": "6e9724acadf1d9c7dff61531f5e02df4c1bd3543c451e785f237e693356b437d"
+  },
+  "files": {
+    "01-quality-overview.png": "5f6539db905ad674ab338e0ab66589c05301a85898c07930780cd483a867b9e0",
+    "01-quality-overview.pdf": "15cbb9d83567dfd31dd2d47084d134ab743b8674694216bbef0cf3cba3d0afcb",
+    "chart-data.json": "56c353a5ceb06b51501243255a9c218d5d2375ddc22e963a1ca8b0b0b7be8129",
+    "01-quality-overview.svg": "62bc01dec30f56ba331318b6e0ff59da17d25eb4da5cc89fe7f37ca160c9da52",
+    "03-cost-and-budget.svg": "070f1625675b81a408d3b928d16c5a10507331a1e95ab4d5ba323b1e94b5b0b0",
+    "02-question-quality-and-stability.pdf": "b7552faafafb4b5e4970be1b445e5c9eb472ee633996fb8378e100d4e00fcd5f",
+    "02-question-quality-and-stability.png": "a337ae87437dd41f51c68f6e961e8d016d78ba021c006ca0fe67dfbb1e4f0f32",
+    "02-question-quality-and-stability.svg": "2c91e7002bcd3b5fc8b17452ca4498496092c740c205415609d6e52c5b9ad56c",
+    "03-cost-and-budget.pdf": "c6d16813b9099e66940a094cb7b2d2ebd2fa5920ade60c342f7826cfce06e2db",
+    "03-cost-and-budget.png": "c074eed0a6544d74461081ba5f66f860afb3fb7895cf3a2e6a114022025480dd"
+  }
+}
