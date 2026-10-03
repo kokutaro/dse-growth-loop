@@ -1,0 +1,337 @@
+[
+  {
+    "question": "同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。",
+    "questionId": "v2f-software-04-query",
+    "scores": {
+      "recall": 0,
+      "hitRate": 0,
+      "precision": null,
+      "ndcg": null,
+      "finalHitRate": null,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0,
+      "relevantCount": 2,
+      "displayedCount": 0,
+      "unknownDisplayed": 0,
+      "falseRecommendation": null
+    },
+    "beforeLimit": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "candidateIds": [
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-19-knowledge-negative",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-04-knowledge-negative",
+      "v2f-operations-19-knowledge-direct"
+    ],
+    "missingGold": [
+      {
+        "id": "v2f-software-04-knowledge-direct-unit-projection",
+        "entityId": "v2f-software-04-knowledge-direct",
+        "entityType": "knowledge",
+        "tenantId": "demo-tenant",
+        "unitId": "v2f-software-04-knowledge-direct-unit",
+        "title": "架空v2f-software-04-knowledge-direct",
+        "summary": "ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。",
+        "scopeIds": [
+          "demo"
+        ],
+        "status": "active",
+        "available": true,
+        "taxonomyVersion": "taxonomy-v1",
+        "classifications": [],
+        "experienceSignals": [],
+        "normalizedTerms": [],
+        "sourceRefs": [
+          {
+            "id": "v2f-software-04-knowledge-direct-evidence",
+            "documentTitle": "sources.md",
+            "location": "#v2f-software-04-knowledge-direct-evidence",
+            "text": "ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+          }
+        ],
+        "confirmationState": "fixture",
+        "judgment": {
+          "entityId": "v2f-software-04-knowledge-direct",
+          "grade": 3,
+          "insufficient": false,
+          "reason": "原本に要求された対応の本人実施／実践が明記されている。",
+          "evidenceRefs": [
+            "v2f-software-04-knowledge-direct-evidence"
+          ]
+        },
+        "jevAnswers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "unknown": 0.0,
+              "operations": 0.0,
+              "mechanical": 0.0,
+              "software": 1.0,
+              "manufacturing": 0.0,
+              "sales": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.56
+          }
+        }
+      },
+      {
+        "id": "v2f-software-04-knowledge-support-unit-projection",
+        "entityId": "v2f-software-04-knowledge-support",
+        "entityType": "knowledge",
+        "tenantId": "demo-tenant",
+        "unitId": "v2f-software-04-knowledge-support-unit",
+        "title": "架空v2f-software-04-knowledge-support",
+        "summary": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。",
+        "scopeIds": [
+          "demo"
+        ],
+        "status": "active",
+        "available": true,
+        "taxonomyVersion": "taxonomy-v1",
+        "classifications": [],
+        "experienceSignals": [],
+        "normalizedTerms": [],
+        "sourceRefs": [
+          {
+            "id": "v2f-software-04-knowledge-support-evidence",
+            "documentTitle": "sources.md",
+            "location": "#v2f-software-04-knowledge-support-evidence",
+            "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+          }
+        ],
+        "confirmationState": "fixture",
+        "judgment": {
+          "entityId": "v2f-software-04-knowledge-support",
+          "grade": 2,
+          "insufficient": false,
+          "reason": "要求された対応の共同実施／補助的な参考事例が明記されている。",
+          "evidenceRefs": [
+            "v2f-software-04-knowledge-support-evidence"
+          ]
+        },
+        "jevAnswers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "software": 1.0,
+              "sales": 0.0,
+              "manufacturing": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.68
+          }
+        }
+      }
+    ],
+    "queryAnswers": {
+      "domain": {
+        "type": "choice",
+        "choice": "operations",
+        "confidence": 0.41,
+        "probabilities": {
+          "unknown": 0.04,
+          "software": 0.42,
+          "manufacturing": 0.0,
+          "mechanical": 0.0,
+          "operations": 0.52,
+          "sales": 0.02
+        }
+      },
+      "mechanical": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "software": {
+        "type": "noul",
+        "noul": 0.19
+      },
+      "sales": {
+        "type": "noul",
+        "noul": 0.15
+      },
+      "manufacturing": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "operations": {
+        "type": "noul",
+        "noul": 0.22
+      },
+      "handover": {
+        "type": "noul",
+        "noul": 0.11
+      }
+    }
+  },
+  {
+    "question": "顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。",
+    "questionId": "v2f-sales-09-query",
+    "scores": {
+      "recall": 0.5,
+      "hitRate": 1,
+      "precision": null,
+      "ndcg": null,
+      "finalHitRate": null,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0,
+      "relevantCount": 2,
+      "displayedCount": 0,
+      "unknownDisplayed": 0,
+      "falseRecommendation": null
+    },
+    "beforeLimit": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-operations-17-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-mechanical-06-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-software-02-person-support",
+      "v2f-mechanical-05-person-support",
+      "v2f-manufacturing-13-person-support"
+    ],
+    "candidateIds": [
+      "v2f-operations-18-person-support",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-support",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-09-person-negative",
+      "v2f-sales-10-person-negative",
+      "v2f-manufacturing-14-person-support",
+      "v2f-manufacturing-13-person-support",
+      "v2f-mechanical-05-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-sales-09-person-direct"
+    ],
+    "missingGold": [
+      {
+        "id": "v2f-sales-09-person-support-unit-projection",
+        "entityId": "v2f-sales-09-person-support",
+        "entityType": "person",
+        "tenantId": "demo-tenant",
+        "unitId": "v2f-sales-09-person-support-unit",
+        "title": "架空v2f-sales-09-person-support",
+        "summary": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。",
+        "scopeIds": [
+          "demo"
+        ],
+        "status": "active",
+        "available": true,
+        "taxonomyVersion": "taxonomy-v1",
+        "classifications": [],
+        "experienceSignals": [],
+        "normalizedTerms": [],
+        "sourceRefs": [
+          {
+            "id": "v2f-sales-09-person-support-evidence",
+            "documentTitle": "sources.md",
+            "location": "#v2f-sales-09-person-support-evidence",
+            "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+          }
+        ],
+        "confirmationState": "fixture",
+        "judgment": {
+          "entityId": "v2f-sales-09-person-support",
+          "grade": 2,
+          "insufficient": false,
+          "reason": "要求された対応の共同実施／補助的な参考事例が明記されている。",
+          "evidenceRefs": [
+            "v2f-sales-09-person-support-evidence"
+          ]
+        },
+        "jevAnswers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.91,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "software": 0.0,
+              "sales": 0.07,
+              "mechanical": 0.93
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.89
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.75
+          }
+        }
+      }
+    ],
+    "queryAnswers": {
+      "domain": {
+        "type": "choice",
+        "choice": "sales",
+        "confidence": 0.92,
+        "probabilities": {
+          "mechanical": 0.0,
+          "sales": 0.93,
+          "manufacturing": 0.0,
+          "unknown": 0.01,
+          "software": 0.01,
+          "operations": 0.05
+        }
+      },
+      "mechanical": {
+        "type": "noul",
+        "noul": 0.17
+      },
+      "software": {
+        "type": "noul",
+        "noul": 0.16
+      },
+      "sales": {
+        "type": "noul",
+        "noul": 0.25
+      },
+      "manufacturing": {
+        "type": "noul",
+        "noul": 0.13
+      },
+      "operations": {
+        "type": "noul",
+        "noul": 0.2
+      },
+      "handover": {
+        "type": "noul",
+        "noul": 0.26
+      }
+    }
+  }
+]

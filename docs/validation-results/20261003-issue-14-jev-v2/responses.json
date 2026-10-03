@@ -1,0 +1,6354 @@
+{
+  "origin": "recorded-jev-classifications",
+  "planSha256": "4f546cd7bb2699123bdabbc11b4a2a6c66d3bb312141f4f17f9685ad25a625be",
+  "modelVersion": "jev-1.13.0",
+  "responses": [
+    {
+      "id": "jev-86a2d10a081af99947ece852e9de54deec73a2758fe77cf80965fa74414badd3",
+      "requestSha256": "39f4ba2f1adbee56220a3acccd3e0c0563c4ab0f2b74956760b5a63d6520b340",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "operations": 0.0,
+              "software": 1.0,
+              "unknown": 0.0,
+              "manufacturing": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 472,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 217.30912500061095
+    },
+    {
+      "id": "jev-5554ac2564d132a6ef83b20bb4760c0cd5505af8009b177bda2107ae6e14cf6e",
+      "requestSha256": "6128caa164aee46ee585de6ac4660e2956e821863a243f45412ad53e01735278",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.47,
+            "probabilities": {
+              "software": 0.56,
+              "sales": 0.44,
+              "unknown": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.87
+          }
+        },
+        "usage": {
+          "input_tokens": 538,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 194.47933393530548
+    },
+    {
+      "id": "jev-1e899b570c454fd99fc9888dc84e4b45d81b8163a952a48f067ec477f03cd45b",
+      "requestSha256": "09df2495b48ed9a943feffb0220904a78a2c83736b321b8a4d42fe9b7a1f2065",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.6,
+            "probabilities": {
+              "unknown": 0.16,
+              "sales": 0.0,
+              "software": 0.67,
+              "mechanical": 0.0,
+              "operations": 0.17,
+              "manufacturing": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.25
+          }
+        },
+        "usage": {
+          "input_tokens": 557,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 181.1133329756558
+    },
+    {
+      "id": "jev-a6ba9c69ab1cdbb163f1cc3c7843260ef95cd0b26e4cf657b2ab11cf589e938e",
+      "requestSha256": "5eb20a066939030502c798ebda827bff615d237224818fb725b53aa7a66a510b",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "software": 1.0,
+              "sales": 0.0,
+              "manufacturing": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.73
+          }
+        },
+        "usage": {
+          "input_tokens": 532,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 176.8901247996837
+    },
+    {
+      "id": "jev-603643b6df8eb6f48e1ff2b1c9f8833c62f3be48ed12f9d3af40a4e80b168445",
+      "requestSha256": "edca73dc696983c24ceba5878ba14d0a9aff7420780d5aa43ec0f181471a7eea",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.41,
+            "probabilities": {
+              "operations": 0.01,
+              "software": 0.48,
+              "manufacturing": 0.0,
+              "sales": 0.51,
+              "unknown": 0.0,
+              "mechanical": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.85
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.88
+          }
+        },
+        "usage": {
+          "input_tokens": 598,
+          "output_tokens": 96
+        }
+      },
+      "durationMs": 179.8310000449419
+    },
+    {
+      "id": "jev-59083ebeb14f907eb2771973c60a7bc7aeeb3815ac8eebe2515f36bbd8065ab0",
+      "requestSha256": "7013c3950db0b32a030417cc6a86e2de33642a4bdf03d73581a047c833a243ba",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.84,
+            "probabilities": {
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.03,
+              "mechanical": 0.0,
+              "unknown": 0.1,
+              "software": 0.87
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.29
+          }
+        },
+        "usage": {
+          "input_tokens": 553,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 186.34749995544553
+    },
+    {
+      "id": "jev-3a3ecabad910398dbe77e90c03abb924183022b174f0b0d5f54157efc13f9c96",
+      "requestSha256": "5d642756c7345fc6f7bcf08b3aa46bdace0720532dfa1953d055a6437d339e29",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.91,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "unknown": 0.0,
+              "software": 0.93,
+              "operations": 0.07,
+              "manufacturing": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.27
+          }
+        },
+        "usage": {
+          "input_tokens": 529,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 183.0325829796493
+    },
+    {
+      "id": "jev-4cf18891b62952adfc019e00c3284176f0a85a6dc4babbaacb8e783d7e5fda52",
+      "requestSha256": "5bc0cf4e0912df29743ffd85b1a677a3370317436558339ac100cd25b5243a1b",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.96,
+            "probabilities": {
+              "sales": 0.0,
+              "operations": 0.04,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "software": 0.96
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.31
+          }
+        },
+        "usage": {
+          "input_tokens": 546,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 183.5984589997679
+    },
+    {
+      "id": "jev-031936fe78b2fdd3ad4bc6d3227d596b5fcafde9a839b302ed60543e3e385475",
+      "requestSha256": "7729d4ef8463f825ade7faff3400261c9bdb5c0953aac86897fabfd4f0e3927c",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.99,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.0,
+              "unknown": 0.0,
+              "software": 1.0,
+              "sales": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        },
+        "usage": {
+          "input_tokens": 552,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 206.0831249691546
+    },
+    {
+      "id": "jev-001a8703ba9c95af11ac7db94dc286f3381c083718918c91f26f8f402d65e69d",
+      "requestSha256": "1fcb1982a3d76ea8e921d766c5ed05d3e1832ec182a0cc9ed4ca0a0192cc7de5",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "software": 1.0,
+              "operations": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.73
+          }
+        },
+        "usage": {
+          "input_tokens": 523,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 175.07416591979563
+    },
+    {
+      "id": "jev-aeb44be8e3f2706654a6135a5ee1d576aac9f730d72fb560536598173d92fe11",
+      "requestSha256": "d8ffc42c07e1b3756669bb6c594ba034631a22fd26eafe22f8b619103b0e8be2",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "software": 1.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.8
+          }
+        },
+        "usage": {
+          "input_tokens": 540,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 202.0926671102643
+    },
+    {
+      "id": "jev-2b71711f6326105068c01e7b7d3ac56970f8af2d790c9a2e6079e38fb6f0570f",
+      "requestSha256": "657a92759b6d90cf3cbd7a7d5b9efb798a0747fa3466ec49cc263292b6317c41",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.99,
+            "probabilities": {
+              "unknown": 0.01,
+              "mechanical": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "software": 0.99,
+              "operations": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        },
+        "usage": {
+          "input_tokens": 548,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 269.33654118329287
+    },
+    {
+      "id": "jev-82262fcaf3b52036d53ebdf6233c7ccf4263c8b7860d17bf193532aa70a0e23b",
+      "requestSha256": "19d660b2ffc3086c571cb2ad514b7149d39ed23e095ee701766f1216b7c29a9f",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "unknown": 0.0,
+              "software": 0.0,
+              "mechanical": 1.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.55
+          }
+        },
+        "usage": {
+          "input_tokens": 515,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 192.82449991442263
+    },
+    {
+      "id": "jev-52b2066aa940d962628fb187dc2d369f806a0cb42401032fac5d02b64fab4ab6",
+      "requestSha256": "2b9787d6e72f3faf1a8d6bbd5406cbc0f5fc02bc1fbdaca915b825a2fb18e977",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.55,
+            "probabilities": {
+              "sales": 0.37,
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.63,
+              "software": 0.0,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.85
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.86
+          }
+        },
+        "usage": {
+          "input_tokens": 581,
+          "output_tokens": 100
+        }
+      },
+      "durationMs": 220.24350007995963
+    },
+    {
+      "id": "jev-64670bf0c0bd630fbb8c96227c8158483acb8260babf9384c5a5d45f2df5d2b0",
+      "requestSha256": "79d158c25de8e8d74c0d2a6808bfbb45bc4a2c7d09e2e9c518c70f764e42266b",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.44,
+            "probabilities": {
+              "mechanical": 0.53,
+              "manufacturing": 0.01,
+              "sales": 0.04,
+              "software": 0.0,
+              "operations": 0.16,
+              "unknown": 0.26
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.17
+          }
+        },
+        "usage": {
+          "input_tokens": 548,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 200.0810420140624
+    },
+    {
+      "id": "jev-ef69ddcba979c273b527f0340065317ba5b465b6cb37c49df400711372f9c4a9",
+      "requestSha256": "3a3a6108d525024306ceb1638ca2e073d59c3ea7feabe9aac0dc99b516e9ec77",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "operations": 0.0,
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "mechanical": 1.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.6
+          }
+        },
+        "usage": {
+          "input_tokens": 516,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 188.5709159541875
+    },
+    {
+      "id": "jev-c5b782adbf9e315041efcf91dd6697606e26e0c09004e5c25313ae9424641285",
+      "requestSha256": "816604c768ad3b2fb5c9301a7eae6681390f8ada6ab56af4e22b94ef0994f751",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.49,
+            "probabilities": {
+              "operations": 0.0,
+              "sales": 0.42,
+              "mechanical": 0.58,
+              "manufacturing": 0.0,
+              "software": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.87
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.86
+          }
+        },
+        "usage": {
+          "input_tokens": 582,
+          "output_tokens": 100
+        }
+      },
+      "durationMs": 234.29562477394938
+    },
+    {
+      "id": "jev-1ca2781dca000ea7c5fd3c8ae92f583e881fa1be73b86f2b0128969e10b68cf8",
+      "requestSha256": "701fb798a2bfee2032d559ab290b5b487c1e35dd11f7f12555257c7630d68b35",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.47,
+            "probabilities": {
+              "manufacturing": 0.02,
+              "software": 0.0,
+              "mechanical": 0.56,
+              "operations": 0.1,
+              "sales": 0.03,
+              "unknown": 0.29
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.15
+          }
+        },
+        "usage": {
+          "input_tokens": 546,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 187.6759580336511
+    },
+    {
+      "id": "jev-6b8be1d220868d54c2cbaadf73f03c7ff929dc68b24da4bed12fa5abb8527ee6",
+      "requestSha256": "3e1d1386fcdcfed189562ff72d2b9628379ab603f968c5b4ccb5b970b16f59ed",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 0.0,
+              "software": 0.0,
+              "mechanical": 1.0,
+              "unknown": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.49
+          }
+        },
+        "usage": {
+          "input_tokens": 524,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 196.1109999101609
+    },
+    {
+      "id": "jev-f8b4a08bd503f5c7c6e06bdd8eb675c9222f9be1997c1a645de2ce8797b479cf",
+      "requestSha256": "93e7db098da7d97c30f83765e9ff8c032a93a7418816b40e0c5a7041696cfc80",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "unknown": 0.0,
+              "sales": 0.0,
+              "mechanical": 1.0,
+              "software": 0.0,
+              "operations": 0.0,
+              "manufacturing": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.42
+          }
+        },
+        "usage": {
+          "input_tokens": 541,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 335.26949980296195
+    },
+    {
+      "id": "jev-10d151361195525eac2a4dc26b05cab1ad1b674f71c91d9ee37e4188ab31df1d",
+      "requestSha256": "7cad1a9181cd3cfb4583dc506f02043a91aac0e7e237abc9d87632021c9628bf",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.99,
+            "probabilities": {
+              "unknown": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 1.0,
+              "operations": 0.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        },
+        "usage": {
+          "input_tokens": 536,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 205.94145893119276
+    },
+    {
+      "id": "jev-b9d94f94c002f4b2ca4cc9da5adaaee4bfc40dcb35ee67b7c55ac109844c3906",
+      "requestSha256": "fea009ec8841ebdeec73315a8c577391438e42c6c5619678412cfe556eba4d31",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 1.0,
+              "sales": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.68
+          }
+        },
+        "usage": {
+          "input_tokens": 526,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 174.26600004546344
+    },
+    {
+      "id": "jev-bba91362ade410b5c50888ed875b9e673198c7323766aa6b8e25e862bc6e8bea",
+      "requestSha256": "57f60e7567afd25dd1e0bef4df6662b489bc4ed10072dd37c6565fb890cdf024",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "mechanical": 1.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.75
+          }
+        },
+        "usage": {
+          "input_tokens": 543,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 178.07837505824864
+    },
+    {
+      "id": "jev-8d3d96d7b932e003d30776d446d85470c3acd5dfefb2f29c1f960d026183670c",
+      "requestSha256": "ea36c52eba86f71f0b3719bd323d3457d73556195c3425540ab1b80bec34579d",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.99,
+            "probabilities": {
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "unknown": 0.01,
+              "mechanical": 0.99,
+              "software": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 548,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 197.70525000058115
+    },
+    {
+      "id": "jev-a7acfd119d0f9e512ac9dbfa37d4523f932b24983fb6ad3144475072396c46c3",
+      "requestSha256": "cc37d927ff409a4ab6450f1ab354dd505443386b96b365fd09530fe5db56c534",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "operations": 0.01,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.99,
+              "unknown": 0.0,
+              "mechanical": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.5
+          }
+        },
+        "usage": {
+          "input_tokens": 508,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 190.89450011961162
+    },
+    {
+      "id": "jev-8438e9291ff8c990e00ad00f856095dc23338f4931a166d763b69cdca5b82148",
+      "requestSha256": "5cd212eebb4dc8e0128d4dfbb40023fe453bdcdb7a2ae4872336a9db3f714ec1",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.79,
+            "probabilities": {
+              "mechanical": 0.83,
+              "manufacturing": 0.0,
+              "sales": 0.16,
+              "software": 0.0,
+              "operations": 0.01,
+              "unknown": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.89
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.74
+          }
+        },
+        "usage": {
+          "input_tokens": 578,
+          "output_tokens": 100
+        }
+      },
+      "durationMs": 204.88020800985396
+    },
+    {
+      "id": "jev-653d75fd28f34d6c711eddb87f74d9c980aa7b1731c37a447a268391ce24399e",
+      "requestSha256": "2902825b0b1a549b94ac029a965c1b6f7c8bab55da9ed414fc85cd1b54718879",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.46,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.17,
+              "unknown": 0.27,
+              "software": 0.01,
+              "sales": 0.55
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.2
+          }
+        },
+        "usage": {
+          "input_tokens": 539,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 203.38804204948246
+    },
+    {
+      "id": "jev-d920717023be40cc8103a4f6dc04c6ece39fd77c0e407885e0a93d6a49c626b4",
+      "requestSha256": "4019e198058f00829d2a91ded0d5f043f20b6597518a2a8a419aed795940d87d",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 1.0,
+              "operations": 0.0,
+              "manufacturing": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.79
+          }
+        },
+        "usage": {
+          "input_tokens": 519,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 189.68504201620817
+    },
+    {
+      "id": "jev-ca4dc50bfe8406aa72d42873858d325e5b29bf52625ac544276193644b954d5f",
+      "requestSha256": "4713cb9539cbc0497a4af2d533dca3b559c312bce003e9a20b892f65a03f0e08",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.88,
+            "probabilities": {
+              "mechanical": 0.9,
+              "unknown": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "software": 0.0,
+              "sales": 0.1
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.91
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.81
+          }
+        },
+        "usage": {
+          "input_tokens": 589,
+          "output_tokens": 100
+        }
+      },
+      "durationMs": 177.17599985189736
+    },
+    {
+      "id": "jev-8da8ac1eaf1d52c413d555c3966c900d12d15a29c96c8f498859e7eb3341ae03",
+      "requestSha256": "d75a1cb072440f2084f005ee5df7b39e18cfe9cb6ed90f8edeccd4aa0911e6b0",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "sales": {
+            "type": "noul",
+            "noul": 0.26
+          },
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.48,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.22,
+              "mechanical": 0.0,
+              "software": 0.03,
+              "unknown": 0.18,
+              "sales": 0.57
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 540,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 184.59449987858534
+    },
+    {
+      "id": "jev-c055e0132ed2df7cfe7ba84796378e73499684eb85f88bee363b4ebafed9c05c",
+      "requestSha256": "0529b1f4a65613600c8b79cd0a24550304e2da7eb60b467262167f003946580e",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "sales": 0.99,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "operations": 0.01,
+              "manufacturing": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.63
+          }
+        },
+        "usage": {
+          "input_tokens": 521,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 176.2553749140352
+    },
+    {
+      "id": "jev-8cf52dff82dc46a92295bd82576509fcb6ba17e423f80541445273965a6b916c",
+      "requestSha256": "9c99a69f24c3d714af150066778bd5a42611f8b8557ab50d86236f37c8de5458",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "sales": 1.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.66
+          }
+        },
+        "usage": {
+          "input_tokens": 538,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 183.541625039652
+    },
+    {
+      "id": "jev-0005f561e2d4f83882b7d60d3ffff73ebaa7ada92742822f9df58ef905c45e64",
+      "requestSha256": "535b52fee8e4a40016f112ca31a3a56c7e193b04e61806d9ae4b5125441d62f8",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "unknown": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "sales": 1.0,
+              "operations": 0.0,
+              "software": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        },
+        "usage": {
+          "input_tokens": 536,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 219.42191594280303
+    },
+    {
+      "id": "jev-edea9e19935709e0edb281d0425ba30ef483f416701f745b719825cb9cc12900",
+      "requestSha256": "8fbdf9534e2cf6081ef18e5f2d8afdd46e6c6c63a6b74b556428949346fd81e7",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "unknown": 0.0,
+              "sales": 1.0,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "operations": 0.0,
+              "manufacturing": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.62
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.87
+          }
+        },
+        "usage": {
+          "input_tokens": 573,
+          "output_tokens": 97
+        }
+      },
+      "durationMs": 179.46504103019834
+    },
+    {
+      "id": "jev-a96b199c66cd77acd2cf9fd614abfef7de5f375b37b7fca826d8b77a78b03018",
+      "requestSha256": "795cd9968fd43eb4f5b021512bd791154a9ca0a7576dd2f13bdf1e3e783f3180",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "sales": 1.0,
+              "mechanical": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.73
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.85
+          }
+        },
+        "usage": {
+          "input_tokens": 590,
+          "output_tokens": 97
+        }
+      },
+      "durationMs": 187.21129093319178
+    },
+    {
+      "id": "jev-3cc4945809b3ec7d2ef37423f106d86ab8d73ecb1e65c43af4a24e2cd715569e",
+      "requestSha256": "8a36125e31ad739b09f813a7526847bd967ebf91677d57e0c345bd98adf38425",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.97,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "unknown": 0.01,
+              "mechanical": 0.0,
+              "operations": 0.01,
+              "software": 0.0,
+              "sales": 0.98
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        },
+        "usage": {
+          "input_tokens": 537,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 192.7869999781251
+    },
+    {
+      "id": "jev-be550c54b7416a1316401a947f0a4b2d4722cb815ff8b790c2a27c3d48a1f212",
+      "requestSha256": "744831df4ec3232a9d443580fbb639acd848c31f7b73500030b3edf461388bb3",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.97,
+            "probabilities": {
+              "sales": 0.0,
+              "operations": 0.02,
+              "manufacturing": 0.98,
+              "software": 0.0,
+              "mechanical": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.24
+          }
+        },
+        "usage": {
+          "input_tokens": 514,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 193.01504106260836
+    },
+    {
+      "id": "jev-0854ae7c6bc8c5a2a233a5eb312e169507931f86bb1e851b860eda544250d8e7",
+      "requestSha256": "061c83aaeb322babd31d2745ba09f073b5fdb77cf081061954c247722f454714",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.41,
+            "probabilities": {
+              "mechanical": 0.0,
+              "manufacturing": 0.41,
+              "sales": 0.51,
+              "software": 0.0,
+              "operations": 0.08,
+              "unknown": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.85
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.72
+          }
+        },
+        "usage": {
+          "input_tokens": 580,
+          "output_tokens": 98
+        }
+      },
+      "durationMs": 251.6953330487013
+    },
+    {
+      "id": "jev-8bb3884ceeab21ea14a4446e0ba284c5fedc82161b7e7ba0551fc28e1b9afbf9",
+      "requestSha256": "1fafb79f9099d740de6267bd6b12534a04afa9210a0c42bf620f6ee64d2a9f81",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.44,
+            "probabilities": {
+              "unknown": 0.29,
+              "software": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.14,
+              "sales": 0.03,
+              "manufacturing": 0.54
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.2
+          }
+        },
+        "usage": {
+          "input_tokens": 537,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 208.48754211328924
+    },
+    {
+      "id": "jev-f530f66f37ee09c6136710293cd161beb60bbac3366cffb0448b2e582daed1bc",
+      "requestSha256": "039628f5a1d28f5b9fc168a659d71a358bf3029724ab3e9eb58c04280d059480",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.96,
+            "probabilities": {
+              "software": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.03,
+              "unknown": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.97
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.5
+          }
+        },
+        "usage": {
+          "input_tokens": 516,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 248.79533401690423
+    },
+    {
+      "id": "jev-b9651482f4cc02d99544a6547041621ae68ade69026b91be088801c31e658f66",
+      "requestSha256": "3508477e050604e071653e3e4c2d9b64930248e416a6016414f7bbd5054d58c0",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.5,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.58,
+              "manufacturing": 0.3,
+              "software": 0.0,
+              "unknown": 0.0,
+              "operations": 0.12
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.87
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.68
+          }
+        },
+        "usage": {
+          "input_tokens": 582,
+          "output_tokens": 98
+        }
+      },
+      "durationMs": 193.1948340497911
+    },
+    {
+      "id": "jev-1a8be95b3e0203dc977e3f6b15d985532e16500a7bcee6a1cc56e4392a8015fc",
+      "requestSha256": "558d181b4909d0e25ae72028c584d9c50a7e12374f58f9bcd8f2a16e63e7d06b",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.45,
+            "probabilities": {
+              "unknown": 0.21,
+              "operations": 0.22,
+              "manufacturing": 0.55,
+              "sales": 0.02,
+              "software": 0.0,
+              "mechanical": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.2
+          }
+        },
+        "usage": {
+          "input_tokens": 541,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 241.90854094922543
+    },
+    {
+      "id": "jev-80e9b13b5c04afc5be2d50597ce71b37fcaef1c040b61290340621ba6968bb72",
+      "requestSha256": "4fbe68ca93d397fb2899f497860abd3befacfa10fcf0c106bde99c68d9abb604",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.85,
+            "probabilities": {
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.88,
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "operations": 0.12
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.51
+          }
+        },
+        "usage": {
+          "input_tokens": 514,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 189.74420800805092
+    },
+    {
+      "id": "jev-8092709c326175c602076cf1282d36643d47b76dec58da2a774468c9140f2ad3",
+      "requestSha256": "cae2fa9827280a9f21be8c50d06969462ec2c2442d06015220de8890502ba8b0",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.94,
+            "probabilities": {
+              "sales": 0.0,
+              "software": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.05,
+              "manufacturing": 0.95,
+              "unknown": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.63
+          }
+        },
+        "usage": {
+          "input_tokens": 531,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 187.89891595952213
+    },
+    {
+      "id": "jev-7565ddcc26cdfa9e60769b0fa101cc34ebe89b7ce63b00c333617fde03c3c1a1",
+      "requestSha256": "20f08696efbc24283cf2c9b8b16a51bbee74182933c2de1b43359bcb8ca3bb8f",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.92,
+            "probabilities": {
+              "mechanical": 0.0,
+              "manufacturing": 0.9299999999999999,
+              "sales": 0.0,
+              "software": 0.0,
+              "operations": 0.06,
+              "unknown": 0.01
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        },
+        "usage": {
+          "input_tokens": 540,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 195.29800000600517
+    },
+    {
+      "id": "jev-a64e75de9618d5d26087c7024c7d6b2c9adc65769d5fcc53c3f7b2dd99a1952a",
+      "requestSha256": "2c153e502150fedf9b009692df4e545761effe1ce975d8f3594689d85fe4d29a",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "mechanical": 0.0,
+              "manufacturing": 1.0,
+              "software": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.62
+          }
+        },
+        "usage": {
+          "input_tokens": 521,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 199.615583056584
+    },
+    {
+      "id": "jev-35588410012dd1cd2ed686b2845ca36674d06433f8c50d88be6bac4b03ba6ecf",
+      "requestSha256": "da76bec4096b1735c5c783f6b8521262d747c6bb14f680d4d4dccffd1bd0180a",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 1.0,
+            "probabilities": {
+              "manufacturing": 1.0,
+              "software": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.0,
+              "sales": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.72
+          }
+        },
+        "usage": {
+          "input_tokens": 538,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 199.0787498652935
+    },
+    {
+      "id": "jev-a69311c4b878a767693fe61fcb0fa1701ec9b89d1d1ae4806289edaddb0828cb",
+      "requestSha256": "eb31f6a6bb29fe72cec84b9199bd6e5a2828b6ed5410d3c3474b54693ac7bb16",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 0.0,
+              "unknown": 0.0,
+              "sales": 0.0,
+              "manufacturing": 1.0,
+              "mechanical": 0.0,
+              "operations": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        },
+        "usage": {
+          "input_tokens": 533,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 188.99183301255107
+    },
+    {
+      "id": "jev-91b5cdaf4640b9861c792c31338334a41e3c3c20329050030a11483ccf5496b4",
+      "requestSha256": "5694219b21868dd313cbccfc63d30adf2b89297c46312a1c187ebd197fc071d3",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "operations": 1.0,
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 477,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 184.26954094320536
+    },
+    {
+      "id": "jev-962dec9a88f4326018dadb7aae473c3e28b4de416a2bb87bb2e8a66c82ba812c",
+      "requestSha256": "bd3c6a6145da9ebdfe1032fd527981ca926caa057c9f631e0550966c6b98f179",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.51,
+            "probabilities": {
+              "sales": 0.41,
+              "software": 0.0,
+              "unknown": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.59
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.88
+          }
+        },
+        "usage": {
+          "input_tokens": 543,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 205.40666696615517
+    },
+    {
+      "id": "jev-bd65486287ff00799b5dcc219ee657409f680461d8ff18b76689cc56b97ef9d2",
+      "requestSha256": "6b9dc889518bd30ad7f2995f91b3ec58281b4c83974d16c71852fd91c9267975",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.67,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "software": 0.02,
+              "unknown": 0.24,
+              "mechanical": 0.0,
+              "sales": 0.01,
+              "operations": 0.73
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 503,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 185.9357920475304
+    },
+    {
+      "id": "jev-0730dd6e5e1faa4461db5e8e2308deaf4126555555bcb69585f1ed22e3d5ba51",
+      "requestSha256": "bb83e8cbc79389cd3d4c7fa6a20ceaeb3355b4af88f95a0dad48a31ba947cc4b",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 0.0,
+              "operations": 1.0,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 484,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 181.81458301842213
+    },
+    {
+      "id": "jev-1d9bf63c50226aa1a58fffa671e8cf5f86e484fe80987645d38c3414ec0cdd91",
+      "requestSha256": "356857192f5ecba2a39c37a926d0f26de4b5b2156b141f0266e0e2c3b3f7bc61",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.47,
+            "probabilities": {
+              "unknown": 0.0,
+              "sales": 0.56,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.44
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.89
+          }
+        },
+        "usage": {
+          "input_tokens": 550,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 188.4792079217732
+    },
+    {
+      "id": "jev-2b85cc16e54fc00791847575c80b61ec98d5d840c05419dc8ffae1ba7a6c4400",
+      "requestSha256": "24dd495a1c17a739b054ac3f6b775c5cd2a0d28e7feefa371859cc21da120e5a",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.77,
+            "probabilities": {
+              "mechanical": 0.0,
+              "software": 0.03,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.81,
+              "unknown": 0.16
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 505,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 216.62337495945394
+    },
+    {
+      "id": "jev-ff41ed8433585503011c97df0408bbc7a675fe1de175677289d9c8fbab2da815",
+      "requestSha256": "e4ab5375b1f88c25fb4250a6c309bf4259b6f9f32694d494f8f7aff1b98b4cb4",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "sales": 0.0,
+              "operations": 1.0,
+              "software": 0.0,
+              "manufacturing": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 475,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 194.42245783284307
+    },
+    {
+      "id": "jev-4223de6766f6284b9feb23753771cbf745605f0dbd33c3dc353a3d49c7ec1814",
+      "requestSha256": "0552a99fb604a428fa0de3f62c00729c69f8f8054a35e02dc3bb9b8878ba92ef",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 0.0,
+              "operations": 1.0,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 492,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 189.66816598549485
+    },
+    {
+      "id": "jev-0830b31ded13ad62aaca489126894168e912197b2ec025fbc785c5686e558a86",
+      "requestSha256": "0a6311b7a8fc146c335c13bf5769816feb7e4ff908580f855e4d67a068bccacc",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.99,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "software": 0.0,
+              "sales": 0.0,
+              "operations": 1.0,
+              "mechanical": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 502,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 191.93462515249848
+    },
+    {
+      "id": "jev-690a0672e113b7952c2745d85f12cf98ea954c06917f9429019c1f519694fe60",
+      "requestSha256": "5f10e7d2ee965704450bba2673d5924188ed9731c74f88a963c7dba43d37b1a1",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "software": 0.0,
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "operations": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 481,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 200.68945782259107
+    },
+    {
+      "id": "jev-39eb2a8cc37fbb872a92b8e2c664277b02cd3fb0a78ee17cdb38126fd2985fe7",
+      "requestSha256": "600eac9e620011161d96715ac81dee8d3267a40b9463022cf24409d337cf3b47",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 0.0,
+              "unknown": 0.0,
+              "manufacturing": 0.0,
+              "operations": 1.0,
+              "mechanical": 0.0,
+              "software": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 498,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 204.54270811751485
+    },
+    {
+      "id": "jev-8e1ef5984e0a41d9b52e987c21cd75f03771c34b6229309d59bbb5f2f39786a0",
+      "requestSha256": "4eabc2460abd688439bb70e96ac4c4ed8f934118cae05990e9a23eac2b1f0879",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.99,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "software": 0.0,
+              "operations": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 505,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 185.9112500678748
+    },
+    {
+      "id": "jev-cf86f923fa8e2e598ef811a4b6656fc5620c0a9ee1fcb34557d846665aef471f",
+      "requestSha256": "fec02b6d3dfdc0aa14ee56b4a8e3dcc2d15dd5a82983c3da9899eea720992a98",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 0.0,
+              "operations": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "software": 1.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.59
+          }
+        },
+        "usage": {
+          "input_tokens": 533,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 192.05112499184906
+    },
+    {
+      "id": "jev-72b5b27ed27aa8daf219cfdc54e4d7b4ece3958cbc5709ee9240d70b48335c46",
+      "requestSha256": "66d286e4657109fc7f8c3f4a78ea6b4840b6ea25ef01b8007622b11fa7e3dc72",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.41,
+            "probabilities": {
+              "mechanical": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.48,
+              "software": 0.52,
+              "operations": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.82
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.86
+          }
+        },
+        "usage": {
+          "input_tokens": 599,
+          "output_tokens": 96
+        }
+      },
+      "durationMs": 213.29675009474158
+    },
+    {
+      "id": "jev-a08f6edac96e580e09070bf94b16be8e9f44080b9dd61d89e6525aa877fea616",
+      "requestSha256": "4cf49647c63e19262f76487e90771bcf14c3ceee431c944404f5405fe8aa8368",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.73,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "unknown": 0.12,
+              "software": 0.78,
+              "operations": 0.1
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.23
+          }
+        },
+        "usage": {
+          "input_tokens": 552,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 174.34566607698798
+    },
+    {
+      "id": "jev-a3f59fde509df6072c89e968cd53f7db6c8ab110b3ab411334b589f9a563cdae",
+      "requestSha256": "76695fe600376877b59d24576d0cc185eac29b92f728193ad825ea6294970ebb",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "operations": 0.0,
+              "sales": 0.0,
+              "unknown": 0.0,
+              "software": 1.0,
+              "manufacturing": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.63
+          }
+        },
+        "usage": {
+          "input_tokens": 527,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 188.8729170896113
+    },
+    {
+      "id": "jev-b4e9456a5b1cd8aa3802d5eaa41257334abfe895eed0e809d59a750f2058268d",
+      "requestSha256": "5438e0a472f95323fcf4fa9f875ecfaef7ac65089cdd2d2127c0e27f6ca9dc61",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.47,
+            "probabilities": {
+              "operations": 0.0,
+              "mechanical": 0.0,
+              "sales": 0.43,
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "software": 0.5700000000000001
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.8
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.84
+          }
+        },
+        "usage": {
+          "input_tokens": 593,
+          "output_tokens": 96
+        }
+      },
+      "durationMs": 178.55112487450242
+    },
+    {
+      "id": "jev-015bb9f898e1ce4ff6a85218ba758621eaa33c92da811913901ad489f02f56a0",
+      "requestSha256": "7e051bd5e0c2d4300cc8ff9deb4806f9e8fd31399d7a8276ab1c06c7a2077e52",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.63,
+            "probabilities": {
+              "sales": 0.01,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "unknown": 0.15,
+              "operations": 0.14,
+              "software": 0.7
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.22
+          }
+        },
+        "usage": {
+          "input_tokens": 559,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 177.3682499770075
+    },
+    {
+      "id": "jev-ee24f1ba242d8b0f945ee2730c7af31c0b5951103b11018bc9b2b5db0486ce48",
+      "requestSha256": "ad716f44cd663a7d48f7638f75c06276bca2004492d8429caf1ee52f2c8b892b",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "mechanical": 0.0,
+              "software": 1.0,
+              "unknown": 0.0,
+              "sales": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.46
+          }
+        },
+        "usage": {
+          "input_tokens": 530,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 175.2638341858983
+    },
+    {
+      "id": "jev-f1411dec6cbf9a93432fc61c591acc47d8a36ae7cf6ac27195cd9a044b25615e",
+      "requestSha256": "c2fef3185a5f3be97021d53b3cb569f66795d376b744c8ac1f5c21d2fab43249",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 1.0,
+              "operations": 0.0,
+              "unknown": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "sales": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.57
+          }
+        },
+        "usage": {
+          "input_tokens": 547,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 176.1766669806093
+    },
+    {
+      "id": "jev-b6313f2317108836ca27ddbb2cb80113438de3b2bf3a711335b5849e18d4a1a3",
+      "requestSha256": "2c280fa48c8b503f6a03232cdf4efbd09ceece5bd849c00a83ba7e40a0285b10",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.98,
+            "probabilities": {
+              "mechanical": 0.0,
+              "unknown": 0.01,
+              "operations": 0.0,
+              "manufacturing": 0.0,
+              "software": 0.99,
+              "sales": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        },
+        "usage": {
+          "input_tokens": 546,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 173.20458288304508
+    },
+    {
+      "id": "jev-0c435ce828c39b57bee602ff55eef768a7cf430914f79e2bec2d3431fc0b7734",
+      "requestSha256": "2750a0f971c3c3a3b6724023f50791a7e6035d0eb8c1f50db46ac9409608b334",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "unknown": 0.0,
+              "operations": 0.0,
+              "mechanical": 0.0,
+              "software": 1.0,
+              "manufacturing": 0.0,
+              "sales": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.56
+          }
+        },
+        "usage": {
+          "input_tokens": 538,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 183.06033313274384
+    },
+    {
+      "id": "jev-f54bfd84a2573a2d34f41d6f319e8e22eeb6dd7470d1e97eaa3f65c417099ff8",
+      "requestSha256": "f5d0954d23531656d6117af749ec33160e1dd2928a2521a2650e4032fff8b528",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "software": 1.0,
+              "sales": 0.0,
+              "manufacturing": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.68
+          }
+        },
+        "usage": {
+          "input_tokens": 555,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 174.8882499523461
+    },
+    {
+      "id": "jev-836ffe8991498ddfae5cd54d6748226bc6c56a8d30162719162c475f2dbb7a1b",
+      "requestSha256": "d8c4b1a4d91e061252345a5855f390cb2a54620855bbbbceaf188cee3b9d6bc3",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.91,
+            "probabilities": {
+              "operations": 0.05,
+              "sales": 0.02,
+              "manufacturing": 0.0,
+              "unknown": 0.01,
+              "software": 0.92,
+              "mechanical": 0.0
+            }
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        },
+        "usage": {
+          "input_tokens": 549,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 198.47041694447398
+    },
+    {
+      "id": "jev-7069b485278066323f16a7ef0fb15cea85f36c19cc15dd1c976ae867ac9b22a7",
+      "requestSha256": "3ae59ec4e3086ff84302805a858bfc281be8e3ddc7f5889c0d229e3ab68a011f",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.66
+          },
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 1.0,
+              "operations": 0.0,
+              "unknown": 0.0,
+              "software": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 516,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 172.4481249693781
+    },
+    {
+      "id": "jev-47064d14b055cc779277fd774affea9c61b827f1276d2e801f21dd86eff04335",
+      "requestSha256": "7d4d85dcaa74a906b00c4f78f5de0b3fb47cb95d8b3c8bdc9aacb51a8f79321e",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.52,
+            "probabilities": {
+              "operations": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.39,
+              "mechanical": 0.61,
+              "unknown": 0.0,
+              "software": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.85
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.87
+          }
+        },
+        "usage": {
+          "input_tokens": 582,
+          "output_tokens": 100
+        }
+      },
+      "durationMs": 176.05120898224413
+    },
+    {
+      "id": "jev-3b190b73fe473146a53d9fdbb53b88d1b67d0d115977f57b2cf7a59e8bdfd60b",
+      "requestSha256": "dcec48dd6e3cd3e6395b044e61f28b2a306bd462c8e90d859ca65f60c766f12a",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.36,
+            "probabilities": {
+              "mechanical": 0.45999999999999996,
+              "manufacturing": 0.0,
+              "software": 0.01,
+              "sales": 0.03,
+              "operations": 0.2,
+              "unknown": 0.3
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.19
+          }
+        },
+        "usage": {
+          "input_tokens": 546,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 204.15004203096032
+    },
+    {
+      "id": "jev-0d45051fbe0eff2af09cf20010162902dc30056f2ea9c010f77df2dce307b632",
+      "requestSha256": "0b21db6f98d705e5d1e5f3c990cd584237eecf35d5e6bdaab2270c21def9e6be",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 1.0,
+              "unknown": 0.0,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.84
+          }
+        },
+        "usage": {
+          "input_tokens": 518,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 330.37266694009304
+    },
+    {
+      "id": "jev-cbbf056f6e707d617f3a309e0dad76a2b88f736a6c163f958b7c37e8239092d8",
+      "requestSha256": "385b07f210a0cd3e26209ae6e2f6f96ef36a54fcb2109fc24acc8a77e7d5ddfd",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.43,
+            "probabilities": {
+              "manufacturing": 0.01,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "sales": 0.54,
+              "software": 0.0,
+              "mechanical": 0.45
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.88
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.88
+          }
+        },
+        "usage": {
+          "input_tokens": 584,
+          "output_tokens": 98
+        }
+      },
+      "durationMs": 169.74445804953575
+    },
+    {
+      "id": "jev-6c329c3e9ed655f554c9051dbf4a4d8236612c03a101ed1e94ade05a8fbaaedb",
+      "requestSha256": "198f85c773566f7bef6ca4973524df6516930d1958ad972da368b3ae9b9aa5f8",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.41,
+            "probabilities": {
+              "sales": 0.01,
+              "manufacturing": 0.03,
+              "mechanical": 0.51,
+              "unknown": 0.28,
+              "software": 0.0,
+              "operations": 0.17
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.19
+          }
+        },
+        "usage": {
+          "input_tokens": 546,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 188.74466698616743
+    },
+    {
+      "id": "jev-54bce20bdaf6003dbc1f5112265145596631f3223ce36d47a835b505dbe854d2",
+      "requestSha256": "a6f446f3abaddbd9ea2afe09758f06d7f4296ece10d47885eba835632be79c43",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 1.0,
+              "operations": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.59
+          }
+        },
+        "usage": {
+          "input_tokens": 520,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 190.43204188346863
+    },
+    {
+      "id": "jev-19b059768a9c4d29ed547240ccac86ef60ebb7eba2cf7fd23eb726f61cf96d9f",
+      "requestSha256": "0800a58576808869bd06298d7b534746aa29c90b0c8de559f2fa72412a4ed127",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "operations": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "mechanical": 1.0,
+              "software": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.67
+          }
+        },
+        "usage": {
+          "input_tokens": 537,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 179.49125007726252
+    },
+    {
+      "id": "jev-5d723f4e1e80697e3107b86c425c5309a31b9871d207e88c1021e6072d7547e1",
+      "requestSha256": "82c9b8f8b99c04663932866cabb140d0f4da5380710da69e46934e516aa6e930",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.98,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "unknown": 0.01,
+              "software": 0.0,
+              "mechanical": 0.99,
+              "sales": 0.0,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        },
+        "usage": {
+          "input_tokens": 537,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 193.2938750833273
+    },
+    {
+      "id": "jev-8745987987d9506820da94d77f8724c5f6f6fb2f32fdd6e09b77bfae5a11e83e",
+      "requestSha256": "0b83c0038974feaacddc1d666afd2b67e212b7ec5cb59aa572be616e7c670344",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 1.0,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "software": 0.0,
+              "operations": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.61
+          }
+        },
+        "usage": {
+          "input_tokens": 526,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 201.22137502767146
+    },
+    {
+      "id": "jev-1dad54357d849df69a69120c25b7ebab022cb564f8bcf4cc7695b44b842fec42",
+      "requestSha256": "d004f76144f39bd533bf2af0374c974b8c2ba9dcaf8db1d986894650b6e06f07",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 0.0,
+              "mechanical": 1.0,
+              "operations": 0.0,
+              "unknown": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.69
+          }
+        },
+        "usage": {
+          "input_tokens": 543,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 183.3216669037938
+    },
+    {
+      "id": "jev-02b2778a7e3dd5d315a5fe6ec25c3e4bf12503be765aea19ef4a4e99927e745f",
+      "requestSha256": "946f5020af9fae857e8d01bffd629fae1d9d441da0bbdd2230e04a295ee67f89",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.99,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "sales": 0.0,
+              "mechanical": 1.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 546,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 260.8796248678118
+    },
+    {
+      "id": "jev-220473bb4367bfe3dc5e7d770c9b77a98eb5def485320f923d30ba61bcb3687e",
+      "requestSha256": "3fb62ccdb880c80874423eb5c1569ae9931d1840266db8517379114d6b0bd53d",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 1.0,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "sales": 1.0,
+              "mechanical": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.44
+          }
+        },
+        "usage": {
+          "input_tokens": 513,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 188.96350008435547
+    },
+    {
+      "id": "jev-3d35cb17b92cd092a8699a16c620e80904629e2bdcd6094da7dfcada4a30ca43",
+      "requestSha256": "7812244950bb1eb2dc284f9a0881005fc21b5f6562cc41cded96123144eeffd9",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.91,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "software": 0.0,
+              "sales": 0.07,
+              "mechanical": 0.93
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.89
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.75
+          }
+        },
+        "usage": {
+          "input_tokens": 583,
+          "output_tokens": 100
+        }
+      },
+      "durationMs": 187.40254105068743
+    },
+    {
+      "id": "jev-aec2b7447c1cee687db61f36f123699cbbc34524350aacd27c1743835609157c",
+      "requestSha256": "4ae9472e556649e41f2a8269587c0db442b7ff7e7e099ad7f72f8ff4c213239a",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.84,
+            "probabilities": {
+              "software": 0.02,
+              "sales": 0.87,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "unknown": 0.08,
+              "operations": 0.03
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.22
+          }
+        },
+        "usage": {
+          "input_tokens": 545,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 195.82691695541143
+    },
+    {
+      "id": "jev-19b8e9ee23ecc28f82e1259e4dff49a8f82a7e60bd14f31d1ecee54d8c551130",
+      "requestSha256": "e260d02bd284ddc062c055af94f4bbb243f1ba62918e16ffb62622ff985e8b71",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.97,
+            "probabilities": {
+              "sales": 0.97,
+              "operations": 0.03,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.77
+          }
+        },
+        "usage": {
+          "input_tokens": 524,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 199.03166685253382
+    },
+    {
+      "id": "jev-d41d5bdcd29861a9dccbb1ff218e38a5f181d1f1d79200a45973efaf40abe15f",
+      "requestSha256": "0458273c8a960fd2c35e4b6021765add30e7f19f7d50ef84498ae8aeb4aff89c",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.67,
+            "probabilities": {
+              "operations": 0.03,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.24,
+              "mechanical": 0.73,
+              "unknown": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.89
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.82
+          }
+        },
+        "usage": {
+          "input_tokens": 594,
+          "output_tokens": 100
+        }
+      },
+      "durationMs": 182.84450005739927
+    },
+    {
+      "id": "jev-91a16b966824807951436777197ca994a8a0c5802da8b7a82d177188e744eabd",
+      "requestSha256": "ec0a3b212c15c6ef4e51cc332e292ec8d1df3ec41096c5e49a2124e25ae206da",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.85,
+            "probabilities": {
+              "unknown": 0.05,
+              "sales": 0.88,
+              "software": 0.05,
+              "mechanical": 0.0,
+              "operations": 0.02,
+              "manufacturing": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.41
+          }
+        },
+        "usage": {
+          "input_tokens": 536,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 169.15570804849267
+    },
+    {
+      "id": "jev-32db57c654ddcc11c3ee6a1322ae3c568229bbfd664207614a299d6c1f97fdcf",
+      "requestSha256": "abf07fac9c64713bd66613f04c277392cb7c51be299a43661ecb55f6c32eb2e6",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.01,
+              "unknown": 0.0,
+              "software": 0.0,
+              "sales": 0.99
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.67
+          }
+        },
+        "usage": {
+          "input_tokens": 529,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 184.6865420229733
+    },
+    {
+      "id": "jev-dc43b8dfb1f42149d1618f222c363b9d29b3bb68fb60369e5790c23d75fdb5af",
+      "requestSha256": "e489594d792ea3f04e21c8dd0f0d01159ccdd4405a1e911870b5464e27456b41",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.98,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.01,
+              "unknown": 0.0,
+              "software": 0.0,
+              "mechanical": 0.0,
+              "sales": 0.99
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.75
+          }
+        },
+        "usage": {
+          "input_tokens": 546,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 202.7420410886407
+    },
+    {
+      "id": "jev-4bf6c6eb63ff622d74d0b9058f01478d6459052a9230e79239ff4cc42aacd7dc",
+      "requestSha256": "9179a3f96b54bbe3338f1066b77155ef804fc9024b9762d1f1848419529763f4",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "software": 0.0,
+              "sales": 1.0,
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        },
+        "usage": {
+          "input_tokens": 538,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 207.35245803371072
+    },
+    {
+      "id": "jev-5edf99ee280c9c41df2321fcc82ec94e37b1e0f9247b7c3e6f6bb1e80314d0be",
+      "requestSha256": "1cd2d6a70f3178812b35d36b964435242be2b3ec7533ff322215156ffb0cf992",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "manufacturing": 0.0,
+              "sales": 1.0,
+              "operations": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.44
+          }
+        },
+        "usage": {
+          "input_tokens": 525,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 181.74050003290176
+    },
+    {
+      "id": "jev-6110cdbce1ff05533518eb341383e1d612e1c5913c0ae33daea17a2003385259",
+      "requestSha256": "0d59b5e0896d346e3f0c72f6aa72b75d21912069f8aeb9155670da3a0924793d",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "sales": {
+            "type": "noul",
+            "noul": 0.74
+          },
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 1.0,
+              "operations": 0.0,
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "software": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 542,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 224.5879580732435
+    },
+    {
+      "id": "jev-efa7cc90a4909ba57adcaa1843c91d7c0bcda8b937d627fc407e7c1ef6e7c168",
+      "requestSha256": "19a5b557e2b7e32acbe224673b6e9d3152d857dfb62bcd99980a8dc71e7bcea7",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "mechanical": 0.0,
+              "manufacturing": 0.0,
+              "sales": 1.0,
+              "software": 0.0,
+              "operations": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 539,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 193.9679579809308
+    },
+    {
+      "id": "jev-f6a0695ebf095a357bb54928934d8f0515dd0f912bccfaa28f25ab67974c6207",
+      "requestSha256": "de17ea33e2de42eb6f4dd6084b395f399870f218440e8872165c888fd26ceda9",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.93,
+            "probabilities": {
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "operations": 0.06,
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.94
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.34
+          }
+        },
+        "usage": {
+          "input_tokens": 517,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 177.96125006861985
+    },
+    {
+      "id": "jev-701711bba383a6bb81f08a129749414a2273338c485ed9b654da09fccc23e0fa",
+      "requestSha256": "972b61c4394c070058a924b0ceac9bed140100b806d5b52ef3445e319fa6310d",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.37,
+            "probabilities": {
+              "operations": 0.16,
+              "sales": 0.35,
+              "manufacturing": 0.49,
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "software": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.87
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.77
+          }
+        },
+        "usage": {
+          "input_tokens": 583,
+          "output_tokens": 100
+        }
+      },
+      "durationMs": 178.421082906425
+    },
+    {
+      "id": "jev-f622327a93ee4a7da74c846397afb373fccf2a6b89293c5b1a92baf5f4938da0",
+      "requestSha256": "f5e37e8109f14864303e14330651d23315de030d56695edecfe3bffc4eeae6c1",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.36,
+            "probabilities": {
+              "mechanical": 0.0,
+              "manufacturing": 0.47000000000000003,
+              "sales": 0.06,
+              "software": 0.01,
+              "operations": 0.15,
+              "unknown": 0.31
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.2
+          }
+        },
+        "usage": {
+          "input_tokens": 542,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 235.78816605731845
+    },
+    {
+      "id": "jev-9b94a2ab970ba778757d845222ec2cb6c56c1fe3df5aeaa5e6b4f112a0caa201",
+      "requestSha256": "c7c1d72e5d35242334189f0f5a003e232e9aee50cd256bf93548d332a9347cd8",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.97,
+            "probabilities": {
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "manufacturing": 0.98,
+              "sales": 0.0,
+              "software": 0.0,
+              "operations": 0.02
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.64
+          }
+        },
+        "usage": {
+          "input_tokens": 517,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 194.03291610069573
+    },
+    {
+      "id": "jev-ecb15416968b65d96fdff539b2c99629f770b71894bd89b1496bf88bc3510682",
+      "requestSha256": "e033354264583ca0891fe152819bd989ccf52531712ff43c85f59617f533f339",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.49,
+            "probabilities": {
+              "mechanical": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "operations": 0.05,
+              "sales": 0.58,
+              "manufacturing": 0.37
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.86
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.76
+          }
+        },
+        "usage": {
+          "input_tokens": 583,
+          "output_tokens": 98
+        }
+      },
+      "durationMs": 190.52716717123985
+    },
+    {
+      "id": "jev-3957617f2941ba8fe6cbce4ddc71d2ff91420381b75812e97e204f3b4616968b",
+      "requestSha256": "b15033ef84c86a1d65fbd5bc9e2dd7ad3c1c6a8ff2ea80a9a9b76d9eb37a0822",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.55,
+            "probabilities": {
+              "operations": 0.14,
+              "sales": 0.01,
+              "manufacturing": 0.62,
+              "unknown": 0.2,
+              "software": 0.03,
+              "mechanical": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.16
+          }
+        },
+        "usage": {
+          "input_tokens": 542,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 177.40799998864532
+    },
+    {
+      "id": "jev-a80cecbba7f441938a210a5dedaf73cf9d894d53c74f35729cf67d75625dbccd",
+      "requestSha256": "cb6be8a5600e78648f0db2e5533d0d6ccdbcd2531e85a8a760fbe8eb4bcd0e63",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.99,
+            "probabilities": {
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "manufacturing": 1.0,
+              "sales": 0.0,
+              "operations": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.24
+          }
+        },
+        "usage": {
+          "input_tokens": 519,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 171.52904090471566
+    },
+    {
+      "id": "jev-f14c2f00978693c73e80aaf56c9c9cee8ad53b5f310a7eea16968dd5386b60f4",
+      "requestSha256": "1a2eb6ad50b5ed2082b125722f18567edadcce74e1121e563eec4fe1237f0d42",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 0.0,
+              "operations": 0.0,
+              "manufacturing": 1.0,
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "software": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.41
+          }
+        },
+        "usage": {
+          "input_tokens": 536,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 190.24270912632346
+    },
+    {
+      "id": "jev-938229e6c9ea0762d2c344f4d873d1bc96295661d2c5199697ff4d70f59a1591",
+      "requestSha256": "abee2fed2abcd9765ff52bf9590c3048ab110fe465b1050ef312b9a1b2b081d4",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.98,
+            "probabilities": {
+              "operations": 0.0,
+              "unknown": 0.01,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.99,
+              "sales": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 535,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 183.69516707025468
+    },
+    {
+      "id": "jev-61af63854b9952045157da5ccececa95c7b21623643e77d7bd7b54a796a362dc",
+      "requestSha256": "f1679d43f59b36ddc5411a5cd25af382a8bdbce211905583112ca83fab699e67",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.95,
+            "probabilities": {
+              "manufacturing": 0.95,
+              "operations": 0.03,
+              "unknown": 0.0,
+              "software": 0.0,
+              "mechanical": 0.02,
+              "sales": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.65
+          }
+        },
+        "usage": {
+          "input_tokens": 523,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 199.73820797167718
+    },
+    {
+      "id": "jev-19dffc316801dc96e87a9ac6d32cb37d98ea4653eb454c48dda87f414cfbf0b3",
+      "requestSha256": "92e2ea0f9098a254d035b7a906579debf2a086887d90e5072c40b35f9f85ec49",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.98,
+            "probabilities": {
+              "mechanical": 0.01,
+              "unknown": 0.0,
+              "operations": 0.01,
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.98
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.74
+          }
+        },
+        "usage": {
+          "input_tokens": 540,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 184.6119579859078
+    },
+    {
+      "id": "jev-a2573467e5a0db8080dfc79e27c8755d796e62702ab26d59accd4d73ded40986",
+      "requestSha256": "40b2700c752f567eb36d109a7b359ea0bc435ae7555b898989f1cf65a821e08c",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.97,
+            "probabilities": {
+              "software": 0.0,
+              "operations": 0.02,
+              "unknown": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.98,
+              "mechanical": 0.0
+            }
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        },
+        "usage": {
+          "input_tokens": 536,
+          "output_tokens": 84
+        }
+      },
+      "durationMs": 206.62454213015735
+    },
+    {
+      "id": "jev-35e22790e5309d96e4818191d83d541a3e0676b945e93bd8261cf7ef26e93bba",
+      "requestSha256": "37d76aebf4deeda3e2e4c6fc34e482d1b7f9a739e9214f234f51aff0e52267d2",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.99,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "sales": 0.0,
+              "operations": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 477,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 177.44149989448488
+    },
+    {
+      "id": "jev-6f45378619f10710dd8d7fae36ea23c49ae3de7941eb32c4227492429b905970",
+      "requestSha256": "62a4b366482f5171b25e2972bda7af0204e68b92670c65fb0cea9c0e663f5266",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.54,
+            "probabilities": {
+              "operations": 0.38,
+              "manufacturing": 0.0,
+              "sales": 0.62,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.87
+          }
+        },
+        "usage": {
+          "input_tokens": 543,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 170.8774589933455
+    },
+    {
+      "id": "jev-8b0669082184abd835ead3ca64375039826f0b0e302af885c7ec1d288cb6ffae",
+      "requestSha256": "475bd5a78bb69f6c20e4977229c4f00ce36df6c9b105bb9a252265e8c6c6bc2a",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.67,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "software": 0.03,
+              "unknown": 0.24,
+              "operations": 0.73
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 160.66708299331367
+    },
+    {
+      "id": "jev-be3a990f1262f378c04d62b3547a7b56412963317119254948fc4356f9158ca0",
+      "requestSha256": "47b3326735c192a01dd0281af01c0fdd78ceb7a1556727a02ca93a3ee8504a08",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "operations": 1.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "sales": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 479,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 181.4090828411281
+    },
+    {
+      "id": "jev-0aeabe28e7c12abb701502a236a62925b1548e3769540998a9a04dee3bed7d5f",
+      "requestSha256": "a93fdc07b7498673ecdb7956676329b5305033704875f8bdbb942971204ea6a6",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.45,
+            "probabilities": {
+              "mechanical": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "operations": 0.55,
+              "manufacturing": 0.0,
+              "sales": 0.45
+            }
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.88
+          }
+        },
+        "usage": {
+          "input_tokens": 545,
+          "output_tokens": 80
+        }
+      },
+      "durationMs": 186.23054190538824
+    },
+    {
+      "id": "jev-2c8b270c659f73efda5609bff80475c7f404c24e058f990f9c8b3109a4765d71",
+      "requestSha256": "82c8468cc6bbc3ba6bf75aefbebcad1452c91c7e68db01bb10ca23e268be9e41",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.64,
+            "probabilities": {
+              "mechanical": 0.0,
+              "software": 0.01,
+              "unknown": 0.29,
+              "operations": 0.7,
+              "manufacturing": 0.0,
+              "sales": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 501,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 176.24454107135534
+    },
+    {
+      "id": "jev-cc013bdc4d5aff2144717cc9494e90a3f3901a62e903420de00fdd619288b7d3",
+      "requestSha256": "061b21d2541d966e4c59871345bfeceb87d8dc3a8da7c122adc601a50f841a27",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 0.0,
+              "software": 0.0,
+              "operations": 1.0,
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "manufacturing": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 490,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 212.8665829077363
+    },
+    {
+      "id": "jev-7c6b859f40e8769b174f944923a1f65ee5bef4265678534c61478ed78d39463f",
+      "requestSha256": "2ea5bb71c0e5b0df64979c2220a912751f22ec7690e459ef91d291d64a7501bf",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "software": 0.0,
+              "operations": 1.0,
+              "unknown": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 507,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 246.49224989116192
+    },
+    {
+      "id": "jev-59dbccf4c412aa1b0fe07f998b6e0d992afbe964aa6da59f00ace0c763cbf335",
+      "requestSha256": "110b4187068c9645cded194bc3bf979bcee0eb9946724381147ee4059ea13a7c",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.97,
+            "probabilities": {
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "operations": 0.98,
+              "unknown": 0.02
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 497,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 179.77837496437132
+    },
+    {
+      "id": "jev-0ec65dad6cae44b50526a16364857fb69d0723e88975dcbe96620ca47dbffe27",
+      "requestSha256": "0cadc386b78e48e72f241e542190d9fe1d0f76e6c21d8aeb9a63c4410a4d43d5",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "unknown": 0.0,
+              "operations": 1.0,
+              "mechanical": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 481,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 220.8279580809176
+    },
+    {
+      "id": "jev-d6c9a77a6f97c9483e627d3cb2300390a421035c7fa89dc3121a9ebc1e37d486",
+      "requestSha256": "50ea041bdd7d505cfd1f17f888f48755e9ae70cfc945a62395d1a7a649185919",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 1.0,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.0,
+              "software": 0.0,
+              "unknown": 0.0,
+              "operations": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 498,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 225.294291973114
+    },
+    {
+      "id": "jev-7379d54c7d65693a78ead5b1909407b15b0041938158ffb0737218314e0dcc65",
+      "requestSha256": "aaefc82f36b65661a59fa412edebf24774775f113070c91477f638d0a11ca3a6",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.99,
+            "probabilities": {
+              "software": 0.0,
+              "operations": 0.99,
+              "unknown": 0.01,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "mechanical": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 498,
+          "output_tokens": 63
+        }
+      },
+      "durationMs": 183.03387495689094
+    },
+    {
+      "id": "jev-6a72c03b5f9eead868a61de0e7b1c64a46b556d5c7c340fcf7d4964f97128d2f",
+      "requestSha256": "1c655c4bc4d77fb7fc1dfe5a7398bf9199865d1fcfa41b16d5d2dde65e7b5fa4",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.0,
+              "software": 1.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.29
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.26
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.23
+          }
+        },
+        "usage": {
+          "input_tokens": 686,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 186.9256249628961
+    },
+    {
+      "id": "jev-9eab8d4f3831494576d5a4af3f0fb3a6e4222cd7ef187dcd2120c739d4bfbcb5",
+      "requestSha256": "234b67113fe1529444b8a19701e805fed950ab0cd2daba90c7bc5b5de0fb1dd6",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.99,
+            "probabilities": {
+              "mechanical": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "manufacturing": 0.0,
+              "software": 1.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.52
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.27
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.16
+          }
+        },
+        "usage": {
+          "input_tokens": 682,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 213.06166611611843
+    },
+    {
+      "id": "jev-9cfc0e632a43b42a50e8cce818144ee17743572582dd7914e122ffc99ab11f13",
+      "requestSha256": "27e6afd0ffaf5e2dfa77dae5f359273ca4cfbe1eff78ab0a7108ca3a328268bd",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "sales": 0.0,
+              "software": 1.0,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.33
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.36
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.31
+          }
+        },
+        "usage": {
+          "input_tokens": 683,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 190.33616688102484
+    },
+    {
+      "id": "jev-f50288f706192bd24aa81391d464cd4430d0981314f490e7a6b10aa7f1657b50",
+      "requestSha256": "bc33009210d20d205693ce0462f2505497bc026382a6498a2b13edbf5be8adbc",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "sales": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "software": 1.0,
+              "unknown": 0.0,
+              "mechanical": 0.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.37
+          }
+        },
+        "usage": {
+          "input_tokens": 679,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 166.65304102934897
+    },
+    {
+      "id": "jev-2e08f86ea2d7ebfe5ad17fe70b0b94d94ae3958ffa1ae553b8a459c4f311a06c",
+      "requestSha256": "5d1e2937141047fc9bb0fefa93c9a21e15d3ba88ace678be3b5e817c227bacdc",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.99,
+            "probabilities": {
+              "sales": 0.0,
+              "unknown": 0.0,
+              "operations": 0.0,
+              "manufacturing": 0.0,
+              "mechanical": 1.0,
+              "software": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.48
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.35
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.36
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.2
+          }
+        },
+        "usage": {
+          "input_tokens": 683,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 187.29504197835922
+    },
+    {
+      "id": "jev-fa7231ff204f77043a5334a9965db634c26c17294c0edafb533cfb1b4d725a1f",
+      "requestSha256": "4f22df83d1bc9d46f52f34e6ec630bc806dc83f079a33c31bf6c480682728bbd",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.98,
+            "probabilities": {
+              "sales": 0.0,
+              "manufacturing": 0.01,
+              "unknown": 0.01,
+              "mechanical": 0.98,
+              "software": 0.0,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.39
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.42
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.35
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.29
+          }
+        },
+        "usage": {
+          "input_tokens": 681,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 199.9328329693526
+    },
+    {
+      "id": "jev-1cbdc1488b65b3f733e5c0a5d00c4611766b2165408e43afdf5896160b2c7eea",
+      "requestSha256": "c251cd0fbf0e65f38db4e82a10b3e8a7470161e0799faec3d65b84c0d793e724",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.99,
+            "probabilities": {
+              "operations": 0.0,
+              "mechanical": 0.99,
+              "manufacturing": 0.01,
+              "software": 0.0,
+              "unknown": 0.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.46
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.29
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.23
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        },
+        "usage": {
+          "input_tokens": 673,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 185.22512493655086
+    },
+    {
+      "id": "jev-30b2bc883a581de045677e8d3e6b09a5151022583cfb8b656cec188311477706",
+      "requestSha256": "c8568d6172cd7af8aea7ba2b71fe8eb9427f126e4a8a384b4192aa2e630806e3",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.99,
+            "probabilities": {
+              "unknown": 0.0,
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.01,
+              "operations": 0.0,
+              "mechanical": 0.99
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.29
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.3
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.25
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        },
+        "usage": {
+          "input_tokens": 685,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 201.00012491457164
+    },
+    {
+      "id": "jev-b5228f3b44f00c5486842cf3c16d702c9106912809cce1363bb99c749cdc8096",
+      "requestSha256": "c0396f234b0d9a2ea48002f571c4c24b760f0d29504199ffbd2ed7b5d5fc04d8",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.48,
+            "probabilities": {
+              "sales": 0.42,
+              "operations": 0.57,
+              "unknown": 0.01,
+              "manufacturing": 0.0,
+              "software": 0.0,
+              "mechanical": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.22
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.35
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.17
+          }
+        },
+        "usage": {
+          "input_tokens": 678,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 301.2024590279907
+    },
+    {
+      "id": "jev-a59e424617e171d8e35d7dcb42e091c96ed12dd7f70a101c6f8ee348562d896e",
+      "requestSha256": "8a992c5c7d9163228f591757b55a3dbad4bb3718ddafa63217c6ed1735075529",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.88,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.09,
+              "unknown": 0.01,
+              "sales": 0.9,
+              "software": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.47
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.66
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.21
+          }
+        },
+        "usage": {
+          "input_tokens": 679,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 205.219334224239
+    },
+    {
+      "id": "jev-148574a2fa874a1f14d2ed543781364e5b1d4926c829bf91b34e217aed83cc34",
+      "requestSha256": "2f62c5831684610513e9938cd8b86bd87354f22f711047d7bf5eb5cebdfda7fb",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.93,
+            "probabilities": {
+              "operations": 0.04,
+              "sales": 0.95,
+              "manufacturing": 0.0,
+              "unknown": 0.01,
+              "software": 0.0,
+              "mechanical": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.17
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.27
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        },
+        "usage": {
+          "input_tokens": 677,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 187.6944589894265
+    },
+    {
+      "id": "jev-ad4824e56171460d497042e01bc8450e4dfb381c99e75e9cb6513d573f82b0e2",
+      "requestSha256": "d0454511173e3b15bf89c55aed7f3e20cc13b16a798a276ed14ff8b1f7f20c83",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.89,
+            "probabilities": {
+              "unknown": 0.04,
+              "operations": 0.02,
+              "software": 0.01,
+              "mechanical": 0.0,
+              "sales": 0.92,
+              "manufacturing": 0.01
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.22
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.17
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.25
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 678,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 192.61691602878273
+    },
+    {
+      "id": "jev-5d21a592567837c4b64b98d305d2ce75bd59fc9f80e06dc5d3404081e2a65c67",
+      "requestSha256": "dc6c379fc466c65ec71c6c1042ef972571730e5d83d8ee83ba39e6e10f6ef9f9",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.94,
+            "probabilities": {
+              "unknown": 0.01,
+              "operations": 0.02,
+              "manufacturing": 0.95,
+              "sales": 0.0,
+              "software": 0.0,
+              "mechanical": 0.02
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.27
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.21
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.22
+          }
+        },
+        "usage": {
+          "input_tokens": 676,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 221.8126249499619
+    },
+    {
+      "id": "jev-1f96e4f0da8e198a32aef28d29cbc6d2ff1e498a1471a044dbeb80c87ceac39f",
+      "requestSha256": "1f5d5c0c87e37fad3306504a13fdabd8514c6371c712c7d7368d049153258c11",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.51,
+            "probabilities": {
+              "operations": 0.59,
+              "manufacturing": 0.39,
+              "sales": 0.0,
+              "mechanical": 0.0,
+              "unknown": 0.02,
+              "software": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.17
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.39
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.62
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.32
+          }
+        },
+        "usage": {
+          "input_tokens": 680,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 182.4716660194099
+    },
+    {
+      "id": "jev-3d5a753b99b77fef5c599e70a798e6e46a61d64d6857dabbe6af8626418b9e79",
+      "requestSha256": "3b71c80d8cb2d574df58fe7fdf7b23b6d88e7bf26a70178a6425e66bf8cd705d",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.36,
+            "probabilities": {
+              "sales": 0.0,
+              "software": 0.03,
+              "unknown": 0.07,
+              "manufacturing": 0.46,
+              "mechanical": 0.0,
+              "operations": 0.44
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.19
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.28
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.34
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        },
+        "usage": {
+          "input_tokens": 681,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 181.5005000680685
+    },
+    {
+      "id": "jev-11d74bc8992bddc72669470a4bd7bfd0e8091cc6c587a152a6340fe17add0032",
+      "requestSha256": "219c83b56a88f9d90b5389be44bbcf3be49c53224c19b5180272666ea93a4c38",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.98,
+            "probabilities": {
+              "sales": 0.0,
+              "unknown": 0.01,
+              "operations": 0.01,
+              "manufacturing": 0.98,
+              "mechanical": 0.0,
+              "software": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.21
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.24
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        },
+        "usage": {
+          "input_tokens": 674,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 177.87816701456904
+    },
+    {
+      "id": "jev-d4feb910ae714ea4fe6146e7ad5d73f892e10808f6a7d65cf1a2af06257cd730",
+      "requestSha256": "f6e07da2fbdaef4fb61716b48ec5a98b915b9969d162b8e571ee9e29551c6e52",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.97,
+            "probabilities": {
+              "operations": 0.97,
+              "software": 0.01,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "mechanical": 0.0,
+              "unknown": 0.02
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.23
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.41
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.34
+          }
+        },
+        "usage": {
+          "input_tokens": 681,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 178.37808304466307
+    },
+    {
+      "id": "jev-e366175bfcbd6bf6b3d11e404d746639f14a21d6b2444620c92347ef0c9ee836",
+      "requestSha256": "239a9d55f680e09cd121c39e78608652eedf2b23a9e24f3a5ac9ce39ab98fc11",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.91,
+            "probabilities": {
+              "unknown": 0.07,
+              "operations": 0.92,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "software": 0.01,
+              "mechanical": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.31
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.58
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.69
+          }
+        },
+        "usage": {
+          "input_tokens": 683,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 205.3822921589017
+    },
+    {
+      "id": "jev-8d26348b928c6e6ea42b6a1ea2bafbd546cb46a1a35b9f8ac147b18943d55b21",
+      "requestSha256": "d23f3772840718fd6b6a2a7f376b4a74bfa5b06981642b57ad7be717c0dd4219",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.96,
+            "probabilities": {
+              "sales": 0.0,
+              "software": 0.01,
+              "unknown": 0.01,
+              "manufacturing": 0.01,
+              "operations": 0.97,
+              "mechanical": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.31
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        },
+        "usage": {
+          "input_tokens": 682,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 183.05337498895824
+    },
+    {
+      "id": "jev-55ddf0124358e3472b2286f0c6906923f702eaf8e957aac7019cbf8162ff2c0d",
+      "requestSha256": "ca5719bb0a1abfafc7ab944df9ce8f434b7f64d3ef6b7fbef6b504b08bd9995d",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.92,
+            "probabilities": {
+              "sales": 0.0,
+              "software": 0.02,
+              "mechanical": 0.0,
+              "operations": 0.93,
+              "manufacturing": 0.02,
+              "unknown": 0.03
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        },
+        "usage": {
+          "input_tokens": 685,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 317.74670886807144,
+      "manualRecovery": true,
+      "attemptCount": 3,
+      "manualDiagnosticAttempt": 2,
+      "failedDiagnosticAttempts": [
+        {
+          "requestId": "jev-55ddf0124358e3472b2286f0c6906923f702eaf8e957aac7019cbf8162ff2c0d",
+          "manualDiagnosticAttempt": 1,
+          "requestSha256": "ca5719bb0a1abfafc7ab944df9ce8f434b7f64d3ef6b7fbef6b504b08bd9995d",
+          "startedAt": "2026-10-03T02:43:18.920105+00:00",
+          "status": "failed",
+          "reservedInputTokens": 64000,
+          "errorType": "ValueError",
+          "validationReason": "Provider distribution mismatch",
+          "durationMs": null
+        }
+      ]
+    },
+    {
+      "id": "jev-99ff33a21b0562c0f8d892ef01e3ab29e2ff14e58d31d1064e51926940b5bc01",
+      "requestSha256": "b89bb46a26931aa276bdc6d68b8c58c9d4b20e12eb28bb4d6fa9e92dd8278684",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.88,
+            "probabilities": {
+              "unknown": 0.1,
+              "mechanical": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "software": 0.9,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.61
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.31
+          }
+        },
+        "usage": {
+          "input_tokens": 674,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 198.3544579707086
+    },
+    {
+      "id": "jev-a95d99a9153e449ce65d8424204cafd3d5eee586191ffa77734495e1ca9b3d79",
+      "requestSha256": "b3cb21e99cf8c2d38258f94b825b9640bc699b9510a4e928d6b09ec73570d23e",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "unknown",
+            "confidence": 0.95,
+            "probabilities": {
+              "operations": 0.02,
+              "software": 0.0,
+              "manufacturing": 0.03,
+              "sales": 0.0,
+              "unknown": 0.95,
+              "mechanical": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.21
+          }
+        },
+        "usage": {
+          "input_tokens": 670,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 214.04937491752207
+    },
+    {
+      "id": "jev-9498560c79a1ee75e46e8fe37a1789f813954591fca2af813c07f75f6330667d",
+      "requestSha256": "646af9c7f3698039949b316b9c8ba8641f0b2006e836b798cc79cb4102bb827c",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "unknown",
+            "confidence": 0.46,
+            "probabilities": {
+              "unknown": 0.55,
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.02,
+              "operations": 0.2,
+              "mechanical": 0.23
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        },
+        "usage": {
+          "input_tokens": 669,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 185.01116707921028
+    },
+    {
+      "id": "jev-6ec63906d4a1795830e1bf8c95e82f7086860bd10a6866ccb68791298256d6dc",
+      "requestSha256": "1b30353b6aed72ecdff5871c9e7fd25ad760a5a204bd83f1c08bde7c5ff222a8",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "unknown",
+            "confidence": 0.98,
+            "probabilities": {
+              "sales": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.01,
+              "unknown": 0.99
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        },
+        "usage": {
+          "input_tokens": 673,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 312.2788751497865
+    },
+    {
+      "id": "jev-5e2c62e449aedf721aa899aac14dbe2a48b2f8d0a597d8e77ab21132a42fb61f",
+      "requestSha256": "93b830e8557e2cb46b2916149567df2cb23a54c9923662bffdadff49f4b9fce5",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 1.0,
+            "probabilities": {
+              "software": 1.0,
+              "unknown": 0.0,
+              "sales": 0.0,
+              "mechanical": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.25
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.28
+          }
+        },
+        "usage": {
+          "input_tokens": 681,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 198.40958388522267
+    },
+    {
+      "id": "jev-1932bbd925cd5a1671cba2d280074abd1a69b0fa1ae68b19e51a44727207df79",
+      "requestSha256": "466d25e4a93369686c0e44cf771063bfa848fe91fe8fe57e7d6b7e31093e8114",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.98,
+            "probabilities": {
+              "mechanical": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "software": 0.98,
+              "operations": 0.01,
+              "unknown": 0.01
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.58
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.5
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.36
+          }
+        },
+        "usage": {
+          "input_tokens": 688,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 188.56987496837974
+    },
+    {
+      "id": "jev-8c7676f8bb9713e3bdc38042ff8b81d2db316dd4108630b1b410396df72dc544",
+      "requestSha256": "28cd959315ee5fa4dc32f88400f088223769a8b4f148178131ae6abd995ce35f",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "software",
+            "confidence": 0.98,
+            "probabilities": {
+              "operations": 0.0,
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "unknown": 0.02,
+              "manufacturing": 0.0,
+              "software": 0.98
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 677,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 197.242374997586
+    },
+    {
+      "id": "jev-fce6b1346d6f3c9b7b6ffbba5343cc3e12a6f56892ca671266805be8f07735d2",
+      "requestSha256": "eced96488de166e7f00496af8b57af3b07313525e733ad2606a7ac393d4439cb",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.41,
+            "probabilities": {
+              "unknown": 0.04,
+              "software": 0.42,
+              "manufacturing": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.52,
+              "sales": 0.02
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.19
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.22
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 680,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 190.57516590692103
+    },
+    {
+      "id": "jev-539dd247a351208ca045dda89f53babeebe7cc5572930a026204bf33d6ad8d77",
+      "requestSha256": "6c752cf12cf9f0e4b31520b7b775d7bae490cbbc52f235fbbb198030512b6bfd",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.99,
+            "probabilities": {
+              "mechanical": 0.99,
+              "unknown": 0.0,
+              "software": 0.0,
+              "sales": 0.0,
+              "operations": 0.0,
+              "manufacturing": 0.01
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.44
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.31
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.23
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.21
+          }
+        },
+        "usage": {
+          "input_tokens": 681,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 207.9417088534683
+    },
+    {
+      "id": "jev-0ac5c3e764e08147b5ef0b3ffaecc923eabe266eb29d503f47cc23138dcaee8d",
+      "requestSha256": "ff8b1e0958dec5db7ba1e6bb821880318cddf0a64b0b7cf6ec81c1f9a013fe89",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.96,
+            "probabilities": {
+              "software": 0.0,
+              "operations": 0.0,
+              "manufacturing": 0.02,
+              "sales": 0.0,
+              "unknown": 0.0,
+              "mechanical": 0.98
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.54
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.35
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.41
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.28
+          }
+        },
+        "usage": {
+          "input_tokens": 681,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 184.79604204185307
+    },
+    {
+      "id": "jev-2dfbf3e23218176a877235c5e8bfd2b71b68078d32b59b5d77cc02aac0570e12",
+      "requestSha256": "c4a597affb21620a2ab9447e51b01104d5599eefeac7cba8844bc3e1f59e8fa8",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.98,
+            "probabilities": {
+              "manufacturing": 0.01,
+              "unknown": 0.01,
+              "software": 0.0,
+              "sales": 0.0,
+              "operations": 0.0,
+              "mechanical": 0.98
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.26
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.14
+          }
+        },
+        "usage": {
+          "input_tokens": 674,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 201.8655000720173
+    },
+    {
+      "id": "jev-38f1825f94b43c192cb10a92c1c9f709e4eb9661586611ad1ffd245242cf92d1",
+      "requestSha256": "a8c0f6f921ca16eb46086608d046d42761799b0ce1ce88ebb8ef404743327947",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.87,
+            "probabilities": {
+              "operations": 0.01,
+              "mechanical": 0.9,
+              "sales": 0.0,
+              "manufacturing": 0.07,
+              "unknown": 0.02,
+              "software": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.17
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        },
+        "usage": {
+          "input_tokens": 683,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 325.5960000678897
+    },
+    {
+      "id": "jev-e2b627817e41b0ceaafe25c07f99c1b2a2cc739e7c34b0ec071307fd22bb7615",
+      "requestSha256": "0348eda2921319c0898bad715a184040b944ac6d9475ba0f3160a5e27e058509",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.92,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.93,
+              "manufacturing": 0.0,
+              "unknown": 0.01,
+              "software": 0.01,
+              "operations": 0.05
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.17
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.25
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.26
+          }
+        },
+        "usage": {
+          "input_tokens": 684,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 203.22637492790818
+    },
+    {
+      "id": "jev-912e44bb56243fde813f4f71c8ce64e3b07004e157f70fe6bb0339d0d5d608c3",
+      "requestSha256": "18c42b91eae86f92552c58752afae9654466deaeb26e56cea9bcd7812b12b09b",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "software": 0.0,
+              "mechanical": 0.0,
+              "operations": 0.0,
+              "unknown": 0.0,
+              "sales": 1.0,
+              "manufacturing": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.42
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.2
+          }
+        },
+        "usage": {
+          "input_tokens": 675,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 217.93495793826878
+    },
+    {
+      "id": "jev-67270ba6013836eb970a25c31fc5195858b02b474669755885aa000a86de8562",
+      "requestSha256": "24ad3ebe76c5c2ad9bb783aa455f843fd98edac7d4130fbb7aa03f6495147d1a",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "sales": 0.99,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "operations": 0.0,
+              "unknown": 0.01,
+              "mechanical": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.31
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 679,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 198.498124955222
+    },
+    {
+      "id": "jev-1bb891dd050c2f4b4afdf02ec680451661820de00a28479c47389eda2bb06499",
+      "requestSha256": "ccc96d52e2118b26fd3a78f81a8831851d51ef79a4e74348a4c00b2c96be33d8",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "sales",
+            "confidence": 0.99,
+            "probabilities": {
+              "operations": 0.0,
+              "software": 0.0,
+              "manufacturing": 0.0,
+              "sales": 0.99,
+              "unknown": 0.01,
+              "mechanical": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.17
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        },
+        "usage": {
+          "input_tokens": 680,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 199.09145799465477
+    },
+    {
+      "id": "jev-b15c03b02b48992b19986375ebd59ad51a3fb439e694ba411185641620261fa9",
+      "requestSha256": "fbe42e49358d2cafbf5229998a0d4d1a85ed2659a8400f8bff5a273c83dba474",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.65,
+            "probabilities": {
+              "mechanical": 0.08,
+              "software": 0.0,
+              "operations": 0.2,
+              "unknown": 0.01,
+              "sales": 0.0,
+              "manufacturing": 0.71
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.21
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.26
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.35
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.16
+          }
+        },
+        "usage": {
+          "input_tokens": 681,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 184.44208311848342
+    },
+    {
+      "id": "jev-c43891d874932fc0e6112ba4474f2e5cdcb7439d4542520e982a8c7dd28357c5",
+      "requestSha256": "bef7c0e9a03ba256df11e90a5803c7601a57892b6ee3e786cb76b1e6d94d7734",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.74,
+            "probabilities": {
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.79,
+              "software": 0.03,
+              "unknown": 0.02,
+              "operations": 0.16
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.28
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.33
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.35
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.24
+          }
+        },
+        "usage": {
+          "input_tokens": 681,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 191.62929197773337
+    },
+    {
+      "id": "jev-d016d092cef431c74cfcdf618a4ff1aa572e03407da16fb82b2de2bc9e5c9a90",
+      "requestSha256": "564373605a27acda43e56513d36635d76d173fb66f97e3736db37151671349d1",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.89,
+            "probabilities": {
+              "mechanical": 0.08,
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.92,
+              "operations": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.34
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.41
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.4
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.22
+          }
+        },
+        "usage": {
+          "input_tokens": 676,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 330.6548330001533
+    },
+    {
+      "id": "jev-6b5517733daddadf00e7254468f93bee87094c1ab8ec5b6dacb92ff4419e101c",
+      "requestSha256": "912009331776bd1b376f6fff88820ab9866555f2cf8ff1bef4458a46628145e6",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "manufacturing",
+            "confidence": 0.65,
+            "probabilities": {
+              "unknown": 0.01,
+              "software": 0.0,
+              "mechanical": 0.23,
+              "operations": 0.05,
+              "manufacturing": 0.71,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        },
+        "usage": {
+          "input_tokens": 677,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 192.9064579308033
+    },
+    {
+      "id": "jev-35a1e4e381694f9c362bbe70c35a900170c0c8c6a9c84ba955a56e4c7dbc16cc",
+      "requestSha256": "f698d6558383fe4a363f9e843e17fc43237aa113e2ded617a11093e3ea976827",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "handover": {
+            "type": "noul",
+            "noul": 0.31
+          },
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.82,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.85,
+              "unknown": 0.1,
+              "software": 0.05,
+              "mechanical": 0.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.43
+          }
+        },
+        "usage": {
+          "input_tokens": 678,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 180.87587505578995
+    },
+    {
+      "id": "jev-1bcc9fe4d5ab32f604d881a6c108fd2cb193a72e544c0aa81c17deeb2189d214",
+      "requestSha256": "d3d551018a8b2242539b46b52cbca4d9b9c347afcf3157deb9b0830cc5322894",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.97,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "operations": 0.97,
+              "unknown": 0.02,
+              "software": 0.01,
+              "mechanical": 0.0,
+              "sales": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.64
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.26
+          }
+        },
+        "usage": {
+          "input_tokens": 679,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 193.53116699494421
+    },
+    {
+      "id": "jev-41819bb8e3a075ade5100c798a1715c1524e168346128721661641e74f9370df",
+      "requestSha256": "caf88b057fe1603503b1e9d59652e3683efa8e707b50f822eaa34df2a035561c",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.9,
+            "probabilities": {
+              "operations": 0.92,
+              "mechanical": 0.0,
+              "sales": 0.0,
+              "software": 0.02,
+              "unknown": 0.06,
+              "manufacturing": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.22
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        },
+        "usage": {
+          "input_tokens": 677,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 183.05362504906952
+    },
+    {
+      "id": "jev-7986eb384f2867784ac098ef0a0ef3850ee76d906c1b43f5152a28b78c91aab1",
+      "requestSha256": "7e37b20927aad6415506b1d9bfa37b6e81939e19bdf8970b30e7c14e9f589160",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.31
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "domain": {
+            "type": "choice",
+            "choice": "operations",
+            "confidence": 0.96,
+            "probabilities": {
+              "mechanical": 0.0,
+              "operations": 0.97,
+              "software": 0.01,
+              "sales": 0.01,
+              "unknown": 0.01,
+              "manufacturing": 0.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 678,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 208.5890411399305
+    },
+    {
+      "id": "jev-f827dfd0176c95077de3a7fa6fa0f977406bee0dd01f8842d61ccb9b50c881e3",
+      "requestSha256": "185e72c4ef39a5dde58482af2c2ab4d3441400bd2a3a24be921bfa8e85a23659",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "mechanical",
+            "confidence": 0.32,
+            "probabilities": {
+              "manufacturing": 0.0,
+              "sales": 0.0,
+              "software": 0.13,
+              "unknown": 0.3,
+              "operations": 0.13,
+              "mechanical": 0.44
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.11
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.21
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.29
+          }
+        },
+        "usage": {
+          "input_tokens": 674,
+          "output_tokens": 167
+        }
+      },
+      "durationMs": 219.319042051211
+    },
+    {
+      "id": "jev-342dd95959c15df8f5178cb6c8a68e3874dadc1c4c7c730a31e9cda9c9a2ca0f",
+      "requestSha256": "718947f020ad2d48b4fca617100e8ae8b5e05542889068a0d37764e0b046b65a",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "sales": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.13
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.22
+          },
+          "domain": {
+            "type": "choice",
+            "choice": "unknown",
+            "confidence": 0.98,
+            "probabilities": {
+              "unknown": 0.99,
+              "mechanical": 0.0,
+              "manufacturing": 0.01,
+              "sales": 0.0,
+              "software": 0.0,
+              "operations": 0.0
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.06
+          }
+        },
+        "usage": {
+          "input_tokens": 669,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 172.32329095713794
+    },
+    {
+      "id": "jev-8c446d951bba236a878ace4e1aba09242bf682d07bd2c7f070b98f5fa862a354",
+      "requestSha256": "cbf21e5da2bbe0af58c75333f5bdcf4533692c01f4e02b1e15ab56abac141d4e",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "unknown",
+            "confidence": 0.39,
+            "probabilities": {
+              "mechanical": 0.31,
+              "unknown": 0.5,
+              "operations": 0.18,
+              "software": 0.0,
+              "sales": 0.0,
+              "manufacturing": 0.01
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.1
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.14
+          }
+        },
+        "usage": {
+          "input_tokens": 668,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 185.25645905174315
+    },
+    {
+      "id": "jev-b1c71ba8e2dee3a307e68d574fbe19d8b72ffb300a85af57d4080991fecfeb00",
+      "requestSha256": "fd3032b3c2295d65968895079a5addc24b601ea1d349fca9d2a7a9340fbecdb3",
+      "status": "succeeded",
+      "body": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "domain": {
+            "type": "choice",
+            "choice": "unknown",
+            "confidence": 0.57,
+            "probabilities": {
+              "manufacturing": 0.03,
+              "software": 0.0,
+              "unknown": 0.64,
+              "mechanical": 0.32,
+              "sales": 0.0,
+              "operations": 0.01
+            }
+          },
+          "mechanical": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "software": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "sales": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "manufacturing": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "operations": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "handover": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        },
+        "usage": {
+          "input_tokens": 671,
+          "output_tokens": 165
+        }
+      },
+      "durationMs": 213.14633288420737
+    }
+  ],
+  "completedRequests": 168,
+  "inputTokens": 96720,
+  "outputTokens": 17669,
+  "estimatedCostUsd": 0.00406224,
+  "maximumReservedUsd": 0.45696,
+  "retryCount": 2,
+  "attemptCount": 170,
+  "uncertainInputTokens": 128000,
+  "conservativeCostUsd": 0.00943824,
+  "retries": 2,
+  "measuredAt": "2026-10-03T02:46:12.333707+00:00"
+}

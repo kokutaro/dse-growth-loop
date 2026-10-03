@@ -1,0 +1,200 @@
+{
+  "runId": "issue14-jev-v2-tuning",
+  "createdAt": "2026-10-03T02:47:03.5465+00:00",
+  "version": "evaluation-v2",
+  "origin": "synthetic",
+  "humanReviewStatus": "human-approved",
+  "qualityClaim": false,
+  "aiEnabled": true,
+  "classificationOrigin": "recorded-jev-experiment-inputs",
+  "modelVersion": "jev-1.13.0",
+  "documentPromptVersion": "profile-classify-v1",
+  "queryPromptVersion": "search-query-v1",
+  "jevPlanSha256": "4f546cd7bb2699123bdabbc11b4a2a6c66d3bb312141f4f17f9685ad25a625be",
+  "jevCaptureSha256": "b80eaf0331eadc071285a00849b8ee97568dbfea50fd437ec31d901d8d56b511",
+  "selectedSettingsSha256": null,
+  "recordedJevUsage": {
+    "calls": 170,
+    "inputTokens": 96720,
+    "outputTokens": 17669,
+    "retries": 2,
+    "uncertainInputTokens": 128000,
+    "estimatedCostUsd": 0.00406224,
+    "conservativeCostUsd": 0.00943824,
+    "pricingCheckedAt": "2026-10-03",
+    "fxDate": null
+  },
+  "evaluatorSha256": "f7a849d4d1b42d333082a1b7e1d4ab3346d967e7239c47ab9e9127e598c2651c",
+  "ruleVersion": "primary-experiments-v1",
+  "taxonomyVersion": "taxonomy-v1",
+  "normalizationVersion": "normalization-v1",
+  "datasetSha256": "6e9724acadf1d9c7dff61531f5e02df4c1bd3543c451e785f237e693356b437d",
+  "experimentInputsSha256": null,
+  "replaySha256": "e7c8db3196f6ebfaba41f182f1a585a64389ec8334334ae3654ae1be734f6724",
+  "comparisonsSha256": null,
+  "gatesSha256": null,
+  "usage": {
+    "calls": 0,
+    "tokens": 0,
+    "retries": 0,
+    "ru": 0,
+    "liveLatencyMs": null
+  },
+  "measurementScope": "Primary ranking over dummy data; no reranking or Cosmos latency",
+  "adoptionStatus": "pending_live_measurement_and_approval",
+  "summary": [
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 12,
+      "recall": {
+        "value": 0,
+        "denominator": 10
+      },
+      "hitRate": {
+        "value": 0,
+        "denominator": 10
+      },
+      "meanCandidates": 0.16666666666666666,
+      "zeroGold": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 50
+      },
+      "questions": 12,
+      "recall": {
+        "value": 0,
+        "denominator": 10
+      },
+      "hitRate": {
+        "value": 0,
+        "denominator": 10
+      },
+      "meanCandidates": 0.16666666666666666,
+      "zeroGold": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "questions": 12,
+      "recall": {
+        "value": 0,
+        "denominator": 10
+      },
+      "hitRate": {
+        "value": 0,
+        "denominator": 10
+      },
+      "meanCandidates": 0.16666666666666666,
+      "zeroGold": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 12,
+      "recall": {
+        "value": 0,
+        "denominator": 10
+      },
+      "hitRate": {
+        "value": 0,
+        "denominator": 10
+      },
+      "meanCandidates": 0.08333333333333333,
+      "zeroGold": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 50
+      },
+      "questions": 12,
+      "recall": {
+        "value": 0,
+        "denominator": 10
+      },
+      "hitRate": {
+        "value": 0,
+        "denominator": 10
+      },
+      "meanCandidates": 0.08333333333333333,
+      "zeroGold": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "questions": 12,
+      "recall": {
+        "value": 0,
+        "denominator": 10
+      },
+      "hitRate": {
+        "value": 0,
+        "denominator": 10
+      },
+      "meanCandidates": 0.08333333333333333,
+      "zeroGold": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    }
+  ],
+  "primaryChecks": [],
+  "comparisons": [],
+  "variations": []
+}

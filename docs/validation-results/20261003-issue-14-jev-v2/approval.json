@@ -1,0 +1,15 @@
+{
+  "planSha256": "4f546cd7bb2699123bdabbc11b4a2a6c66d3bb312141f4f17f9685ad25a625be",
+  "modelVersion": "jev-1.13.0",
+  "approvalReference": "user-20261003-issue14-jev-expansion-labels",
+  "creditBudgetUsd": 1.0,
+  "maximumRequests": 350,
+  "contextTokenReservation": 64000,
+  "maximumReservedUsd": 0.451584,
+  "priceUsdPerMillionInput": 0.042,
+  "outputPriceUsdPerMillion": 0,
+  "pricingSource": "https://docs.typesafe.ai/models",
+  "pricingCheckedAt": "2026-10-03",
+  "startedAt": "2026-10-03T02:42:03.287962+00:00",
+  "retries": 0
+}
