@@ -123,6 +123,15 @@ def capture(plan, plan_hash, output, credit, approval, send, recovery=None):
             outputPriceUsdPerMillion=0, pricingSource='https://docs.typesafe.ai/models',
             pricingCheckedAt='2026-10-03', startedAt=datetime.datetime.now(datetime.timezone.utc).isoformat(), retries=0))
     journal = output / 'responses.jsonl'
+    def manual_attempts(evidence, request_id, request_hash):
+        attempt = evidence.get('manualDiagnosticAttempt', 1)
+        failed = evidence.get('failedDiagnosticAttempts', [])
+        if type(attempt) is not int or attempt not in (1, 2) or len(failed) != attempt - 1:
+            raise ValueError('Manual recovery requires every prior failed diagnostic')
+        for number, row in enumerate(failed, 1):
+            if row.get('requestId') != request_id or row.get('requestSha256') != request_hash or row.get('status') != 'failed' or row.get('manualDiagnosticAttempt') != number or row.get('reservedInputTokens') != MAX_CONTEXT_TOKENS:
+                raise ValueError('Failed diagnostic reservation or fingerprint mismatch')
+        return attempt
     last = {}
     recovery_count = 0
     if journal.exists():
@@ -131,7 +140,7 @@ def capture(plan, plan_hash, output, credit, approval, send, recovery=None):
             if row['id'] in last and (last[row['id']]['status'] != 'pending' or row['status'] == 'pending'):
                 if not (last[row['id']]['status'] == 'failed' and row['status'] == 'succeeded' and row.get('manualRecovery') is True):
                     raise ValueError('Invalid journal transitions')
-                recovery_count += 1
+                recovery_count += manual_attempts(row, row['id'], row['requestSha256'])
             last[row['id']] = row
     allowed = {r['id']: r for r in requests}
     if any(k not in allowed or r['requestSha256'] != allowed[k]['requestSha256'] for k, r in last.items()):
@@ -143,17 +152,19 @@ def capture(plan, plan_hash, output, credit, approval, send, recovery=None):
     if recovery is not None:
         recovered_id = recovery.get('requestId')
         previous = last.get(recovered_id)
-        if previous is None or recovery.get('status') != 'succeeded' or recovery.get('manualDiagnosticAttempt') != 1:
+        if previous is None or recovery.get('status') != 'succeeded':
             raise ValueError('Invalid explicit recovery evidence')
         request = allowed[recovered_id]
         if recovery.get('requestSha256') != request['requestSha256']:
             raise ValueError('Recovery input fingerprint mismatch')
+        attempts = manual_attempts(recovery, recovered_id, request['requestSha256'])
         body = validate_response(recovery['body'], request)
         if previous['status'] == 'failed':
-            validate_budget(len(requests) + recovery_count + 1, credit)
+            validate_budget(len(requests) + recovery_count + attempts, credit)
             row = dict(id=recovered_id, requestSha256=request['requestSha256'], status='succeeded', body=body,
-                durationMs=recovery['durationMs'], manualRecovery=True, attemptCount=2)
-            append(row); last[recovered_id] = row; recovery_count += 1
+                durationMs=recovery['durationMs'], manualRecovery=True, attemptCount=1+attempts,
+                manualDiagnosticAttempt=attempts, failedDiagnosticAttempts=recovery.get('failedDiagnosticAttempts', []))
+            append(row); last[recovered_id] = row; recovery_count += attempts
         elif previous['status'] != 'succeeded' or previous.get('manualRecovery') is not True or previous['body'] != body:
             raise ValueError('Pending or mismatched recovery is not authorized')
     validate_budget(len(requests) + recovery_count, credit)

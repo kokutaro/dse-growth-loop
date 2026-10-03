@@ -1,0 +1,73 @@
+{
+  "policySha256": "fba0d461249d881f40a0693b9a79bc12e3b7a47c555f52c2e1a214999a25709e",
+  "tuningReportSha256": "faa548967f2b13bd833d98a7521d7dc6334852447a2fb1b7adae5e0004172f66",
+  "selectedAt": "2026-10-03T02:48:13.073896+00:00",
+  "passingConditionCount": 84,
+  "selectedSetting": {
+    "variant": "E",
+    "documentThreshold": 0.3,
+    "questionTop": 1,
+    "noulThreshold": 0.3,
+    "n": 20
+  },
+  "selectionStatistics": {
+    "minimumRecall": 0.9,
+    "meanRecall": 0.95,
+    "sumMeanCandidates": 13.416666666666668,
+    "capLoss": 0
+  },
+  "selectedSummaries": [
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.3,
+        "questionTop": 1,
+        "noulThreshold": 0.3,
+        "n": 20
+      },
+      "questions": 12,
+      "recall": {
+        "value": 0.9,
+        "denominator": 10
+      },
+      "hitRate": {
+        "value": 0.9,
+        "denominator": 10
+      },
+      "meanCandidates": 7.416666666666667,
+      "zeroGold": 2,
+      "noulRelevant": 3,
+      "noulIrrelevant": 10,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.3,
+        "questionTop": 1,
+        "noulThreshold": 0.3,
+        "n": 20
+      },
+      "questions": 12,
+      "recall": {
+        "value": 1,
+        "denominator": 10
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 10
+      },
+      "meanCandidates": 6,
+      "zeroGold": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 6,
+      "noulUnknown": 0,
+      "capLoss": 0
+    }
+  ],
+  "finalResultConsulted": false,
+  "adoptionStatus": "experiment-only"
+}

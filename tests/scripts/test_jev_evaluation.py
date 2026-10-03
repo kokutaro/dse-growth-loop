@@ -75,3 +75,17 @@ class JevEvaluationTests(unittest.TestCase):
             self.assertNotIn('secret-must-not-be-logged', journal)
             self.assertIn('failed', journal)
             self.assertRaises(ValueError, jev.capture, plan, 'hash', Path(temp), 1, 'approval', send)
+
+    def test_failed_manual_diagnostic_is_counted_and_requires_prior_evidence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            req = self.request(); plan = {'version': 'jev-evaluation-v1', 'modelVersion': 'jev-1.13.0', 'requests': [req]}
+            def fail(_): raise ValueError('Provider distribution mismatch')
+            self.assertRaises(ValueError, jev.capture, plan, 'hash', Path(temp), 1, 'approval', fail)
+            recovery = dict(requestId=req['id'], requestSha256=req['requestSha256'], status='succeeded', manualDiagnosticAttempt=2, body=self.response(), durationMs=10)
+            self.assertRaises(ValueError, jev.capture, plan, 'hash', Path(temp), 1, 'approval', fail, recovery)
+            recovery['failedDiagnosticAttempts'] = [dict(requestId=req['id'], requestSha256=req['requestSha256'], status='failed', manualDiagnosticAttempt=1, reservedInputTokens=64000)]
+            def must_not_send(_): self.fail('Recovered call must not be resent')
+            report = jev.capture(plan, 'hash', Path(temp), 1, 'approval', must_not_send, recovery)
+            self.assertEqual(3, report['attemptCount']); self.assertEqual(2, report['retryCount'])
+            self.assertEqual(128000, report['uncertainInputTokens'])
+            self.assertEqual(3, jev.capture(plan, 'hash', Path(temp), 1, 'approval', must_not_send)['attemptCount'])

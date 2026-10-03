@@ -1,0 +1,51 @@
+[
+  {
+    "variant": "L",
+    "documentThreshold": 0.3,
+    "questionTop": 1,
+    "noulThreshold": 0.3,
+    "n": 20
+  },
+  {
+    "variant": "A",
+    "documentThreshold": 0.3,
+    "questionTop": 1,
+    "noulThreshold": 0.3,
+    "n": 20
+  },
+  {
+    "variant": "B",
+    "documentThreshold": 0.3,
+    "questionTop": 1,
+    "noulThreshold": 0.3,
+    "n": 20
+  },
+  {
+    "variant": "C",
+    "documentThreshold": 0.3,
+    "questionTop": 1,
+    "noulThreshold": 0.3,
+    "n": 20
+  },
+  {
+    "variant": "D",
+    "documentThreshold": 0.3,
+    "questionTop": 1,
+    "noulThreshold": 0.3,
+    "n": 20
+  },
+  {
+    "variant": "E",
+    "documentThreshold": 0.3,
+    "questionTop": 1,
+    "noulThreshold": 0.3,
+    "n": 20
+  },
+  {
+    "variant": "F",
+    "documentThreshold": 0.2,
+    "questionTop": 3,
+    "noulThreshold": 0.5,
+    "n": 100
+  }
+]
