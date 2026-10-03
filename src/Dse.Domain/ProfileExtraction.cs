@@ -4,6 +4,17 @@ namespace Dse.Domain;
 
 public static partial class ProfileExtraction
 {
+    public const string SecondaryWorkRuleVersion = "secondary-work-v1";
+    [GeneratedRegex(@"(?<=[。！？\r\n])\s*(?<text>(?:副業務|兼務)(?:として|は|[：:])(?<content>.+))$", RegexOptions.Singleline | RegexOptions.CultureInvariant)]
+    private static partial Regex SecondaryWork();
+    // 明示された副業務以降の原文だけを返す。共同実施・否定等の文脈も保持する。
+    public static string? SecondaryWorkText(string text)
+    {
+        var match = SecondaryWork().Match(text);
+        return match.Success && !string.IsNullOrWhiteSpace(match.Groups["content"].Value)
+            ? match.Groups["text"].Value.TrimEnd() : null;
+    }
+
     public static readonly IReadOnlyDictionary<string, string> Domains = new Dictionary<string, string>
     {
         ["mechanical"] = "機械設計", ["software"] = "ソフトウェア開発", ["sales"] = "営業",

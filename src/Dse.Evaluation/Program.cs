@@ -4,6 +4,26 @@ using Dse.Evaluation;
 
 try
 {
+    if (args.Length == 2 && args[0] == "--issue30-case-limits")
+    {
+        Issue30CaseLimits.Run(args[1]);
+        return 0;
+    }
+    if (args.Length == 1 && args[0] == "--issue30-live-plan")
+    {
+        Issue30Live.WritePlan();
+        return 0;
+    }
+    if (args.Length == 3 && args[0] == "--issue30-live-score")
+    {
+        Issue30Live.Score(args[1], args[2]);
+        return 0;
+    }
+    if (args.Length == 2 && args[0] == "--issue30-replay")
+    {
+        Issue30Replay.Run(args[1]);
+        return 0;
+    }
     var large = false;
     var split = "tuning";
     var data = "evaluation";

@@ -288,6 +288,16 @@
                 "type": "null"
               }
             ]
+          },
+          "target": {
+            "type": "string",
+            "enum": [
+              "all",
+              "person",
+              "knowledge"
+            ],
+            "default": "all",
+            "description": "personは人物、knowledgeは公開知識・部門活動などの事例。候補上限と再順位付けより前に絞り込む。"
           }
         },
         "required": [
@@ -1073,6 +1083,23 @@
                   ],
                   "additionalProperties": false
                 }
+              },
+              "target": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "person",
+                  "knowledge"
+                ],
+                "default": "all",
+                "description": "personは人物、knowledgeは公開知識・部門活動などの事例。候補上限と再順位付けより前に絞り込む。"
+              },
+              "finalRanking": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "実際に返した推薦の種別:ID。リランク失敗時は空配列。"
               }
             },
             "required": [

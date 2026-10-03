@@ -1,0 +1,55 @@
+{
+  "version": "issue30-llm-v1",
+  "newRequests": 9,
+  "reusedResponses": 0,
+  "wireAttempts": 9,
+  "parseRetries": 0,
+  "costUsd": "0.00162944",
+  "inputTokens": 12909,
+  "outputTokens": 1450,
+  "cachedTokens": 4294,
+  "validSchemaAndGrounding": 9,
+  "productionApplied": false,
+  "scope": "Observed regression; three changed positive questions, no new no-gold or independent questions",
+  "summaries": [
+    {
+      "order": "original",
+      "attempt": 1,
+      "questions": 3,
+      "hitRateAt5": 1.0,
+      "meanPrecisionAt5": 1.0,
+      "meanNdcgAt5": 1.0,
+      "addedGoldKept": 3,
+      "addedGoldLost": 0,
+      "addedOtherRecommended": 0,
+      "irrelevantRecommended": 0
+    },
+    {
+      "order": "reversed",
+      "attempt": 1,
+      "questions": 3,
+      "hitRateAt5": 1.0,
+      "meanPrecisionAt5": 1.0,
+      "meanNdcgAt5": 1.0,
+      "addedGoldKept": 3,
+      "addedGoldLost": 0,
+      "addedOtherRecommended": 0,
+      "irrelevantRecommended": 0
+    },
+    {
+      "order": "original",
+      "attempt": 2,
+      "questions": 3,
+      "hitRateAt5": 1.0,
+      "meanPrecisionAt5": 1.0,
+      "meanNdcgAt5": 1.0,
+      "addedGoldKept": 3,
+      "addedGoldLost": 0,
+      "addedOtherRecommended": 0,
+      "irrelevantRecommended": 0
+    }
+  ],
+  "sameOrderRepeatMatches": 3,
+  "reverseOrderMatches": 3,
+  "gatesPassed": true
+}

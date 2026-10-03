@@ -3,6 +3,7 @@ var api = builder.AddProject<Projects.Dse_Api>("api")
     .WithEnvironment("Data__Mode", "Demo")
     .WithEnvironment("Data__LocalPath", Path.GetFullPath("../../.artifacts/local-ingestion", builder.Environment.ContentRootPath))
     .WithEnvironment("Ai__Mode", "Mock")
+    .WithEnvironment("Profile__SecondaryWorkFragments", "true")
     .WithEnvironment("AiUsage__Stopped", "false")
     .WithEnvironment("AiUsage__MaxOutputTokens", "3000")
     .WithEnvironment("Ingestion__RunWorker", "true");

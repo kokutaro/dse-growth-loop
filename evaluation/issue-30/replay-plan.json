@@ -1,0 +1,109 @@
+{
+  "version": "issue-30-replay-v1",
+  "scope": "offline-regression-on-existing-approved-labels",
+  "liveCalls": 0,
+  "settings": [
+    {
+      "id": "legacy-E",
+      "top": 1,
+      "documentThreshold": 0.3,
+      "queryNoulThreshold": 0.3,
+      "documentNoulThreshold": 0.3,
+      "categoryRescue": false,
+      "productionLimits": false
+    },
+    {
+      "id": "legacy-top3",
+      "top": 3,
+      "documentThreshold": 0.3,
+      "queryNoulThreshold": 0.3,
+      "documentNoulThreshold": 0.3,
+      "categoryRescue": false,
+      "productionLimits": false
+    },
+    {
+      "id": "legacy-category-rescue",
+      "top": 1,
+      "documentThreshold": 0.3,
+      "queryNoulThreshold": 0.3,
+      "documentNoulThreshold": 0.3,
+      "categoryRescue": true,
+      "productionLimits": false
+    },
+    {
+      "id": "legacy-combined",
+      "top": 3,
+      "documentThreshold": 0.3,
+      "queryNoulThreshold": 0.3,
+      "documentNoulThreshold": 0.3,
+      "categoryRescue": true,
+      "productionLimits": false
+    },
+    {
+      "id": "production-default",
+      "top": 3,
+      "documentThreshold": 0.2,
+      "queryNoulThreshold": 0.5,
+      "documentNoulThreshold": 0.5,
+      "categoryRescue": false,
+      "productionLimits": true
+    },
+    {
+      "id": "production-query-noul02",
+      "top": 3,
+      "documentThreshold": 0.2,
+      "queryNoulThreshold": 0.2,
+      "documentNoulThreshold": 0.5,
+      "categoryRescue": false,
+      "productionLimits": true
+    },
+    {
+      "id": "production-category-rescue",
+      "top": 3,
+      "documentThreshold": 0.2,
+      "queryNoulThreshold": 0.5,
+      "documentNoulThreshold": 0.5,
+      "categoryRescue": true,
+      "productionLimits": true
+    },
+    {
+      "id": "production-category-rescue-noul03",
+      "top": 3,
+      "documentThreshold": 0.2,
+      "queryNoulThreshold": 0.5,
+      "documentNoulThreshold": 0.3,
+      "categoryRescue": true,
+      "productionLimits": true
+    },
+    {
+      "id": "legacy-fragments-top3",
+      "top": 3,
+      "documentThreshold": 0.3,
+      "queryNoulThreshold": 0.3,
+      "documentNoulThreshold": 0.3,
+      "categoryRescue": false,
+      "productionLimits": false,
+      "fragmentReplay": true
+    },
+    {
+      "id": "production-fragments",
+      "top": 3,
+      "documentThreshold": 0.2,
+      "queryNoulThreshold": 0.5,
+      "documentNoulThreshold": 0.5,
+      "categoryRescue": false,
+      "productionLimits": true,
+      "fragmentReplay": true
+    },
+    {
+      "id": "production-fragments-category-rescue",
+      "top": 3,
+      "documentThreshold": 0.2,
+      "queryNoulThreshold": 0.5,
+      "documentNoulThreshold": 0.5,
+      "categoryRescue": true,
+      "productionLimits": true,
+      "fragmentReplay": true
+    }
+  ]
+}

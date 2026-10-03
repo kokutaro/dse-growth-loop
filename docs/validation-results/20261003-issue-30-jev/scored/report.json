@@ -1,0 +1,311 @@
+{
+  "createdAt": "2026-10-03T08:01:14.366952+00:00",
+  "newClassificationCalls": 42,
+  "newCaptureSha256": "740ec0bf1e26d8179e01e3ac41f946ddbcb7cb50b509fd96cb8e36a8d4a8df73",
+  "newPlanSha256": "f453adec2169177a9d0e2ca5983fb1c5ab1693a6971dfc47abfbc60907d148d8",
+  "model": "jev-1.13.0",
+  "productionApplied": false,
+  "newRerankingCalls": 0,
+  "summaries": [
+    {
+      "split": "tuning",
+      "entityType": "person",
+      "condition": "saved-baseline",
+      "questions": 12,
+      "recall": 0.85,
+      "hitRate": 1,
+      "meanCandidates": 7.166666666666667,
+      "capLoss": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2t-no-answer-01",
+          "candidates": 6,
+          "manualRequired": false
+        },
+        {
+          "questionId": "v2t-no-answer-02",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "tuning",
+      "entityType": "person",
+      "condition": "paired-control",
+      "questions": 12,
+      "recall": 0.85,
+      "hitRate": 1,
+      "meanCandidates": 7.166666666666667,
+      "capLoss": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2t-no-answer-01",
+          "candidates": 6,
+          "manualRequired": false
+        },
+        {
+          "questionId": "v2t-no-answer-02",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "tuning",
+      "entityType": "person",
+      "condition": "secondary-added",
+      "questions": 12,
+      "recall": 1,
+      "hitRate": 1,
+      "meanCandidates": 7.166666666666667,
+      "capLoss": 0,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2t-no-answer-01",
+          "candidates": 6,
+          "manualRequired": false
+        },
+        {
+          "questionId": "v2t-no-answer-02",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "tuning",
+      "entityType": "knowledge",
+      "condition": "saved-baseline",
+      "questions": 12,
+      "recall": 0.95,
+      "hitRate": 1,
+      "meanCandidates": 5.333333333333333,
+      "capLoss": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2t-no-answer-03",
+          "candidates": 0,
+          "manualRequired": true
+        },
+        {
+          "questionId": "v2t-no-answer-04",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "tuning",
+      "entityType": "knowledge",
+      "condition": "paired-control",
+      "questions": 12,
+      "recall": 0.95,
+      "hitRate": 1,
+      "meanCandidates": 5.333333333333333,
+      "capLoss": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2t-no-answer-03",
+          "candidates": 0,
+          "manualRequired": true
+        },
+        {
+          "questionId": "v2t-no-answer-04",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "tuning",
+      "entityType": "knowledge",
+      "condition": "secondary-added",
+      "questions": 12,
+      "recall": 0.95,
+      "hitRate": 1,
+      "meanCandidates": 5.333333333333333,
+      "capLoss": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2t-no-answer-03",
+          "candidates": 0,
+          "manualRequired": true
+        },
+        {
+          "questionId": "v2t-no-answer-04",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "final",
+      "entityType": "person",
+      "condition": "saved-baseline",
+      "questions": 12,
+      "recall": 0.85,
+      "hitRate": 1,
+      "meanCandidates": 7.666666666666667,
+      "capLoss": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2f-no-answer-01",
+          "candidates": 10,
+          "manualRequired": false
+        },
+        {
+          "questionId": "v2f-no-answer-02",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "final",
+      "entityType": "person",
+      "condition": "paired-control",
+      "questions": 12,
+      "recall": 0.85,
+      "hitRate": 1,
+      "meanCandidates": 7.666666666666667,
+      "capLoss": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2f-no-answer-01",
+          "candidates": 10,
+          "manualRequired": false
+        },
+        {
+          "questionId": "v2f-no-answer-02",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "final",
+      "entityType": "person",
+      "condition": "secondary-added",
+      "questions": 12,
+      "recall": 1,
+      "hitRate": 1,
+      "meanCandidates": 7.666666666666667,
+      "capLoss": 0,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2f-no-answer-01",
+          "candidates": 10,
+          "manualRequired": false
+        },
+        {
+          "questionId": "v2f-no-answer-02",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "final",
+      "entityType": "knowledge",
+      "condition": "saved-baseline",
+      "questions": 12,
+      "recall": 0.9,
+      "hitRate": 0.9,
+      "meanCandidates": 5.666666666666667,
+      "capLoss": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2f-no-answer-03",
+          "candidates": 0,
+          "manualRequired": true
+        },
+        {
+          "questionId": "v2f-no-answer-04",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "final",
+      "entityType": "knowledge",
+      "condition": "paired-control",
+      "questions": 12,
+      "recall": 0.9,
+      "hitRate": 0.9,
+      "meanCandidates": 5.666666666666667,
+      "capLoss": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2f-no-answer-03",
+          "candidates": 0,
+          "manualRequired": true
+        },
+        {
+          "questionId": "v2f-no-answer-04",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    },
+    {
+      "split": "final",
+      "entityType": "knowledge",
+      "condition": "secondary-added",
+      "questions": 12,
+      "recall": 0.9,
+      "hitRate": 0.9,
+      "meanCandidates": 5.666666666666667,
+      "capLoss": 2,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "rescueOnlySelected": 0,
+      "noGoldCandidateCounts": [
+        {
+          "questionId": "v2f-no-answer-03",
+          "candidates": 0,
+          "manualRequired": true
+        },
+        {
+          "questionId": "v2f-no-answer-04",
+          "candidates": 0,
+          "manualRequired": true
+        }
+      ]
+    }
+  ]
+}

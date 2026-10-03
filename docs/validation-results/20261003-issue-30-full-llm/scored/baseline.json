@@ -1,0 +1,3602 @@
+[
+  {
+    "questionId": "v2t-software-01-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "displayed": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-software-02-person-direct",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-software-01-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "displayed": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-software-02-person-direct",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-software-02-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "displayed": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.4966392596877323,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-software-01-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "lostGold": [
+      "v2t-software-02-person-support"
+    ]
+  },
+  {
+    "questionId": "v2t-software-02-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "displayed": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6419288461539238,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-software-01-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-software-03-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support",
+      "v2t-software-04-knowledge-negative",
+      "v2t-software-03-knowledge-support",
+      "v2t-software-03-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support",
+      "v2t-software-04-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-software-03-knowledge-direct",
+      "v2t-software-03-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2t-software-03-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support",
+      "v2t-software-04-knowledge-negative",
+      "v2t-software-03-knowledge-support",
+      "v2t-software-03-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support",
+      "v2t-software-04-knowledge-negative",
+      "v2t-software-03-knowledge-support"
+    ],
+    "precision": 0.2,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.1305055576691351,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support",
+      "v2t-software-04-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-software-03-knowledge-direct"
+    ]
+  },
+  {
+    "questionId": "v2t-software-04-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support",
+      "v2t-software-04-knowledge-negative",
+      "v2t-software-03-knowledge-support",
+      "v2t-software-03-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6653152460429406,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-negative",
+      "v2t-software-03-knowledge-support",
+      "v2t-software-03-knowledge-direct"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-software-04-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support",
+      "v2t-software-04-knowledge-negative",
+      "v2t-software-03-knowledge-support",
+      "v2t-software-03-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support",
+      "v2t-software-04-knowledge-negative",
+      "v2t-software-03-knowledge-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6653152460429406,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-software-03-knowledge-negative",
+      "v2t-software-04-knowledge-negative",
+      "v2t-software-03-knowledge-support",
+      "v2t-software-03-knowledge-direct"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-mechanical-05-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-05-person-support",
+      "v2t-mechanical-06-person-support",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-mechanical-06-person-negative",
+      "v2t-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-05-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-06-person-support",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-mechanical-06-person-negative",
+      "v2t-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-mechanical-05-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-05-person-support",
+      "v2t-mechanical-06-person-support",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-mechanical-06-person-negative",
+      "v2t-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-05-person-support",
+      "v2t-mechanical-06-person-support",
+      "v2t-sales-10-person-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-06-person-support",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-mechanical-06-person-negative",
+      "v2t-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-mechanical-06-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-05-person-support",
+      "v2t-mechanical-06-person-support",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-mechanical-06-person-negative",
+      "v2t-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-05-person-support"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.4966392596877323,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-05-person-support",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-mechanical-06-person-negative",
+      "v2t-mechanical-05-person-negative"
+    ],
+    "lostGold": [
+      "v2t-mechanical-06-person-support"
+    ]
+  },
+  {
+    "questionId": "v2t-mechanical-06-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-05-person-support",
+      "v2t-mechanical-06-person-support",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-mechanical-06-person-negative",
+      "v2t-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-05-person-support",
+      "v2t-mechanical-06-person-support",
+      "v2t-sales-10-person-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6419288461539238,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-05-person-support",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-mechanical-06-person-negative",
+      "v2t-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-mechanical-07-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support",
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support",
+      "v2t-mechanical-08-knowledge-negative"
+    ],
+    "displayed": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support",
+      "v2t-mechanical-08-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-mechanical-07-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support",
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support",
+      "v2t-mechanical-08-knowledge-negative"
+    ],
+    "displayed": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support",
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support",
+      "v2t-mechanical-08-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-mechanical-08-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support",
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support",
+      "v2t-mechanical-08-knowledge-negative"
+    ],
+    "displayed": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support",
+      "v2t-mechanical-08-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2t-mechanical-08-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support",
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support",
+      "v2t-mechanical-08-knowledge-negative"
+    ],
+    "displayed": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support",
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.469514592756915,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-negative",
+      "v2t-mechanical-07-knowledge-support",
+      "v2t-mechanical-08-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-sales-10-person-direct",
+      "v2t-sales-09-person-direct",
+      "v2t-sales-10-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-sales-09-person-support"
+    ],
+    "displayed": [
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-sales-10-person-negative"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-sales-10-person-direct",
+      "v2t-sales-10-person-support",
+      "v2t-operations-18-person-negative"
+    ],
+    "lostGold": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ]
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-sales-10-person-direct",
+      "v2t-sales-09-person-direct",
+      "v2t-sales-10-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-sales-09-person-support"
+    ],
+    "displayed": [
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-sales-10-person-direct",
+      "v2t-sales-10-person-support",
+      "v2t-operations-18-person-negative"
+    ],
+    "lostGold": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ]
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-09-person-direct",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-sales-09-person-negative",
+      "v2t-operations-18-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-software-02-person-support",
+      "v2t-mechanical-05-person-support"
+    ],
+    "displayed": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-09-person-direct",
+      "v2t-sales-10-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-sales-09-person-negative",
+      "v2t-operations-18-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-software-02-person-support",
+      "v2t-mechanical-05-person-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-09-person-direct",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-sales-09-person-negative",
+      "v2t-operations-18-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-software-02-person-support",
+      "v2t-mechanical-05-person-support"
+    ],
+    "displayed": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-09-person-direct",
+      "v2t-sales-10-person-support",
+      "v2t-sales-09-person-support",
+      "v2t-sales-10-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support",
+      "v2t-sales-10-person-negative",
+      "v2t-sales-09-person-negative",
+      "v2t-operations-18-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-software-02-person-support",
+      "v2t-mechanical-05-person-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-11-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support",
+      "v2t-sales-11-knowledge-direct",
+      "v2t-sales-12-knowledge-negative"
+    ],
+    "displayed": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-12-knowledge-direct"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.2128453970090281,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support",
+      "v2t-sales-12-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-sales-11-knowledge-direct"
+    ]
+  },
+  {
+    "questionId": "v2t-sales-11-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support",
+      "v2t-sales-11-knowledge-direct",
+      "v2t-sales-12-knowledge-negative"
+    ],
+    "displayed": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support",
+      "v2t-sales-11-knowledge-direct"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.5173583649036767,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support",
+      "v2t-sales-12-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-12-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support",
+      "v2t-sales-11-knowledge-direct",
+      "v2t-sales-12-knowledge-negative"
+    ],
+    "displayed": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-12-knowledge-direct"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.3935773014954859,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-11-knowledge-direct",
+      "v2t-sales-12-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-sales-12-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2t-sales-12-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support",
+      "v2t-sales-11-knowledge-direct",
+      "v2t-sales-12-knowledge-negative"
+    ],
+    "displayed": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support",
+      "v2t-sales-11-knowledge-direct"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.5388668879616774,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-sales-11-knowledge-negative",
+      "v2t-sales-11-knowledge-support",
+      "v2t-sales-11-knowledge-direct",
+      "v2t-sales-12-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-manufacturing-13-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-manufacturing-13-person-direct",
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-13-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-manufacturing-13-person-negative"
+    ],
+    "displayed": [
+      "v2t-manufacturing-13-person-direct",
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-13-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-manufacturing-13-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-manufacturing-13-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-manufacturing-13-person-direct",
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-13-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-manufacturing-13-person-negative"
+    ],
+    "displayed": [
+      "v2t-manufacturing-13-person-direct",
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-13-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-manufacturing-14-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-manufacturing-13-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-manufacturing-14-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-manufacturing-13-person-direct",
+      "v2t-manufacturing-14-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-manufacturing-13-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-operations-18-person-negative"
+    ],
+    "displayed": [
+      "v2t-manufacturing-14-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-manufacturing-14-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-manufacturing-13-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-manufacturing-13-person-support",
+      "v2t-operations-18-person-negative"
+    ],
+    "lostGold": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ]
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-manufacturing-14-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-manufacturing-13-person-direct",
+      "v2t-manufacturing-14-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-manufacturing-13-person-support",
+      "v2t-manufacturing-14-person-support",
+      "v2t-operations-18-person-negative"
+    ],
+    "displayed": [
+      "v2t-manufacturing-14-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-manufacturing-13-person-direct",
+      "v2t-manufacturing-14-person-direct"
+    ],
+    "precision": 0.2,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.30451296789464855,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-manufacturing-14-person-negative",
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-manufacturing-13-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-manufacturing-13-person-support",
+      "v2t-operations-18-person-negative"
+    ],
+    "lostGold": [
+      "v2t-manufacturing-14-person-support"
+    ]
+  },
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support",
+      "v2t-manufacturing-15-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support",
+      "v2t-manufacturing-15-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2t-manufacturing-16-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-manufacturing-15-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-manufacturing-16-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-manufacturing-15-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-manufacturing-15-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-operations-17-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-operations-17-person-negative",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-sales-10-person-negative"
+    ],
+    "displayed": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-operations-17-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-18-person-direct",
+      "v2t-operations-18-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-operations-17-person-negative",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-sales-10-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-operations-17-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-operations-17-person-negative",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-sales-10-person-negative"
+    ],
+    "displayed": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-operations-18-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-18-person-direct",
+      "v2t-operations-18-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-operations-17-person-negative",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-sales-10-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-operations-18-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-operations-17-person-negative",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-sales-10-person-negative"
+    ],
+    "displayed": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-operations-17-person-support"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.4966392596877323,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-operations-17-person-negative",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-sales-10-person-negative"
+    ],
+    "lostGold": [
+      "v2t-operations-18-person-support"
+    ]
+  },
+  {
+    "questionId": "v2t-operations-18-query",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-operations-17-person-negative",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-sales-10-person-negative"
+    ],
+    "displayed": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-18-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-support",
+      "v2t-operations-18-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6419288461539238,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-17-person-support",
+      "v2t-operations-18-person-negative",
+      "v2t-operations-17-person-negative",
+      "v2t-manufacturing-14-person-negative",
+      "v2t-sales-10-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-operations-19-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support"
+    ],
+    "displayed": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-operations-19-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support"
+    ],
+    "displayed": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-operations-20-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support"
+    ],
+    "displayed": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2t-operations-20-query",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support"
+    ],
+    "displayed": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative"
+    ],
+    "precision": 0.2,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.3390090350877799,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2t-operations-20-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2t-no-answer-01",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "displayed": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support"
+    ],
+    "precision": 0,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": false,
+    "noGold": true,
+    "falseRecommendation": 1,
+    "irrelevantRecommended": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-no-answer-01",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "displayed": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative"
+    ],
+    "precision": 0,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": false,
+    "noGold": true,
+    "falseRecommendation": 1,
+    "irrelevantRecommended": [
+      "v2t-software-01-person-direct",
+      "v2t-software-02-person-direct",
+      "v2t-software-01-person-support",
+      "v2t-software-02-person-support",
+      "v2t-software-02-person-negative",
+      "v2t-software-01-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-no-answer-02",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-no-answer-02",
+    "split": "tuning",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-no-answer-03",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-no-answer-03",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-no-answer-04",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-no-answer-04",
+    "split": "tuning",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-software-01-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-support",
+      "v2f-software-01-person-negative",
+      "v2f-software-02-person-negative"
+    ],
+    "displayed": [
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.7871546029909718,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-negative",
+      "v2f-software-02-person-negative"
+    ],
+    "lostGold": [
+      "v2f-software-01-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-software-01-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-support",
+      "v2f-software-01-person-negative",
+      "v2f-software-02-person-negative"
+    ],
+    "displayed": [
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-support",
+      "v2f-software-01-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.9324441894571632,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-negative",
+      "v2f-software-02-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-software-02-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-support",
+      "v2f-software-01-person-negative",
+      "v2f-software-02-person-negative"
+    ],
+    "displayed": [
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6653152460429406,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-software-01-person-direct",
+      "v2f-software-01-person-support",
+      "v2f-software-01-person-negative",
+      "v2f-software-02-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-software-02-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-support",
+      "v2f-software-01-person-negative",
+      "v2f-software-02-person-negative"
+    ],
+    "displayed": [
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-software-02-person-support",
+      "v2f-software-01-person-support",
+      "v2f-software-01-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6653152460429406,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-software-01-person-direct",
+      "v2f-software-01-person-support",
+      "v2f-software-01-person-negative",
+      "v2f-software-02-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-software-03-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support",
+      "v2f-software-03-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-software-04-knowledge-direct"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support",
+      "v2f-software-03-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-software-03-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support",
+      "v2f-software-03-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support",
+      "v2f-software-03-knowledge-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support",
+      "v2f-software-03-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-software-03-knowledge-negative",
+      "v2f-operations-19-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-software-03-knowledge-negative",
+      "v2f-operations-19-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-software-03-knowledge-negative",
+      "v2f-operations-19-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-03-knowledge-direct"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-software-03-knowledge-negative",
+      "v2f-operations-19-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-mechanical-05-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-09-person-support",
+      "v2f-sales-10-person-support",
+      "v2f-mechanical-06-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-05-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-09-person-support",
+      "v2f-sales-10-person-support",
+      "v2f-mechanical-06-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-mechanical-05-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-09-person-support",
+      "v2f-sales-10-person-support",
+      "v2f-mechanical-06-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-09-person-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-09-person-support",
+      "v2f-sales-10-person-support",
+      "v2f-mechanical-06-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-mechanical-06-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-09-person-support",
+      "v2f-sales-10-person-support",
+      "v2f-mechanical-06-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-05-person-support"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.4966392596877323,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-sales-09-person-support",
+      "v2f-sales-10-person-support",
+      "v2f-mechanical-06-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "lostGold": [
+      "v2f-mechanical-06-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-mechanical-06-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-09-person-support",
+      "v2f-sales-10-person-support",
+      "v2f-mechanical-06-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-mechanical-06-person-support",
+      "v2f-sales-09-person-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6419288461539238,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-sales-09-person-support",
+      "v2f-sales-10-person-support",
+      "v2f-mechanical-06-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-mechanical-07-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-mechanical-07-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-mechanical-07-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-mechanical-07-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-mechanical-07-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-mechanical-07-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-mechanical-08-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-mechanical-07-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-07-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-mechanical-08-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-mechanical-07-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.469514592756915,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-07-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-sales-09-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-software-02-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.7871546029909718,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-manufacturing-14-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-software-02-person-support"
+    ],
+    "lostGold": [
+      "v2f-sales-09-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-sales-09-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-software-02-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative"
+    ],
+    "precision": 0.2,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.7871546029909718,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-manufacturing-14-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-software-02-person-support"
+    ],
+    "lostGold": [
+      "v2f-sales-09-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-sales-09-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-software-02-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6653152460429406,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-sales-09-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-software-02-person-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-sales-09-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-software-02-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6653152460429406,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-10-person-negative",
+      "v2f-sales-09-person-negative",
+      "v2f-sales-09-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-software-01-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-software-02-person-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-11-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-12-knowledge-support",
+      "v2f-sales-11-knowledge-direct",
+      "v2f-sales-11-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-negative"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-12-knowledge-support"
+    ],
+    "lostGold": [
+      "v2f-sales-11-knowledge-direct",
+      "v2f-sales-11-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-sales-11-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-12-knowledge-support",
+      "v2f-sales-11-knowledge-direct",
+      "v2f-sales-11-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-12-knowledge-support",
+      "v2f-sales-11-knowledge-direct"
+    ],
+    "precision": 0.2,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.30451296789464855,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-12-knowledge-support"
+    ],
+    "lostGold": [
+      "v2f-sales-11-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-sales-12-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-support",
+      "v2f-sales-11-knowledge-direct",
+      "v2f-sales-11-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.3935773014954859,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-11-knowledge-direct",
+      "v2f-sales-11-knowledge-support"
+    ],
+    "lostGold": [
+      "v2f-sales-12-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-sales-12-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-support",
+      "v2f-sales-11-knowledge-direct",
+      "v2f-sales-11-knowledge-support"
+    ],
+    "displayed": [
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-12-knowledge-direct",
+      "v2f-sales-12-knowledge-support",
+      "v2f-sales-11-knowledge-direct"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.5388668879616774,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-sales-12-knowledge-negative",
+      "v2f-sales-11-knowledge-negative",
+      "v2f-sales-11-knowledge-direct",
+      "v2f-sales-11-knowledge-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-14-person-support",
+      "v2f-manufacturing-13-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative"
+    ],
+    "displayed": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative"
+    ],
+    "lostGold": [
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-14-person-support",
+      "v2f-manufacturing-13-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative"
+    ],
+    "displayed": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-manufacturing-14-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative"
+    ],
+    "lostGold": [
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-14-person-support",
+      "v2f-manufacturing-13-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative"
+    ],
+    "displayed": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.3935773014954859,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative"
+    ],
+    "lostGold": [
+      "v2f-manufacturing-14-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-14-person-support",
+      "v2f-manufacturing-13-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative"
+    ],
+    "displayed": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-manufacturing-14-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support"
+    ],
+    "precision": 0.2,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.3935773014954859,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative"
+    ],
+    "lostGold": [
+      "v2f-manufacturing-14-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-manufacturing-15-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-support",
+      "v2f-manufacturing-16-knowledge-direct"
+    ],
+    "displayed": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-support",
+      "v2f-manufacturing-16-knowledge-direct"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-15-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-support",
+      "v2f-manufacturing-16-knowledge-direct"
+    ],
+    "displayed": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-support",
+      "v2f-manufacturing-16-knowledge-direct"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-mechanical-07-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-support",
+      "v2f-manufacturing-16-knowledge-direct"
+    ],
+    "displayed": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-mechanical-07-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-mechanical-07-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-support",
+      "v2f-manufacturing-16-knowledge-direct"
+    ],
+    "displayed": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct"
+    ],
+    "precision": 0.0,
+    "hitRate": 0,
+    "recall": 0.0,
+    "ndcg": 0.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-mechanical-07-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-operations-17-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-18-person-direct",
+      "v2f-operations-18-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-operations-17-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-operations-17-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.95583058934618,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-18-person-direct",
+      "v2f-operations-18-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-operations-18-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.4966392596877323,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "lostGold": [
+      "v2f-operations-18-person-support"
+    ]
+  },
+  {
+    "questionId": "v2f-operations-18-query",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "displayed": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support",
+      "v2f-operations-17-person-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.6419288461539238,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-17-person-direct",
+      "v2f-operations-17-person-support",
+      "v2f-operations-17-person-negative",
+      "v2f-operations-18-person-negative",
+      "v2f-mechanical-05-person-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-operations-19-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct"
+    ],
+    "precision": 0.6666666666666666,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-operations-19-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-operations-20-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct"
+    ],
+    "precision": 0.3333333333333333,
+    "hitRate": 1,
+    "recall": 0.5,
+    "ndcg": 0.3935773014954859,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative"
+    ],
+    "lostGold": [
+      "v2f-operations-20-knowledge-support"
+    ]
+  },
+  {
+    "questionId": "v2f-operations-20-query",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-operations-20-knowledge-negative"
+    ],
+    "precision": 0.4,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.5388668879616774,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-operations-19-knowledge-negative"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [
+      "v2f-mechanical-05-person-negative",
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support"
+    ],
+    "displayed": [
+      "v2f-mechanical-05-person-negative",
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct"
+    ],
+    "precision": 0,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": false,
+    "noGold": true,
+    "falseRecommendation": 1,
+    "irrelevantRecommended": [
+      "v2f-mechanical-05-person-negative",
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [
+      "v2f-mechanical-05-person-negative",
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support"
+    ],
+    "displayed": [
+      "v2f-mechanical-05-person-negative",
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct"
+    ],
+    "precision": 0,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": false,
+    "noGold": true,
+    "falseRecommendation": 1,
+    "irrelevantRecommended": [
+      "v2f-mechanical-05-person-negative",
+      "v2f-mechanical-05-person-direct",
+      "v2f-mechanical-06-person-direct",
+      "v2f-operations-17-person-direct",
+      "v2f-operations-18-person-direct",
+      "v2f-software-01-person-direct",
+      "v2f-software-02-person-direct",
+      "v2f-mechanical-05-person-support",
+      "v2f-operations-17-person-support",
+      "v2f-operations-18-person-support"
+    ],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-02",
+    "split": "final",
+    "entityType": "person",
+    "k": 3,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-02",
+    "split": "final",
+    "entityType": "person",
+    "k": 5,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-03",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-03",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-04",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 3,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-04",
+    "split": "final",
+    "entityType": "knowledge",
+    "k": 5,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  }
+]

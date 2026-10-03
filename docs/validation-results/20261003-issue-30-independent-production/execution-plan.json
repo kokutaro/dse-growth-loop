@@ -1,0 +1,71 @@
+{
+  "version": "issue30-independent-production-v1",
+  "frozenAt": "2026-10-03T09:31:20.178272+00:00",
+  "approvalReference": "user-20261003-independent-production-and-independent-24-labels",
+  "runId": "issue30-independent-20261003-v1",
+  "resourceGroup": "dse-growth-loop-rg",
+  "job": "dse-validation-issue30",
+  "dummyOnly": true,
+  "questions": 24,
+  "positiveQuestions": 20,
+  "noGoldQuestions": 4,
+  "rawUnits": 60,
+  "models": {
+    "Jev": "jev-1.13.0",
+    "Foundry": "gpt-6-luna-2026-09-22",
+    "deployment": "dse-luna6-eval"
+  },
+  "rules": {
+    "personLimit": 10,
+    "caseLimit": 15,
+    "rescueSlots": 2,
+    "topCategories": 3,
+    "questionThreshold": 0.1,
+    "documentThreshold": 0.2,
+    "noulThreshold": 0.5,
+    "evidenceBytes": 1200,
+    "secondaryFragments": true
+  },
+  "limits": {
+    "maxDailyCallsIncludingExisting": 240,
+    "maxDailyTokenReservation": 4500000,
+    "maxDailyAiEstimatedJpy": 200,
+    "planningUsdToJpy": 200,
+    "attemptsPerCall": 1,
+    "automaticJobRetries": 0,
+    "jobTimeoutSeconds": 900,
+    "cpu": 0.25,
+    "memory": "0.5Gi"
+  },
+  "localImageIds": {
+    "api": "sha256:c417cea051d3b0736e8e655a50976a08c263b1a51c2f56c92de4d2a0e234716d",
+    "evaluation": "sha256:f8a5b912b3d8d1e5d534421f70aac58735910e117c57402b934a987821d73b8b"
+  },
+  "gates": {
+    "primaryRecallPerTypeMinimum": 0.9,
+    "finalHitRateAt5Minimum": 0.9,
+    "targetTypePrecisionAt5Minimum": 0.9,
+    "noGoldFalseRecommendationsMaximum": 0,
+    "otherTypeRecommendationsMaximum": 0,
+    "groundingRequired": true,
+    "warmHttpP95MaximumMs": 15000,
+    "coldMaximumMs": null
+  },
+  "measurementScope": {
+    "phase1": "Production Azure services via MI, real Cosmos/source guard/ProfilePipeline/Jev/NaturalSearchService/Foundry. No public HTTP/JWT assertion.",
+    "phase2": "Authenticated public API and real cold/warm timing; currently blocked by unavailable delegated token; do not treat phase1 timing as HTTP SLO."
+  },
+  "sourcePublicationScope": "Person projections via ProfilePipeline; legacy approved dummy knowledge seed plus actual document classification, not full knowledge publication workflow.",
+  "unknownOtherEntityTypePolicy": "Requested entity-type metrics use approved 30-label judgments; recommendations of the other type are separately reported and fail the specificity gate.",
+  "sha256": {
+    "evaluation/issue-30/independent/dataset.json": "c8eb808d70f925ebdcd6262fc74c97e3d41c5383ca5556788619d91066f0a6b0",
+    "evaluation/issue-30/independent/approval.json": "9c16e03e6ed09713d7e554b3c6ba408c9bc52f95d3e1c171e80918b6bc158923",
+    "src/Dse.ProductionEvaluation/Program.cs": "9c4ba61430ce90761177d997de88c9337f1c71a02ce9c033c00e43fc403906be",
+    "src/Dse.ProductionEvaluation/Dockerfile": "cc63d7097a9ea67b7c6bb1bec9d95dd409f5a7f233fce5e5fad5cb70b51c29c3",
+    "src/Dse.Infrastructure/ProfilePipeline.cs": "073ffa37865d1d6bd652f8777ac30710dd556ce408bbe1aece3f5e166b32e74c",
+    "src/Dse.Infrastructure/NaturalSearchService.cs": "62b3ff1e697a6e8b8db535132c309993dfd335f00b33be909ddec5221df1f617",
+    "src/Dse.Infrastructure/AiCodecs.cs": "6e329d53016e87b3aa847033a9eb24d9b43eb5302147f2ae3589fc30287fb242",
+    "src/Dse.Infrastructure/AiService.cs": "fbdfa59a8261098f25ad132f5004737a52a40df1ecf3a536b3d8338d85be88fb",
+    "src/Dse.Domain/ProfileExtraction.cs": "23d48cd8dff6278d341260b149be483e318dae4d116ac2e3f3a89844cece1ea1"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "method": "Normal production SPA and MSAL JWT via CUA UI clicks",
+  "failureDisplayProbe": {
+    "queryId": "i30i-software-cache-person-query",
+    "manualConditions": true,
+    "target": "person",
+    "stage": "completed",
+    "rerankingStatus": "stopped",
+    "runId": "retrieval-a9a08bf3fef8464fb081a2288d7b20ad",
+    "visibleRecommendations": 0,
+    "matchedUnits": 18,
+    "beforeLimit": 8,
+    "falseNoCandidatesMessage": false,
+    "aiCalls": 0
+  },
+  "liveRows": [
+    {
+      "questionId": "i30i-software-cache-person-query",
+      "target": "person",
+      "rerankingStatus": "succeeded",
+      "runId": "retrieval-3f95ad1a77eb4c51927b1adadc8c70ba",
+      "ranking": [
+        "i30i-software-cache-person-direct",
+        "i30i-software-cache-person-support"
+      ],
+      "timingMeasured": false,
+      "approvedGold": [
+        "i30i-software-cache-person-direct",
+        "i30i-software-cache-person-support"
+      ],
+      "onlyGoldDisplayed": true,
+      "wrongEntityTypeDisplayed": false
+    },
+    {
+      "questionId": "i30i-software-cache-knowledge-query",
+      "target": "knowledge",
+      "rerankingStatus": "succeeded",
+      "runId": "retrieval-50f8ec7413dd4646b3dfdd380a666da5",
+      "ranking": [
+        "i30i-software-cache-knowledge-direct",
+        "i30i-software-cache-knowledge-support"
+      ],
+      "timingMeasured": false,
+      "approvedGold": [
+        "i30i-software-cache-knowledge-direct",
+        "i30i-software-cache-knowledge-support"
+      ],
+      "onlyGoldDisplayed": true,
+      "wrongEntityTypeDisplayed": false
+    },
+    {
+      "questionId": "i30i-no-answer-01",
+      "target": "person",
+      "rerankingStatus": "all_unsuitable",
+      "runId": "retrieval-9bfc21305920470d96c0659f44fec28a",
+      "ranking": [],
+      "timingMeasured": false,
+      "approvedGold": [],
+      "onlyGoldDisplayed": true,
+      "wrongEntityTypeDisplayed": false
+    },
+    {
+      "questionId": "i30i-no-answer-02",
+      "target": "knowledge",
+      "rerankingStatus": "all_unsuitable",
+      "runId": "retrieval-9f38295011ba4972b0e5881d8cca7fc3",
+      "ranking": [],
+      "timingMeasured": false,
+      "approvedGold": [],
+      "onlyGoldDisplayed": true,
+      "wrongEntityTypeDisplayed": false
+    }
+  ],
+  "qualityScope": "4 representative JWT/UI searches, not full 24-question HTTP quality evaluation or latency SLO",
+  "allFourExpectedResults": true
+}

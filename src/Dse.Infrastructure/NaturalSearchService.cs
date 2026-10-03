@@ -41,6 +41,7 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
     public async Task SearchAndConsumeAsync(NaturalSearchRequest request, ActorAccess actor, Func<NaturalSearchResponse, CancellationToken, Task> consume, CancellationToken ct, AiContext? shared = null)
     {
         RequireMember(actor); new NaturalQuery(request.Query).Validate();
+        if (request.Target is not ("all" or "person" or "knowledge")) throw new ArgumentException("Invalid search target");
         var start = Stopwatch.GetTimestamp(); var runId = "retrieval-" + Guid.NewGuid().ToString("N");
         QueryConversion? conversion = null;
         if (request.Conditions is null) conversion = await ConvertAsync(new(request.Query), actor, ct, shared);
@@ -54,7 +55,8 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
         var chatAccess = new ChatAccess(repository, guard, new IdentityResolver(config), config);
         async Task<SearchUnit[]> Filter(IEnumerable<SearchUnit> units, CancellationToken token) => shared is null
             ? await guard.FilterAsync(actor, units, token) : await chatAccess.FilterAsync(shared, units, token);
-        var primary = await fence.RunAsync(actor.TenantId, async token => Retriever.Search(await Filter(fetched, token), conditions, actor.Search, rules), ct);
+        var targeted = fetched.Where(u => request.Target == "all" || (request.Target == "person" ? u.EntityType == "person" : u.EntityType != "person"));
+        var primary = await fence.RunAsync(actor.TenantId, async token => Retriever.Search(await Filter(targeted, token), conditions, actor.Search, rules), ct);
         // One relevant fragment per entity bounds evidence fairly; all matching fragments remain in primary cards.
         var inputs = primary.Candidates.Select(c => c.Units[0]).Where(u => u.SourceRefs.Any(s => !string.IsNullOrWhiteSpace(s.Text))).ToArray();
         // Aggregate versions are independent; precise versions travel in validated source snapshots.
@@ -65,7 +67,7 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
         {
             if (inputs.Length > 0)
             {
-                ranked = await reranker.RerankAsync((shared is null ? new AiContext(actor, runId, "search-rerank-v1", Retriever.TaxonomyVersion, inputVersion, [], inputs) : shared with { PromptVersion = "search-rerank-v1", Candidates = inputs })
+                ranked = await reranker.RerankAsync((shared is null ? new AiContext(actor, runId, "search-rerank-v2", Retriever.TaxonomyVersion, inputVersion, [], inputs) : shared with { PromptVersion = "search-rerank-v2", Candidates = inputs })
                     with { EvidenceBytesPerCandidate = rules.EvidenceBytesPerCandidate }, request.Query, ct);
                 status = ranked.Status == AiStatus.Succeeded ? ranked.Value?.Items.Length == 0 ? "all_unsuitable" : "succeeded" :
                     ranked.Failure switch { AiFailure.Refused => "refused", AiFailure.Truncated => "truncated", AiFailure.Budget => "budget_stopped", AiFailure.Stopped => "stopped", _ => "not_performed:" + ranked.Failure?.ToString().ToLowerInvariant() };
@@ -96,9 +98,11 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
                 // Successful omission means unsuitable. Keep the complete primary set only in the audit.
                 visible = assessments.Select(a => visible.Single(c => c.EntityId == a.EntityId && c.EntityType == a.EntityType)).ToArray();
             }
-            else if (status == "all_unsuitable") visible = [];
+            else { visible = []; assessments.Clear(); }
             var run = RecordJson.New("retrievalRun", runId, actor.TenantId, actor.PrincipalId, actor.ScopeIds, clock.GetUtcNow());
             run["contractVersion"] = "search-v2";
+            run["target"] = request.Target;
+            run["finalRanking"] = AiCodecs.Node(visible.Select(c => c.EntityType + ":" + c.EntityId));
             run["rules"] = AiCodecs.Node(rules); run["conditions"] = AiCodecs.Node(conditions);
             run["taxonomyVersion"] = Retriever.TaxonomyVersion; run["normalizationVersion"] = "normalization-v1";
             run["dataVersions"] = AiCodecs.Node(primary.MergedCandidates.SelectMany(c => c.Units).Select(u => new { u.Id, u.EntityId, u.SourceVersion, u.AccessVersion, u.ProjectionVersion }));

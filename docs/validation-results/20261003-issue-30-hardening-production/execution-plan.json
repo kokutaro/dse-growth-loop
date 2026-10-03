@@ -1,0 +1,81 @@
+{
+  "version": "issue30-hardening-production-v1",
+  "frozenAt": "2026-10-03T11:31:17.204021+00:00",
+  "approvalReference": "user-explicit-request-production-redeployment-real-AI-quality-check",
+  "evaluationId": "issue30-hardening-20261003-v1",
+  "sourceScope": "issue30-independent-20261003-v1",
+  "datasetObserved": true,
+  "independentHoldout": false,
+  "labelsChanged": false,
+  "arms": [
+    "all",
+    "targeted"
+  ],
+  "questionsPerArm": 24,
+  "httpSmokeQuestions": 4,
+  "maxAdditionalAiCalls": 104,
+  "models": {
+    "Jev": "jev-1.13.0",
+    "Foundry": "gpt-6-luna-2026-09-22",
+    "deployment": "dse-luna6-eval"
+  },
+  "rules": {
+    "personLimit": 10,
+    "caseLimit": 15,
+    "rescueSlots": 2,
+    "topCategories": 3,
+    "questionThreshold": 0.1,
+    "documentThreshold": 0.2,
+    "noulThreshold": 0.5,
+    "evidenceBytes": 1200,
+    "secondaryFragments": true
+  },
+  "limits": {
+    "maxDailyCallsIncludingExisting": 240,
+    "maxDailyTokenReservation": 4500000,
+    "maxDailyAiEstimatedJpy": 200,
+    "planningUsdToJpy": 200,
+    "attemptsPerCall": 1,
+    "automaticJobRetries": 0,
+    "jobTimeoutSeconds": 900,
+    "cpu": 0.25,
+    "memory": "0.5Gi"
+  },
+  "gates": {
+    "primaryRecallPerTypeMinimum": 0.9,
+    "finalHitRateAt5Minimum": 0.9,
+    "targetTypePrecisionAt5Minimum": 0.9,
+    "noGoldFalseRecommendationsMaximum": 0,
+    "otherTypeRecommendationsMaximum": 0,
+    "groundingRequired": true,
+    "warmHttpP95MaximumMs": 15000,
+    "coldMaximumMs": null
+  },
+  "promptVersion": "search-rerank-v2",
+  "inputBudgetVersion": "search-total-bytes-v1",
+  "localImageIds": {
+    "api": "sha256:85476ce735ac8d4946bb14ee237e815a8fdc5c4d4605b287a7fcaeffb456146e",
+    "evaluation": "sha256:e954c16d5ac99153f670d7361d8698d25adbf7c6ea26eabf435b9dd5132bcf95"
+  },
+  "sha256": {
+    "evaluation/issue-30/independent/dataset.json": "c8eb808d70f925ebdcd6262fc74c97e3d41c5383ca5556788619d91066f0a6b0",
+    "evaluation/issue-30/independent/approval.json": "9c16e03e6ed09713d7e554b3c6ba408c9bc52f95d3e1c171e80918b6bc158923",
+    "src/Dse.ProductionEvaluation/Program.cs": "39a4efabb90dcc2a52fb1a5c9e5d649bcc9467720ec4fb633d1c6c81db7b358e",
+    "src/Dse.Infrastructure/NaturalSearchService.cs": "0675214ea5555c6457ff64d13edd368761406e8cc4aea980a889a151a068414e",
+    "src/Dse.Infrastructure/AiService.cs": "78621c4edcedb7b5bfc6afc29254974af76879e3486aaa9d5a78cecfc24ea21a",
+    "src/Dse.Infrastructure/AiCodecs.cs": "055e1b39ca4eb2db65adb3924c960d4e7277f07f2007bf72b01d687dbb63e0c4",
+    "src/Dse.Infrastructure/AiTransport.cs": "4ad6134d734baa3f549fc2ca889b76b44b0f5cee7dd09fdc149a4a432573eec8",
+    "src/Dse.Infrastructure/SearchRerankBudget.cs": "cf7e756b523f516628660eaa9c4f6f642b2c8ff6a7d9912f2c065c8fe706edf7",
+    "web/src/main.tsx": "9dd18552ffad2b158c3ca0805d23e7675651b44d65ba90b104a6fa9b0f62afe7"
+  },
+  "restoreOriginalApiAfterValidation": true,
+  "httpFull24QualityClaim": false,
+  "gatesApplyToArm": "targeted",
+  "allArmPurpose": "Diagnostic comparison; explicit all allows mixed entity types.",
+  "httpSmokeQuestionIds": [
+    "i30i-software-cache-person-query",
+    "i30i-software-cache-knowledge-query",
+    "i30i-no-answer-01",
+    "i30i-no-answer-02"
+  ]
+}

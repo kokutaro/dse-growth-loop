@@ -1,0 +1,4 @@
+# Preserve captured CSV bytes for evidence SHA256 verification.
+/docs/validation-results/20261003-issue-30-full-llm/scored/summary.csv -text whitespace=cr-at-eol
+/docs/validation-results/20261003-issue-30-independent-production/http-metrics.csv -text whitespace=cr-at-eol
+/docs/validation-results/20261003-issue-30-independent-production/production-metrics.csv -text whitespace=cr-at-eol

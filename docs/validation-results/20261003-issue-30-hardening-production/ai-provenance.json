@@ -1,0 +1,29 @@
+{
+  "validationExecution": "dse-validation-issue30-x0a2coa",
+  "exportExecution": "dse-validation-issue30-b16y4ye",
+  "modelPins": [
+    [
+      "gpt-6-luna-2026-09-22",
+      "2026-09-22"
+    ],
+    [
+      "jev-1.13.0",
+      "jev-1.13.0"
+    ]
+  ],
+  "rerankRuns": 44,
+  "rerankLiveAttempts": 44,
+  "queryRuns": 48,
+  "queryLiveAttempts": 24,
+  "queryCached": 24,
+  "rerankPromptVersions": [
+    "search-rerank-v2"
+  ],
+  "maxRerankInputByteBound": 13084,
+  "rerankBudgetVersions": [
+    "search-total-bytes-v1"
+  ],
+  "totalFurtherCutBytes": 0,
+  "allAuditsInDedicatedScope": true,
+  "liveEstimatedUsageRuns": 0
+}

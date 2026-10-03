@@ -1,0 +1,141 @@
+[
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "ranking": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support",
+      "v2t-manufacturing-15-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative",
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "displayed": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative"
+    ],
+    "precisionAt5": 0.0,
+    "hitRateAt5": 0,
+    "recallAt5": 0.0,
+    "ndcgAt5": 0.0,
+    "addedGoldKept": [],
+    "addedGoldLost": [
+      "v2t-manufacturing-15-knowledge-direct"
+    ],
+    "addedOtherRecommended": [
+      "v2t-manufacturing-15-knowledge-negative"
+    ],
+    "irrelevantRecommended": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-negative",
+      "v2t-manufacturing-16-knowledge-support",
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-negative",
+      "v2t-operations-19-knowledge-support",
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-negative",
+      "v2t-operations-20-knowledge-support",
+      "v2t-manufacturing-15-knowledge-negative"
+    ]
+  },
+  {
+    "questionId": "v2f-software-04-query",
+    "ranking": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-software-04-knowledge-direct",
+      "v2f-software-04-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-software-03-knowledge-negative",
+      "v2f-operations-19-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "displayed": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-03-knowledge-direct"
+    ],
+    "precisionAt5": 0.0,
+    "hitRateAt5": 0,
+    "recallAt5": 0.0,
+    "ndcgAt5": 0.0,
+    "addedGoldKept": [],
+    "addedGoldLost": [],
+    "addedOtherRecommended": [
+      "v2f-operations-19-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ],
+    "irrelevantRecommended": [
+      "v2f-operations-19-knowledge-direct",
+      "v2f-operations-19-knowledge-support",
+      "v2f-operations-20-knowledge-direct",
+      "v2f-operations-20-knowledge-support",
+      "v2f-software-03-knowledge-direct",
+      "v2f-software-03-knowledge-support",
+      "v2f-operations-20-knowledge-negative",
+      "v2f-software-03-knowledge-negative",
+      "v2f-operations-19-knowledge-negative",
+      "v2f-software-04-knowledge-negative"
+    ]
+  },
+  {
+    "questionId": "v2f-manufacturing-16-query",
+    "ranking": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-mechanical-07-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-support",
+      "v2f-manufacturing-16-knowledge-direct"
+    ],
+    "displayed": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct"
+    ],
+    "precisionAt5": 0.0,
+    "hitRateAt5": 0,
+    "recallAt5": 0.0,
+    "ndcgAt5": 0.0,
+    "addedGoldKept": [],
+    "addedGoldLost": [
+      "v2f-manufacturing-16-knowledge-direct",
+      "v2f-manufacturing-16-knowledge-support"
+    ],
+    "addedOtherRecommended": [],
+    "irrelevantRecommended": [
+      "v2f-manufacturing-15-knowledge-direct",
+      "v2f-manufacturing-15-knowledge-support",
+      "v2f-mechanical-07-knowledge-direct",
+      "v2f-mechanical-07-knowledge-support",
+      "v2f-mechanical-08-knowledge-direct",
+      "v2f-mechanical-08-knowledge-negative",
+      "v2f-mechanical-08-knowledge-support",
+      "v2f-manufacturing-15-knowledge-negative",
+      "v2f-mechanical-07-knowledge-negative",
+      "v2f-manufacturing-16-knowledge-negative"
+    ]
+  }
+]

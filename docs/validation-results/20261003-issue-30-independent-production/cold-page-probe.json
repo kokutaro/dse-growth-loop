@@ -1,0 +1,45 @@
+{
+  "scope": "Unauthenticated production SPA index GET after verified zero replicas; scale-out/page serving, not JWT search/classification/rerank",
+  "zeroConfirmedAt": "2026-10-03T10:46:23.677023+00:00",
+  "startedAt": "2026-10-03T10:46:23.677023+00:00",
+  "durationMs": 33410.844,
+  "httpStatus": 200,
+  "bytesRead": 480,
+  "failure": null,
+  "httpAttempts": 1,
+  "inferenceSent": false,
+  "polls": [
+    {
+      "at": "2026-10-03T10:42:45.470073+00:00",
+      "replicaCount": 1
+    },
+    {
+      "at": "2026-10-03T10:43:16.733302+00:00",
+      "replicaCount": 1
+    },
+    {
+      "at": "2026-10-03T10:43:47.870886+00:00",
+      "replicaCount": 1
+    },
+    {
+      "at": "2026-10-03T10:44:19.041964+00:00",
+      "replicaCount": 1
+    },
+    {
+      "at": "2026-10-03T10:44:50.134960+00:00",
+      "replicaCount": 1
+    },
+    {
+      "at": "2026-10-03T10:45:21.250309+00:00",
+      "replicaCount": 1
+    },
+    {
+      "at": "2026-10-03T10:45:52.785492+00:00",
+      "replicaCount": 1
+    },
+    {
+      "at": "2026-10-03T10:46:23.677023+00:00",
+      "replicaCount": 0
+    }
+  ]
+}

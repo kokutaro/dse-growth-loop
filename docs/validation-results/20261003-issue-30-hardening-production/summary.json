@@ -1,0 +1,1192 @@
+{
+  "regressionQualityGate": "passed",
+  "gateChecks": {
+    "personPrimaryRecall": true,
+    "personVisibleHitAt5": true,
+    "personVisiblePrecisionAt5": true,
+    "knowledgePrimaryRecall": true,
+    "knowledgeVisibleHitAt5": true,
+    "knowledgeVisiblePrecisionAt5": true,
+    "noGoldFalse": true,
+    "otherType": true,
+    "positiveRerankSucceeded": true
+  },
+  "independentHoldout": false,
+  "observedQuestions": 24,
+  "searches": 48,
+  "arms": {
+    "all": {
+      "person": {
+        "positiveQuestions": 10,
+        "primaryRecall": 0.95,
+        "visibleHitAt5": 1.0,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1.0,
+        "typedPrecisionAt5": 1.0,
+        "visibleRecallAt5": 0.95,
+        "lostGoldAt5": [
+          {
+            "questionId": "i30i-sales-discount-person-query",
+            "entityIds": [
+              "i30i-sales-discount-person-support"
+            ]
+          }
+        ]
+      },
+      "knowledge": {
+        "positiveQuestions": 10,
+        "primaryRecall": 1,
+        "visibleHitAt5": 1.0,
+        "visiblePrecisionAt5": 0.5333333333333333,
+        "typedHitAt5": 1.0,
+        "typedPrecisionAt5": 1.0,
+        "visibleRecallAt5": 1.0,
+        "lostGoldAt5": []
+      },
+      "noGoldQuestions": 4,
+      "noGoldFalseQuestions": 0,
+      "otherTypeQuestions": 10,
+      "statusCounts": {
+        "CLASSIFICATION_MANUAL_REQUIRED": 2,
+        "all_unsuitable": 2,
+        "succeeded": 20
+      },
+      "serviceTiming": {
+        "p50Ms": 11377.59195,
+        "p95Ms": 16139.0336,
+        "maxMs": 16161.5457,
+        "publicHttpSlo": false
+      }
+    },
+    "targeted": {
+      "person": {
+        "positiveQuestions": 10,
+        "primaryRecall": 0.95,
+        "visibleHitAt5": 1.0,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1.0,
+        "typedPrecisionAt5": 1.0,
+        "visibleRecallAt5": 0.95,
+        "lostGoldAt5": [
+          {
+            "questionId": "i30i-sales-discount-person-query",
+            "entityIds": [
+              "i30i-sales-discount-person-support"
+            ]
+          }
+        ]
+      },
+      "knowledge": {
+        "positiveQuestions": 10,
+        "primaryRecall": 1,
+        "visibleHitAt5": 1.0,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1.0,
+        "typedPrecisionAt5": 1.0,
+        "visibleRecallAt5": 1.0,
+        "lostGoldAt5": []
+      },
+      "noGoldQuestions": 4,
+      "noGoldFalseQuestions": 0,
+      "otherTypeQuestions": 0,
+      "statusCounts": {
+        "CLASSIFICATION_MANUAL_REQUIRED": 2,
+        "all_unsuitable": 2,
+        "succeeded": 20
+      },
+      "serviceTiming": {
+        "p50Ms": 6923.35125,
+        "p95Ms": 10007.9876,
+        "maxMs": 10238.5131,
+        "publicHttpSlo": false
+      }
+    }
+  },
+  "usage": {
+    "aiAuditCount": 92,
+    "statusCounts": {
+      "succeeded": 68,
+      "not_evaluated": 24
+    },
+    "attemptCount": 68,
+    "cachedResponses": 24,
+    "inputTokens": 106179,
+    "outputTokens": 20256,
+    "estimatedAiJpy": 3.5549688,
+    "usageEstimatedRuns": 0,
+    "inputLimitFailures": 0,
+    "requestUnits": 12637.910000000025,
+    "ruScope": "Search budgets only; audit export/blob/admin operations excluded",
+    "ledgerBefore": {
+      "calls": 132,
+      "tokens": 188860,
+      "estimatedJpy": 2.9599196,
+      "activeReservations": 0,
+      "blocked": null
+    },
+    "ledgerAfter": {
+      "calls": 200,
+      "tokens": 315295,
+      "estimatedJpy": 6.5148884,
+      "activeReservations": 0,
+      "blocked": null
+    }
+  },
+  "evaluatedRows": {
+    "all": [
+      {
+        "questionId": "i30i-software-cache-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-software-cache-person-direct",
+          "i30i-software-cache-person-support"
+        ],
+        "ranking": [
+          "i30i-software-cache-person-direct",
+          "i30i-software-cache-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 323.89000000000067
+      },
+      {
+        "questionId": "i30i-software-cache-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-software-cache-knowledge-direct",
+          "i30i-software-cache-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-software-cache-knowledge-direct",
+          "i30i-software-cache-knowledge-support",
+          "i30i-software-cache-person-direct",
+          "i30i-software-cache-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.5,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 2,
+        "rankingCount": 4,
+        "requestUnits": 318.16000000000065
+      },
+      {
+        "questionId": "i30i-software-timezone-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-software-timezone-person-direct",
+          "i30i-software-timezone-person-support"
+        ],
+        "ranking": [
+          "i30i-software-timezone-person-direct",
+          "i30i-software-timezone-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 518.3000000000013
+      },
+      {
+        "questionId": "i30i-software-timezone-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-software-timezone-knowledge-direct",
+          "i30i-software-timezone-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-software-timezone-person-direct",
+          "i30i-software-timezone-knowledge-direct",
+          "i30i-software-timezone-person-support",
+          "i30i-software-timezone-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.5,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 2,
+        "rankingCount": 4,
+        "requestUnits": 318.16000000000065
+      },
+      {
+        "questionId": "i30i-mechanical-thermal-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-mechanical-thermal-person-direct",
+          "i30i-mechanical-thermal-person-support"
+        ],
+        "ranking": [
+          "i30i-mechanical-thermal-person-direct",
+          "i30i-mechanical-thermal-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 371.44000000000096
+      },
+      {
+        "questionId": "i30i-mechanical-thermal-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-mechanical-thermal-knowledge-direct",
+          "i30i-mechanical-thermal-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-mechanical-thermal-person-direct",
+          "i30i-mechanical-thermal-knowledge-direct",
+          "i30i-mechanical-thermal-person-support",
+          "i30i-mechanical-thermal-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.5,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 2,
+        "rankingCount": 4,
+        "requestUnits": 365.70000000000095
+      },
+      {
+        "questionId": "i30i-mechanical-fatigue-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-mechanical-fatigue-person-direct",
+          "i30i-mechanical-fatigue-person-support"
+        ],
+        "ranking": [
+          "i30i-mechanical-fatigue-person-direct",
+          "i30i-mechanical-fatigue-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 365.70000000000095
+      },
+      {
+        "questionId": "i30i-mechanical-fatigue-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-mechanical-fatigue-knowledge-direct",
+          "i30i-mechanical-fatigue-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-mechanical-fatigue-person-direct",
+          "i30i-mechanical-fatigue-knowledge-direct",
+          "i30i-mechanical-fatigue-person-support",
+          "i30i-mechanical-fatigue-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.5,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 2,
+        "rankingCount": 4,
+        "requestUnits": 365.70000000000095
+      },
+      {
+        "questionId": "i30i-sales-discount-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-sales-discount-person-direct",
+          "i30i-sales-discount-person-support"
+        ],
+        "ranking": [
+          "i30i-sales-discount-person-direct"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 0.5,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 1,
+        "requestUnits": 523.9100000000012
+      },
+      {
+        "questionId": "i30i-sales-discount-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-sales-discount-knowledge-direct",
+          "i30i-sales-discount-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-sales-discount-person-direct",
+          "i30i-sales-discount-knowledge-direct",
+          "i30i-sales-discount-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.6666666666666666,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 1,
+        "rankingCount": 3,
+        "requestUnits": 518.1800000000012
+      },
+      {
+        "questionId": "i30i-sales-channel-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-sales-channel-person-direct",
+          "i30i-sales-channel-person-support"
+        ],
+        "ranking": [
+          "i30i-sales-channel-person-direct",
+          "i30i-sales-channel-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 365.2800000000009
+      },
+      {
+        "questionId": "i30i-sales-channel-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-sales-channel-knowledge-direct",
+          "i30i-sales-channel-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-sales-channel-knowledge-direct",
+          "i30i-sales-channel-person-direct",
+          "i30i-sales-channel-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.6666666666666666,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 1,
+        "rankingCount": 3,
+        "requestUnits": 518.1800000000012
+      },
+      {
+        "questionId": "i30i-manufacturing-calibration-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-manufacturing-calibration-person-direct",
+          "i30i-manufacturing-calibration-person-support"
+        ],
+        "ranking": [
+          "i30i-manufacturing-calibration-person-direct",
+          "i30i-manufacturing-calibration-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 271.09000000000043
+      },
+      {
+        "questionId": "i30i-manufacturing-calibration-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-manufacturing-calibration-knowledge-direct",
+          "i30i-manufacturing-calibration-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-manufacturing-calibration-person-direct",
+          "i30i-manufacturing-calibration-knowledge-direct",
+          "i30i-manufacturing-calibration-knowledge-support",
+          "i30i-manufacturing-calibration-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.5,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 2,
+        "rankingCount": 4,
+        "requestUnits": 271.09000000000043
+      },
+      {
+        "questionId": "i30i-manufacturing-traceability-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-manufacturing-traceability-person-direct",
+          "i30i-manufacturing-traceability-person-support"
+        ],
+        "ranking": [
+          "i30i-manufacturing-traceability-person-direct",
+          "i30i-manufacturing-traceability-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 271.09000000000043
+      },
+      {
+        "questionId": "i30i-manufacturing-traceability-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-manufacturing-traceability-knowledge-direct",
+          "i30i-manufacturing-traceability-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-manufacturing-traceability-person-direct",
+          "i30i-manufacturing-traceability-knowledge-direct",
+          "i30i-manufacturing-traceability-person-support",
+          "i30i-manufacturing-traceability-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.5,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 2,
+        "rankingCount": 4,
+        "requestUnits": 271.09000000000043
+      },
+      {
+        "questionId": "i30i-operations-permit-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-operations-permit-person-direct",
+          "i30i-operations-permit-person-support"
+        ],
+        "ranking": [
+          "i30i-operations-permit-person-direct",
+          "i30i-operations-permit-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 300.23000000000053
+      },
+      {
+        "questionId": "i30i-operations-permit-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-operations-permit-knowledge-direct",
+          "i30i-operations-permit-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-operations-permit-person-direct",
+          "i30i-operations-permit-knowledge-direct",
+          "i30i-operations-permit-person-support",
+          "i30i-operations-permit-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.5,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 2,
+        "rankingCount": 4,
+        "requestUnits": 294.5000000000005
+      },
+      {
+        "questionId": "i30i-operations-spares-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-operations-spares-person-direct",
+          "i30i-operations-spares-person-support"
+        ],
+        "ranking": [
+          "i30i-operations-spares-person-direct",
+          "i30i-operations-spares-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 507.7700000000013
+      },
+      {
+        "questionId": "i30i-operations-spares-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-operations-spares-knowledge-direct",
+          "i30i-operations-spares-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-operations-spares-knowledge-direct",
+          "i30i-operations-spares-knowledge-support",
+          "i30i-operations-spares-person-direct",
+          "i30i-operations-spares-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 0.5,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 2,
+        "rankingCount": 4,
+        "requestUnits": 502.04000000000127
+      },
+      {
+        "questionId": "i30i-no-answer-01",
+        "entityType": "person",
+        "gold": [],
+        "ranking": [],
+        "status": "all_unsuitable",
+        "primaryRecall": null,
+        "visibleHitAt5": null,
+        "visiblePrecisionAt5": 0,
+        "typedHitAt5": null,
+        "typedPrecisionAt5": 0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 0,
+        "requestUnits": 318.16000000000065
+      },
+      {
+        "questionId": "i30i-no-answer-02",
+        "entityType": "knowledge",
+        "gold": [],
+        "ranking": [],
+        "status": "all_unsuitable",
+        "primaryRecall": null,
+        "visibleHitAt5": null,
+        "visiblePrecisionAt5": 0,
+        "typedHitAt5": null,
+        "typedPrecisionAt5": 0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 0,
+        "requestUnits": 365.70000000000095
+      },
+      {
+        "questionId": "i30i-no-answer-03",
+        "entityType": "person",
+        "gold": [],
+        "ranking": [],
+        "status": "CLASSIFICATION_MANUAL_REQUIRED",
+        "primaryRecall": null,
+        "visibleHitAt5": null,
+        "visiblePrecisionAt5": 0,
+        "typedHitAt5": null,
+        "typedPrecisionAt5": 0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 0,
+        "requestUnits": null
+      },
+      {
+        "questionId": "i30i-no-answer-04",
+        "entityType": "knowledge",
+        "gold": [],
+        "ranking": [],
+        "status": "CLASSIFICATION_MANUAL_REQUIRED",
+        "primaryRecall": null,
+        "visibleHitAt5": null,
+        "visiblePrecisionAt5": 0,
+        "typedHitAt5": null,
+        "typedPrecisionAt5": 0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 0,
+        "requestUnits": null
+      }
+    ],
+    "targeted": [
+      {
+        "questionId": "i30i-software-cache-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-software-cache-person-direct",
+          "i30i-software-cache-person-support"
+        ],
+        "ranking": [
+          "i30i-software-cache-person-direct",
+          "i30i-software-cache-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 233.29000000000042
+      },
+      {
+        "questionId": "i30i-software-cache-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-software-cache-knowledge-direct",
+          "i30i-software-cache-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-software-cache-knowledge-direct",
+          "i30i-software-cache-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 112.88999999999997
+      },
+      {
+        "questionId": "i30i-software-timezone-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-software-timezone-person-direct",
+          "i30i-software-timezone-person-support"
+        ],
+        "ranking": [
+          "i30i-software-timezone-person-direct",
+          "i30i-software-timezone-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 336.0800000000009
+      },
+      {
+        "questionId": "i30i-software-timezone-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-software-timezone-knowledge-direct",
+          "i30i-software-timezone-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-software-timezone-knowledge-direct",
+          "i30i-software-timezone-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 112.88999999999997
+      },
+      {
+        "questionId": "i30i-mechanical-thermal-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-mechanical-thermal-person-direct",
+          "i30i-mechanical-thermal-person-support"
+        ],
+        "ranking": [
+          "i30i-mechanical-thermal-person-direct",
+          "i30i-mechanical-thermal-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 280.8400000000007
+      },
+      {
+        "questionId": "i30i-mechanical-thermal-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-mechanical-thermal-knowledge-direct",
+          "i30i-mechanical-thermal-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-mechanical-thermal-knowledge-direct",
+          "i30i-mechanical-thermal-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 112.97999999999998
+      },
+      {
+        "questionId": "i30i-mechanical-fatigue-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-mechanical-fatigue-person-direct",
+          "i30i-mechanical-fatigue-person-support"
+        ],
+        "ranking": [
+          "i30i-mechanical-fatigue-person-direct",
+          "i30i-mechanical-fatigue-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 275.10000000000065
+      },
+      {
+        "questionId": "i30i-mechanical-fatigue-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-mechanical-fatigue-knowledge-direct",
+          "i30i-mechanical-fatigue-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-mechanical-fatigue-knowledge-direct",
+          "i30i-mechanical-fatigue-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 112.97999999999998
+      },
+      {
+        "questionId": "i30i-sales-discount-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-sales-discount-person-direct",
+          "i30i-sales-discount-person-support"
+        ],
+        "ranking": [
+          "i30i-sales-discount-person-direct"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 0.5,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 1,
+        "requestUnits": 341.84000000000094
+      },
+      {
+        "questionId": "i30i-sales-discount-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-sales-discount-knowledge-direct",
+          "i30i-sales-discount-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-sales-discount-knowledge-direct",
+          "i30i-sales-discount-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 208.3600000000001
+      },
+      {
+        "questionId": "i30i-sales-channel-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-sales-channel-person-direct",
+          "i30i-sales-channel-person-support"
+        ],
+        "ranking": [
+          "i30i-sales-channel-person-direct",
+          "i30i-sales-channel-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 274.83000000000067
+      },
+      {
+        "questionId": "i30i-sales-channel-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-sales-channel-knowledge-direct",
+          "i30i-sales-channel-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-sales-channel-knowledge-support",
+          "i30i-sales-channel-knowledge-direct"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 208.3600000000001
+      },
+      {
+        "questionId": "i30i-manufacturing-calibration-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-manufacturing-calibration-person-direct",
+          "i30i-manufacturing-calibration-person-support"
+        ],
+        "ranking": [
+          "i30i-manufacturing-calibration-person-direct",
+          "i30i-manufacturing-calibration-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 179.92000000000016
+      },
+      {
+        "questionId": "i30i-manufacturing-calibration-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-manufacturing-calibration-knowledge-direct",
+          "i30i-manufacturing-calibration-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-manufacturing-calibration-knowledge-direct",
+          "i30i-manufacturing-calibration-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 112.76999999999998
+      },
+      {
+        "questionId": "i30i-manufacturing-traceability-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-manufacturing-traceability-person-direct",
+          "i30i-manufacturing-traceability-person-support"
+        ],
+        "ranking": [
+          "i30i-manufacturing-traceability-person-direct",
+          "i30i-manufacturing-traceability-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 179.92000000000016
+      },
+      {
+        "questionId": "i30i-manufacturing-traceability-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-manufacturing-traceability-knowledge-direct",
+          "i30i-manufacturing-traceability-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-manufacturing-traceability-knowledge-direct",
+          "i30i-manufacturing-traceability-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 112.76999999999998
+      },
+      {
+        "questionId": "i30i-operations-permit-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-operations-permit-person-direct",
+          "i30i-operations-permit-person-support"
+        ],
+        "ranking": [
+          "i30i-operations-permit-person-direct",
+          "i30i-operations-permit-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 209.4400000000003
+      },
+      {
+        "questionId": "i30i-operations-permit-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-operations-permit-knowledge-direct",
+          "i30i-operations-permit-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-operations-permit-knowledge-direct",
+          "i30i-operations-permit-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 112.82999999999998
+      },
+      {
+        "questionId": "i30i-operations-spares-person-query",
+        "entityType": "person",
+        "gold": [
+          "i30i-operations-spares-person-direct",
+          "i30i-operations-spares-person-support"
+        ],
+        "ranking": [
+          "i30i-operations-spares-person-direct",
+          "i30i-operations-spares-person-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 325.5500000000009
+      },
+      {
+        "questionId": "i30i-operations-spares-knowledge-query",
+        "entityType": "knowledge",
+        "gold": [
+          "i30i-operations-spares-knowledge-direct",
+          "i30i-operations-spares-knowledge-support"
+        ],
+        "ranking": [
+          "i30i-operations-spares-knowledge-direct",
+          "i30i-operations-spares-knowledge-support"
+        ],
+        "status": "succeeded",
+        "primaryRecall": 1,
+        "visibleHitAt5": 1,
+        "visiblePrecisionAt5": 1.0,
+        "typedHitAt5": 1,
+        "typedPrecisionAt5": 1.0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 2,
+        "requestUnits": 208.3700000000001
+      },
+      {
+        "questionId": "i30i-no-answer-01",
+        "entityType": "person",
+        "gold": [],
+        "ranking": [],
+        "status": "all_unsuitable",
+        "primaryRecall": null,
+        "visibleHitAt5": null,
+        "visiblePrecisionAt5": 0,
+        "typedHitAt5": null,
+        "typedPrecisionAt5": 0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 0,
+        "requestUnits": 227.56000000000037
+      },
+      {
+        "questionId": "i30i-no-answer-02",
+        "entityType": "knowledge",
+        "gold": [],
+        "ranking": [],
+        "status": "all_unsuitable",
+        "primaryRecall": null,
+        "visibleHitAt5": null,
+        "visiblePrecisionAt5": 0,
+        "typedHitAt5": null,
+        "typedPrecisionAt5": 0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 0,
+        "requestUnits": 112.97999999999998
+      },
+      {
+        "questionId": "i30i-no-answer-03",
+        "entityType": "person",
+        "gold": [],
+        "ranking": [],
+        "status": "CLASSIFICATION_MANUAL_REQUIRED",
+        "primaryRecall": null,
+        "visibleHitAt5": null,
+        "visiblePrecisionAt5": 0,
+        "typedHitAt5": null,
+        "typedPrecisionAt5": 0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 0,
+        "requestUnits": null
+      },
+      {
+        "questionId": "i30i-no-answer-04",
+        "entityType": "knowledge",
+        "gold": [],
+        "ranking": [],
+        "status": "CLASSIFICATION_MANUAL_REQUIRED",
+        "primaryRecall": null,
+        "visibleHitAt5": null,
+        "visiblePrecisionAt5": 0,
+        "typedHitAt5": null,
+        "typedPrecisionAt5": 0,
+        "noGoldFalse": false,
+        "otherTypeCount": 0,
+        "rankingCount": 0,
+        "requestUnits": null
+      }
+    ]
+  },
+  "previousManagedIdentity": {
+    "person": {
+      "positiveQuestions": 10,
+      "primaryRecall": 0.9,
+      "visibleHitAt5": 1.0,
+      "visiblePrecisionAt5": 0.35000000000000003,
+      "typedHitAt5": 1.0,
+      "typedPrecisionAt5": 0.5
+    },
+    "knowledge": {
+      "positiveQuestions": 10,
+      "primaryRecall": 1,
+      "visibleHitAt5": 0.2,
+      "visiblePrecisionAt5": 0.1,
+      "typedHitAt5": 0.8,
+      "typedPrecisionAt5": 0.4
+    },
+    "noGoldQuestions": 4,
+    "noGoldFalseQuestions": 2,
+    "otherTypeQuestions": 22,
+    "statusCounts": {
+      "CLASSIFICATION_MANUAL_REQUIRED": 2,
+      "not_performed:inputlimit": 16,
+      "succeeded": 5,
+      "ungrounded_output": 1
+    }
+  }
+}

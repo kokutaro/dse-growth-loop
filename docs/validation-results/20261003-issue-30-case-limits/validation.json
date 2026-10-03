@@ -1,0 +1,44 @@
+{
+  "createdAt": "2026-10-03T08:25:26.378447+00:00",
+  "liveCalls": 0,
+  "additionalCostUsd": 0,
+  "productionApplied": false,
+  "checks": {
+    "solutionBuild": {
+      "passed": true,
+      "existingWarnings": [
+        "ASPIRE010"
+      ]
+    },
+    "dotnetTests": {
+      "passed": 332,
+      "failed": 0,
+      "skipped": 0
+    },
+    "testBeforeImplementation": "Expected missing Issue30CaseLimits compile failure observed",
+    "deterministicQuestionsAndCsv": true,
+    "deterministicReportExcludingTimestamp": true,
+    "baselineCandidateMatches": 48,
+    "personCandidateMatches": 72,
+    "fifteenTwentyCandidateMatches": 48,
+    "rows": 144,
+    "relativeLinks": true
+  },
+  "commands": [
+    "dotnet build --no-restore -m:1 -nr:false",
+    "dotnet test tests/Dse.Tests --no-restore -m:1 -nr:false",
+    "dotnet run --project src/Dse.Evaluation --no-build -- --issue30-case-limits docs/validation-results/20261003-issue-30-case-limits",
+    "dotnet run --project src/Dse.Evaluation --no-build -- --issue30-case-limits .artifacts/issue30-case-limits-verification"
+  ],
+  "sha256": {
+    "evaluation/issue-30/case-limit-plan.json": "c04a38d30e7cce9e42896361fffcc56b33b5a378704182df0fbf9157f6f37ae2",
+    "src/Dse.Evaluation/Issue30CaseLimits.cs": "e54926a6bfec4be4bef1e19156c330637ed7669e0099ae2b231ce51e53e98adc",
+    "tests/Dse.Tests/Issue30CaseLimitsTests.cs": "cc0635e83b8c8176b280784db7619996047dbf36e841b00d22049959667fecab",
+    "docs/validation-results/20261003-issue-30-jev/capture/responses.json": "740ec0bf1e26d8179e01e3ac41f946ddbcb7cb50b509fd96cb8e36a8d4a8df73",
+    "docs/validation-results/20261003-issue-30-jev/scored/classifications.json": "73339d6c1b67940ee4dd52b1d1ae1b33143ece624b4f38f887836fa932b0b845",
+    "docs/validation-results/20261003-issue-30-case-limits/report.json": "d2ae496fccfdbd8a5ac9021ed90d8a2b097a05953c733a4f824c450cd415a4d3",
+    "docs/validation-results/20261003-issue-30-case-limits/questions.json": "ae6ca47a78e020dceb82d2a1df452d0abe1b53ff3a43ca623d9a6ff0ae94e094",
+    "docs/validation-results/20261003-issue-30-case-limits/summary.csv": "e0598c39cc9b19f240c0761270c91ecad68449c5c651554f8141e3ec6339b526",
+    "docs/validation-results/20261003-issue-30-case-limits/results.md": "1bf66dbe9faf58ef35b23fe3d757bc5e1353ce16a8a4ca8623422c74d0ea2f53"
+  }
+}

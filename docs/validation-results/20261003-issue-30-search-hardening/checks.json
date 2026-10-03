@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-03",
+  "liveCalls": 0,
+  "productionDeployed": false,
+  "modelQualityMeasured": false,
+  "dotnetTests": {
+    "passed": 340,
+    "failed": 0,
+    "lineCoverage": 0.8502,
+    "branchCoverage": 0.7303000000000001
+  },
+  "contractTests": {
+    "passed": 17,
+    "failed": 0
+  },
+  "searchE2e": {
+    "passed": 8,
+    "failed": 0
+  },
+  "allE2eSharedApi": {
+    "workers": 1,
+    "passed": 18,
+    "failed": 6,
+    "isolatedRerunPassed": 6,
+    "reason": "Same test principal exhausts fixed-window HTTP rate limits (429). Fresh API processes passed all six failed cases. Full suite is not recorded as a single passing run."
+  },
+  "parallelAllE2e": {
+    "workers": 6,
+    "passed": 10,
+    "failed": 14
+  },
+  "offlineObservedPayloadReconstruction": {
+    "inputLimitFailuresReplayed": 32,
+    "minInputByteBound": 9879,
+    "maxInputByteBound": 14536,
+    "inputLimit": 16000,
+    "furtherEvidenceCuts": 0,
+    "metadataReconstructed": true
+  }
+}

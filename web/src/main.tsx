@@ -37,6 +37,7 @@ function App() {
   const [config, setConfig] = useState<AppConfig>();
   const [conditionsReady, setConditionsReady] = useState(false);
   const [query, setQuery] = useState("");
+  const [target, setTarget] = useState("all");
   const [categoryIds, setCategoryIds] = useState("operations");
   const [signalIds, setSignalIds] = useState("handover");
   const [conversionStatus, setConversionStatus] = useState("");
@@ -116,7 +117,7 @@ function App() {
       const response = await fetch(query.trim() ? "/api/v2/search" : "/api/search", {
         method: "POST",
         headers,
-        body: JSON.stringify(query.trim() ? { query, ...(conditionsReady ? { conditions } : {}) } : conditions),
+        body: JSON.stringify(query.trim() ? { query, target, ...(conditionsReady ? { conditions } : {}) } : conditions),
       });
       if (generation !== searchGeneration.current) return;
       if (response.status === 422) {
@@ -139,7 +140,8 @@ function App() {
         setTerms(value.conditions.terms.join(" "));
         setConditionsReady(true);
       }
-      setResult(value.primary ? { ...value.primary, assessments: value.assessments, runId: value.runId } : value);
+      const failed = value.primary && !["succeeded", "all_unsuitable", "no_candidates"].includes(value.rerankingStatus);
+      setResult(value.primary ? { ...value.primary, candidates: failed ? [] : value.primary.candidates, assessments: failed ? [] : value.assessments, runId: value.runId } : value);
       setStage("完了・表示前の権限確認済み");
     } catch (e) {
       if (generation !== searchGeneration.current) return;
@@ -149,6 +151,7 @@ function App() {
       if (generation === searchGeneration.current) setBusy(false);
     }
   }
+  const rerankFailed = !!result?.runId && !["succeeded", "all_unsuitable", "no_candidates"].includes(result.rerankingStatus);
   return (
     <>
       <header>
@@ -191,6 +194,12 @@ function App() {
               <button type="button" disabled={busy || !config || !query.trim()} onClick={() => { void convert(); }}>自然文から条件を生成</button>
               {conversionStatus && <p role="status">{conversionStatus}</p>}
               {query.trim() && <>
+                <label htmlFor="search-target">検索対象</label>
+                <select id="search-target" value={target} disabled={busy} onChange={e => { setTarget(e.target.value); setResult(undefined); }}>
+                  <option value="all">人物と事例</option>
+                  <option value="person">人物</option>
+                  <option value="knowledge">事例</option>
+                </select>
                 <label htmlFor="category-ids">複数分野・技術要素の分類ID</label>
                 <input id="category-ids" disabled={busy} value={categoryIds} onChange={e => { setCategoryIds(e.target.value); setConditionsReady(true); }} />
                 <small>operations sales manufacturing software mechanical（スペース区切り）</small>
@@ -262,12 +271,12 @@ function App() {
             {result && (
               <>
                 <p className="notice">
-                  <strong>{result.rerankingStatus === "succeeded" ? "根拠に基づく再順位付け済み" : result.rerankingStatus === "all_unsuitable" ? "全件不適合" : "再順位付け未実施"}</strong>
+                  <strong>{result.rerankingStatus === "succeeded" ? "根拠に基づく再順位付け済み" : result.rerankingStatus === "all_unsuitable" ? "全件不適合" : rerankFailed ? "候補の評価を完了できませんでした" : "再順位付け未実施"}</strong>
                   <br />
-                  表示順は能力の順位ではありません。根拠と不足情報を確認してください。
+                  {rerankFailed ? "推薦の適合性を確認できないため、候補を表示していません。検索対象を人物または事例に絞るか、時間をおいて再検索してください。" : "表示順は能力の順位ではありません。根拠と不足情報を確認してください。"}
                   {result.runId && <small>検索履歴：{result.runId} ／ {result.rerankingStatus}</small>}
                 </p>
-                {result.candidates.length === 0 && (
+                {result.candidates.length === 0 && !rerankFailed && (
                   <p>条件に合う候補はありません。</p>
                 )}
                 {result.candidates.map((candidate) => (

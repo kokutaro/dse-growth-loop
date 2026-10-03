@@ -1,0 +1,34 @@
+{
+  "version": "issue30-llm-v1",
+  "approval": "user-20261003-issue30-execute-llm",
+  "creditUsd": ".10",
+  "maximumNewWireAttempts": 36,
+  "maximumReservationUsd": "0.0936",
+  "conditions": 9,
+  "newRequests": 9,
+  "reusedResponses": 0,
+  "k": 5,
+  "evidenceBytes": 1000,
+  "includeProbabilities": false,
+  "productionApplied": false,
+  "gates": {
+    "allChangedQuestionsHaveRelevantTop5": true,
+    "allThreeAddedGoldKeptTop5": true,
+    "allThreeAddedNegativesExcluded": true,
+    "noIrrelevantRecommendation": true,
+    "validGroundingAndSchema": true
+  },
+  "scope": "Observed regression; three changed positive questions, no new no-gold or independent questions",
+  "sha256": {
+    "docs/validation-results/20261003-issue-30-case-limits/questions.json": "ae6ca47a78e020dceb82d2a1df452d0abe1b53ff3a43ca623d9a6ff0ae94e094",
+    "docs/validation-results/20261003-issue-30-case-limits/report.json": "d2ae496fccfdbd8a5ac9021ed90d8a2b097a05953c733a4f824c450cd415a4d3",
+    "evaluation/expansion-v2/dataset.json": "6e9724acadf1d9c7dff61531f5e02df4c1bd3543c451e785f237e693356b437d",
+    "docs/validation-results/20261003-issue-14-luna6/comparisons.json": "b8f01d462db14645377d245e6e29b4c8cad003c189db8173d709f978a5da0c43",
+    "evaluation/expansion-v2/luna6/plan.json": "a79e0474df1c811965ee745b7d06ba8e8c6c9321f22916381a85cd12ede250f7",
+    "scripts/llm_rerank_evaluation.py": "b6e44f5b3b957aff7b5f4f10fed103a942e9b5d27c63be208c499f1997590168",
+    "scripts/issue30_llm_evaluation.py": "549bf751415a0d32d92b98a8dac793a5760502a1a3d82ccd4021e2e4317a9dbd",
+    "evaluation/issue-30/llm/plan.json": "826c51d7b7681f510c52169d95c251f516bb1e99658b904419718eeec0c20fc7",
+    "evaluation/issue-30/llm/all-tasks.json": "e9d3938fcb365bdce91a26b623f17881b10a5bc01be9957d2630524b671ea573",
+    "evaluation/issue-30/llm/reused.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  }
+}

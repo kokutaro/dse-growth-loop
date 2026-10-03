@@ -58,7 +58,7 @@ public sealed class AiHttpTransport(HttpClient http, IAiCredentials credentials,
         var endpoint = model.Provider == "Jev" ? model.Endpoint : new Uri(model.Endpoint, "openai/v1/chat/completions");
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
         request.Headers.Authorization = new("Bearer", await credentials.BearerAsync(model.Provider, ct));
-        request.Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json");
+        request.Content = new StringContent(AiCodecs.SerializeRequest(body), Encoding.UTF8, "application/json");
         if (config is not null && (AiLimits.Read(config).Stopped || !AiLimits.Read(config).LiveOptIn || config["Ai:Mode"] != "Live"))
             throw new AiException(AiFailure.Stopped);
         using var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);

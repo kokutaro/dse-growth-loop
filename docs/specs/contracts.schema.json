@@ -409,6 +409,16 @@
           ],
           "minimum": 64,
           "maximum": 8000
+        },
+        "inputByteBound": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inputBudgetVersion": {
+          "type": "string",
+          "enum": [
+            "search-total-bytes-v1"
+          ]
         }
       },
       "required": [
@@ -2333,6 +2343,20 @@
                   "requestCharge"
                 ],
                 "additionalProperties": false
+              }
+            },
+            "target": {
+              "type": "string",
+              "enum": [
+                "all",
+                "person",
+                "knowledge"
+              ]
+            },
+            "finalRanking": {
+              "type": "array",
+              "items": {
+                "type": "string"
               }
             }
           },

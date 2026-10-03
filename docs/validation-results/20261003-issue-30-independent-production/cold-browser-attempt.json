@@ -1,0 +1,9 @@
+{
+  "zeroReplicaConfirmedAt": "2026-10-03T10:36:15.184815+00:00",
+  "pageNavigationStartedAt": "2026-10-03T10:37:40.017Z",
+  "result": "CDP Page.navigate timed out at 10000ms; created tab could not be retrieved after navigation failed",
+  "exactColdHttpDuration": null,
+  "coldAuthenticatedSearchDuration": null,
+  "inferenceSent": false,
+  "note": "No timing inferred from tool wall time; use separate cold unauthenticated SPA index probe."
+}

@@ -1,6 +1,8 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
+  // Tests update the same seeded identities and use one in-memory API instance.
+  workers: 1,
   use: {
     baseURL: "http://127.0.0.1:5173",
     viewport: { width: 1280, height: 900 },
@@ -14,6 +16,7 @@ export default defineConfig({
         Data__Mode: "Demo",
         Ingestion__RunWorker: "true",
         Ai__Mode: "Mock",
+        Profile__SecondaryWorkFragments: "true",
         AiUsage__Stopped: "false",
         AiUsage__MaxOutputTokens: "3000",
         ASPNETCORE_URLS: "http://127.0.0.1:5180",

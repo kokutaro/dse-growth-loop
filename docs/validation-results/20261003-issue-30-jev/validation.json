@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-03",
+  "classificationModel": "jev-1.13.0",
+  "completedNewInputs": 40,
+  "liveAttempts": 42,
+  "manualRecoveryAttempts": 2,
+  "newRerankingCalls": 0,
+  "azureOperations": 0,
+  "productionApplied": false,
+  "dotnetTests": 328,
+  "captureTests": 6,
+  "replayRows": 144,
+  "deterministicReplayFiles": [
+    "questions.json",
+    "classifications.json",
+    "summary.csv"
+  ],
+  "labelScope": "existing human-approved entity labels; no new independent confirmation set",
+  "sourceAndEvidenceHashesVerified": true,
+  "files": {
+    "docs/validation-results/20261003-issue-30-jev/capture/diagnostic-2.json": "bcefcab9beda3aa167c3bbf0819427f728946207802f039c30f32235f79bf7e8",
+    "docs/validation-results/20261003-issue-30-jev/capture/approval.json": "af025b2e02ec6e51fd4cae54fa757bf6757ca15e3af107194b12fd15e6715894",
+    "docs/validation-results/20261003-issue-30-jev/capture/responses.json": "740ec0bf1e26d8179e01e3ac41f946ddbcb7cb50b509fd96cb8e36a8d4a8df73",
+    "docs/validation-results/20261003-issue-30-jev/capture/diagnostic-1.json": "035d6ec4d19e9f9e958688325b9ef8a6b821014bef7ca82a89b2838600b81a4a",
+    "docs/validation-results/20261003-issue-30-jev/scored/report.json": "5bcd9a38ee1eb2a34e3f1e9beac73177e96d32b323525c219434fbb5ef61614c",
+    "docs/validation-results/20261003-issue-30-jev/scored/classifications.json": "73339d6c1b67940ee4dd52b1d1ae1b33143ece624b4f38f887836fa932b0b845",
+    "docs/validation-results/20261003-issue-30-jev/scored/questions.json": "e531150b6e084ef9206e304a26027d02e908937b87ea554e2951c31e132f79e4",
+    "docs/validation-results/20261003-issue-30-jev/capture/responses.jsonl": "d8a6b5cd65f79f67f52e08735c40a4dad1c274a02340cabda3ddfd80d8088879",
+    "docs/validation-results/20261003-issue-30-jev/scored/summary.csv": "f3837ea4f57d08e5808bce84109a305ef146212f58dd6db5024fb161c173ce4c",
+    "evaluation/issue-30/live/fixture.json": "e10db0fef6390e145c29b959ed64346697a236a928dfaf0adb69e1d7473dc08a",
+    "evaluation/issue-30/live/bindings.json": "a7eb91a56d17be8a604d546dbb88ec9d030ec74593fa178944110d457e9f4c1a",
+    "evaluation/issue-30/live/manifest.json": "c1dd85bd5b684a67656da3a30f3e63f837799f307b38c80416141c984b014129",
+    "evaluation/issue-30/live/jev-plan.json": "f453adec2169177a9d0e2ca5983fb1c5ab1693a6971dfc47abfbc60907d148d8",
+    "src/Dse.Evaluation/Issue30Live.cs": "0656fb70cdcce52c78b6c16c3aec13160d9a39939f3bcd4e1a585f16db036229",
+    "tests/Dse.Tests/Issue30LiveTests.cs": "15037c5ebe5d9624f8953d4b3cb5c08f7e6ad0521044ea589d4a7d412e23706a"
+  }
+}

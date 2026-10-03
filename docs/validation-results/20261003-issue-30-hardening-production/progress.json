@@ -1,0 +1,245 @@
+{
+  "completed": true,
+  "rows": [
+    {
+      "questionId": "i30i-software-cache-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-software-cache-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-software-timezone-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-software-timezone-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-mechanical-thermal-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-mechanical-thermal-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-mechanical-fatigue-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-mechanical-fatigue-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-sales-discount-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-sales-discount-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-sales-channel-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-sales-channel-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-manufacturing-calibration-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-manufacturing-calibration-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-manufacturing-traceability-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-manufacturing-traceability-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-operations-permit-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-operations-permit-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-operations-spares-person-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-operations-spares-knowledge-query",
+      "arm": "all",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-no-answer-01",
+      "arm": "all",
+      "status": "all_unsuitable"
+    },
+    {
+      "questionId": "i30i-no-answer-02",
+      "arm": "all",
+      "status": "all_unsuitable"
+    },
+    {
+      "questionId": "i30i-no-answer-03",
+      "arm": "all",
+      "status": "CLASSIFICATION_MANUAL_REQUIRED"
+    },
+    {
+      "questionId": "i30i-no-answer-04",
+      "arm": "all",
+      "status": "CLASSIFICATION_MANUAL_REQUIRED"
+    },
+    {
+      "questionId": "i30i-software-cache-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-software-cache-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-software-timezone-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-software-timezone-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-mechanical-thermal-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-mechanical-thermal-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-mechanical-fatigue-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-mechanical-fatigue-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-sales-discount-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-sales-discount-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-sales-channel-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-sales-channel-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-manufacturing-calibration-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-manufacturing-calibration-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-manufacturing-traceability-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-manufacturing-traceability-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-operations-permit-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-operations-permit-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-operations-spares-person-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-operations-spares-knowledge-query",
+      "arm": "targeted",
+      "status": "succeeded"
+    },
+    {
+      "questionId": "i30i-no-answer-01",
+      "arm": "targeted",
+      "status": "all_unsuitable"
+    },
+    {
+      "questionId": "i30i-no-answer-02",
+      "arm": "targeted",
+      "status": "all_unsuitable"
+    },
+    {
+      "questionId": "i30i-no-answer-03",
+      "arm": "targeted",
+      "status": "CLASSIFICATION_MANUAL_REQUIRED"
+    },
+    {
+      "questionId": "i30i-no-answer-04",
+      "arm": "targeted",
+      "status": "CLASSIFICATION_MANUAL_REQUIRED"
+    }
+  ]
+}

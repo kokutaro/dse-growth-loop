@@ -175,7 +175,26 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             return result.ToArray();
         }
         var projectionIds = new List<string>();
-        foreach (var fragment in fragments.Append(entity))
+        var projectionFragments = new List<JsonObject>(fragments);
+        var searchOnlyIds = new HashSet<string>();
+        if (!department && config.GetValue<bool>("Profile:SecondaryWorkFragments"))
+            foreach (var fragment in fragments)
+            {
+                var secondary = ProfileExtraction.SecondaryWorkText(fragment.Text("description"));
+                if (secondary is null) continue;
+                var references = fragment["evidenceRefs"]!.Deserialize<EvidenceReference[]>(Json)!;
+                var sourceRefs = await SourceRefs(references);
+                var grounded = references.Where(r => sourceRefs.Any(s => s.Id == r.Id && s.Text.Contains(secondary, StringComparison.Ordinal))).ToArray();
+                // 本人訂正にしかない文言を原本引用として追加しない。元断片はそのまま再分類する。
+                if (grounded.Length == 0) continue;
+                var derived = fragment.Copy();
+                derived["id"] = Id("secondary-", fragment.Text("id") + ":" + ProfileExtraction.SecondaryWorkRuleVersion);
+                derived["description"] = secondary; derived["evidenceRefs"] = Node(grounded);
+                projectionFragments.Add(derived); searchOnlyIds.Add(derived.Text("id"));
+            }
+        // 正本の月数・訂正対象は増やさず、検索断片だけを上限内で追加する。
+        if (projectionFragments.Count > MaxFragments) throw new DomainException(422, "PROFILE_FRAGMENT_LIMIT");
+        foreach (var fragment in projectionFragments.Append(entity))
         {
             var evidence = fragment["evidenceRefs"]!.Deserialize<EvidenceReference[]>(Json)!;
             var fingerprint = Id("classification-", RecordJson.Canonical(new JsonObject { ["text"] = fragment.Text("description"), ["refs"] = Node(evidence),
@@ -216,7 +235,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             foreach (var pair in RecordJson.New("searchUnit", unitId, tenant, actor.PrincipalId, entity.Strings("scopeIds"), clock.GetUtcNow()))
                 if (!projection.ContainsKey(pair.Key)) projection[pair.Key] = pair.Value?.DeepClone();
             projection["classificationResultIds"] = RecordJson.Array([fingerprint]); Write(projection); projectionIds.Add(unitId);
-            if (!department && fragment != entity) Write(fragment);
+            if (!department && fragment != entity && !searchOnlyIds.Contains(fragment.Text("id"))) Write(fragment);
         }
         if (department)
         {

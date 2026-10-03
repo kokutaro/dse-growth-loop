@@ -1,0 +1,62 @@
+{
+  "recordedAt": "2026-10-03T10:08:43.855651+00:00",
+  "datasetAndCoreHashesMatchFrozenPlan": {
+    "evaluation/issue-30/independent/dataset.json": true,
+    "evaluation/issue-30/independent/approval.json": true,
+    "src/Dse.Infrastructure/ProfilePipeline.cs": true,
+    "src/Dse.Infrastructure/NaturalSearchService.cs": true,
+    "src/Dse.Infrastructure/AiCodecs.cs": true,
+    "src/Dse.Infrastructure/AiService.cs": true,
+    "src/Dse.Domain/ProfileExtraction.cs": true
+  },
+  "recoveryChanges": [
+    "Worker Identity for existing Blob write access; no RBAC change",
+    "Existing Key Vault Jev secret returned HTTP200; first decide failed AI_UNAUTHORIZED",
+    "User explicitly approved TYPE_SAFE_API_KEY registration and temporary version reference; old version retained",
+    "Resume validates all first-item stored seeds have sourceVersion1 and matching approved evidence; no successful first item existed",
+    "Runner diagnostic/export/recovery modes only; frozen AI/search/pipeline implementations unchanged"
+  ],
+  "recoveryImage": "dse-production-evaluation:issue30-recovery1",
+  "recoveryLocalImageId": "sha256:c8e5065eb4b39f9b90463275e0bd6f50a7227c52069ea4163da9d0bfdc7220f7",
+  "newSecretVersion": "3729dba01ebb4e7eaa20789b15d8fed5",
+  "secretValueIncluded": false,
+  "labelChanges": false,
+  "promptOrThresholdTuning": false,
+  "successfulInferenceAutomaticallyResent": false,
+  "executions": [
+    {
+      "id": "dse-validation-issue30-4ke93wi",
+      "result": "failed first Blob write 403, before AI/seed"
+    },
+    {
+      "id": "dse-validation-issue30-cms38f9",
+      "result": "first profile AI_UNAUTHORIZED, raw first-item seed persisted, no projection/quality result"
+    },
+    {
+      "id": "dse-validation-issue30-38xajb8",
+      "result": "stopped immediately after diagnostic image rejected as arm64; no successful inference resend"
+    },
+    {
+      "id": "dse-validation-issue30-ey120ac",
+      "result": "read-only diagnostic, KeyVaultHTTP200"
+    },
+    {
+      "id": "dse-validation-issue30-3mr1zm6",
+      "result": "read-only metadata, sole old secret version enabled"
+    },
+    {
+      "id": "dse-validation-issue30-cj0qkaa",
+      "result": "approved credential correction and guarded resume"
+    },
+    {
+      "id": "dse-validation-issue30-5j0c14p",
+      "result": "read-only export of completed 24-row report"
+    },
+    {
+      "id": "dse-validation-issue30-vi0vqiw",
+      "result": "read-only export of scoped AI/retrieval audit; completed"
+    }
+  ],
+  "browserDiagnosticInventoryRejectedAndNotPerformed": true,
+  "coldSaferAlternative": "User closed other DSE tabs; used one unauthenticated SPA GET after zero replicas. JWT search cold not claimed."
+}
