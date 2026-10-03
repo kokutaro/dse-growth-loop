@@ -1,0 +1,20 @@
+{
+  "queryCount": 48,
+  "meanQueryRu": 7.121208333333333,
+  "queryRuTotal": 341.818,
+  "meanQueryMs": 46.519056250000006,
+  "p95QueryMs": 49.138,
+  "p95Method": "nearest-rank, all 48 SDK query durations; includes journal IO, excludes AI and authorization reads",
+  "assumedMonthlySearches": 100,
+  "estimatedMonthlyQueryRu": 712.1208333333333,
+  "measuredTotalRu": 1632.2279999999985,
+  "aiRequests": 0,
+  "retailJpyPerMillionRu": 44.9017,
+  "estimatedMonthlyQueryJpy": 0.03197543602208333,
+  "estimatedRunRuJpy": 0.07328981198759993,
+  "createRu": 1289.4099999999999,
+  "queryRuMin": 3.49,
+  "queryRuMax": 8.15,
+  "invoiceReconciled": false,
+  "excludes": "Storage, bandwidth, backups, source authorization, audit/fence/AI operations and other Azure services"
+}

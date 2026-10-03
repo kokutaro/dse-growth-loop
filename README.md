@@ -90,3 +90,5 @@ AI Search、PostgreSQL、埋め込み・ベクトル検索は初期構成から�
 解決評価・根拠付き要約レビュー・公開知識の検索と撤回は[知識公開手順](docs/knowledge-publication.md)を参照してください。ローカルダミーでは架空人物01が参加publisherです。実運用の公開責任者・尺度・分析方針は暫定のままです。
 
 検索比較の実行・承認条件は[Issue #14の比較手順](docs/retrieval-experiments.md)を参照。[実JEV分類と語一致の比較結果](docs/validation-results/20261003-issue-14-jev/results.md)と、ラベル承認後の[追加20問による再評価](docs/validation-results/20261003-issue-14-jev-v2/results.md)を追加した。[Luna6の実再順位付け](docs/validation-results/20261003-issue-14-luna6/results.md)では最終HitRate@5が19/20、正解なしの誤推薦0/4。[評価グラフ](docs/validation-results/20261003-issue-14-luna6/figures.md)で品質・順位安定性・費用を確認できる。合成fixture・実AI応答の測定・未測定の検索全体SLOを区別する。
+
+実Cosmosの投影RU・少量利用の費用推計は[検証結果](docs/validation-results/20261003-issue-14-cosmos/results.md)を参照。追加AI呼出しなしで既存候補との一致を確認した。

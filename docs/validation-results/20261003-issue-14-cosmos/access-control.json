@@ -1,0 +1,10 @@
+{
+  "principalId": "d7681b2b-d8ca-492c-acf0-56d4eaa8a412",
+  "temporaryRoleAssignmentId": "a3065b9f-29cc-4831-9cc7-2b312a1c0114",
+  "scope": "/dbs/dse-growth-loop/colls/catalog",
+  "role": "Cosmos DB Built-in Data Contributor",
+  "userApproved": true,
+  "removedAfterMeasurement": true,
+  "matchingAssignmentsAfterRemoval": [],
+  "verificationCommand": "az cosmosdb sql role assignment list -g dse-growth-loop-rg -a dse-cosmos-ypbunss3xh66m --query \"[?name=='a3065b9f-29cc-4831-9cc7-2b312a1c0114'].name\" -o json"
+}

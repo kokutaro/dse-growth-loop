@@ -1,0 +1,33 @@
+{
+  "runId": "20261003-issue-14-cosmos",
+  "aiRequests": 0,
+  "files": {
+    "access-control.json": "dcb35aabc39fd2d015deae54a0a6b88236db78ea6dd8fa8c244964619ab8a282",
+    "container-settings.json": "c3240914eb16edc2dd6e9ab386a87d2e6f92ca22fcb3f63721002ba5b030eaa4",
+    "cosmos-ru.pdf": "0a8539c2ebd1bf9cda09e387396059a78cdbecdd08bf969c9721d1f9e19e7a29",
+    "cosmos-ru.png": "6fde412fd96ca179312018edfaad4333b0a9546db375770e8211019c2ff67eb1",
+    "cosmos-ru.svg": "c0ae24802893087d88fb33b09c4f084a667bc62a938c4c051285e1ba6587380b",
+    "initial-probe-status.json": "56dfa63f4512e7caa7e4c2e6937bb9940b1f4cc225623d5aae54900c406677db",
+    "operations.jsonl": "77e075433e99e8693aa61a82bd9baf11a197adbf535af035b89a0f08084b7f7d",
+    "plan.json": "e069b705dd753b4244c3caed3e79c954ec1de075fec539e4d1f514a2db8d4e6d",
+    "queries.csv": "ccdc8962a641c7f5a2cff63b21c15c47d4ba7818e1edb163158edd57789577df",
+    "queries.json": "029855496f2f4727e0c0f86a52c1cd9fa35edfed9297d97b8154824e4023737c",
+    "results.md": "8d58afe7e1157a7df39b51997af9e1293a35b1191231e9c529e2dbf006094c3f",
+    "retail-price.json": "89b06635ddcc14e8f7f01103d81b8bf7bf710b35399776f5cbad09db2e551011",
+    "status.json": "cff23383aa037946d496b61c7d13735d570ae1785a7566a19201d8aae65ede57",
+    "summary.json": "168bb826dc19e0e00454c6781e745c1306bdef209e80dc0ad6dc5699873b3cf9"
+  },
+  "sources": {
+    "src/Dse.CosmosEvaluation/Program.cs": "7b5b79583f83408af4960d1ac24e7f784e88d1e0f21cf4e6c87205534b9c80bb",
+    "scripts/plot_cosmos_evaluation.py": "dbc84266031377472c8bb9b37c3994e1fb49961264cbb30f31f85786ba6f63e7"
+  },
+  "checks": {
+    "dotnetTests": 310,
+    "localCandidateHashes": 24,
+    "cosmosCandidateHashes": 48,
+    "operations": 109,
+    "jsonCsvRuAgreement": true,
+    "pngInspected": true,
+    "temporaryRoleRemoved": true
+  }
+}

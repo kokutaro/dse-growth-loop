@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AzureCosmosDisableNewtonsoftJsonCheck>true</AzureCosmosDisableNewtonsoftJsonCheck></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Dse.Evaluation/Dse.Evaluation.csproj" />
+    <ProjectReference Include="../Dse.Infrastructure/Dse.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
