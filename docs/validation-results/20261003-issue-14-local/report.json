@@ -1,0 +1,3066 @@
+{
+  "runId": "20261003-issue-14-local",
+  "qualityClaim": false,
+  "reports": [
+    {
+      "runId": "issue14-final-smoke",
+      "createdAt": "2026-10-03T01:17:10.072365+00:00",
+      "version": "evaluation-v1",
+      "origin": "synthetic",
+      "humanReviewStatus": "human-approved",
+      "qualityClaim": false,
+      "aiEnabled": false,
+      "evaluatorSha256": "2f4e702d05d41325c37cd9e9258645dc5a6586adb7029137a2b5ea0f8a281d18",
+      "ruleVersion": "primary-experiments-v1",
+      "taxonomyVersion": "taxonomy-v1",
+      "normalizationVersion": "normalization-v1",
+      "datasetSha256": "0a8b238a6b0640b223a637d7d7c752eb3fcc2e0d1cb1c0a1b3961d7f2df07e19",
+      "experimentInputsSha256": "22e682c2611b063351aa7e7471d014a02e15c25c80124c8095f894d180428d4b",
+      "replaySha256": "c86fdccff92937f0d2e4b109df44e0ef11cb585da06c6a2bee4843dd67fe5d2f",
+      "comparisonsSha256": null,
+      "gatesSha256": "d86573b552bd362023605b6f87eefc4e2277e553400f19b2ea3b02701d40a4f3",
+      "usage": {
+        "calls": 0,
+        "tokens": 0,
+        "retries": 0,
+        "ru": 0,
+        "liveLatencyMs": null
+      },
+      "adoptionStatus": "pending_live_measurement_and_approval",
+      "summary": [
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 2.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 2.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 2.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 2.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 2.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 2.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 3.5,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 3.5,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 3.5,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 4,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 4,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 4,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 4,
+          "zeroGold": 1,
+          "noulRelevant": 1,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.3,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 4,
+          "zeroGold": 1,
+          "noulRelevant": 1,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "F",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 8,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 1,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 1,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 1,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.3,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "F",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 3,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        }
+      ],
+      "primaryChecks": [
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.3,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "F",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.3,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "F",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        }
+      ],
+      "comparisons": [],
+      "variations": [],
+      "selectionNote": "Full predeclared sweep in summary CSV; these rows are diagnostic, no production setting adopted.",
+      "modelVersion": "fixture-no-model",
+      "promptVersion": "fixture-rerank-v1",
+      "sourceCommit": "b654c3d",
+      "fullSummarySha256": "abaa0480457566f7bcd399e446a186cbc3b96b192c80a3f26fd759c81f5e95cb",
+      "fullPrimarySha256": "215fbcb3a496fd2d45fc16d41b98b5f89ad505abc9275b576f9843bfa8ac47b1",
+      "rows": 2164,
+      "unsafePrimaryOccurrences": 0,
+      "multipleCareerRegression": {
+        "conditions": 108,
+        "rescued": 108,
+        "basis": "synthetic-primary-only"
+      }
+    },
+    {
+      "runId": "issue14-final-large",
+      "createdAt": "2026-10-03T01:17:11.69974+00:00",
+      "version": "evaluation-v1",
+      "origin": "synthetic",
+      "humanReviewStatus": "human-approved",
+      "qualityClaim": false,
+      "aiEnabled": false,
+      "evaluatorSha256": "2f4e702d05d41325c37cd9e9258645dc5a6586adb7029137a2b5ea0f8a281d18",
+      "ruleVersion": "primary-experiments-v1",
+      "taxonomyVersion": "taxonomy-v1",
+      "normalizationVersion": "normalization-v1",
+      "datasetSha256": "0a8b238a6b0640b223a637d7d7c752eb3fcc2e0d1cb1c0a1b3961d7f2df07e19",
+      "experimentInputsSha256": "22e682c2611b063351aa7e7471d014a02e15c25c80124c8095f894d180428d4b",
+      "replaySha256": "c86fdccff92937f0d2e4b109df44e0ef11cb585da06c6a2bee4843dd67fe5d2f",
+      "comparisonsSha256": null,
+      "gatesSha256": "d86573b552bd362023605b6f87eefc4e2277e553400f19b2ea3b02701d40a4f3",
+      "usage": {
+        "calls": 0,
+        "tokens": 0,
+        "retries": 0,
+        "ru": 0,
+        "liveLatencyMs": null
+      },
+      "adoptionStatus": "pending_live_measurement_and_approval",
+      "summary": [
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 10,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 1
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 25,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 1
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 50,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 1
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 10,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 3
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 25,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 3
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 50,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 3
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 10,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 25,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 50,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 10,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 25,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 50,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 10,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 25,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 50,
+          "zeroGold": 1,
+          "noulRelevant": 2,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 2
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0.4,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 10,
+          "zeroGold": 1,
+          "noulRelevant": 1,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 3
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.3,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 10,
+          "zeroGold": 1,
+          "noulRelevant": 1,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "F",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 158,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 1,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 1,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 0,
+            "denominator": 1
+          },
+          "meanCandidates": 1,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.3,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 1.5,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "F",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "questions": 2,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "hitRate": {
+            "value": 1,
+            "denominator": 1
+          },
+          "meanCandidates": 3,
+          "zeroGold": 1,
+          "noulRelevant": 0,
+          "noulIrrelevant": 0,
+          "noulUnknown": 0,
+          "capLoss": 0
+        }
+      ],
+      "primaryChecks": [
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.2,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.6,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0.4,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.3,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "person",
+          "setting": {
+            "variant": "F",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "A",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 0,
+            "denominator": 1
+          },
+          "passed": false
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "B",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "C",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "D",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 50
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 1,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "E",
+            "documentThreshold": 0.3,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 20
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        },
+        {
+          "entityType": "knowledge",
+          "setting": {
+            "variant": "F",
+            "documentThreshold": 0.2,
+            "questionTop": 3,
+            "noulThreshold": 0.5,
+            "n": 100
+          },
+          "minimum": 0.9,
+          "recall": {
+            "value": 1,
+            "denominator": 1
+          },
+          "passed": true
+        }
+      ],
+      "comparisons": [],
+      "variations": [],
+      "selectionNote": "Full predeclared sweep in summary CSV; these rows are diagnostic, no production setting adopted.",
+      "modelVersion": "fixture-no-model",
+      "promptVersion": "fixture-rerank-v1",
+      "sourceCommit": "b654c3d",
+      "fullSummarySha256": "bbc3f05102c1e0ce90b10e1f4f43933f437d046cb914f10cab658d4946dff8b3",
+      "fullPrimarySha256": "0286f1520ecb833480b8f56bff168a553bfed7513a1040658794375e790ef7dd",
+      "rows": 2164,
+      "unsafePrimaryOccurrences": 0,
+      "multipleCareerRegression": {
+        "conditions": 108,
+        "rescued": 108,
+        "basis": "synthetic-primary-only"
+      }
+    }
+  ],
+  "liveMeasurements": {
+    "cosmosRu": null,
+    "indexBytes": null,
+    "storageBytes": null,
+    "inputTokens": null,
+    "outputTokens": null,
+    "reasoningTokens": null,
+    "retries": null,
+    "coldP50Ms": null,
+    "coldP95Ms": null,
+    "warmP50Ms": null,
+    "warmP95Ms": null,
+    "costJpy": null,
+    "pricingDate": null,
+    "fxDate": null,
+    "monthlyUsage": null,
+    "monthlyEstimateJpy": null
+  }
+}

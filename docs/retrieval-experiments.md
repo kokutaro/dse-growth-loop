@@ -25,7 +25,7 @@
 
 A/Bの全体分類が欠落・重複する場合は拒否する。全構成でtenant/scope、利用可否、active、有効版を検査する。Fは公開APIも `SearchRequest.Limit` も変更しない。FのAI投入は実装しておらず、有料試験は別途件数・トークン・費用上限の承認が必要。
 
-一次検索は文書閾値0.05/0.1/0.2/0.3、質問Top-1/3/5、Noul0.3/0.5/0.7、N=20/50/100を探索する。Fは同じ全件集合の重複試験を避けて1条件。人物・事例ごとに指標と分母を保存する。一次検索に最終順位はないのでPrecision/nDCG/最終HitRateはnull。採用設定は自動更新しない。
+一次検索は文書閾値0.05/0.1/0.2/0.3、質問Top-1/3/5、Noul0.3/0.5/0.7、N=20/50/100を探索する。Fは同じ全件集合の重複試験を避けて1条件。人物・事例ごとに指標と分母を保存する。実験は既存Retrieverの全体上限Nと20%救済枠を使い、公開自然文検索のretrieval-v2の人物/事例別枠・RescueSlotsとは異なる。本番枠設定の代替測定ではない。一次検索に最終順位はないのでPrecision/nDCG/最終HitRateはnull。採用設定は自動更新しない。
 
 ## 再現コマンド
 
@@ -43,7 +43,7 @@ dotnet run --project src/Dse.Evaluation -- --matrix --large --split final --gate
 dotnet run --project src/Dse.Evaluation -- --matrix --comparisons /path/to/comparisons.json --out .artifacts/issue14-comparisons
 ```
 
-既存runへの上書きは拒否する。`report.json` にrunId、時刻、データ/入力/応答/ゲートhash、版、採用未決定状態を保存する。`primary.json` は全条件の上限前/後ID・根拠・候補hash、`summary.csv` は条件ごとの平均・分母・Noul増分・打切り損失を持つ。大量の全候補JSONは `.artifacts/` で生成し、文書にはCSVと選択条件・失敗例を保存する。
+既存runへの上書きは拒否する。`report.json` にrunId、時刻、データ/入力/応答/ゲートhash、版、採用未決定状態を保存する。`primary.json` は全条件の上限前/後ID・根拠・候補hash、`summary.csv` は条件ごとの平均・分母・Noul増分・打切り損失を持つ。`questions.csv`は質問/条件別、`failures.json`は検索漏れと上限損失、`primaryChecks`は承認一次基準へのfixture内合否を出す。大量の全候補JSONは `.artifacts/` で生成し、文書にはCSVと選択条件・失敗例を保存する。
 
 ## 同一候補の再順位付け比較
 
@@ -77,3 +77,5 @@ dotnet run --project src/Dse.Evaluation -- --matrix --comparisons /path/to/compa
 ライブでは同じrunIdへページ別RU、索引/保存量、全AiRunのprovider usageと推定usage区別、reasoning token、retry、成功/障害別のcold/warm p50/p95と標本数、単価日付/為替日付、実利用量を固定した月額推計を集める。未測定値はnull。価格や過去runの成功件数を今回の実測に転用しない。追加20問、実構造化の主要項目一致、候補の再順位付け比較、月額との比較、採用理由と不採用理由はまだ完了していない。
 
 最終確認ではdataset/replayに加え実験入力と比較応答のhashを固定する。冷起動上限は承認に従いnullを許容する。ゲートJSONの8,000円は承認予算を記録する値で、送信実装やAzureの強制停止を提供しない。最終集合を見た後の基準変更は禁止し、未達は同じIssueに残す。
+
+今回の確認集合・合否・未達項目は[ローカル検証記録](validation-results/20261003-issue-14-local/results.md)を参照。
