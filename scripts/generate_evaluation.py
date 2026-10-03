@@ -146,13 +146,13 @@ def main():
         expectations.extend(office(split, [(u['search']['unitId'], u['search']['entityId'], u['search']['summary'], u['smoke']) for u in local]))
     for expected in expectations:
         expected['sha256'] = hashlib.sha256((OUT / expected['path']).read_bytes()).hexdigest()
-    save('dataset.json', dict(version='evaluation-v1', origin='synthetic', humanReviewStatus='pending', units=units, questions=questions))
+    save('dataset.json', dict(version='evaluation-v1', origin='synthetic', humanReviewStatus='human-approved', units=units, questions=questions))
     save('saved-responses.json', dict(version='evaluation-v1', origin='synthetic-saved-response', modelVersion='fixture-no-model', promptVersion='fixture-rerank-v1', responses=responses))
     save('contract-records.json', contracts)
     save('extraction-expected.json', expectations)
     save('gates.template.json', dict(status='pending', approvedBy='', frozenAt=None, datasetSha256='', replaySha256='',
         primaryRecallMinimum=None, structuredAccuracyMinimum=None, warmP95MsMaximum=None, coldP95MsMaximum=None, aiBudgetYenMaximum=None))
-    review = ['# 正解ラベル確認票', '', '全件架空。作成者はAIエージェント。人による確認は未実施。', '',
+    review = ['# 正解ラベル確認票', '', '全件架空。作成者はAIエージェント。2026-10-03、Issue #14対応時にユーザーがevaluation-v1の全ラベルを承認。', '',
               '関連度: 0 非該当 / 1 参考 / 2 有用 / 3 直接。情報不足は別フラグ。', '',
               '| 質問 | ID | 関連度 | 情報不足 | 根拠 |', '|---|---|---:|---|---|']
     for q in questions:

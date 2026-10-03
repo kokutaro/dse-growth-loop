@@ -5523,6 +5523,29 @@
                   "string",
                   "null"
                 ]
+              },
+              "cosmosCharges": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "operation": {
+                      "enum": [
+                        "projection_page",
+                        "primary_read"
+                      ]
+                    },
+                    "requestCharge": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "requestCharge"
+                  ],
+                  "additionalProperties": false
+                }
               }
             },
             "required": [

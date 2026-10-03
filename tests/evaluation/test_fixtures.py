@@ -32,6 +32,17 @@ class FixtureTests(unittest.TestCase):
                 if path.is_file():
                     self.assertEqual(path.read_bytes(), (ROOT / "evaluation" / path.relative_to(module.OUT)).read_bytes(), str(path))
 
+    def test_experiment_inputs_are_reproducible_and_keep_provenance(self):
+        spec = importlib.util.spec_from_file_location("generate_experiment_inputs", ROOT / "scripts/generate_experiment_inputs.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        data = module.generate(ROOT / 'evaluation/dataset.json')
+        self.assertEqual(data, read('evaluation/experiment-inputs.json'))
+        self.assertEqual('synthetic-experiment-inputs', data['origin'])
+        self.assertEqual(len({u['search']['entityId'] for u in read('evaluation/dataset.json')['units']}), len(data['overallUnits']))
+        for q in data['queries']:
+            self.assertAlmostEqual(1, sum(p['probability'] for p in q['distribution']))
+
     def test_ooxml_extraction_matches_every_expected_paragraph_and_cell(self):
         for expected in read('evaluation/extraction-expected.json'):
             path = ROOT / 'evaluation' / expected['path']
@@ -72,7 +83,7 @@ class FixtureTests(unittest.TestCase):
             cell = ref['location'].split('!')[1]
             self.assertEqual(ref['text'], expected['documents/' + ref['documentTitle']]['cells'][cell])
         self.assertTrue(all(len(splits) == 1 for splits in groups.values()))
-        self.assertEqual('pending', data['humanReviewStatus'])
+        self.assertEqual('human-approved', data['humanReviewStatus'])
         self.assertEqual('synthetic', data['origin'])
         scenarios = {u['scenario'] for u in data['units']}
         self.assertTrue({'multiple-careers', 'secondary-category', 'low-confidence', 'flat-distribution',

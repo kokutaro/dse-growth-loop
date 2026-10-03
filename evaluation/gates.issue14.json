@@ -1,0 +1,14 @@
+{
+  "status": "frozen",
+  "approvedBy": "repository-owner-user (Issue 14 conversation, 2026-10-03)",
+  "frozenAt": "2026-10-03T01:13:08.634343+00:00",
+  "datasetSha256": "0a8b238a6b0640b223a637d7d7c752eb3fcc2e0d1cb1c0a1b3961d7f2df07e19",
+  "replaySha256": "c86fdccff92937f0d2e4b109df44e0ef11cb585da06c6a2bee4843dd67fe5d2f",
+  "experimentInputsSha256": "22e682c2611b063351aa7e7471d014a02e15c25c80124c8095f894d180428d4b",
+  "comparisonsSha256": null,
+  "primaryRecallMinimum": 0.9,
+  "structuredAccuracyMinimum": 0.9,
+  "warmP95MsMaximum": 15000,
+  "coldP95MsMaximum": null,
+  "aiBudgetYenMaximum": 8000
+}

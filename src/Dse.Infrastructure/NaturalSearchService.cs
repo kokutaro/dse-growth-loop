@@ -109,6 +109,7 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
             run["mergedIds"] = AiCodecs.Node(primary.MergedCandidates.Select(c => c.EntityType + ":" + c.EntityId));
             run["selectedIds"] = AiCodecs.Node(primary.Candidates.Select(c => c.EntityType + ":" + c.EntityId));
             run["rerankInputIds"] = AiCodecs.Node(inputs.Select(u => u.Id)); run["evidenceCuts"] = AiCodecs.Node(cuts);
+            run["cosmosCharges"] = AiCodecs.Node(budget.Charges);
             run["requestUnits"] = budget.RequestUnits; run["ruMeasured"] = config["Data:Mode"] != "Demo";
             run["durationMs"] = (long)Stopwatch.GetElapsedTime(start).TotalMilliseconds;
             run["rerankingStatus"] = status; run["aiRunId"] = ranked?.RunId;
