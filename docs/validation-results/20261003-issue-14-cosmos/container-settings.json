@@ -1,0 +1,36 @@
+{
+  "defaultTtl": null,
+  "indexingPolicy": {
+    "automatic": true,
+    "compositeIndexes": null,
+    "excludedPaths": [
+      {
+        "path": "/summary/?"
+      },
+      {
+        "path": "/sourceRefs/*"
+      },
+      {
+        "path": "/\"_etag\"/?"
+      }
+    ],
+    "fullTextIndexes": [],
+    "includedPaths": [
+      {
+        "indexes": null,
+        "path": "/*"
+      }
+    ],
+    "indexingMode": "consistent",
+    "spatialIndexes": null,
+    "vectorIndexes": null
+  },
+  "partitionKey": {
+    "kind": "Hash",
+    "paths": [
+      "/tenantId"
+    ],
+    "systemKey": null,
+    "version": 2
+  }
+}

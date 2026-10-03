@@ -1,0 +1,61 @@
+{
+  "datasetVersion": "evaluation-v2",
+  "planCommittedBeforeSend": "e32c9b4",
+  "settingsCommittedBeforeFinal": "f61e786",
+  "captureCodeBeforeRecovery": "e32c9b4",
+  "captureCodeAfterRecovery": "f61e786",
+  "totalAttempts": 170,
+  "classificationHttpLatencyMs": {
+    "samples": 169,
+    "missingSamples": 1,
+    "missingReason": "failed first manual diagnostic duration was not persisted",
+    "p50": 190.52716717123985,
+    "p95": 260.8796248678118
+  },
+  "budgetUsd": 1,
+  "initialReservationUsd": 0.451584,
+  "totalAttemptReservationUsd": 0.45696,
+  "runs": [
+    {
+      "name": "tuning",
+      "originalArtifacts": {
+        "summary.csv": "3a73a6ad7c931b1bb1eb13d4c4f34c593d29c164af9997cfd266e32ed303077b",
+        "failures.json": "88a1c6dd55335ca94402c0411ee3d8ca49eb0165a345712b4b7933c5ea497d36",
+        "report.json": "faa548967f2b13bd833d98a7521d7dc6334852447a2fb1b7adae5e0004172f66",
+        "primary.json": "980618a6fe4cb27a24be75d8ac3076b68eb63bd2d7f5b70479178f5d04c25213",
+        "questions.csv": "96e387503059595e22fe237ddbdff53dd901d2e9170efda7376381de8b806706"
+      }
+    },
+    {
+      "name": "tuning-selected",
+      "originalArtifacts": {
+        "summary.csv": "9dc69ff7744a7fe77a8323a8e07cd0da884638c19a153dfc332ea25b4ab86608",
+        "failures.json": "8e60e9be84292009d8a53a8908e5ab95c42a2273bab6b8576eef554c06bdcfad",
+        "report.json": "3d03707fe68e48e8d22bdb3e2c1adf81cefba7017f9da0e0bfd42493a3ba7c8e",
+        "primary.json": "b7459729a1f6d611273568fa3ad8f494abbd48a06a0fc576c82f0fa683924358",
+        "questions.csv": "3dfc64a7dc31c6c797c3c85fdc61a43ad491a23f60d6686e7536cbe1a373ff55"
+      }
+    },
+    {
+      "name": "final",
+      "originalArtifacts": {
+        "summary.csv": "3478fd6e19546832c4c563476c58ea0efc79bfdc6c6be5daafa1f1cc9174a2c4",
+        "failures.json": "5aa810dcaa1ed7fe2fd688fd41e47d89bda5b50394c737eba38325c975602c26",
+        "report.json": "59d8bbed65cf21cda6c80e99f9226633d197cb7eea06693cdbf257889cb03ce2",
+        "primary.json": "15cfff785f31ddbcd0b0068269b14b1854f52be4f0420a845408abafe3997a21",
+        "questions.csv": "040cb343095e647addbc325eb131122f705991bdfe8d2cec1d7ee810ed108431"
+      }
+    }
+  ],
+  "sourceSha256": {
+    "scripts/jev_evaluation.py": "74f6a3205cce717bc982d1c8e896b90e4d94d29caabf155d169544b7cc8b9701",
+    "src/Dse.Evaluation/Program.cs": "3266ca63926707f08581bd9011de1a81b9fb40a0f0161405870e39cee5c41d51",
+    "src/Dse.Evaluation/PrimaryExperiments.cs": "9ab1f15ca0de7e9627acc048511e9a2b5ebf25c72121eaf63256cfa5cc401302",
+    "src/Dse.Evaluation/Gate.cs": "3556b67f4e3d1c4a50367784ab2b1af25ebf2f43d6905375fb7b15ce2ed92672"
+  },
+  "finalReplayVerification": {
+    "matchesOriginal": true,
+    "primarySha256": "15cfff785f31ddbcd0b0068269b14b1854f52be4f0420a845408abafe3997a21"
+  },
+  "sourceDocumentSha256": "e3ad1402d8845f97ed2c19b4e0a2ab9bcd0c5b1b9ab8dc3fd2167ec11028fb22"
+}

@@ -9,6 +9,24 @@ namespace Dse.Tests;
 
 public class TelemetryTests
 {
+    [Fact]
+    public void SearchChargesKeepPageAndReadBreakdownAcrossNestedBudgets()
+    {
+        using var outer = new SearchBudget();
+        SearchBudget.Charge(2.5, "projection_page");
+        using (var inner = new SearchBudget())
+        {
+            SearchBudget.Charge(1, "primary_read");
+            Assert.Equal(1, inner.RequestUnits);
+            Assert.Equal("primary_read", Assert.Single(inner.Charges).Operation);
+        }
+        Assert.Equal(3.5, outer.RequestUnits);
+        Assert.Equal(new[] { "projection_page", "primary_read" }, outer.Charges.Select(c => c.Operation));
+        Assert.Throws<ArgumentException>(() => SearchBudget.Charge(double.NaN));
+        Assert.Throws<ArgumentException>(() => SearchBudget.Charge(-1));
+        Assert.Throws<ArgumentException>(() => SearchBudget.Charge(1, "unrecognized"));
+    }
+
     private static IConfiguration Configuration(string? percentage) => new ConfigurationBuilder()
         .AddInMemoryCollection(new Dictionary<string, string?>
         {

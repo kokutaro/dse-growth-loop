@@ -1,0 +1,38 @@
+{
+  "requestId": "jev-5cd795bebe79558eba9ce62403bdce977cff9a0ea6063d994483963627826da5",
+  "manualDiagnosticAttempt": 1,
+  "requestSha256": "3600db198d105ae4cc3c1b04931876d7d477bbe5b3b25d70b310c3ddcbe16339",
+  "startedAt": "2026-10-03T01:57:22.084573+00:00",
+  "status": "succeeded",
+  "body": {
+    "model": "jev-1.13.0",
+    "answers": {
+      "domain": {
+        "type": "choice",
+        "choice": "operations",
+        "confidence": 0.32,
+        "probabilities": {
+          "unknown": 0.38,
+          "software": 0.18,
+          "mechanical": 0.0,
+          "operations": 0.43,
+          "manufacturing": 0.0,
+          "sales": 0.01
+        }
+      },
+      "software": {
+        "type": "noul",
+        "noul": 0.16
+      },
+      "handover": {
+        "type": "noul",
+        "noul": 0.56
+      }
+    },
+    "usage": {
+      "input_tokens": 558,
+      "output_tokens": 97
+    }
+  },
+  "durationMs": 216.63933293893933
+}

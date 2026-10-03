@@ -1,0 +1,540 @@
+[
+  {
+    "questionId": "v2t-software-01-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "0a040123c61890ac53725df10f258f14130f2e8b45768a51907c743b886e33a5",
+    "retrievalMiss": [
+      "v2t-software-01-person-direct",
+      "v2t-software-01-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-software-02-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-software-02-person-direct",
+      "v2t-software-02-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-software-02-query",
+    "setting": {
+      "variant": "A",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "96a3eaaa1a0eb54ecc7f58f5cf959434b5b70db36fefdb87a9fee8cca655d21f",
+    "retrievalMiss": [
+      "v2t-software-02-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-software-03-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-software-03-knowledge-direct",
+      "v2t-software-03-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-software-04-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-software-04-knowledge-direct",
+      "v2t-software-04-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-mechanical-05-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "41c30ee8371a9f89d4cef0f0cd33d14fbb17f1d97ad73d5135d60bfca5255ef0",
+    "retrievalMiss": [
+      "v2t-mechanical-05-person-direct",
+      "v2t-mechanical-05-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-mechanical-06-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-mechanical-06-person-direct",
+      "v2t-mechanical-06-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-mechanical-07-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-mechanical-07-knowledge-direct",
+      "v2t-mechanical-07-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-mechanical-08-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "f26ae4d0d6d543845078f25741f4bb561eeb8a5a736e0cc39d8d0df2e1356cd9",
+    "retrievalMiss": [
+      "v2t-mechanical-08-knowledge-direct",
+      "v2t-mechanical-08-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "setting": {
+      "variant": "A",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "376f27d22b20e58988fa2053b653adf6f04bbfd66fbbef46879b57ee391deffd",
+    "retrievalMiss": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "setting": {
+      "variant": "B",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "8f30e493326b66777d271fde384e45fe1c31aea14aacbec87cd368d45fbbcbf2",
+    "retrievalMiss": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "setting": {
+      "variant": "C",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "d3204dbd8464c79daefd303282bc3f388b16a8e980fce218fa48337ddc7ada68",
+    "retrievalMiss": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "setting": {
+      "variant": "D",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "d3204dbd8464c79daefd303282bc3f388b16a8e980fce218fa48337ddc7ada68",
+    "retrievalMiss": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "setting": {
+      "variant": "E",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "d3204dbd8464c79daefd303282bc3f388b16a8e980fce218fa48337ddc7ada68",
+    "retrievalMiss": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-10-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "setting": {
+      "variant": "A",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "de3afb05500d3178473285d2b1d9427280e41c8b3d5755c62c6ed53144316a84",
+    "retrievalMiss": [
+      "v2t-sales-10-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "setting": {
+      "variant": "B",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "5f176f876ab1b0b7d3782419fb27b686fa3596b057aeb9aab93affab5c23e598",
+    "retrievalMiss": [
+      "v2t-sales-10-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "setting": {
+      "variant": "C",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "ac42693ef8a6fbe92899a6eab16848ad7dab95e08a7d7fdfeeb2bdfc429c58ec",
+    "retrievalMiss": [
+      "v2t-sales-10-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-11-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-sales-11-knowledge-direct",
+      "v2t-sales-11-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-sales-12-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-sales-12-knowledge-direct",
+      "v2t-sales-12-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-manufacturing-13-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-manufacturing-13-person-direct",
+      "v2t-manufacturing-13-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-manufacturing-13-query",
+    "setting": {
+      "variant": "A",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "a0e0f4479fe179834dae30c1f6951d1c61028789d718875a144b6d40591bcae8",
+    "retrievalMiss": [
+      "v2t-manufacturing-13-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "setting": {
+      "variant": "A",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "376f27d22b20e58988fa2053b653adf6f04bbfd66fbbef46879b57ee391deffd",
+    "retrievalMiss": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "setting": {
+      "variant": "B",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "8f30e493326b66777d271fde384e45fe1c31aea14aacbec87cd368d45fbbcbf2",
+    "retrievalMiss": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "setting": {
+      "variant": "C",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "d3204dbd8464c79daefd303282bc3f388b16a8e980fce218fa48337ddc7ada68",
+    "retrievalMiss": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-manufacturing-15-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-manufacturing-15-knowledge-direct",
+      "v2t-manufacturing-15-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-manufacturing-16-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-manufacturing-16-knowledge-direct",
+      "v2t-manufacturing-16-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-operations-17-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-operations-17-person-direct",
+      "v2t-operations-17-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-operations-18-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-operations-18-person-direct",
+      "v2t-operations-18-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-operations-18-query",
+    "setting": {
+      "variant": "A",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "376f27d22b20e58988fa2053b653adf6f04bbfd66fbbef46879b57ee391deffd",
+    "retrievalMiss": [
+      "v2t-operations-18-person-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-operations-19-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-operations-19-knowledge-direct",
+      "v2t-operations-19-knowledge-support"
+    ],
+    "capLoss": []
+  },
+  {
+    "questionId": "v2t-operations-20-query",
+    "setting": {
+      "variant": "L",
+      "documentThreshold": 0.3,
+      "questionTop": 1,
+      "noulThreshold": 0.3,
+      "n": 20
+    },
+    "candidateSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "retrievalMiss": [
+      "v2t-operations-20-knowledge-direct",
+      "v2t-operations-20-knowledge-support"
+    ],
+    "capLoss": []
+  }
+]

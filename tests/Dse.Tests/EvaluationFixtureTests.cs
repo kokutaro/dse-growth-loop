@@ -86,6 +86,8 @@ public class EvaluationFixtureTests
         var gate = new Gate("frozen", "test-reviewer", DateTimeOffset.UtcNow.AddDays(-1),
             Runner.Hash(dataset), Runner.Hash(replay), .9, .9, 1000, 10000, 100);
         gate.Validate(dataset, replay, "human-approved");
+        (gate with { ColdP95MsMaximum = null }).Validate(dataset, replay, "human-approved");
+        Assert.Throws<ArgumentException>(() => (gate with { ColdP95MsMaximum = -1 }).Validate(dataset, replay, "human-approved"));
         Assert.Throws<ArgumentException>(() => gate.Validate(dataset, replay, "pending"));
         Assert.Throws<ArgumentException>(() => (gate with { PrimaryRecallMinimum = null }).Validate(dataset, replay, "human-approved"));
         Assert.Throws<ArgumentException>(() => (gate with { WarmP95MsMaximum = -1 }).Validate(dataset, replay, "human-approved"));

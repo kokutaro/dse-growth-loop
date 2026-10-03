@@ -1,0 +1,30 @@
+{
+  "status": "pilot_completed_full_evaluation_awaiting_approval",
+  "modelVersion": "gpt-6-luna-2026-09-22",
+  "promptVersion": "rerank-eval-v1",
+  "priceSource": "https://azure.microsoft.com/en-us/blog/gpt-6-astra-sol-and-luna-for-production-agents-in-microsoft-foundry/",
+  "pilotTaskSha256": "d9f070e2dd570b47e6d58a273a1bb120f914747768ba9e539aaac4d21e59a79c",
+  "planSha256": "a79e0474df1c811965ee745b7d06ba8e8c6c9321f22916381a85cd12ede250f7",
+  "measuredPilot": {
+    "inputTokens": 789,
+    "outputTokens": 146,
+    "cachedTokens": 0,
+    "reasoningTokens": 0,
+    "durationMs": 1632.808,
+    "usageEstimated": false,
+    "costUsd": "0.0001519"
+  },
+  "normalRequests": 69,
+  "maximumWireAttempts": 276,
+  "estimatedFullCostUsd": "0.0104811",
+  "maximumReservedFullCostUsd": "0.7176",
+  "requestedCreditUsd": "0.75",
+  "pastUncertainPilotReservedCostUsd": "0.0026",
+  "actualBilledCost": "not_reconciled",
+  "limitations": [
+    "One tuning pilot; per-question input/output sizes vary",
+    "No full evaluation executed",
+    "HTTP401 pilot token usage unknown; conservatively reserved",
+    "LLM API duration is not end-to-end warm search latency"
+  ]
+}

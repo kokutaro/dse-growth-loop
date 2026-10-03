@@ -1,0 +1,11 @@
+{
+  "requestId": "jev-55ddf0124358e3472b2286f0c6906923f702eaf8e957aac7019cbf8162ff2c0d",
+  "manualDiagnosticAttempt": 1,
+  "requestSha256": "ca5719bb0a1abfafc7ab944df9ce8f434b7f64d3ef6b7fbef6b504b08bd9995d",
+  "startedAt": "2026-10-03T02:43:18.920105+00:00",
+  "status": "failed",
+  "reservedInputTokens": 64000,
+  "errorType": "ValueError",
+  "validationReason": "Provider distribution mismatch",
+  "durationMs": null
+}

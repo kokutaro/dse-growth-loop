@@ -1,0 +1,27 @@
+{
+  "createdAt": "2026-10-03T05:39:03.553047+00:00",
+  "mode": "--run",
+  "endpoint": "https://dse-cosmos-ypbunss3xh66m.documents.azure.com:443/",
+  "database": "dse-growth-loop",
+  "container": "catalog",
+  "tenant": "issue14-cosmos-v2-c99007c82a1d408084c4184701cb364d",
+  "dummyOnly": true,
+  "aiRequests": 0,
+  "documents": 60,
+  "searches": 48,
+  "repeats": 2,
+  "assumedMonthlySearches": 100,
+  "setting": {
+    "variant": "E",
+    "documentThreshold": 0.3,
+    "questionTop": 1,
+    "noulThreshold": 0.3,
+    "n": 20
+  },
+  "datasetSha256": "6e9724acadf1d9c7dff61531f5e02df4c1bd3543c451e785f237e693356b437d",
+  "captureSha256": "b80eaf0331eadc071285a00849b8ee97568dbfea50fd437ec31d901d8d56b511",
+  "expectedSha256": "15cfff785f31ddbcd0b0068269b14b1854f52be4f0420a845408abafe3997a21",
+  "plannedRuStopThreshold": 5000,
+  "scope": "Projection SQL queries only; excludes source authorization reads, fences, audit writes, storage and full end-to-end latency",
+  "localCandidateHashesMatched": 24
+}

@@ -6,4 +6,5 @@
   <Project Path="src/Dse.Worker/Dse.Worker.csproj" />
   <Project Path="tests/Dse.Tests/Dse.Tests.csproj" />
   <Project Path="src/Dse.Evaluation/Dse.Evaluation.csproj" />
+  <Project Path="src/Dse.CosmosEvaluation/Dse.CosmosEvaluation.csproj" />
 </Solution>

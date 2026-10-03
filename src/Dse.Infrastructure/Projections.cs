@@ -44,7 +44,7 @@ public sealed class CosmosProjectionRepository(CosmosClient client, IConfigurati
             var start = Stopwatch.GetTimestamp();
             var page = await iterator.ReadNextAsync(ct);
             ru += page.RequestCharge;
-            SearchBudget.Charge(page.RequestCharge);
+            SearchBudget.Charge(page.RequestCharge, "projection_page");
             units.AddRange(page);
             logger.LogInformation("Cosmos search RequestCharge={RequestCharge} CorrelationId={CorrelationId} DurationMs={DurationMs}",
                 page.RequestCharge, Activity.Current?.TraceId.ToString() ?? "background", Stopwatch.GetElapsedTime(start).TotalMilliseconds);

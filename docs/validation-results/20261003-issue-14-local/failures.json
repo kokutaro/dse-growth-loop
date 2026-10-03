@@ -1,0 +1,20 @@
+[
+  {
+    "size": "large",
+    "questionId": "f-large-person-software",
+    "setting": {
+      "variant": "E",
+      "documentThreshold": 0.2,
+      "questionTop": 3,
+      "noulThreshold": 0.5,
+      "n": 20
+    },
+    "candidateSha256": "d1d2b11a8c61f7e575c11a79310636d5cc08da3ce14199925038fa9e366ece9f",
+    "retrievalMiss": [],
+    "capLoss": [
+      "f-person-002",
+      "f-person-003",
+      "f-person-012"
+    ]
+  }
+]

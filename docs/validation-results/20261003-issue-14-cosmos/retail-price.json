@@ -1,0 +1,29 @@
+{
+  "source": "https://prices.azure.com/api/retail/prices?%24filter=serviceName+eq+%27Azure+Cosmos+DB%27+and+armRegionName+eq+%27japaneast%27&currencyCode=JPY",
+  "items": [
+    {
+      "currencyCode": "JPY",
+      "tierMinimumUnits": 0.0,
+      "retailPrice": 44.9017,
+      "unitPrice": 44.9017,
+      "armRegionName": "japaneast",
+      "location": "JA East",
+      "effectiveStartDate": "2023-04-01T00:00:00Z",
+      "meterId": "a51edd7d-8788-5b4e-a394-2581fce5a32a",
+      "meterName": "1M RUs",
+      "productId": "DZH318Z0D20N",
+      "skuId": "DZH318Z0D20N/0019",
+      "productName": "Azure Cosmos DB serverless",
+      "skuName": "RUs",
+      "serviceName": "Azure Cosmos DB",
+      "serviceId": "DZH317DL9CC7",
+      "serviceFamily": "Databases",
+      "unitOfMeasure": "1M",
+      "type": "Consumption",
+      "isPrimaryMeterRegion": true,
+      "armSkuName": ""
+    }
+  ],
+  "nextPageLink": null,
+  "retrievedOn": "2026-10-03"
+}

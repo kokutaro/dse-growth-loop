@@ -1,0 +1,1964 @@
+{
+  "runId": "issue14-jev-final-large",
+  "createdAt": "2026-10-03T02:10:15.627036+00:00",
+  "version": "evaluation-v1",
+  "origin": "synthetic",
+  "humanReviewStatus": "human-approved",
+  "qualityClaim": false,
+  "aiEnabled": true,
+  "classificationOrigin": "recorded-jev-experiment-inputs",
+  "modelVersion": "jev-1.13.0",
+  "documentPromptVersion": "profile-classify-v1",
+  "queryPromptVersion": "search-query-v1",
+  "jevPlanSha256": "fdd6ccb3c9d15f1517e03330b62275b6108daf4c57c89362a0b36085d06fbafa",
+  "jevCaptureSha256": "fe60f357d97ffd6754c77506a70fcb06a69bac15c1dc4907b195e997c508edcd",
+  "recordedJevUsage": {
+    "calls": 334,
+    "inputTokens": 186664,
+    "outputTokens": 33140,
+    "retries": 4,
+    "uncertainInputTokens": 256000,
+    "estimatedCostUsd": 0.007839888,
+    "conservativeCostUsd": 0.018591888,
+    "pricingCheckedAt": "2026-10-03",
+    "fxDate": null
+  },
+  "evaluatorSha256": "0ac142b8e79948f57ac2924379d819f4088861d2afa8a0d2964b7c2282055a59",
+  "ruleVersion": "primary-experiments-v1",
+  "taxonomyVersion": "taxonomy-v1",
+  "normalizationVersion": "normalization-v1",
+  "datasetSha256": "0a8b238a6b0640b223a637d7d7c752eb3fcc2e0d1cb1c0a1b3961d7f2df07e19",
+  "experimentInputsSha256": null,
+  "replaySha256": "c86fdccff92937f0d2e4b109df44e0ef11cb585da06c6a2bee4843dd67fe5d2f",
+  "comparisonsSha256": null,
+  "gatesSha256": "e18450fce5b94613c1ff635333840f90242aa169a7d2ee95c13e5408791930d9",
+  "usage": {
+    "calls": 0,
+    "tokens": 0,
+    "retries": 0,
+    "ru": 0,
+    "liveLatencyMs": null
+  },
+  "measurementScope": "Primary ranking over dummy data; no reranking or Cosmos latency",
+  "adoptionStatus": "pending_live_measurement_and_approval",
+  "comparisons": [],
+  "variations": [],
+  "summary": [
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "A",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 0.8,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 20,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "B",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 0.8,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 20,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "C",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 0.8,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 20,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "D",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 20,
+      "zeroGold": 1,
+      "noulRelevant": 1,
+      "noulIrrelevant": 3,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 20,
+      "zeroGold": 1,
+      "noulRelevant": 1,
+      "noulIrrelevant": 3,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "F",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 158,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 0.8,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 2,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "A",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 2,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "B",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 3,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "C",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 3,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "D",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 3,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 3,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "F",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 3,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "questions": 2,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "hitRate": {
+        "value": 1,
+        "denominator": 1
+      },
+      "meanCandidates": 0.5,
+      "zeroGold": 1,
+      "noulRelevant": 0,
+      "noulIrrelevant": 0,
+      "noulUnknown": 0,
+      "capLoss": 0
+    }
+  ],
+  "primaryChecks": [
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "A",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 0.8,
+        "denominator": 1
+      },
+      "passed": false
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "B",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 0.8,
+        "denominator": 1
+      },
+      "passed": false
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "C",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 0.8,
+        "denominator": 1
+      },
+      "passed": false
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "D",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "F",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "person",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 0.8,
+        "denominator": 1
+      },
+      "passed": false
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "A",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "B",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "C",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "D",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "F",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    },
+    {
+      "entityType": "knowledge",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "minimum": 0.9,
+      "recall": {
+        "value": 1,
+        "denominator": 1
+      },
+      "passed": true
+    }
+  ],
+  "excludedCandidateCount": 0,
+  "selectedQuestions": [
+    {
+      "questionId": "f-large-person-software",
+      "setting": {
+        "variant": "A",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 0.8,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 5,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-001",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-088",
+        "f-person-113",
+        "f-person-143",
+        "f-person-013"
+      ]
+    },
+    {
+      "questionId": "f-large-person-software",
+      "setting": {
+        "variant": "B",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 0.8,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 5,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-001",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-088",
+        "f-person-113",
+        "f-person-143",
+        "f-person-013"
+      ]
+    },
+    {
+      "questionId": "f-large-person-software",
+      "setting": {
+        "variant": "C",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 0.8,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 5,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-088",
+        "f-person-113",
+        "f-person-143",
+        "f-person-013"
+      ]
+    },
+    {
+      "questionId": "f-large-person-software",
+      "setting": {
+        "variant": "D",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 1,
+        "noulIrrelevant": 3,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 5,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-002",
+        "f-person-014",
+        "f-person-016",
+        "f-person-021"
+      ]
+    },
+    {
+      "questionId": "f-large-person-software",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 1,
+        "noulIrrelevant": 3,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 5,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-002",
+        "f-person-014",
+        "f-person-016",
+        "f-person-021"
+      ]
+    },
+    {
+      "questionId": "f-large-person-software",
+      "setting": {
+        "variant": "F",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 5,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 158,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-002",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-006",
+        "f-person-007",
+        "f-person-012",
+        "f-person-013",
+        "f-person-014",
+        "f-person-015",
+        "f-person-016",
+        "f-person-017",
+        "f-person-018",
+        "f-person-019",
+        "f-person-020",
+        "f-person-021",
+        "f-person-022",
+        "f-person-023",
+        "f-person-024",
+        "f-person-025",
+        "f-person-026",
+        "f-person-027",
+        "f-person-028",
+        "f-person-029",
+        "f-person-030",
+        "f-person-031",
+        "f-person-032",
+        "f-person-033",
+        "f-person-034",
+        "f-person-035",
+        "f-person-036",
+        "f-person-037",
+        "f-person-038",
+        "f-person-039",
+        "f-person-040",
+        "f-person-041",
+        "f-person-042",
+        "f-person-043",
+        "f-person-044",
+        "f-person-045",
+        "f-person-046",
+        "f-person-047",
+        "f-person-048",
+        "f-person-049",
+        "f-person-050",
+        "f-person-051",
+        "f-person-052",
+        "f-person-053",
+        "f-person-054",
+        "f-person-055",
+        "f-person-056",
+        "f-person-057",
+        "f-person-058",
+        "f-person-059",
+        "f-person-060",
+        "f-person-061",
+        "f-person-062",
+        "f-person-063",
+        "f-person-064",
+        "f-person-065",
+        "f-person-066",
+        "f-person-067",
+        "f-person-068",
+        "f-person-069",
+        "f-person-070",
+        "f-person-071",
+        "f-person-072",
+        "f-person-073",
+        "f-person-074",
+        "f-person-075",
+        "f-person-076",
+        "f-person-077",
+        "f-person-078",
+        "f-person-079",
+        "f-person-080",
+        "f-person-081",
+        "f-person-082",
+        "f-person-083",
+        "f-person-084",
+        "f-person-085",
+        "f-person-086",
+        "f-person-087",
+        "f-person-088",
+        "f-person-089",
+        "f-person-090",
+        "f-person-091",
+        "f-person-092",
+        "f-person-093",
+        "f-person-094",
+        "f-person-095",
+        "f-person-096",
+        "f-person-097",
+        "f-person-098",
+        "f-person-099",
+        "f-person-100",
+        "f-person-101",
+        "f-person-102",
+        "f-person-103",
+        "f-person-104",
+        "f-person-105",
+        "f-person-106",
+        "f-person-107",
+        "f-person-108",
+        "f-person-109",
+        "f-person-110",
+        "f-person-111",
+        "f-person-112",
+        "f-person-113",
+        "f-person-114",
+        "f-person-115",
+        "f-person-116",
+        "f-person-117",
+        "f-person-118",
+        "f-person-119",
+        "f-person-120",
+        "f-person-121",
+        "f-person-122",
+        "f-person-123",
+        "f-person-124",
+        "f-person-125",
+        "f-person-126",
+        "f-person-127",
+        "f-person-128",
+        "f-person-129",
+        "f-person-130",
+        "f-person-131",
+        "f-person-132",
+        "f-person-133",
+        "f-person-134",
+        "f-person-135",
+        "f-person-136",
+        "f-person-137",
+        "f-person-138",
+        "f-person-139",
+        "f-person-140",
+        "f-person-141",
+        "f-person-142",
+        "f-person-143",
+        "f-person-144",
+        "f-person-145",
+        "f-person-146",
+        "f-person-147",
+        "f-person-148",
+        "f-person-149",
+        "f-person-150",
+        "f-person-151",
+        "f-person-152",
+        "f-person-153",
+        "f-person-154",
+        "f-person-155",
+        "f-person-156",
+        "f-person-157",
+        "f-person-158",
+        "f-person-159",
+        "f-person-160",
+        "f-person-161",
+        "f-person-162"
+      ]
+    },
+    {
+      "questionId": "f-large-person-software",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 0.8,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 5,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 4,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-003",
+        "f-person-004",
+        "f-person-012"
+      ]
+    },
+    {
+      "questionId": "f-large-person-none",
+      "setting": {
+        "variant": "A",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-001",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-088",
+        "f-person-113",
+        "f-person-143",
+        "f-person-013"
+      ]
+    },
+    {
+      "questionId": "f-large-person-none",
+      "setting": {
+        "variant": "B",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-001",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-088",
+        "f-person-113",
+        "f-person-143",
+        "f-person-013"
+      ]
+    },
+    {
+      "questionId": "f-large-person-none",
+      "setting": {
+        "variant": "C",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-088",
+        "f-person-113",
+        "f-person-143",
+        "f-person-013"
+      ]
+    },
+    {
+      "questionId": "f-large-person-none",
+      "setting": {
+        "variant": "D",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-088",
+        "f-person-113",
+        "f-person-143",
+        "f-person-013"
+      ]
+    },
+    {
+      "questionId": "f-large-person-none",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 20,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-006",
+        "f-person-012",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-018",
+        "f-person-083",
+        "f-person-048",
+        "f-person-118",
+        "f-person-063",
+        "f-person-128",
+        "f-person-038",
+        "f-person-053",
+        "f-person-058",
+        "f-person-068",
+        "f-person-088",
+        "f-person-113",
+        "f-person-143",
+        "f-person-013"
+      ]
+    },
+    {
+      "questionId": "f-large-person-none",
+      "setting": {
+        "variant": "F",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 158,
+      "candidateIds": [
+        "f-person-001",
+        "f-person-002",
+        "f-person-003",
+        "f-person-004",
+        "f-person-005",
+        "f-person-006",
+        "f-person-007",
+        "f-person-012",
+        "f-person-013",
+        "f-person-014",
+        "f-person-015",
+        "f-person-016",
+        "f-person-017",
+        "f-person-018",
+        "f-person-019",
+        "f-person-020",
+        "f-person-021",
+        "f-person-022",
+        "f-person-023",
+        "f-person-024",
+        "f-person-025",
+        "f-person-026",
+        "f-person-027",
+        "f-person-028",
+        "f-person-029",
+        "f-person-030",
+        "f-person-031",
+        "f-person-032",
+        "f-person-033",
+        "f-person-034",
+        "f-person-035",
+        "f-person-036",
+        "f-person-037",
+        "f-person-038",
+        "f-person-039",
+        "f-person-040",
+        "f-person-041",
+        "f-person-042",
+        "f-person-043",
+        "f-person-044",
+        "f-person-045",
+        "f-person-046",
+        "f-person-047",
+        "f-person-048",
+        "f-person-049",
+        "f-person-050",
+        "f-person-051",
+        "f-person-052",
+        "f-person-053",
+        "f-person-054",
+        "f-person-055",
+        "f-person-056",
+        "f-person-057",
+        "f-person-058",
+        "f-person-059",
+        "f-person-060",
+        "f-person-061",
+        "f-person-062",
+        "f-person-063",
+        "f-person-064",
+        "f-person-065",
+        "f-person-066",
+        "f-person-067",
+        "f-person-068",
+        "f-person-069",
+        "f-person-070",
+        "f-person-071",
+        "f-person-072",
+        "f-person-073",
+        "f-person-074",
+        "f-person-075",
+        "f-person-076",
+        "f-person-077",
+        "f-person-078",
+        "f-person-079",
+        "f-person-080",
+        "f-person-081",
+        "f-person-082",
+        "f-person-083",
+        "f-person-084",
+        "f-person-085",
+        "f-person-086",
+        "f-person-087",
+        "f-person-088",
+        "f-person-089",
+        "f-person-090",
+        "f-person-091",
+        "f-person-092",
+        "f-person-093",
+        "f-person-094",
+        "f-person-095",
+        "f-person-096",
+        "f-person-097",
+        "f-person-098",
+        "f-person-099",
+        "f-person-100",
+        "f-person-101",
+        "f-person-102",
+        "f-person-103",
+        "f-person-104",
+        "f-person-105",
+        "f-person-106",
+        "f-person-107",
+        "f-person-108",
+        "f-person-109",
+        "f-person-110",
+        "f-person-111",
+        "f-person-112",
+        "f-person-113",
+        "f-person-114",
+        "f-person-115",
+        "f-person-116",
+        "f-person-117",
+        "f-person-118",
+        "f-person-119",
+        "f-person-120",
+        "f-person-121",
+        "f-person-122",
+        "f-person-123",
+        "f-person-124",
+        "f-person-125",
+        "f-person-126",
+        "f-person-127",
+        "f-person-128",
+        "f-person-129",
+        "f-person-130",
+        "f-person-131",
+        "f-person-132",
+        "f-person-133",
+        "f-person-134",
+        "f-person-135",
+        "f-person-136",
+        "f-person-137",
+        "f-person-138",
+        "f-person-139",
+        "f-person-140",
+        "f-person-141",
+        "f-person-142",
+        "f-person-143",
+        "f-person-144",
+        "f-person-145",
+        "f-person-146",
+        "f-person-147",
+        "f-person-148",
+        "f-person-149",
+        "f-person-150",
+        "f-person-151",
+        "f-person-152",
+        "f-person-153",
+        "f-person-154",
+        "f-person-155",
+        "f-person-156",
+        "f-person-157",
+        "f-person-158",
+        "f-person-159",
+        "f-person-160",
+        "f-person-161",
+        "f-person-162"
+      ]
+    },
+    {
+      "questionId": "f-large-person-none",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 0,
+      "candidateIds": []
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "setting": {
+        "variant": "A",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 1,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 2,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "setting": {
+        "variant": "B",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 1,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "setting": {
+        "variant": "C",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 1,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "setting": {
+        "variant": "D",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 1,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 1,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "setting": {
+        "variant": "F",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 1,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-software",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": 1,
+        "hitRate": 1,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 1,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 1,
+      "candidateIds": [
+        "f-knowledge-001"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "setting": {
+        "variant": "A",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 2,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "setting": {
+        "variant": "B",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "setting": {
+        "variant": "C",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "setting": {
+        "variant": "D",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "setting": {
+        "variant": "E",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "setting": {
+        "variant": "F",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 100
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 3,
+      "candidateIds": [
+        "f-knowledge-001",
+        "f-knowledge-002",
+        "f-knowledge-003"
+      ]
+    },
+    {
+      "questionId": "f-large-knowledge-none",
+      "setting": {
+        "variant": "L",
+        "documentThreshold": 0.2,
+        "questionTop": 3,
+        "noulThreshold": 0.5,
+        "n": 20
+      },
+      "scores": {
+        "recall": null,
+        "hitRate": null,
+        "precision": null,
+        "ndcg": null,
+        "finalHitRate": null,
+        "noulRelevant": 0,
+        "noulIrrelevant": 0,
+        "noulUnknown": 0,
+        "capLoss": 0,
+        "relevantCount": 0,
+        "displayedCount": 0,
+        "unknownDisplayed": 0,
+        "falseRecommendation": null
+      },
+      "candidateCount": 0,
+      "candidateIds": []
+    }
+  ]
+}

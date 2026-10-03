@@ -1,7 +1,7 @@
 {
   "version": "evaluation-v1",
   "origin": "synthetic",
-  "humanReviewStatus": "pending",
+  "humanReviewStatus": "human-approved",
   "units": [
     {
       "search": {
