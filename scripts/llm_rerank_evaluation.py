@@ -84,14 +84,21 @@ def cost(u):
 
 def reserve(): return cost({'inputTokens':INPUT_BOUND,'cachedTokens':0,'outputTokens':OUTPUT_BOUND})
 
+def task_reservation(task):
+    bound=task.get('inputTokenBound',INPUT_BOUND)
+    if type(bound)!=int or not 1<=bound<=INPUT_BOUND or len(encode(payload(task,'dse-luna6-eval')))+512>bound: raise ValueError('Invalid input reservation')
+    return cost({'inputTokens':bound,'cachedTokens':0,'outputTokens':OUTPUT_BOUND})
+
 def execute(task, deployment, send, record=lambda attempt:None, max_attempts=4):
     if not 1<=max_attempts<=4: raise ValueError('Invalid attempt bound')
+    task_reservation(task)
+    bound=task.get('inputTokenBound',INPUT_BOUND)
     p=payload(task,deployment)
     # UTF-8 bytes plus conservative framing bound; usage from successful calls is authoritative.
     if len(encode(p))+512>INPUT_BOUND: raise ValueError('input_bound')
     attempts=[];status='failed';items=[];failure=None
     for n in range(max_attempts):
-        a={'attempt':n+1,'inputTokens':INPUT_BOUND,'outputTokens':OUTPUT_BOUND,'cachedTokens':0,'reasoningTokens':0,'usageEstimated':True}
+        a={'attempt':n+1,'inputTokens':bound,'outputTokens':OUTPUT_BOUND,'cachedTokens':0,'reasoningTokens':0,'usageEstimated':True}
         retry=False;start=time.monotonic()
         try:
             body=send(p);a.update(usage(body));a['body']=body
@@ -102,6 +109,12 @@ def execute(task, deployment, send, record=lambda attempt:None, max_attempts=4):
             failure=str(e);status=failure if failure in ('refused','truncated') else 'failed'
         except urllib.error.HTTPError as e:
             failure='http_'+str(e.code)
+            a['httpStatus']=e.code
+            a['retryAfter']=e.headers.get('retry-after') if e.headers else None
+            try:
+                code=json.loads(e.read(16000)).get('error',{}).get('code')
+                if isinstance(code,str) and len(code)<=80 and code.replace('_','').replace('-','').isalnum(): a['providerErrorCode']=code
+            except Exception: pass
         except Exception:
             # Never serialize arbitrary transport exceptions or credential/error bodies.
             failure='transport_or_usage_failure'
@@ -176,7 +189,7 @@ def batch(plan_data, deployment, directory, send, approval, credit):
     tasks=plan_data['requests']
     if plan_data.get('modelVersion')!=MODEL_RESPONSE or plan_data.get('promptVersion')!=PROMPT or plan_data.get('parseRetries')!=3 or len({t['id'] for t in tasks})!=len(tasks): raise ValueError('Invalid frozen plan')
     paid=sum(not t['skip'] for t in tasks)
-    if not 0<paid<=69 or not credit.is_finite() or not reserve()*4*paid<=credit<=Decimal('1'): raise ValueError('Full retry reservation exceeds credit')
+    if not 0<paid<=69 or not credit.is_finite() or not sum((task_reservation(t)*4 for t in tasks if not t['skip']),Decimal(0))<=credit<=Decimal('1'): raise ValueError('Full retry reservation exceeds credit')
     for t in tasks:
         if len(encode(payload(t,deployment)))+512>INPUT_BOUND: raise ValueError('Input bound')
     manifest={'planSha256':sha(encode(plan_data)),'approval':approval,'creditUsd':str(credit),'maxWireAttempts':paid*4}
@@ -191,6 +204,8 @@ def batch(plan_data, deployment, directory, send, approval, credit):
         else:
             result=capture(task,deployment,directory/(sha(task['id'].encode())+'.json'),send,approval)
         results.append(result)
+        save(directory/'comparisons.json',results)
+        if plan_data.get('stopOnHttp429') and result.get('failure')=='http_429': raise ValueError('HTTP 429: stopped batch; partial results preserved')
     save(directory/'comparisons.json',results)
     return results
 
@@ -207,8 +222,16 @@ def main():
         # Complete validation and reservation before obtaining credentials or sending requests.
         code_hash=sha(Path(__file__).read_bytes())
         if data.get('captureCodeSha256')!=code_hash: ap.error('Capture code differs from the frozen plan')
-        if not args.credit_usd.is_finite() or not reserve()*4*sum(not t['skip'] for t in data['requests'])<=args.credit_usd<=Decimal('1'): ap.error('Insufficient full retry reservation')
-        results=batch(data,'dse-luna6-eval',args.output,sender('https://dse-foundry-ypbunss3xh66m.openai.azure.com/'),args.approval,args.credit_usd)
+        if not args.credit_usd.is_finite() or not sum((task_reservation(t)*4 for t in data['requests'] if not t['skip']),Decimal(0))<=args.credit_usd<=Decimal('1'): ap.error('Insufficient full retry reservation')
+        raw_send=sender('https://dse-foundry-ypbunss3xh66m.openai.azure.com/')
+        interval=data.get('minimumRequestIntervalSeconds',0)
+        last=[0.0]
+        def paced_send(p):
+            delay=interval-(time.monotonic()-last[0])
+            if delay>0: time.sleep(delay)
+            last[0]=time.monotonic()
+            return raw_send(p)
+        results=batch(data,'dse-luna6-eval',args.output,paced_send,args.approval,args.credit_usd)
         print(json.dumps({'conditions':len(results),'wireAttempts':sum(len(r['wireAttempts']) for r in results),'costUsd':str(sum((Decimal(r['costUsd']) for r in results),Decimal(0))) }))
     else:
         if not args.credit_usd.is_finite() or not reserve()*4<=args.credit_usd<=Decimal('.05'): ap.error('Pilot credit must cover retries and be <= $0.05')

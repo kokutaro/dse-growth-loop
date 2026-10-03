@@ -111,7 +111,8 @@ try
             ComparisonsSha256 = comparisonPath is null ? null : Runner.Hash(comparisonPath),
             GatesSha256 = gatesPath is null ? null : Runner.Hash(gatesPath),
             Usage = new { Calls = 0, Tokens = 0, Retries = 0, Ru = 0, LiveLatencyMs = (double?)null },
-            MeasurementScope = "Primary ranking over dummy data; no reranking or Cosmos latency",
+            MeasurementScope = comparisonPath is null ? "Primary ranking over dummy data; no reranking or Cosmos latency" :
+                "Primary ranking and recorded reranking over dummy data; no new inference, Cosmos or end-to-end latency",
             AdoptionStatus = "pending_live_measurement_and_approval", Summary = summaries, PrimaryChecks = primaryChecks, Comparisons = comparisons, Variations = RerankComparisons.Variations(comparisons)
         }, Runner.Json) + "\n");
         File.WriteAllText(Path.Combine(output, "primary.json"), JsonSerializer.Serialize(primary, Runner.Json) + "\n");

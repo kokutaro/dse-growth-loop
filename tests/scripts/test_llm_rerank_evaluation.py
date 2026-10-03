@@ -93,3 +93,45 @@ class RerankTests(unittest.TestCase):
             m.batch(plan,'d',Path(d),send,'approval',Decimal('.02'))
             self.assertEqual(1,len(calls))
             self.assertRaises(ValueError,m.batch,plan,'d',Path(d),send,'changed-approval',Decimal('.02'))
+
+    def test_tighter_recovery_reservation_requires_utf8_bound_and_keeps_old_cost(self):
+        from decimal import Decimal
+        task={**self.task(),'inputTokenBound':7000,'skip':False}
+        self.assertEqual(Decimal('.0017'),m.task_reservation(task))
+        task['inputTokenBound']=1
+        self.assertRaises(ValueError,m.task_reservation,task)
+
+    def test_batch_stops_on_429_and_preserves_partial_results(self):
+        from decimal import Decimal
+        task={**self.task(),'skip':False};calls=[]
+        plan={'modelVersion':m.MODEL_RESPONSE,'promptVersion':m.PROMPT,'parseRetries':3,'stopOnHttp429':True,'requests':[task,{**task,'id':'next'}]}
+        def send(p):calls.append(p);raise urllib.error.HTTPError('https://example.test',429,'redacted',{'retry-after':'60'},None)
+        with tempfile.TemporaryDirectory() as d:
+            self.assertRaises(ValueError,m.batch,plan,'d',Path(d),send,'approval',Decimal('.05'))
+            self.assertEqual(1,len(calls));self.assertEqual(1,len(json.loads((Path(d)/'comparisons.json').read_text())))
+
+    def test_sender_uses_only_approved_endpoint_and_never_logs_key(self):
+        from unittest.mock import patch
+        from types import SimpleNamespace
+        import sys
+        self.assertRaises(ValueError,m.sender,'https://untrusted.example/')
+        fake_env=SimpleNamespace(ROOT=ROOT,load_env=lambda p:{'AZURE_OPENAI_API_KEY':'dummy-test-key'})
+        captured=[]
+        class Response:
+            def __enter__(self):return self
+            def __exit__(self,*a):pass
+            def read(self,n):return json.dumps(self_outer.body()).encode()
+        self_outer=self
+        opener=SimpleNamespace(open=lambda request,timeout:(captured.append(request) or Response()))
+        with patch.dict(sys.modules,{'env_config':fake_env}), patch.object(m.subprocess,'run',return_value=SimpleNamespace(returncode=0,stdout='dummy-token')), patch.object(m.urllib.request,'build_opener',return_value=opener):
+            send=m.sender('https://dse-foundry-ypbunss3xh66m.openai.azure.com/')
+            self.assertEqual(m.MODEL_RESPONSE,send(m.payload(self.task(),'d'))['model'])
+        self.assertEqual('dummy-test-key',captured[0].get_header('Api-key'))
+        self.assertIsNone(captured[0].get_header('Authorization'))
+        self.assertNotIn('dummy-test-key',captured[0].data.decode())
+
+    def test_cli_denies_missing_approval_before_credentials_or_network(self):
+        from unittest.mock import patch
+        import sys
+        with patch.object(sys,'argv',['rerank','--task','missing.json','--output','out.json','--approval','approval','--credit-usd','.05']),patch.object(m,'sender',side_effect=AssertionError('network attempted')):
+            self.assertRaises(SystemExit,m.main)

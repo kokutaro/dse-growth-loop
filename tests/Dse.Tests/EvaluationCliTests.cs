@@ -9,6 +9,31 @@ public class EvaluationCliTests
     private static int Invoke(params string[] args) => (int)typeof(Runner).Assembly.EntryPoint!.Invoke(null, [args])!;
 
     [Fact]
+    public void SavedRerankingReportStatesItsScopeWithoutClaimingNewInference()
+    {
+        var root = new DirectoryInfo(AppContext.BaseDirectory);
+        while (root != null && !File.Exists(Path.Combine(root.FullName, "evaluation/dataset.json"))) root = root.Parent;
+        var data = Path.Combine(root!.FullName, "evaluation");
+        var temp = Path.Combine(Path.GetTempPath(), "rerank-scope-" + Guid.NewGuid());
+        Directory.CreateDirectory(temp);
+        try
+        {
+            Assert.Equal(0, Invoke("--matrix", "--data", data, "--out", Path.Combine(temp, "primary")));
+            var row = Runner.Load<PrimaryRow[]>(Path.Combine(temp, "primary/primary.json"))[0];
+            var response = new ComparisonResponse(row.QuestionId, row.CandidateSha256, "dummy-v1", "dummy-v1", 1000, false, "original", 1, "success", []);
+            var comparisons = Path.Combine(temp, "comparisons.json");
+            File.WriteAllText(comparisons, JsonSerializer.Serialize(new[] { response }, Runner.Json));
+            Assert.Equal(0, Invoke("--matrix", "--data", data, "--comparisons", comparisons, "--out", Path.Combine(temp, "result")));
+            using var report = JsonDocument.Parse(File.ReadAllText(Path.Combine(temp, "result/report.json")));
+            Assert.Contains("recorded reranking", report.RootElement.GetProperty("measurementScope").GetString());
+            Assert.False(report.RootElement.GetProperty("qualityClaim").GetBoolean());
+            Assert.Equal(0, report.RootElement.GetProperty("usage").GetProperty("calls").GetInt32());
+            Assert.Equal(2, report.RootElement.GetProperty("comparisons").GetArrayLength());
+        }
+        finally { Directory.Delete(temp, true); }
+    }
+
+    [Fact]
     public void NestedDataSupportsExplicitSpecsAndLimitedSettings()
     {
         var root = new DirectoryInfo(AppContext.BaseDirectory);

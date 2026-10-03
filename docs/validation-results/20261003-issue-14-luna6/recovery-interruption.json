@@ -1,0 +1,16 @@
+{
+  "reason": "user raised model quota to 1000; deployment aligned to capacity 1000",
+  "actualRateLimits": {
+    "requestsPerMinute": 1000,
+    "tokensPerMinute": 1000000
+  },
+  "signal": "SIGINT",
+  "observedStack": "time.sleep(delay) in paced_send; no wireAttempts saved",
+  "completedRecoveryRequests": 4,
+  "successfulRecoveryRequests": 3,
+  "pendingRecords": 1,
+  "pendingConservativeCostUsd": ".0017",
+  "remainingRequests": 64,
+  "previousConservativeCostUsd": "0.1784237",
+  "combinedReservationUsd": "0.6136237"
+}
