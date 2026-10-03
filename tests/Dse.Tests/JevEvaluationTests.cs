@@ -76,6 +76,18 @@ public class JevEvaluationTests
     }
 
     [Fact]
+    public void RecoveryAccountingCannotUnderstateFailedCallsOrExceedTheApprovedBound()
+    {
+        var plan = Plan(); var fixture = Runner.Load<Fixture>(Path.Combine(Root, "evaluation/dataset.json"));
+        var capture = new JevCapture("recorded-jev-classifications", "hash", plan.ModelVersion, plan.Requests.Select(Response).ToArray(), 4, plan.Requests.Length + 4, 4 * 64000);
+        var loaded = JevEvaluation.Apply(fixture, plan, capture, "hash");
+        Assert.Equal(4, loaded.RetryCount); Assert.Equal(plan.Requests.Length + 4, loaded.AttemptCount);
+        Assert.Equal(256000, loaded.UncertainInputTokens);
+        foreach (var invalid in new[] { capture with { RetryCount = -1 }, capture with { AttemptCount = 351 }, capture with { AttemptCount = plan.Requests.Length }, capture with { UncertainInputTokens = 0 } })
+            Assert.Throws<ArgumentException>(() => JevEvaluation.Apply(fixture, plan, invalid, "hash"));
+    }
+
+    [Fact]
     public void PartialDuplicateMismatchedAndMalformedCapturesCannotProduceQualityScores()
     {
         var plan = Plan(); var fixture = Runner.Load<Fixture>(Path.Combine(Root, "evaluation/dataset.json"));

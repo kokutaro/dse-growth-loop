@@ -1,0 +1,15 @@
+{
+  "planSha256": "fdd6ccb3c9d15f1517e03330b62275b6108daf4c57c89362a0b36085d06fbafa",
+  "modelVersion": "jev-1.13.0",
+  "approvalReference": "user-20261003-issue14-jev-credit",
+  "creditBudgetUsd": 1.0,
+  "maximumRequests": 350,
+  "contextTokenReservation": 64000,
+  "maximumReservedUsd": 0.88704,
+  "priceUsdPerMillionInput": 0.042,
+  "outputPriceUsdPerMillion": 0,
+  "pricingSource": "https://docs.typesafe.ai/models",
+  "pricingCheckedAt": "2026-10-03",
+  "startedAt": "2026-10-03T01:54:15.539029+00:00",
+  "retries": 0
+}

@@ -1,0 +1,115 @@
+{
+  "planCommittedBeforeSend": "dc2b0fd",
+  "failedRequests": [
+    {
+      "id": "jev-5cd795bebe79558eba9ce62403bdce977cff9a0ea6063d994483963627826da5",
+      "requestSha256": "3600db198d105ae4cc3c1b04931876d7d477bbe5b3b25d70b310c3ddcbe16339",
+      "status": "failed",
+      "body": {},
+      "durationMs": 184.77187515236437,
+      "errorCode": "JEV_CAPTURE_FAILED",
+      "reservedInputTokens": 64000
+    },
+    {
+      "id": "jev-d312927805480edd4be3ce5cab81878ee0a8171ed7d897fe99e79f731ed1439b",
+      "requestSha256": "1fe0b718a0e675c4098b7277ea5120e6d81c248f90f88e90fd9239cf4e77fd9e",
+      "status": "failed",
+      "body": {},
+      "durationMs": 209.9389999639243,
+      "errorCode": "JEV_CAPTURE_FAILED",
+      "reservedInputTokens": 64000,
+      "errorType": "ValueError",
+      "validationReason": "Provider distribution mismatch"
+    },
+    {
+      "id": "jev-8dbe8719146d0c090a4c5aba166c6ef0993c0735991aec47424d6b379357861d",
+      "requestSha256": "d8275476405023bb89aa605ebac2ed946a8ebdba0f72f57a9738b5103486628c",
+      "status": "failed",
+      "body": {},
+      "durationMs": 193.4709579218179,
+      "errorCode": "JEV_CAPTURE_FAILED",
+      "reservedInputTokens": 64000,
+      "errorType": "ValueError",
+      "validationReason": "Provider distribution mismatch",
+      "probabilitySum": 0.9900000000000001,
+      "choiceProbability": 0.55,
+      "maximumProbability": 0.55
+    },
+    {
+      "id": "jev-f8edc42530d61764d7b0c2851ca942be89c276dc054fd4de261a43b66e801943",
+      "requestSha256": "264e55b1320fa0e8ae12e5747ac4a7c025bb339448df8ad5a2039aabc96e4f39",
+      "status": "failed",
+      "body": {},
+      "durationMs": 189.42925008013844,
+      "errorCode": "JEV_CAPTURE_FAILED",
+      "reservedInputTokens": 64000,
+      "errorType": "ValueError",
+      "validationReason": "Provider distribution mismatch",
+      "probabilitySum": 0.9900000000000001,
+      "choiceProbability": 0.55,
+      "maximumProbability": 0.55
+    }
+  ],
+  "classificationHttpLatencyMs": {
+    "samples": 334,
+    "p50": 192.60795786976814,
+    "p95": 238.02729090675712
+  },
+  "aiBudgetUsd": 1,
+  "initialReservedUsd": 0.88704,
+  "totalAttemptReservationUsd": 0.897792,
+  "firstAttemptFailures": 4,
+  "firstAttemptFailureRate": 0.012121212121212121,
+  "runs": [
+    {
+      "name": "tuning-large",
+      "originalArtifacts": {
+        "summary.csv": "d0cec1c8bfcbbe6402f325f4028f47cb027981c8ab6df2daee0424db473a5e79",
+        "failures.json": "056453cdde0bbfbb9888f034aa4ef17536fe2af7c9a2d5d7004e615599d5303a",
+        "report.json": "1d28e8dc2cda600bb0099e63e37cd057fec44f85135128cc9c909da45d58f89c",
+        "primary.json": "e55648b9743d73073cb1e7be147a2ff6afb4eaa97d8d2783447d58bd5045bd34",
+        "questions.csv": "befbb9b9e37264747be6e6b18162219f4c1cf56bbe7be6233704310a8ccf98a3"
+      },
+      "rows": 2176,
+      "settings": 544,
+      "excludedCandidateCount": 0
+    },
+    {
+      "name": "final-small",
+      "originalArtifacts": {
+        "summary.csv": "85748cbcfd17c1eebace3716775eab14290c6456b7ca7cac928ddf761cd27869",
+        "failures.json": "906d123afcb95db77ee623a30a5eb3530d2908ce7a239060593abbb6c8fef351",
+        "report.json": "193e78a6404c18cfc6467eebb50904ed71ddec03d7d81a1b494caf3158b95b35",
+        "primary.json": "8456ccdb5068b29be68375dfd914528a9c1773c051e6fe3f626b064b853018c6",
+        "questions.csv": "0dee8b09728def728662088d64ee442fcd210fab01cc52aefabde88a122e586c"
+      },
+      "rows": 2176,
+      "settings": 544,
+      "excludedCandidateCount": 0
+    },
+    {
+      "name": "final-large",
+      "originalArtifacts": {
+        "summary.csv": "a20133c1761b4a2df6fc2391f0c480c007c70f75aa1caf46343ae4d38b4f5227",
+        "failures.json": "438fad69ced223ab8b99c76e91084a7b267b75b9518214f0b1f1785cc7b9a392",
+        "report.json": "73b15ab986063736cf2b759a56b852bd352e6c924adf2b38b8676cffa58429bc",
+        "primary.json": "03eded1691cdea8ad65ee18810870383f9f9bd877a6efb50159bfc3c54e05228",
+        "questions.csv": "0faabf21ccc56a35743dd03ed74779ee2d2cd806cf7b18a848e52f0faeae0127"
+      },
+      "rows": 2176,
+      "settings": 544,
+      "excludedCandidateCount": 0
+    }
+  ],
+  "finalReplayVerification": {
+    "primarySha256": "03eded1691cdea8ad65ee18810870383f9f9bd877a6efb50159bfc3c54e05228",
+    "matchesOriginal": true,
+    "evaluatorSha256": "e146b0b37272ee0d829de285153b0168ce802536858674537f33ddf2465baf5d"
+  },
+  "sourceSha256": {
+    "scripts/jev_evaluation.py": "23bc56342f4a11a38c717a6df35fbfbd8396466c84e8cc80dde7ce4fbb47a792",
+    "src/Dse.Evaluation/JevEvaluation.cs": "0a4917ad239262b53fc4716a7680d510647542bfdb37f8b5c14b41d4e08b9376",
+    "src/Dse.Evaluation/PrimaryExperiments.cs": "9ab1f15ca0de7e9627acc048511e9a2b5ebf25c72121eaf63256cfa5cc401302",
+    "src/Dse.Evaluation/Program.cs": "8aa6c64fd202e29794c2db678e62b990de30d932d2a79d018d7b65adb7809a1b"
+  }
+}

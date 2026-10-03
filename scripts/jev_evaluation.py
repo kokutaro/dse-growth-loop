@@ -98,7 +98,7 @@ def write_json(path, value):
     temporary.replace(path)
 
 
-def capture(plan, plan_hash, output, credit, approval, send):
+def capture(plan, plan_hash, output, credit, approval, send, recovery=None):
     requests = plan['requests']
     validate_budget(len(requests), credit)
     if plan['version'] != 'jev-evaluation-v1' or plan['modelVersion'] != MODEL or not approval.strip():
@@ -124,21 +124,41 @@ def capture(plan, plan_hash, output, credit, approval, send):
             pricingCheckedAt='2026-10-03', startedAt=datetime.datetime.now(datetime.timezone.utc).isoformat(), retries=0))
     journal = output / 'responses.jsonl'
     last = {}
+    recovery_count = 0
     if journal.exists():
         for line in journal.read_text().splitlines():
             row = json.loads(line)
             if row['id'] in last and (last[row['id']]['status'] != 'pending' or row['status'] == 'pending'):
-                raise ValueError('Invalid journal transitions')
+                if not (last[row['id']]['status'] == 'failed' and row['status'] == 'succeeded' and row.get('manualRecovery') is True):
+                    raise ValueError('Invalid journal transitions')
+                recovery_count += 1
             last[row['id']] = row
     allowed = {r['id']: r for r in requests}
     if any(k not in allowed or r['requestSha256'] != allowed[k]['requestSha256'] for k, r in last.items()):
         raise ValueError('Journal does not belong to this plan')
-    if any(r['status'] != 'succeeded' for r in last.values()):
-        raise ValueError('Failed/uncertain calls are retained; no automatic resend')
     def append(row):
         with journal.open('a') as stream:
             stream.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + '\n')
             stream.flush(); os.fsync(stream.fileno())
+    if recovery is not None:
+        recovered_id = recovery.get('requestId')
+        previous = last.get(recovered_id)
+        if previous is None or recovery.get('status') != 'succeeded' or recovery.get('manualDiagnosticAttempt') != 1:
+            raise ValueError('Invalid explicit recovery evidence')
+        request = allowed[recovered_id]
+        if recovery.get('requestSha256') != request['requestSha256']:
+            raise ValueError('Recovery input fingerprint mismatch')
+        body = validate_response(recovery['body'], request)
+        if previous['status'] == 'failed':
+            validate_budget(len(requests) + recovery_count + 1, credit)
+            row = dict(id=recovered_id, requestSha256=request['requestSha256'], status='succeeded', body=body,
+                durationMs=recovery['durationMs'], manualRecovery=True, attemptCount=2)
+            append(row); last[recovered_id] = row; recovery_count += 1
+        elif previous['status'] != 'succeeded' or previous.get('manualRecovery') is not True or previous['body'] != body:
+            raise ValueError('Pending or mismatched recovery is not authorized')
+    validate_budget(len(requests) + recovery_count, credit)
+    if any(r['status'] != 'succeeded' for r in last.values()):
+        raise ValueError('Failed/uncertain calls are retained; no automatic resend')
     def save_report():
         responses = [last[r['id']] for r in requests if r['id'] in last]
         input_tokens = sum(r.get('body', {}).get('usage', {}).get('input_tokens', 0) for r in responses)
@@ -146,7 +166,11 @@ def capture(plan, plan_hash, output, credit, approval, send):
         report = dict(origin='recorded-jev-classifications', planSha256=plan_hash, modelVersion=MODEL,
             responses=responses, completedRequests=sum(r['status']=='succeeded' for r in responses),
             inputTokens=input_tokens, outputTokens=output_tokens, estimatedCostUsd=float(Decimal(input_tokens)*PRICE/1_000_000),
-            maximumReservedUsd=float(reserved_cost(len(last))), retries=0,
+            maximumReservedUsd=float(reserved_cost(len(last) + recovery_count)),
+            retryCount=recovery_count, attemptCount=len(last)+recovery_count,
+            uncertainInputTokens=(recovery_count + sum(r['status'] != 'succeeded' for r in responses))*MAX_CONTEXT_TOKENS,
+            conservativeCostUsd=float(Decimal(input_tokens + (recovery_count + sum(r['status'] != 'succeeded' for r in responses))*MAX_CONTEXT_TOKENS)*PRICE/1_000_000),
+            retries=recovery_count,
             measuredAt=datetime.datetime.now(datetime.timezone.utc).isoformat())
         write_json(output / 'responses.json', report)
         return report
@@ -156,13 +180,20 @@ def capture(plan, plan_hash, output, credit, approval, send):
         # Persist reservation before the network request: a crash must not cause a resend.
         pending = dict(id=request['id'], requestSha256=request['requestSha256'], status='pending', reservedInputTokens=MAX_CONTEXT_TOKENS)
         append(pending); start = time.monotonic()
+        provider = None
         try:
-            body = validate_response(send(request), request)
+            provider = send(request)
+            body = validate_response(provider, request)
             row = dict(id=request['id'], requestSha256=request['requestSha256'], status='succeeded', body=body,
                 durationMs=(time.monotonic()-start)*1000)
-        except Exception:
+        except Exception as error:
             row = dict(id=request['id'], requestSha256=request['requestSha256'], status='failed', body={},
-                durationMs=(time.monotonic()-start)*1000, errorCode='JEV_CAPTURE_FAILED', reservedInputTokens=MAX_CONTEXT_TOKENS)
+                durationMs=(time.monotonic()-start)*1000, errorCode='JEV_CAPTURE_FAILED', reservedInputTokens=MAX_CONTEXT_TOKENS, errorType=type(error).__name__)
+            if isinstance(error, urllib.error.HTTPError): row['httpStatus'] = error.code
+            if isinstance(error, ValueError) and str(error).startswith('Provider '): row['validationReason'] = str(error)
+            if row.get('validationReason') == 'Provider distribution mismatch' and isinstance(provider, dict):
+                answer = provider['answers']['domain']; values = answer['probabilities']
+                row['probabilitySum'] = sum(values.values()); row['choiceProbability'] = values.get(answer['choice']); row['maximumProbability'] = max(values.values())
             append(row); last[request['id']] = row; save_report()
             raise ValueError('Jev capture stopped; failure recorded without raw response or exception text') from None
         append(row); last[request['id']] = row
@@ -176,12 +207,13 @@ def main():
     parser.add_argument('plan', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--recovery-response', type=Path)
     parser.add_argument('--credit-budget-usd', type=float, default=1)
     parser.add_argument('--approval-reference', default='')
     args = parser.parse_args()
     raw = args.plan.read_bytes(); plan = json.loads(raw)
     validate_budget(len(plan['requests']), args.credit_budget_usd)
-    print(json.dumps(dict(requests=len(plan['requests']), model=MODEL, retries=0,
+    print(json.dumps(dict(plannedRequests=len(plan['requests']), model=MODEL, automaticRetries=0,
         maximumReservedUsd=float(reserved_cost(len(plan['requests']))), networkEnabled=args.execute)), flush=True)
     if not args.execute:
         return 0
@@ -191,7 +223,8 @@ def main():
     key = configuration.get('TYPESAFE_API_KEY') or configuration.get('TYPE_SAFE_API_KEY')
     if not key:
         raise ValueError('TYPESAFE_API_KEY must be configured securely; no inference sent')
-    report = capture(plan, hash_bytes(raw), args.out, args.credit_budget_usd, args.approval_reference, sender(key))
+    recovery = json.loads(args.recovery_response.read_text()) if args.recovery_response else None
+    report = capture(plan, hash_bytes(raw), args.out, args.credit_budget_usd, args.approval_reference, sender(key), recovery)
     print(json.dumps({k: report[k] for k in ['completedRequests', 'inputTokens', 'outputTokens', 'estimatedCostUsd', 'retries']}))
     return 0
 

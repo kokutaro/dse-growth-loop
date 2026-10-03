@@ -52,6 +52,20 @@ class JevEvaluationTests(unittest.TestCase):
             self.assertEqual(1, len(calls)); self.assertEqual(1, report['completedRequests'])
             self.assertRaises(ValueError, jev.capture, plan, 'changed-plan', Path(temp), 1, 'test-approval', send)
 
+    def test_explicit_recorded_recovery_keeps_uncertain_cost_and_never_resends_successes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            req = self.request(); plan = {'version': 'jev-evaluation-v1', 'modelVersion': 'jev-1.13.0', 'requests': [req]}
+            def fail(_): raise RuntimeError('redacted')
+            self.assertRaises(ValueError, jev.capture, plan, 'hash', Path(temp), 1, 'approval', fail)
+            recovery = dict(requestId=req['id'], requestSha256=req['requestSha256'], status='succeeded', manualDiagnosticAttempt=1, body=self.response(), durationMs=10)
+            def must_not_send(_): self.fail('Already recovered call must not be resent')
+            report = jev.capture(plan, 'hash', Path(temp), 1, 'approval', must_not_send, recovery)
+            self.assertEqual(2, report['attemptCount']); self.assertEqual(1, report['retryCount'])
+            self.assertEqual(64000, report['uncertainInputTokens'])
+            self.assertGreater(report['conservativeCostUsd'], report['estimatedCostUsd'])
+            resumed = jev.capture(plan, 'hash', Path(temp), 1, 'approval', must_not_send)
+            self.assertEqual(2, resumed['attemptCount'])
+
     def test_failure_is_journalled_without_exception_text_or_automatic_retry(self):
         with tempfile.TemporaryDirectory() as temp:
             req = self.request(); plan = {'version': 'jev-evaluation-v1', 'modelVersion': 'jev-1.13.0', 'requests': [req]}

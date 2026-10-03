@@ -89,4 +89,4 @@ AI Search、PostgreSQL、埋め込み・ベクトル検索は初期構成から�
 
 解決評価・根拠付き要約レビュー・公開知識の検索と撤回は[知識公開手順](docs/knowledge-publication.md)を参照してください。ローカルダミーでは架空人物01が参加publisherです。実運用の公開責任者・尺度・分析方針は暫定のままです。
 
-検索比較の実行・承認条件は[Issue #14の比較手順](docs/retrieval-experiments.md)を参照。合成fixtureの検証と実AI品質測定を区別する。
+検索比較の実行・承認条件は[Issue #14の比較手順](docs/retrieval-experiments.md)を参照。[実JEV分類と語一致の比較結果](docs/validation-results/20261003-issue-14-jev/results.md)を追加した。合成fixture、実JEV分類、未測定のLLM再順位付けを区別する。

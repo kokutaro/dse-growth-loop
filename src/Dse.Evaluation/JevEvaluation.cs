@@ -12,8 +12,8 @@ public sealed record JevPlan(string Version, string DatasetSha256, string ModelV
     string QueryPromptVersion, string TaxonomySha256, string NormalizationSha256, int MaximumRequests,
     decimal CreditBudgetUsd, JevPlannedRequest[] Requests, JevBinding[] UnitBindings, JevBinding[] OverallBindings, JevBinding[] QueryBindings);
 public sealed record JevRecordedResponse(string Id, string RequestSha256, string Status, JsonElement Body, double DurationMs);
-public sealed record JevCapture(string Origin, string PlanSha256, string ModelVersion, JevRecordedResponse[] Responses);
-public sealed record JevApplied(Fixture Fixture, ExperimentInputs Inputs, long InputTokens, long OutputTokens);
+public sealed record JevCapture(string Origin, string PlanSha256, string ModelVersion, JevRecordedResponse[] Responses, int RetryCount = 0, int AttemptCount = 0, long UncertainInputTokens = 0);
+public sealed record JevApplied(Fixture Fixture, ExperimentInputs Inputs, long InputTokens, long OutputTokens, int RetryCount = 0, int AttemptCount = 0, long UncertainInputTokens = 0);
 
 public static class JevEvaluation
 {
@@ -62,6 +62,12 @@ public static class JevEvaluation
 
     public static JevApplied Apply(Fixture fixture, JevPlan plan, JevCapture capture, string planHash)
     {
+        if (capture.RetryCount < 0 || capture.AttemptCount < 0 || capture.UncertainInputTokens < 0 ||
+            capture.AttemptCount > plan.MaximumRequests ||
+            (capture.AttemptCount != 0 && capture.AttemptCount != plan.Requests.Length + capture.RetryCount) ||
+            (capture.RetryCount != 0 && capture.AttemptCount == 0) ||
+            capture.UncertainInputTokens < capture.RetryCount * 64000L)
+            throw new ArgumentException("JEV追加試行・失敗予約・承認上限の記録が不正です。");
         if (plan.Version != Version || plan.ModelVersion != Model || capture.Origin != "recorded-jev-classifications" ||
             capture.ModelVersion != Model || capture.PlanSha256 != planHash ||
             plan.Requests.Select(r => r.Id).Distinct().Count() != plan.Requests.Length ||
@@ -126,6 +132,6 @@ public static class JevEvaluation
             var decision = decisions[plan.QueryBindings.Single(b => b.TargetId == q.Id).RequestId];
             return new QueryDistribution(q.Id, decision.Categories, ProfileExtraction.Terms(q.Text).Take(20).ToArray(), decision.Signals);
         }).ToArray();
-        return new(fixture with { Units = units }, new(PrimaryExperiments.Version, "recorded-jev-experiment-inputs", plan.DatasetSha256, overall, queries), input, output);
+        return new(fixture with { Units = units }, new(PrimaryExperiments.Version, "recorded-jev-experiment-inputs", plan.DatasetSha256, overall, queries), input, output, capture.RetryCount, capture.AttemptCount, capture.UncertainInputTokens);
     }
 }
