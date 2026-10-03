@@ -93,7 +93,10 @@ def grid(ax, axis='y'):
 def save(fig, output, stem):
     for extension in ('png', 'svg', 'pdf'):
         metadata = {'Date': None} if extension == 'svg' else {'CreationDate': None} if extension == 'pdf' else None
-        fig.savefig(output / f'{stem}.{extension}', dpi=180, facecolor='white', metadata=metadata)
+        path = output / f'{stem}.{extension}'
+        fig.savefig(path, dpi=180, facecolor='white', metadata=metadata)
+        if extension == 'svg':
+            path.write_text('\n'.join(line.rstrip() for line in path.read_text().splitlines()) + '\n')
     plt.close(fig)
 
 
