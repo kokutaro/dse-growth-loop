@@ -1,0 +1,12 @@
+{
+  "checkedAtUtc": "2026-10-04T04:31:49.911046+00:00",
+  "apiActiveRevisions": 0,
+  "apiLiveAndRestoredReplicas": 0,
+  "weeklyLedgerRetained": true,
+  "activeAiReservations": 0,
+  "apiImageEnvScaleRestored": true,
+  "jobImageEnvScaleRestored": true,
+  "workerUnchanged": true,
+  "workerActiveRevisions": 0,
+  "jobRunningExecutions": 0
+}

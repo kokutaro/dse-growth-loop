@@ -1,0 +1,1558 @@
+{
+  "independentHoldout": true,
+  "holdoutTuned": false,
+  "serviceQualityPassed": false,
+  "overallGate": "pending-authenticated-http-and-timing",
+  "arms": {
+    "all": {
+      "serviceQualityPassed": false,
+      "metrics": {
+        "person": {
+          "positiveQuestions": 10,
+          "primaryRecall": 0.9,
+          "groupHitAt5": 0.9,
+          "groupPrecisionAt5": 0.9,
+          "groupRecallAt5": 0.9,
+          "combinedHitAt5": 0.9,
+          "combinedPrecisionAt5": 0.9
+        },
+        "knowledge": {
+          "positiveQuestions": 10,
+          "primaryRecall": 0.85,
+          "groupHitAt5": 0.9,
+          "groupPrecisionAt5": 0.9,
+          "groupRecallAt5": 0.85,
+          "combinedHitAt5": 0.9,
+          "combinedPrecisionAt5": 0.5
+        }
+      },
+      "noGoldFalseQuestions": 0,
+      "targetViolations": 0,
+      "manualUnknownQuestions": [
+        "i30n-no-answer-03",
+        "i30n-no-answer-04"
+      ],
+      "allUnsuitableQuestions": [
+        "i30n-sales-tender-person-query",
+        "i30n-no-answer-01",
+        "i30n-no-answer-02"
+      ],
+      "multipleCareerSupportLost": [
+        "i30n-sales-tender-person-query"
+      ],
+      "failedQuestions": [
+        "i30n-sales-renewal-knowledge-query"
+      ],
+      "groundedRecommendations": 51,
+      "recommendationsChecked": 51,
+      "rows": [
+        {
+          "questionId": "i30n-software-deadlock-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "displayRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-software-deadlock-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-person-support",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-software-pagination-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "displayRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-software-pagination-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-person-support",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-mechanical-resonance-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-mechanical-resonance-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support",
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-mechanical-corrosion-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-mechanical-corrosion-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-mechanical-corrosion-knowledge-direct",
+            "i30n-mechanical-corrosion-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-corrosion-knowledge-direct",
+            "i30n-mechanical-corrosion-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support",
+            "i30n-mechanical-corrosion-knowledge-direct",
+            "i30n-mechanical-corrosion-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-sales-renewal-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-sales-renewal-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": 0,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": 0.0,
+          "combinedHitAt5": 0,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "CLASSIFICATION_MANUAL_REQUIRED",
+          "primaryRecall": 0.0,
+          "lostPrimaryGold": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "lostFinalGold": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "manualUnknown": false,
+          "targetViolation": false
+        },
+        {
+          "questionId": "i30n-sales-tender-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": 0,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": 0.0,
+          "combinedHitAt5": 0,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "primaryRecall": 0.0,
+          "lostPrimaryGold": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "lostFinalGold": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-sales-tender-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-sales-tender-knowledge-direct",
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 0.5,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 0.5,
+          "lostPrimaryGold": [
+            "i30n-sales-tender-knowledge-direct"
+          ],
+          "lostFinalGold": [
+            "i30n-sales-tender-knowledge-direct"
+          ],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [
+            "i30n-sales-tender-knowledge-direct"
+          ],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-manufacturing-moisture-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-manufacturing-moisture-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support",
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-manufacturing-setup-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-manufacturing-setup-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support",
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-operations-visitor-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-operations-visitor-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-knowledge-support",
+            "i30n-operations-visitor-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-operations-expense-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-operations-expense-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-knowledge-support",
+            "i30n-operations-expense-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-no-answer-01",
+          "entityType": "person",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "primaryRecall": null,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-no-answer-02",
+          "entityType": "knowledge",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "primaryRecall": null,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-no-answer-03",
+          "entityType": "person",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "CLASSIFICATION_MANUAL_REQUIRED",
+          "primaryRecall": null,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": true,
+          "targetViolation": false
+        },
+        {
+          "questionId": "i30n-no-answer-04",
+          "entityType": "knowledge",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "CLASSIFICATION_MANUAL_REQUIRED",
+          "primaryRecall": null,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": true,
+          "targetViolation": false
+        }
+      ]
+    },
+    "targeted": {
+      "serviceQualityPassed": false,
+      "metrics": {
+        "person": {
+          "positiveQuestions": 10,
+          "primaryRecall": 0.9,
+          "groupHitAt5": 0.9,
+          "groupPrecisionAt5": 0.9,
+          "groupRecallAt5": 0.9,
+          "combinedHitAt5": 0.9,
+          "combinedPrecisionAt5": 0.9
+        },
+        "knowledge": {
+          "positiveQuestions": 10,
+          "primaryRecall": 0.95,
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 0.95,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0
+        }
+      },
+      "noGoldFalseQuestions": 0,
+      "targetViolations": 0,
+      "manualUnknownQuestions": [
+        "i30n-no-answer-03",
+        "i30n-no-answer-04"
+      ],
+      "allUnsuitableQuestions": [
+        "i30n-no-answer-01",
+        "i30n-no-answer-02"
+      ],
+      "multipleCareerSupportLost": [
+        "i30n-sales-tender-person-query"
+      ],
+      "failedQuestions": [],
+      "groundedRecommendations": 39,
+      "recommendationsChecked": 39,
+      "rows": [
+        {
+          "questionId": "i30n-software-deadlock-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "displayRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-software-deadlock-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-software-pagination-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "displayRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-software-pagination-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-mechanical-resonance-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-mechanical-resonance-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-mechanical-corrosion-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-mechanical-corrosion-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-mechanical-corrosion-knowledge-direct",
+            "i30n-mechanical-corrosion-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-corrosion-knowledge-support",
+            "i30n-mechanical-corrosion-knowledge-direct"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-corrosion-knowledge-support",
+            "i30n-mechanical-corrosion-knowledge-direct"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-sales-renewal-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-sales-renewal-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-sales-tender-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "groupHitAt5": 0,
+          "groupPrecisionAt5": 0.0,
+          "groupRecallAt5": 0.0,
+          "combinedHitAt5": 0,
+          "combinedPrecisionAt5": 0.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 0.0,
+          "lostPrimaryGold": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "lostFinalGold": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-sales-tender-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-sales-tender-knowledge-direct",
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 0.5,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 0.5,
+          "lostPrimaryGold": [
+            "i30n-sales-tender-knowledge-direct"
+          ],
+          "lostFinalGold": [
+            "i30n-sales-tender-knowledge-direct"
+          ],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [
+            "i30n-sales-tender-knowledge-direct"
+          ],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-manufacturing-moisture-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-manufacturing-moisture-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-manufacturing-setup-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-manufacturing-setup-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-operations-visitor-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-operations-visitor-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-operations-expense-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-operations-expense-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "primaryRecall": 1.0,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-no-answer-01",
+          "entityType": "person",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "primaryRecall": null,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-no-answer-02",
+          "entityType": "knowledge",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "primaryRecall": null,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": false,
+          "targetViolation": false,
+          "lostBeforeCap": [],
+          "lostAtCap": [],
+          "rescueGold": []
+        },
+        {
+          "questionId": "i30n-no-answer-03",
+          "entityType": "person",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "CLASSIFICATION_MANUAL_REQUIRED",
+          "primaryRecall": null,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": true,
+          "targetViolation": false
+        },
+        {
+          "questionId": "i30n-no-answer-04",
+          "entityType": "knowledge",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "CLASSIFICATION_MANUAL_REQUIRED",
+          "primaryRecall": null,
+          "lostPrimaryGold": [],
+          "lostFinalGold": [],
+          "manualUnknown": true,
+          "targetViolation": false
+        }
+      ]
+    }
+  },
+  "usage": {
+    "billableAttempts": 138,
+    "inputTokens": 162209,
+    "outputTokens": 26175,
+    "estimatedAiJpy": 4.070864,
+    "cacheHits": 53
+  },
+  "ledgerBeforeSearch": {
+    "calls": 38,
+    "tokens": 30844,
+    "estimatedJpy": 0.23436,
+    "activeReservations": 0,
+    "blocked": null
+  },
+  "ledgerAfterSearch": {
+    "calls": 106,
+    "tokens": 161152,
+    "estimatedJpy": 3.8647952,
+    "activeReservations": 0,
+    "blocked": null
+  },
+  "durationScope": "Managed Identity service calls; not HTTP or UI timing",
+  "rescueScope": "Rescue IDs inferred from the frozen per-type reserve rule and captured ordered merged/probability IDs",
+  "sha256": {
+    "/Users/nyanpass/source/repos/dse-growth-loop/evaluation/issue-30/independent-v2/approved/dataset.json": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+    "docs/validation-results/20261004-issue-30-independent-v2-production/production-report.json": "84fc0d7f7d60266751e7ce801bb65735a066876a7aae2f3a3734ad752df565d7",
+    "/Users/nyanpass/source/repos/dse-growth-loop/scripts/issue30_independent_v2_report.py": "ecb3fa6d4944c4b05543c75485d2b2da13d31b7f2759faa0dd89bf7aac3830c3"
+  }
+}

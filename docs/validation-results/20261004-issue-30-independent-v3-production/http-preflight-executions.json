@@ -1,0 +1,12 @@
+[
+  {
+    "execution": "dse-validation-issue30-zyavahb",
+    "label": "http-preflight",
+    "mode": "--weekly-budget-initialize",
+    "startChunk": 0,
+    "status": "Succeeded",
+    "startTime": "2026-10-04T08:52:42+00:00",
+    "endTime": "2026-10-04T08:53:17+00:00",
+    "secondsUpperBound": 35.0
+  }
+]

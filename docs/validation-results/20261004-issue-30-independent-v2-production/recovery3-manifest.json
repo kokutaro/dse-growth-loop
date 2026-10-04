@@ -1,0 +1,11 @@
+{
+  "image": "dseacrypbunss3xh66m.azurecr.io/dse-production-evaluation:issue30-v2-recovery3-20261004",
+  "sha256": {
+    "src/Dse.ProductionEvaluation/Program.cs": "2a14840b4aac791f04988897e86bffecd3191709a9b8bb003f55ea3216e73f48",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "a9be9ce88da51deef2090bddc755e5d27c0176bb7c43093c4c6475f631b09920",
+    "scripts/issue30_independent_v2_report.py": "7137a1ca2e6e378e9bdb92672ef4182cc45a2e60ffd53412a6b12f5bcfe3c0c0",
+    "evaluation/issue-30/independent-v2/approved/dataset.json": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d"
+  },
+  "labelsAndRetrievalAlgorithmChanged": false,
+  "queriesNotYetObserved": true
+}

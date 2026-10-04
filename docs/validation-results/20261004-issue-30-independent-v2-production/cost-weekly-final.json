@@ -1,0 +1,39 @@
+{
+  "fxJpyPerUsd": 162,
+  "weeklyTotalJpy": 2000,
+  "warmQuestionsSent": 24,
+  "newBillableCalls": 46,
+  "newInputTokens": 79171,
+  "newOutputTokens": 13591,
+  "newWarmUsd": "0.011744966",
+  "newWarmJpy": "1.902684492",
+  "independentBillableCallsTotal": 280,
+  "independentAiJpyAt162": "8.384237748",
+  "changedRegressionJpyAt162": "0.70266528",
+  "weekRuntimeCalls": 519,
+  "weekRuntimeJpyAt162": "14.907390012",
+  "reservedNonRuntimeJpy": 1200,
+  "runtimePlusReservesJpy": "1214.907390012",
+  "knownExternalAiJpy": "56.682228276",
+  "knownAiConservativeSubtotalJpy": "71.589618288",
+  "activeReservations": 0,
+  "dailyTokens": 412221,
+  "uncertainReservationsFromEarlierWeekRetained": true,
+  "newTokenCeilingViolations": 0,
+  "infrastructure": {
+    "apiWarmWindowUtc": [
+      "2026-10-04T04:08:33+00:00",
+      "2026-10-04T04:24:56.303654+00:00"
+    ],
+    "newWarmApiReplicaSecondsUpperBound": 2040,
+    "apiCumulativeReplicaSecondsUpperBound": 12480,
+    "apiCumulativeLimitSeconds": 14400,
+    "newReadonlyJobSeconds": 191.0,
+    "jobCumulativeReplicaSecondsUpperBound": 4000.0,
+    "jobCumulativeLimitSeconds": 7200,
+    "computeJpyUpperBoundAt162": "35.18640000",
+    "otherInfrastructureActualInvoice": "not reconciled; held within 1000 JPY reserve"
+  },
+  "allLimitsPassed": true,
+  "invoiceReconciled": false
+}

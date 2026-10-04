@@ -1,0 +1,29 @@
+[
+  {
+    "questionId": "i30n-software-deadlock-person-query",
+    "startedAt": "2026-10-04T02:36:16.656Z",
+    "uiCompletionUpperBoundMs": 54702,
+    "actualReplicasBefore": 0,
+    "replicaProof": "Azure CLI containerapp replica list returned 0 immediately before request; SPA retained without page reload",
+    "phase": "cold",
+    "arm": "all"
+  },
+  {
+    "questionId": "i30n-software-deadlock-knowledge-query",
+    "startedAt": "2026-10-04T02:43:38.173Z",
+    "uiCompletionUpperBoundMs": 49165,
+    "actualReplicasBefore": 0,
+    "replicaProof": "Azure CLI containerapp replica list returned 0 immediately before request; SPA retained without page reload",
+    "phase": "cold",
+    "arm": "all"
+  },
+  {
+    "questionId": "i30n-no-answer-01",
+    "startedAt": "2026-10-04T02:51:35.057Z",
+    "uiCompletionUpperBoundMs": 45431,
+    "actualReplicasBefore": 0,
+    "replicaProof": "Azure CLI containerapp replica list returned 0 immediately before request; SPA retained without page reload",
+    "phase": "cold",
+    "arm": "all"
+  }
+]

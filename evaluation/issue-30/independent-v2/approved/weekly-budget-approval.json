@@ -1,0 +1,32 @@
+{
+  "reference": "user-20261004-weekly2000-fixed162",
+  "totalJpy": 2000,
+  "includes": [
+    "AI",
+    "validation infrastructure"
+  ],
+  "usdToJpy": 162,
+  "week": "Monday 00:00 Asia/Tokyo through next Monday 00:00",
+  "humanEvidence": {
+    "thread": "01a10494-27f7-73e0-8bc8-73cd1b56b098",
+    "messages": [
+      "1791083369.973559",
+      "1791083399.606499",
+      "1791083446.479179"
+    ]
+  },
+  "reserves": {
+    "infrastructureJpy": 1000,
+    "externalAiJpy": 200
+  },
+  "preservedLimits": {
+    "dailyTokens": 4500000,
+    "maxAttempts": 1,
+    "concurrency": 1,
+    "inputTokens": 16000,
+    "outputTokens": 3000,
+    "apiCumulativeHours": 4,
+    "jobCumulativeHours": 2
+  },
+  "note": "留保は実測請求額ではない。既存の実行台帳をUSDへ戻して162円で評価。元の24問ラベル、検索設定、単価を変更しない。"
+}

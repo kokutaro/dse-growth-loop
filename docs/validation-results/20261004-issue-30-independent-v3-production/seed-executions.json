@@ -1,0 +1,12 @@
+[
+  {
+    "execution": "dse-validation-issue30-ldovaro",
+    "label": "seed",
+    "mode": "--seed",
+    "startChunk": 0,
+    "status": "Succeeded",
+    "startTime": "2026-10-04T08:30:51+00:00",
+    "endTime": "2026-10-04T08:33:01+00:00",
+    "secondsUpperBound": 130.0
+  }
+]

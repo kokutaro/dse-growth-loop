@@ -86,6 +86,26 @@ public sealed class SourceGuard(IPrimaryRepository repository)
         }
         return result.ToArray();
     }
+    // Caller must hold the tenant access fence. This read set lives only for this
+    // filtering phase; validation after AI always starts a new read set.
+    public Task<SearchUnit[]> FilterUnderFenceAsync(ActorAccess actor, IEnumerable<SearchUnit> units, CancellationToken ct) =>
+        new SourceGuard(new PhaseReads(repository)).FilterAsync(actor, units, ct);
+
+    private sealed class PhaseReads(IPrimaryRepository inner) : IPrimaryRepository
+    {
+        private readonly Dictionary<(RecordPartition, string), StoredRecord?> reads = [];
+        public async Task<StoredRecord?> ReadAsync(RecordPartition partition, string id, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (!reads.TryGetValue((partition, id), out var record))
+                reads[(partition, id)] = record = await inner.ReadAsync(partition, id, ct);
+            return record is null ? null : new(record.Value.Copy(), record.ETag);
+        }
+        public Task<RecordPage> QueryAsync(RecordPartition partition, string kind, string? field, string? parent, int size, string? token, CancellationToken ct) =>
+            inner.QueryAsync(partition, kind, field, parent, size, token, ct);
+        public Task CommitAsync(RecordPartition partition, IReadOnlyList<RecordWrite> writes, CancellationToken ct) =>
+            throw new InvalidOperationException("Source validation is read-only");
+    }
     public async Task<ValidatedSource> RequireAsync(ActorAccess actor, SearchUnit unit, CancellationToken ct) =>
         await ValidateAsync(actor, unit, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
 

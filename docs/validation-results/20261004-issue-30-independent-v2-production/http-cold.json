@@ -1,0 +1,1717 @@
+[
+  {
+    "startedDateTime": "2026-10-04T02:36:16.717Z",
+    "time": 54603.85300017606,
+    "timings": {
+      "blocked": 1.0980000997781754,
+      "dns": 13.687999999999999,
+      "ssl": 19.286,
+      "connect": 47.153999999999996,
+      "send": 0.17500000000000426,
+      "wait": 54525.656000088915,
+      "receive": 16.081999987363815,
+      "_blocked_queueing": 0.9610000997781754,
+      "_workerStart": -1,
+      "_workerReady": -1,
+      "_workerFetchStart": -1,
+      "_workerRespondWithSettled": -1
+    },
+    "request": {
+      "query": "同時更新のロック順序の違いで取引処理が停止する問題を防ぐ経験のある担当者を探したい。",
+      "target": "all"
+    },
+    "status": 200,
+    "response": {
+      "runId": "retrieval-88c99521bdc348e2bb5a5cf038631746",
+      "conditions": {
+        "categories": [
+          {
+            "axis": "domain",
+            "categoryId": "software"
+          }
+        ],
+        "signalIds": [],
+        "terms": [
+          "同時更新のロック順序の違いで取引処理が停止する問題を防ぐ経験のある担当者を探したい"
+        ],
+        "probabilityThreshold": 0.2,
+        "noulThreshold": 0.5,
+        "limit": 20
+      },
+      "primary": {
+        "candidates": [
+          {
+            "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+            "entityType": "person",
+            "title": "架空i30n-software-deadlock-person-direct",
+            "routes": [
+              "probability"
+            ],
+            "units": [
+              {
+                "id": "projection-b7ed0f25c4d71f6e19d9223179c4e8fd7f1bdee8ac665c1eafcade19c2699c8c",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+                "title": "架空i30n-software-deadlock-person-direct",
+                "summary": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 1
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.87,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "同時更新試験で処理完了を確認した",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-direct",
+                    "location": "#i30n-software-deadlock-person-direct-evidence",
+                    "text": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              },
+              {
+                "id": "projection-1d41c132f3dda068d49ee03d4cdc9c8378f0340f2045b0601700ef979b10aa65",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-experience",
+                "title": "架空i30n-software-deadlock-person-direct",
+                "summary": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 1
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.87,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "同時更新試験で処理完了を確認した",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-direct",
+                    "location": "#i30n-software-deadlock-person-direct-evidence",
+                    "text": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              }
+            ],
+            "categoryMatches": 1,
+            "maxProbability": 1,
+            "termMatches": 0
+          },
+          {
+            "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+            "entityType": "person",
+            "title": "架空i30n-software-deadlock-person-support",
+            "routes": [
+              "probability"
+            ],
+            "units": [
+              {
+                "id": "projection-2f7a241b308f849520bcc49e5693ed8e54310fbbfbf6a2ff9a67a08509acd46d",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+                "title": "架空i30n-software-deadlock-person-support",
+                "summary": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0.21
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 0.77
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0.02
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": 0.95,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.91,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "mechanical",
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "副業務として次の対応を共同実施した",
+                  "同時更新試験で処理完了を確認した",
+                  "第一の職歴では機械設計を担当",
+                  "第二の職歴では部署の定例報告を担当",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-support",
+                    "location": "#i30n-software-deadlock-person-support-evidence",
+                    "text": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "mechanical",
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              },
+              {
+                "id": "projection-d31655db526211344bf3042114e69f3eb8b1a29fe7861f4970f09594de80acb5",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-experience",
+                "title": "架空i30n-software-deadlock-person-support",
+                "summary": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0.21
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 0.77
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0.02
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": 0.95,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.91,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "mechanical",
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "副業務として次の対応を共同実施した",
+                  "同時更新試験で処理完了を確認した",
+                  "第一の職歴では機械設計を担当",
+                  "第二の職歴では部署の定例報告を担当",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-support",
+                    "location": "#i30n-software-deadlock-person-support-evidence",
+                    "text": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "mechanical",
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              },
+              {
+                "id": "projection-1fd883be796dd599d466d48744b1a11faad27f626ec992377275f5cc1808e188",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "secondary-cde66f9ba43266f965283d10c634fae8e911ca287e6206064561ff502e0ca2b4",
+                "title": "架空i30n-software-deadlock-person-support",
+                "summary": "副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0.01
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 0.99
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.9,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "副業務として次の対応を共同実施した",
+                  "同時更新試験で処理完了を確認した",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-support",
+                    "location": "#i30n-software-deadlock-person-support-evidence",
+                    "text": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              }
+            ],
+            "categoryMatches": 1,
+            "maxProbability": 0.99,
+            "termMatches": 0
+          }
+        ],
+        "matchedUnits": 24,
+        "beforeLimit": 14,
+        "ruleVersion": "retrieval-v2",
+        "rerankingStatus": "succeeded"
+      },
+      "assessments": [
+        {
+          "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+          "entityType": "person",
+          "reason": "複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+          "evidenceIds": [
+            "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence"
+          ],
+          "missingInformation": [
+            "役割・期間・現在の対応可否は相談時に確認してください。"
+          ]
+        },
+        {
+          "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+          "entityType": "person",
+          "reason": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+          "evidenceIds": [
+            "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence"
+          ],
+          "missingInformation": [
+            "役割・期間・現在の対応可否は相談時に確認してください。"
+          ]
+        }
+      ],
+      "stage": "completed",
+      "rerankingStatus": "succeeded",
+      "aiRunId": "ai-run-ba4d25242db840bfaaa36a3cf4411ab5"
+    }
+  },
+  {
+    "startedDateTime": "2026-10-04T02:43:38.223Z",
+    "time": 49062.296999979706,
+    "timings": {
+      "blocked": 0.7419999164789914,
+      "dns": 23.864,
+      "ssl": 16.852000000000004,
+      "connect": 55.723000000000006,
+      "send": 0.21699999999999875,
+      "wait": 48980.610999997436,
+      "receive": 1.1400000657886267,
+      "_blocked_queueing": 0.5699999164789915,
+      "_workerStart": -1,
+      "_workerReady": -1,
+      "_workerFetchStart": -1,
+      "_workerRespondWithSettled": -1
+    },
+    "request": {
+      "query": "同時更新のロック順序の違いで取引処理が停止する問題を防ぐ実施済みの事例を探したい。",
+      "target": "all"
+    },
+    "status": 200,
+    "response": {
+      "runId": "retrieval-c141855b748247d0b68d082b282cef1f",
+      "conditions": {
+        "categories": [
+          {
+            "axis": "domain",
+            "categoryId": "software"
+          }
+        ],
+        "signalIds": [],
+        "terms": [
+          "同時更新のロック順序の違いで取引処理が停止する問題を防ぐ実施済みの事例を探したい"
+        ],
+        "probabilityThreshold": 0.2,
+        "noulThreshold": 0.5,
+        "limit": 20
+      },
+      "primary": {
+        "candidates": [
+          {
+            "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+            "entityType": "person",
+            "title": "架空i30n-software-deadlock-person-direct",
+            "routes": [
+              "probability"
+            ],
+            "units": [
+              {
+                "id": "projection-b7ed0f25c4d71f6e19d9223179c4e8fd7f1bdee8ac665c1eafcade19c2699c8c",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+                "title": "架空i30n-software-deadlock-person-direct",
+                "summary": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 1
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.87,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "同時更新試験で処理完了を確認した",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-direct",
+                    "location": "#i30n-software-deadlock-person-direct-evidence",
+                    "text": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              },
+              {
+                "id": "projection-1d41c132f3dda068d49ee03d4cdc9c8378f0340f2045b0601700ef979b10aa65",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-experience",
+                "title": "架空i30n-software-deadlock-person-direct",
+                "summary": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 1
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.87,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "同時更新試験で処理完了を確認した",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-direct",
+                    "location": "#i30n-software-deadlock-person-direct-evidence",
+                    "text": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              }
+            ],
+            "categoryMatches": 1,
+            "maxProbability": 1,
+            "termMatches": 0
+          },
+          {
+            "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct",
+            "entityType": "knowledge",
+            "title": "架空i30n-software-deadlock-knowledge-direct",
+            "routes": [
+              "probability"
+            ],
+            "units": [
+              {
+                "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct-projection",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct",
+                "entityType": "knowledge",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct",
+                "title": "架空i30n-software-deadlock-knowledge-direct",
+                "summary": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 1
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.86,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "同時更新試験で処理完了を確認した",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-knowledge-direct",
+                    "location": "#i30n-software-deadlock-knowledge-direct-evidence",
+                    "text": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "fixture",
+                "kind": "searchUnit",
+                "processingMode": "live",
+                "sourceVersion": 1,
+                "accessVersion": 1,
+                "projectionVersion": 1,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              }
+            ],
+            "categoryMatches": 1,
+            "maxProbability": 1,
+            "termMatches": 0
+          },
+          {
+            "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+            "entityType": "person",
+            "title": "架空i30n-software-deadlock-person-support",
+            "routes": [
+              "probability"
+            ],
+            "units": [
+              {
+                "id": "projection-2f7a241b308f849520bcc49e5693ed8e54310fbbfbf6a2ff9a67a08509acd46d",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+                "title": "架空i30n-software-deadlock-person-support",
+                "summary": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0.21
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 0.77
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0.02
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": 0.95,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.91,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "mechanical",
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "副業務として次の対応を共同実施した",
+                  "同時更新試験で処理完了を確認した",
+                  "第一の職歴では機械設計を担当",
+                  "第二の職歴では部署の定例報告を担当",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-support",
+                    "location": "#i30n-software-deadlock-person-support-evidence",
+                    "text": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "mechanical",
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              },
+              {
+                "id": "projection-d31655db526211344bf3042114e69f3eb8b1a29fe7861f4970f09594de80acb5",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-experience",
+                "title": "架空i30n-software-deadlock-person-support",
+                "summary": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0.21
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 0.77
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0.02
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": 0.95,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.91,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "mechanical",
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "副業務として次の対応を共同実施した",
+                  "同時更新試験で処理完了を確認した",
+                  "第一の職歴では機械設計を担当",
+                  "第二の職歴では部署の定例報告を担当",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-support",
+                    "location": "#i30n-software-deadlock-person-support-evidence",
+                    "text": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "mechanical",
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              },
+              {
+                "id": "projection-1fd883be796dd599d466d48744b1a11faad27f626ec992377275f5cc1808e188",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+                "entityType": "person",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "secondary-cde66f9ba43266f965283d10c634fae8e911ca287e6206064561ff502e0ca2b4",
+                "title": "架空i30n-software-deadlock-person-support",
+                "summary": "副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0.01
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 0.99
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.9,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "副業務として次の対応を共同実施した",
+                  "同時更新試験で処理完了を確認した",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-person-support",
+                    "location": "#i30n-software-deadlock-person-support-evidence",
+                    "text": "第一の職歴では機械設計を担当。第二の職歴では部署の定例報告を担当。副業務として次の対応を共同実施した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "ai_unconfirmed",
+                "kind": "searchUnit",
+                "skillIds": [
+                  "software"
+                ],
+                "processingMode": "live",
+                "sourceVersion": 2,
+                "accessVersion": 1,
+                "projectionVersion": 2,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              }
+            ],
+            "categoryMatches": 1,
+            "maxProbability": 0.99,
+            "termMatches": 0
+          },
+          {
+            "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support",
+            "entityType": "knowledge",
+            "title": "架空i30n-software-deadlock-knowledge-support",
+            "routes": [
+              "probability"
+            ],
+            "units": [
+              {
+                "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support-projection",
+                "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support",
+                "entityType": "knowledge",
+                "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+                "unitId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support",
+                "title": "架空i30n-software-deadlock-knowledge-support",
+                "summary": "次の改善の実施に共同で参加した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+                "scopeIds": [
+                  "issue30-independent-20261004-v2"
+                ],
+                "status": "active",
+                "available": true,
+                "taxonomyVersion": "taxonomy-v1",
+                "classifications": [
+                  {
+                    "axis": "domain",
+                    "categoryId": "software",
+                    "probability": 1
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "sales",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "manufacturing",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "mechanical",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "operations",
+                    "probability": 0
+                  },
+                  {
+                    "axis": "domain",
+                    "categoryId": "unknown",
+                    "probability": 0
+                  }
+                ],
+                "experienceSignals": [
+                  {
+                    "signalId": "mechanical",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "software",
+                    "yesProbability": 0.92,
+                    "evidenceState": "supported"
+                  },
+                  {
+                    "signalId": "sales",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "manufacturing",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "operations",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "unknown",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  },
+                  {
+                    "signalId": "handover",
+                    "yesProbability": null,
+                    "evidenceState": "unknown"
+                  }
+                ],
+                "normalizedTerms": [
+                  "ソフトウェア",
+                  "ソフトウェア開発で",
+                  "デッドロック検出時はトランザクション全体を有限回再試行し",
+                  "同時更新試験で処理完了を確認した",
+                  "次の改善の実施に共同で参加した",
+                  "複数テーブルの更新順序を統一した"
+                ],
+                "sourceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support-evidence",
+                    "documentTitle": "架空i30n-software-deadlock-knowledge-support",
+                    "location": "#i30n-software-deadlock-knowledge-support-evidence",
+                    "text": "次の改善の実施に共同で参加した。ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。"
+                  }
+                ],
+                "confirmationState": "fixture",
+                "kind": "searchUnit",
+                "processingMode": "live",
+                "sourceVersion": 1,
+                "accessVersion": 1,
+                "projectionVersion": 1,
+                "projectionState": "ready",
+                "evidenceRefs": [
+                  {
+                    "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support-evidence",
+                    "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support-version",
+                    "sourceVersion": 1
+                  }
+                ]
+              }
+            ],
+            "categoryMatches": 1,
+            "maxProbability": 1,
+            "termMatches": 0
+          }
+        ],
+        "matchedUnits": 24,
+        "beforeLimit": 14,
+        "ruleVersion": "retrieval-v2",
+        "rerankingStatus": "succeeded"
+      },
+      "assessments": [
+        {
+          "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+          "entityType": "person",
+          "reason": "複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+          "evidenceIds": [
+            "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence"
+          ],
+          "missingInformation": [
+            "役割・期間・現在の対応可否は相談時に確認してください。"
+          ]
+        },
+        {
+          "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct",
+          "entityType": "knowledge",
+          "reason": "複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+          "evidenceIds": [
+            "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct-evidence"
+          ],
+          "missingInformation": [
+            "役割・期間・現在の対応可否は相談時に確認してください。"
+          ]
+        },
+        {
+          "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support",
+          "entityType": "person",
+          "reason": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+          "evidenceIds": [
+            "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence"
+          ],
+          "missingInformation": [
+            "役割・期間・現在の対応可否は相談時に確認してください。"
+          ]
+        },
+        {
+          "entityId": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support",
+          "entityType": "knowledge",
+          "reason": "ソフトウェア開発で、複数テーブルの更新順序を統一した。デッドロック検出時はトランザクション全体を有限回再試行し、同時更新試験で処理完了を確認した。",
+          "evidenceIds": [
+            "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support-evidence"
+          ],
+          "missingInformation": [
+            "役割・期間・現在の対応可否は相談時に確認してください。"
+          ]
+        }
+      ],
+      "stage": "completed",
+      "rerankingStatus": "succeeded",
+      "aiRunId": "ai-run-c31fd05c229946419ae333bd3a70a7e9"
+    }
+  },
+  {
+    "startedDateTime": "2026-10-04T02:51:35.106Z",
+    "time": 45346.42499985755,
+    "timings": {
+      "blocked": 0.7399999056458473,
+      "dns": 13.885,
+      "ssl": 15.277999999999999,
+      "connect": 44.849000000000004,
+      "send": 0.23699999999999477,
+      "wait": 45275.29000004259,
+      "receive": 11.423999909311533,
+      "_blocked_queueing": 0.5379999056458473,
+      "_workerStart": -1,
+      "_workerReady": -1,
+      "_workerFetchStart": -1,
+      "_workerRespondWithSettled": -1
+    },
+    "request": {
+      "query": "音声認識の専門用語の誤変換を辞書学習で減らした経験者を探したい。",
+      "target": "all"
+    },
+    "status": 200,
+    "response": {
+      "runId": "retrieval-7a378132662f4ae3ae1f2f63d05f5c02",
+      "conditions": {
+        "categories": [
+          {
+            "axis": "domain",
+            "categoryId": "software"
+          }
+        ],
+        "signalIds": [
+          "operations"
+        ],
+        "terms": [
+          "音声認識の専門用語の誤変換を辞書学習で減らした経験者を探したい"
+        ],
+        "probabilityThreshold": 0.2,
+        "noulThreshold": 0.5,
+        "limit": 20
+      },
+      "primary": {
+        "candidates": [],
+        "matchedUnits": 24,
+        "beforeLimit": 14,
+        "ruleVersion": "retrieval-v2",
+        "rerankingStatus": "all_unsuitable"
+      },
+      "assessments": [],
+      "stage": "completed",
+      "rerankingStatus": "all_unsuitable",
+      "aiRunId": "ai-run-7972246968b24536812c591696bebddb"
+    }
+  }
+]

@@ -1,0 +1,434 @@
+[
+  {
+    "questionId": "i30n-software-deadlock-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": null,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "observer timing unavailable; use HAR network time"
+  },
+  {
+    "questionId": "i30n-software-deadlock-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": null,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "observer timing unavailable; use HAR network time"
+  },
+  {
+    "questionId": "i30n-software-pagination-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 10946,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-software-pagination-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 11904,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-mechanical-resonance-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 10844,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-mechanical-resonance-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 12100,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-mechanical-corrosion-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 16748,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-mechanical-corrosion-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 17258,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-sales-renewal-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 15679,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-sales-renewal-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 17258,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-sales-tender-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 9168,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-sales-tender-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 9425,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-manufacturing-moisture-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 9433,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-manufacturing-moisture-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 10494,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-manufacturing-setup-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 15880,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-manufacturing-setup-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 17067,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-operations-visitor-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 10224,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-operations-visitor-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 10957,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-operations-expense-person-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 9678,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-operations-expense-knowledge-query",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 11261,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-no-answer-01",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 9571,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-no-answer-02",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 624,
+    "uiStatus": "failed",
+    "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-no-answer-03",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 636,
+    "uiStatus": "failed",
+    "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-no-answer-04",
+    "arm": "all",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 737,
+    "uiStatus": "failed",
+    "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-software-deadlock-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 9364,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-software-deadlock-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 6216,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-software-pagination-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 8860,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-software-pagination-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 5727,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-mechanical-resonance-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 8678,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-mechanical-resonance-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 6420,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-mechanical-corrosion-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 12984,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-mechanical-corrosion-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 741,
+    "uiStatus": "failed",
+    "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-sales-renewal-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 11602,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-sales-renewal-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 8115,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-sales-tender-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 6630,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-sales-tender-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 5787,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-manufacturing-moisture-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 7251,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-manufacturing-moisture-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 6225,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-manufacturing-setup-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 11172,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-manufacturing-setup-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 8634,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-operations-visitor-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 7796,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-operations-visitor-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 6629,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-operations-expense-person-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 7364,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-operations-expense-knowledge-query",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 7151,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-no-answer-01",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 7139,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-no-answer-02",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 6719,
+    "uiStatus": "complete",
+    "alert": null,
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-no-answer-03",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 622,
+    "uiStatus": "failed",
+    "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  },
+  {
+    "questionId": "i30n-no-answer-04",
+    "arm": "targeted",
+    "phase": "initial",
+    "uiCompletionUpperBoundMs": 738,
+    "uiStatus": "failed",
+    "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+    "timingLimitation": "UI polling upper bound, not precise browser render time"
+  }
+]

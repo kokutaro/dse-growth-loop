@@ -1,0 +1,15 @@
+{
+  "runnerImage": "dseacrypbunss3xh66m.azurecr.io/dse-production-evaluation:issue30-v2-recovery2-20261004",
+  "sources": {
+    "evaluation/issue-30/independent-v2/dataset.json": "d544ca86b70e143b36aa36b94011756bb8636ec5836d8c437279eaee523cb465",
+    "evaluation/issue-30/independent-v2/pre-model-manifest.json": "f9c57e2c75c0bb39182cb6ad8ff41fbd9be3a1c2a3e632644da3ce4356861550",
+    "src/Dse.ProductionEvaluation/Program.cs": "9d1c14c1d4ccb1507d69709d51b587ed5a2374d84dd859c31cd3c27e7977b7ba",
+    "src/Dse.ProductionEvaluation/Dockerfile": "1e65ec91fbc2d2edb9e6d742179733533cd15eceafb7fabdeda3a7321e3024a6",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "a9be9ce88da51deef2090bddc755e5d27c0176bb7c43093c4c6475f631b09920",
+    "evaluation/issue-30/independent-v2/approved/dataset.json": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+    "evaluation/issue-30/independent-v2/approved/approval.json": "2ce79b8625538e014548c99819c381388be5ee865fde474395b70890d4b551d4"
+  },
+  "retrievalAlgorithmChanged": false,
+  "labelsChanged": false,
+  "purpose": "Audited seed continuation, more detailed harness-only diagnostics and full retrieval audit capture; no holdout query results observed"
+}

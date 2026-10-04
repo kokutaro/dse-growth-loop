@@ -1,0 +1,695 @@
+{
+  "observedRegressionSet": true,
+  "independentHoldout": false,
+  "independentAcceptanceGranted": false,
+  "serviceQualityPassed": true,
+  "httpSloMeasured": false,
+  "metrics": {
+    "person": {
+      "primaryRecall": 1.0,
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0
+    },
+    "knowledge": {
+      "primaryRecall": 1.0,
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0
+    }
+  },
+  "failedQuestions": [],
+  "multipleCareerSupportLost": [],
+  "noGoldFalseQuestions": 0,
+  "outOfScopeQuestions": [
+    "i30n-no-answer-03",
+    "i30n-no-answer-04"
+  ],
+  "groundedRecommendations": 60,
+  "recommendationsChecked": 60,
+  "usage": {
+    "billableAttempts": 46,
+    "estimatedAiJpy": 1.941358428,
+    "inputTokens": 79407,
+    "outputTokens": 14553,
+    "schemaMismatches": 0
+  },
+  "rows": [
+    {
+      "questionId": "i30n-software-deadlock-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-software-deadlock-person-direct",
+        "i30n-software-deadlock-person-support"
+      ],
+      "displayRanking": [
+        "i30n-software-deadlock-person-direct",
+        "i30n-software-deadlock-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-software-deadlock-person-direct",
+        "i30n-software-deadlock-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 12363.0171,
+      "primaryReads": 220
+    },
+    {
+      "questionId": "i30n-software-deadlock-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-software-deadlock-knowledge-direct",
+        "i30n-software-deadlock-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-software-deadlock-knowledge-direct",
+        "i30n-software-deadlock-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-software-deadlock-person-direct",
+        "i30n-software-deadlock-knowledge-direct",
+        "i30n-software-deadlock-person-support",
+        "i30n-software-deadlock-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 12761.0464,
+      "primaryReads": 220
+    },
+    {
+      "questionId": "i30n-software-pagination-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-software-pagination-person-direct",
+        "i30n-software-pagination-person-support"
+      ],
+      "displayRanking": [
+        "i30n-software-pagination-person-direct",
+        "i30n-software-pagination-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-software-pagination-person-direct",
+        "i30n-software-pagination-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 9420.9566,
+      "primaryReads": 220
+    },
+    {
+      "questionId": "i30n-software-pagination-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-software-pagination-knowledge-direct",
+        "i30n-software-pagination-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-software-pagination-knowledge-direct",
+        "i30n-software-pagination-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-software-pagination-person-direct",
+        "i30n-software-pagination-person-support",
+        "i30n-software-pagination-knowledge-direct",
+        "i30n-software-pagination-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 9591.1781,
+      "primaryReads": 220
+    },
+    {
+      "questionId": "i30n-mechanical-resonance-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-mechanical-resonance-person-direct",
+        "i30n-mechanical-resonance-person-support"
+      ],
+      "displayRanking": [
+        "i30n-mechanical-resonance-person-direct",
+        "i30n-mechanical-resonance-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-mechanical-resonance-person-direct",
+        "i30n-mechanical-resonance-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 8944.2257,
+      "primaryReads": 220
+    },
+    {
+      "questionId": "i30n-mechanical-resonance-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-mechanical-resonance-knowledge-direct",
+        "i30n-mechanical-resonance-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-mechanical-resonance-knowledge-direct",
+        "i30n-mechanical-resonance-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-mechanical-resonance-person-direct",
+        "i30n-mechanical-resonance-knowledge-direct",
+        "i30n-mechanical-resonance-person-support",
+        "i30n-mechanical-resonance-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 10041.3549,
+      "primaryReads": 220
+    },
+    {
+      "questionId": "i30n-mechanical-corrosion-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-mechanical-corrosion-person-direct",
+        "i30n-mechanical-corrosion-person-support"
+      ],
+      "displayRanking": [
+        "i30n-mechanical-corrosion-person-direct",
+        "i30n-mechanical-corrosion-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-mechanical-corrosion-person-direct",
+        "i30n-mechanical-corrosion-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 13372.0574,
+      "primaryReads": 400
+    },
+    {
+      "questionId": "i30n-mechanical-corrosion-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-mechanical-corrosion-knowledge-direct",
+        "i30n-mechanical-corrosion-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-mechanical-corrosion-knowledge-direct",
+        "i30n-mechanical-corrosion-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-mechanical-corrosion-knowledge-direct",
+        "i30n-mechanical-corrosion-person-direct",
+        "i30n-mechanical-corrosion-knowledge-support",
+        "i30n-mechanical-corrosion-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 14919.5893,
+      "primaryReads": 400
+    },
+    {
+      "questionId": "i30n-sales-renewal-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-sales-renewal-person-direct",
+        "i30n-sales-renewal-person-support"
+      ],
+      "displayRanking": [
+        "i30n-sales-renewal-person-direct",
+        "i30n-sales-renewal-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-sales-renewal-person-direct",
+        "i30n-sales-renewal-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 8537.5351,
+      "primaryReads": 190
+    },
+    {
+      "questionId": "i30n-sales-renewal-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-sales-renewal-knowledge-direct",
+        "i30n-sales-renewal-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-sales-renewal-knowledge-direct",
+        "i30n-sales-renewal-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-sales-renewal-person-direct",
+        "i30n-sales-renewal-knowledge-direct",
+        "i30n-sales-renewal-person-support",
+        "i30n-sales-renewal-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 9084.4427,
+      "primaryReads": 190
+    },
+    {
+      "questionId": "i30n-sales-tender-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-sales-tender-person-direct",
+        "i30n-sales-tender-person-support"
+      ],
+      "displayRanking": [
+        "i30n-sales-tender-person-direct",
+        "i30n-sales-tender-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-sales-tender-person-direct",
+        "i30n-sales-tender-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 12263.111,
+      "primaryReads": 370
+    },
+    {
+      "questionId": "i30n-sales-tender-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-sales-tender-knowledge-direct",
+        "i30n-sales-tender-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-sales-tender-knowledge-direct",
+        "i30n-sales-tender-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-sales-tender-person-direct",
+        "i30n-sales-tender-knowledge-direct",
+        "i30n-sales-tender-person-support",
+        "i30n-sales-tender-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 13922.4557,
+      "primaryReads": 370
+    },
+    {
+      "questionId": "i30n-manufacturing-moisture-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-manufacturing-moisture-person-direct",
+        "i30n-manufacturing-moisture-person-support"
+      ],
+      "displayRanking": [
+        "i30n-manufacturing-moisture-person-direct",
+        "i30n-manufacturing-moisture-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-manufacturing-moisture-person-direct",
+        "i30n-manufacturing-moisture-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 8372.0586,
+      "primaryReads": 190
+    },
+    {
+      "questionId": "i30n-manufacturing-moisture-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-manufacturing-moisture-knowledge-direct",
+        "i30n-manufacturing-moisture-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-manufacturing-moisture-knowledge-direct",
+        "i30n-manufacturing-moisture-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-manufacturing-moisture-person-direct",
+        "i30n-manufacturing-moisture-knowledge-direct",
+        "i30n-manufacturing-moisture-person-support",
+        "i30n-manufacturing-moisture-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 9277.9744,
+      "primaryReads": 190
+    },
+    {
+      "questionId": "i30n-manufacturing-setup-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-manufacturing-setup-person-direct",
+        "i30n-manufacturing-setup-person-support"
+      ],
+      "displayRanking": [
+        "i30n-manufacturing-setup-person-direct",
+        "i30n-manufacturing-setup-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-manufacturing-setup-person-direct",
+        "i30n-manufacturing-setup-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 7827.1376,
+      "primaryReads": 190
+    },
+    {
+      "questionId": "i30n-manufacturing-setup-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-manufacturing-setup-knowledge-direct",
+        "i30n-manufacturing-setup-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-manufacturing-setup-knowledge-direct",
+        "i30n-manufacturing-setup-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-manufacturing-setup-knowledge-direct",
+        "i30n-manufacturing-setup-person-direct",
+        "i30n-manufacturing-setup-knowledge-support",
+        "i30n-manufacturing-setup-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 9002.514,
+      "primaryReads": 190
+    },
+    {
+      "questionId": "i30n-operations-visitor-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-operations-visitor-person-direct",
+        "i30n-operations-visitor-person-support"
+      ],
+      "displayRanking": [
+        "i30n-operations-visitor-person-direct",
+        "i30n-operations-visitor-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-operations-visitor-person-direct",
+        "i30n-operations-visitor-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 8700.9796,
+      "primaryReads": 205
+    },
+    {
+      "questionId": "i30n-operations-visitor-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-operations-visitor-knowledge-direct",
+        "i30n-operations-visitor-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-operations-visitor-knowledge-direct",
+        "i30n-operations-visitor-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-operations-visitor-knowledge-direct",
+        "i30n-operations-visitor-person-direct",
+        "i30n-operations-visitor-knowledge-support",
+        "i30n-operations-visitor-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 9699.7363,
+      "primaryReads": 205
+    },
+    {
+      "questionId": "i30n-operations-expense-person-query",
+      "entityType": "person",
+      "gold": [
+        "i30n-operations-expense-person-direct",
+        "i30n-operations-expense-person-support"
+      ],
+      "displayRanking": [
+        "i30n-operations-expense-person-direct",
+        "i30n-operations-expense-person-support"
+      ],
+      "combinedRanking": [
+        "i30n-operations-expense-person-direct",
+        "i30n-operations-expense-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 8518.5386,
+      "primaryReads": 205
+    },
+    {
+      "questionId": "i30n-operations-expense-knowledge-query",
+      "entityType": "knowledge",
+      "gold": [
+        "i30n-operations-expense-knowledge-direct",
+        "i30n-operations-expense-knowledge-support"
+      ],
+      "displayRanking": [
+        "i30n-operations-expense-knowledge-direct",
+        "i30n-operations-expense-knowledge-support"
+      ],
+      "combinedRanking": [
+        "i30n-operations-expense-person-direct",
+        "i30n-operations-expense-knowledge-direct",
+        "i30n-operations-expense-person-support",
+        "i30n-operations-expense-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedHitAt5": 1,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "status": "succeeded",
+      "primaryRecall": 1.0,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 9543.4592,
+      "primaryReads": 205
+    },
+    {
+      "questionId": "i30n-no-answer-01",
+      "entityType": "person",
+      "gold": [],
+      "displayRanking": [],
+      "combinedRanking": [],
+      "groupHitAt5": null,
+      "groupPrecisionAt5": 0,
+      "groupRecallAt5": null,
+      "combinedHitAt5": null,
+      "combinedPrecisionAt5": 0,
+      "noGoldFalse": false,
+      "status": "all_unsuitable",
+      "primaryRecall": null,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 7996.6978,
+      "primaryReads": 220
+    },
+    {
+      "questionId": "i30n-no-answer-02",
+      "entityType": "knowledge",
+      "gold": [],
+      "displayRanking": [],
+      "combinedRanking": [],
+      "groupHitAt5": null,
+      "groupPrecisionAt5": 0,
+      "groupRecallAt5": null,
+      "combinedHitAt5": null,
+      "combinedPrecisionAt5": 0,
+      "noGoldFalse": false,
+      "status": "all_unsuitable",
+      "primaryRecall": null,
+      "lostPrimaryGold": [],
+      "outOfScope": false,
+      "durationMs": 11891.8719,
+      "primaryReads": 400
+    },
+    {
+      "questionId": "i30n-no-answer-03",
+      "entityType": "person",
+      "gold": [],
+      "displayRanking": [],
+      "combinedRanking": [],
+      "groupHitAt5": null,
+      "groupPrecisionAt5": 0,
+      "groupRecallAt5": null,
+      "combinedHitAt5": null,
+      "combinedPrecisionAt5": 0,
+      "noGoldFalse": false,
+      "status": "CLASSIFICATION_OUT_OF_SCOPE",
+      "primaryRecall": null,
+      "lostPrimaryGold": [],
+      "outOfScope": true,
+      "durationMs": 611.5724,
+      "primaryReads": 0
+    },
+    {
+      "questionId": "i30n-no-answer-04",
+      "entityType": "knowledge",
+      "gold": [],
+      "displayRanking": [],
+      "combinedRanking": [],
+      "groupHitAt5": null,
+      "groupPrecisionAt5": 0,
+      "groupRecallAt5": null,
+      "combinedHitAt5": null,
+      "combinedPrecisionAt5": 0,
+      "noGoldFalse": false,
+      "status": "CLASSIFICATION_OUT_OF_SCOPE",
+      "primaryRecall": null,
+      "lostPrimaryGold": [],
+      "outOfScope": true,
+      "durationMs": 571.4154,
+      "primaryReads": 0
+    }
+  ]
+}

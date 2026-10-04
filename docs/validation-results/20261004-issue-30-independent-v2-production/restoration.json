@@ -1,0 +1,32 @@
+{
+  "api": {
+    "imageRestored": true,
+    "environmentRestored": true,
+    "templateRestored": null,
+    "scaleRestored": true,
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-api:issue9-final5",
+    "activeRevisions": 0,
+    "actualReplicaChecks": [
+      0,
+      0
+    ]
+  },
+  "worker": {
+    "imageRestored": true,
+    "environmentRestored": true,
+    "templateRestored": null,
+    "scaleRestored": true,
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-worker:issue13-live3",
+    "replicas": 0
+  },
+  "job": {
+    "imageRestored": true,
+    "environmentRestored": true,
+    "templateRestored": true,
+    "scaleRestored": true,
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-production-evaluation:issue30-hardening1",
+    "runningExecutions": 0
+  },
+  "activeAiReservations": 0,
+  "checkedAtUtc": "2026-10-04T03:02:45.313090+00:00"
+}

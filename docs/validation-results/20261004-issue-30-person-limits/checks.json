@@ -1,0 +1,55 @@
+{
+  "dotnetTests": {
+    "passed": 346,
+    "failed": 0,
+    "skipped": 0,
+    "coverage": {
+      "linePercent": 86.48,
+      "branchPercent": 73.64,
+      "personLimitEvaluator": {
+        "line-rate": "0.9638",
+        "branch-rate": "0.8095"
+      }
+    },
+    "coverageFile": "tests/Dse.Tests/TestResults/d592de4d-3c08-41c5-afc7-979eb609a7e3/coverage.cobertura.xml"
+  },
+  "scriptTests": {
+    "passed": 85,
+    "failed": 0,
+    "includesLocalBicepCompile": true
+  },
+  "searchE2e": {
+    "passed": 12,
+    "failed": 0,
+    "scope": "Search tests only, mock API and routed fixture responses; not full application suite"
+  },
+  "builds": {
+    "dotnet": "passed; existing ASPIRE010 warning",
+    "web": "passed; existing chunk size warning"
+  },
+  "offlineReplay": {
+    "rows": 96,
+    "questions": 48,
+    "deterministicQuestionsAndCsv": true,
+    "baselineMatches": 48,
+    "modelCalls": 0
+  },
+  "liveCalls": 0,
+  "productionApplied": false,
+  "rerankChangedQuestions": 8,
+  "matchingSavedRerankSuccesses": 0,
+  "gitDiffCheck": "passed",
+  "sha256": {
+    "src/Dse.Evaluation/Issue30PersonLimits.cs": "10dac76896a30fcc46b45c7aed1f44736cc6d8fc750f5415c4a7d3109aceaff2",
+    "src/Dse.Evaluation/Program.cs": "eb08f59e6daa99ebc5445cde4801c63b5e2b2a734d011121e358e6aaf9ff8b29",
+    "web/src/main.tsx": "441dd211ac27c74bdbf27854335388099e8d05a3fdef6d90c34749b5f10bc4d3",
+    "web/tests/search.spec.ts": "6026b765c53ea016362cce48f9757c27438cf3036df42ee74890947c61574f1a",
+    "scripts/issue30_grouped_report.py": "873b213088fc50f2d47931397351bebf2ccd34e1c39768402f9959a12bc6f4e5",
+    "scripts/generate_issue30_independent_v2.py": "981299fe99db6acc3b8ee64e3f2a0a11041cf1c7908de5d4d87b2f274656e933",
+    "docs/validation-results/20261004-issue-30-person-limits/replay/questions.json": "9a3cf22558b5e154a73398df4eef4c573d8b0b2ef7b900bcd9e3d475079bcc86",
+    "docs/validation-results/20261004-issue-30-person-limits/replay/report.json": "3e65a5ff8946ea09daed8e47480e53daf40248415cd1fae5ab53981cf0738c0a",
+    "docs/validation-results/20261004-issue-30-person-limits/grouped/grouped-report.json": "1e6a2c2b34878579ae9c565f728d3e53baef9a298ba2d047e944a1495c06c2e7",
+    "evaluation/issue-30/person-limit-rerank-plan.json": "cc1e4be8443322877e2f04d54afdb8985f9edfa1164741c0f00f6091c10b256c"
+  },
+  "recordedDateJst": "2026-10-04"
+}

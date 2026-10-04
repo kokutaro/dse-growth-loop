@@ -1,0 +1,15 @@
+{
+  "purpose": "Completed independent evaluation remains frozen; subsequent observed regression only. All-only arm reduces maximum paid calls from96 to48 without changing labels or model settings.",
+  "changes": {
+    "src/Dse.ProductionEvaluation/Program.cs": {
+      "baselineSha256": "b8046b7061752124481a6fe3140b49cf818774586f87006f98af42024a8f0b09",
+      "baselineSnapshot": "docs/validation-results/20261004-issue-30-regression/Program.cs.before",
+      "currentSha256": "1bbfb25c7c3c183e4bbd68aec1921d3b2e92ee8dfde192d12f2265d76da53403"
+    },
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": {
+      "baselineSha256": "80718024944fad08dc82d5864f285ea8b6b8dc3430e86db9ee0313992233b445",
+      "baselineSnapshot": "docs/validation-results/20261004-issue-30-regression/ProductionEvaluationPlan.cs.before",
+      "currentSha256": "8f01d20bbd5773a1c7c7b69b4d18b75b82d57cfc62c0c1091253849ac484b978"
+    }
+  }
+}

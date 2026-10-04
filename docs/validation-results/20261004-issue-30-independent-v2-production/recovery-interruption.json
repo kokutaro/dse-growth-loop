@@ -1,0 +1,19 @@
+{
+  "attempts": [
+    {
+      "execution": "dse-validation-issue30-m71jerh",
+      "error": "InvalidOperationException",
+      "modelCalls": 0
+    },
+    {
+      "execution": "dse-validation-issue30-3iy730i",
+      "error": "Missing completed seed projection",
+      "modelCalls": 0
+    }
+  ],
+  "cause": "Harness read projections through IPrimaryRepository, which intentionally hides searchUnit. Corrected to IRecordStore for projection verification.",
+  "sourceRecordsMatched": true,
+  "labelsChanged": false,
+  "retrievalAlgorithmChanged": false,
+  "modelCallsResent": 0
+}

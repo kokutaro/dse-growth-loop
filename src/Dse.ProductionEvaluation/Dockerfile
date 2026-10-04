@@ -10,7 +10,7 @@ RUN dotnet publish src/Dse.ProductionEvaluation -c Release --no-restore -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:10.0.11
 WORKDIR /app
 COPY --from=build /app .
-COPY evaluation/issue-30/independent/dataset.json data/dataset.json
-COPY evaluation/issue-30/independent/approval.json data/approval.json
+ARG VALIDATION_DATA=evaluation/issue-30/independent
+COPY ${VALIDATION_DATA}/ data/
 USER $APP_UID
 ENTRYPOINT ["dotnet", "Dse.ProductionEvaluation.dll"]

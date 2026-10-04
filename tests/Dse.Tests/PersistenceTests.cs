@@ -60,4 +60,15 @@ public class PersistenceTests
         await Assert.ThrowsAsync<ArgumentException>(() => repository.CommitAsync(RecordPartition.Catalog("demo-tenant"),
             [RecordWrite.Create(Example("SearchUnit"))], default));
     }
+
+    [Fact]
+    public async Task Stored_projection_can_be_verified_without_exposing_it_as_a_primary_record()
+    {
+        var store = new MemoryRecordStore();
+        var projection = Example("SearchUnit");
+        var partition = RecordPartition.Catalog("demo-tenant");
+        await store.CommitAsync(partition, [RecordWrite.Create(projection)], default);
+        Assert.NotNull(await store.ReadAsync(partition, projection.Text("id"), default));
+        Assert.Null(await new PrimaryRepository(store).ReadAsync(partition, projection.Text("id"), default));
+    }
 }

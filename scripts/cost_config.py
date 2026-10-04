@@ -53,7 +53,18 @@ def parameters(env):
     fx = decimal_value(env, 'AI_USD_TO_JPY', '0')
     price_version = env.get('AI_PRICE_VERSION', '')
     fx_version = env.get('AI_FX_VERSION', '')
-    if not stopped and not (budget and tokens and calls and Decimal(cost) > 0 and Decimal(fx) > 0 and price_version and fx_version):
+    period = env.get('AI_BUDGET_PERIOD', 'Daily')
+    if period not in ('Daily', 'Weekly'):
+        raise ValueError('AI_BUDGET_PERIOD は Daily / Weekly を指定してください。')
+    weekly_calls = integer(env, 'AI_WEEKLY_CALL_LIMIT', 0, maximum=1680)
+    weekly_cost = decimal_value(env, 'AI_WEEKLY_TOTAL_JPY_LIMIT', '0')
+    infra_reserve = decimal_value(env, 'AI_INFRASTRUCTURE_RESERVE_JPY', '0')
+    external_reserve = decimal_value(env, 'AI_EXTERNAL_AI_RESERVE_JPY', '0')
+    if period == 'Weekly' and (Decimal(weekly_cost) > 2000 or Decimal(fx) != 162 or
+            Decimal(infra_reserve) + Decimal(external_reserve) >= Decimal(weekly_cost)):
+        raise ValueError('週次予算は2,000円以下、固定為替162円、予算内の留保が必要です。')
+    money_guard = (budget and calls and Decimal(cost) > 0) if period == 'Daily' else (weekly_calls and Decimal(weekly_cost) > 0)
+    if not stopped and not (money_guard and tokens and Decimal(fx) > 0 and price_version and fx_version):
         raise ValueError('AI停止解除には承認予算、正の日次上限、為替、単価版、為替版が必要です。')
     level = env.get('APP_LOG_LEVEL', 'Warning')
     if level not in ('Trace', 'Debug', 'Information', 'Warning', 'Error', 'Critical', 'None'):
@@ -72,6 +83,11 @@ def parameters(env):
         'AiUsage__PriceVersion': price_version,
         'AiUsage__FxVersion': fx_version,
         'AiUsage__DayTimeZone': 'UTC',
+        'AiUsage__BudgetPeriod': period,
+        'AiUsage__WeeklyCallLimit': str(weekly_calls),
+        'AiUsage__WeeklyTotalJpyLimit': weekly_cost,
+        'AiUsage__InfrastructureReserveJpy': infra_reserve,
+        'AiUsage__ExternalAiReserveJpy': external_reserve,
     }
     for name, default, ceiling in [('OriginalBytes', 10485760, 10485760), ('ExpandedBytes', 52428800, 52428800), ('Entries', 10000, 10000), ('ProcessingSeconds', 120, 120), ('Attempts', 3, 3)]:
         runtime['Ingestion__' + name] = str(integer(env, 'Ingestion__' + name, default, 1, ceiling))

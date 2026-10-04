@@ -1,0 +1,34 @@
+{
+  "approvalReference": "user-20261004-weekly2000-fixed162",
+  "scope": "weekly accounting amendment; retrieval/classification/rerank prompts and labels unchanged",
+  "sha256": {
+    "src/Dse.Infrastructure/AiOptions.cs": "bdc5d8cd4c9631d26e6b22a73c09e6f875fd7ae8fbec84c11e1ebbb20b930ef9",
+    "src/Dse.Infrastructure/AiLedger.cs": "f0a2cc385d9ab14caa6ad1bc5bdbeeb7ab8cb4612e1bddf4eb19550cd4868925",
+    "src/Dse.Infrastructure/AiWeeklyBudget.cs": "3e1b6dc6282c9c3b4aa87d8cd505a0889536e1995bfc44893222e2e7dac8c36b",
+    "src/Dse.Infrastructure/RecordStore.cs": "ddeb3d14ff341edd9f51ff5dccbaa3dfec0bedbac73722f2c11fd16515a3f202",
+    "src/Dse.Domain/Records.cs": "615b53d26542f065fb2028d85e64c5cbc3080f24d35132ee546b747d3ed2bf0d",
+    "src/Dse.ProductionEvaluation/Program.cs": "b8046b7061752124481a6fe3140b49cf818774586f87006f98af42024a8f0b09",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "80718024944fad08dc82d5864f285ea8b6b8dc3430e86db9ee0313992233b445",
+    "scripts/cost_config.py": "581c1f2783ea09e6690477484afe49566bf6a189e9e6f45e46c518085a5661ef",
+    "tests/Dse.Tests/AiWeeklyBudgetTests.cs": "03c409528e4e7459c59131ab925a3757f0cf7d3366bae22fec59a36d28a1ae4b",
+    "tests/Dse.Tests/ProductionEvaluationPlanTests.cs": "3a78cc6c967c1e9abd500ab5ab9acb6e8bf8b79fc56b4dc5cc708b400a81b718",
+    "tests/scripts/test_cost_controls.py": "5426bfa5396c74434ffe568f6a9e1d0b35e994eef0827d04920eeb1ecdc062ea"
+  },
+  "tests": {
+    "dotnetPassed": 361,
+    "pythonPassed": 92,
+    "build": "passed; ASPIRE010 existing warning"
+  },
+  "coverageNewLedgerFiles": {
+    "Dse.Infrastructure/AiLedger.cs": {
+      "covered": 83,
+      "lines": 100,
+      "rate": 0.83
+    },
+    "Dse.Infrastructure/AiWeeklyBudget.cs": {
+      "covered": 61,
+      "lines": 63,
+      "rate": 0.9682539682539683
+    }
+  }
+}

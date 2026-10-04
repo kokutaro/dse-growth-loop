@@ -1,0 +1,32 @@
+{
+  "billableAttempts": 234,
+  "inputTokens": 295192,
+  "outputTokens": 51499,
+  "estimatedIndependentAiJpy": 8.0019176,
+  "estimatedRegressionAiJpy": 0.867488,
+  "sharedDayLedger": {
+    "calls": 202,
+    "tokens": 319459,
+    "estimatedJpy": 7.7958488,
+    "activeReservations": 0,
+    "blocked": null
+  },
+  "cacheHits": 53,
+  "classificationSchemaFailures": 3,
+  "tokenBoundViolations": 0,
+  "infrastructureEstimate": {
+    "apiWindowUpperBoundUtc": [
+      "2026-10-04T01:45:00Z",
+      "2026-10-04T03:02:00Z"
+    ],
+    "apiReplicaSecondsUpperBound": 9240,
+    "apiReplicaSecondsReason": "Conservative entire temporary window times maximum two revisions during restoration transition; both maxReplicas=1; actual replica checks ended at zero before this window end",
+    "jobReplicaSecondsUpperBound": 3809,
+    "jobReplicaSecondsReason": "Succeeded start/end durations plus each of three failed executions lacking endTime bounded at configured 900-second timeout; 21 execution records",
+    "usdPerVcpuSecond": 2.4e-05,
+    "usdPerGibSecond": 3e-06,
+    "fxJpyPerUsd": 200,
+    "computeJpyUpperBound": 33.433499999999995,
+    "otherInfrastructureBilling": "Storage/Cosmos/Log/ACR and invoice reconciliation remain unmeasured; compute estimate is not total invoiced infrastructure cost"
+  }
+}

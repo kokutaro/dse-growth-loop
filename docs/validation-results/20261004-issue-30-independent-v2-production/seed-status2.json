@@ -1,0 +1,3501 @@
+{
+  "plan": {
+    "runId": "issue30-independent-20261004-v2",
+    "mode": "--seed-status",
+    "datasetSha256": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+    "dummyOnly": true,
+    "scope": "issue30-independent-20261004-v2",
+    "evaluationId": "issue30-independent-20261004-v2",
+    "observedRegressionSet": false,
+    "independentHoldout": true,
+    "arms": [
+      "all",
+      "targeted"
+    ],
+    "questions": 24,
+    "documents": 60,
+    "rules": {
+      "version": "retrieval-v2",
+      "questionTopCategories": 3,
+      "questionThreshold": 0.1,
+      "documentThreshold": 0.2,
+      "noulThreshold": 0.5,
+      "rescueSlots": 2,
+      "personLimit": 15,
+      "caseLimit": 15,
+      "evidenceBytesPerCandidate": 1200
+    },
+    "labelApprovalStatus": "human-approved",
+    "executionEnabled": true,
+    "profileFragments": true,
+    "httpAuthenticationTested": false,
+    "executionScope": "Production Azure services via Managed Identity; public HTTP/JWT and cold scale-out are separate"
+  },
+  "units": [
+    {
+      "entityId": "i30n-software-deadlock-person-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-deadlock-person-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-deadlock-person-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-deadlock-knowledge-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-deadlock-knowledge-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-deadlock-knowledge-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-pagination-person-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-pagination-person-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-pagination-person-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-pagination-knowledge-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-pagination-knowledge-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-software-pagination-knowledge-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-resonance-person-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-resonance-person-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-resonance-person-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-resonance-knowledge-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-resonance-knowledge-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-resonance-knowledge-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-corrosion-person-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-corrosion-person-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-corrosion-person-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-corrosion-knowledge-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-corrosion-knowledge-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-mechanical-corrosion-knowledge-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-sales-renewal-person-direct",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-sales-renewal-person-support",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-sales-renewal-person-negative",
+      "primaryExists": true,
+      "receiptExists": true
+    },
+    {
+      "entityId": "i30n-sales-renewal-knowledge-direct",
+      "primaryExists": true,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-sales-renewal-knowledge-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-sales-renewal-knowledge-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-sales-tender-person-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-sales-tender-person-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-sales-tender-person-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-sales-tender-knowledge-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-sales-tender-knowledge-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-sales-tender-knowledge-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-moisture-person-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-moisture-person-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-moisture-person-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-moisture-knowledge-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-moisture-knowledge-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-moisture-knowledge-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-setup-person-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-setup-person-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-setup-person-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-setup-knowledge-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-setup-knowledge-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-manufacturing-setup-knowledge-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-visitor-person-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-visitor-person-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-visitor-person-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-visitor-knowledge-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-visitor-knowledge-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-visitor-knowledge-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-expense-person-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-expense-person-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-expense-person-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-expense-knowledge-direct",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-expense-knowledge-support",
+      "primaryExists": false,
+      "receiptExists": false
+    },
+    {
+      "entityId": "i30n-operations-expense-knowledge-negative",
+      "primaryExists": false,
+      "receiptExists": false
+    }
+  ],
+  "firstRecords": [
+    {
+      "kind": "person",
+      "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 2,
+      "activeVersion": 2,
+      "createdAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:00.1867152\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-direct"
+      },
+      "correctedBy": null,
+      "accessVersion": 1,
+      "displayName": "\u67B6\u7A7Ai30n-software-deadlock-person-direct",
+      "departmentId": "independent-department",
+      "available": true,
+      "publicationState": "published",
+      "confirmationState": "ai_unconfirmed",
+      "correctionState": "none",
+      "experienceIds": [
+        "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-experience"
+      ],
+      "description": "\u30BD\u30D5\u30C8\u30A6\u30A7\u30A2\u958B\u767A\u3067\u3001\u8907\u6570\u30C6\u30FC\u30D6\u30EB\u306E\u66F4\u65B0\u9806\u5E8F\u3092\u7D71\u4E00\u3057\u305F\u3002\u30C7\u30C3\u30C9\u30ED\u30C3\u30AF\u691C\u51FA\u6642\u306F\u30C8\u30E9\u30F3\u30B6\u30AF\u30B7\u30E7\u30F3\u5168\u4F53\u3092\u6709\u9650\u56DE\u518D\u8A66\u884C\u3057\u3001\u540C\u6642\u66F4\u65B0\u8A66\u9A13\u3067\u51E6\u7406\u5B8C\u4E86\u3092\u78BA\u8A8D\u3057\u305F\u3002",
+      "evidenceRefs": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+          "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+          "sourceVersion": 1
+        }
+      ],
+      "processingMode": "live",
+      "totalExperienceMonths": null,
+      "classificationResultId": "classification-a3df0f9790d5a81ee409aceacfebdc1acb493febcc97d7022467c8ac35f13f8d",
+      "decisions": {
+        "choices": {
+          "domain": {
+            "choice": "software",
+            "probabilities": {
+              "sales": 0,
+              "manufacturing": 0,
+              "operations": 0,
+              "unknown": 0,
+              "mechanical": 0,
+              "software": 1
+            },
+            "confidence": 1
+          }
+        },
+        "nouls": {
+          "mechanical": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "software": {
+            "state": 0,
+            "yesProbability": 0.87
+          },
+          "sales": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "manufacturing": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "operations": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "unknown": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "handover": {
+            "state": 1,
+            "yesProbability": null
+          }
+        }
+      },
+      "projectionIds": [
+        "projection-1d41c132f3dda068d49ee03d4cdc9c8378f0340f2045b0601700ef979b10aa65",
+        "projection-b7ed0f25c4d71f6e19d9223179c4e8fd7f1bdee8ac665c1eafcade19c2699c8c"
+      ],
+      "etag": "\u002205000c71-0000-2300-0000-6ac18c380000\u0022"
+    },
+    {
+      "kind": "document",
+      "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-document",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "createdAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "updatedAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-direct"
+      },
+      "correctedBy": null,
+      "title": "\u67B6\u7A7Ai30n-software-deadlock-person-direct",
+      "documentType": "profile",
+      "status": "ready",
+      "currentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+      "accessVersion": 1,
+      "etag": "\u00220500f270-0000-2300-0000-6ac18c360000\u0022"
+    },
+    {
+      "kind": "documentVersion",
+      "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "createdAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "updatedAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-direct"
+      },
+      "correctedBy": null,
+      "documentId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-document",
+      "status": "ready",
+      "blobKey": "validation/issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+      "sha256": "5b117859c95c5e2881cecd1e3149047994979ae79cfaace314b3cbfebf52fb98",
+      "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "bytes": 1,
+      "jobId": "issue30-independent-20261004-v2",
+      "etag": "\u00220500f370-0000-2300-0000-6ac18c360000\u0022"
+    },
+    {
+      "kind": "evidenceSpan",
+      "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "createdAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "updatedAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-direct"
+      },
+      "correctedBy": null,
+      "documentId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-document",
+      "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+      "text": "\u30BD\u30D5\u30C8\u30A6\u30A7\u30A2\u958B\u767A\u3067\u3001\u8907\u6570\u30C6\u30FC\u30D6\u30EB\u306E\u66F4\u65B0\u9806\u5E8F\u3092\u7D71\u4E00\u3057\u305F\u3002\u30C7\u30C3\u30C9\u30ED\u30C3\u30AF\u691C\u51FA\u6642\u306F\u30C8\u30E9\u30F3\u30B6\u30AF\u30B7\u30E7\u30F3\u5168\u4F53\u3092\u6709\u9650\u56DE\u518D\u8A66\u884C\u3057\u3001\u540C\u6642\u66F4\u65B0\u8A66\u9A13\u3067\u51E6\u7406\u5B8C\u4E86\u3092\u78BA\u8A8D\u3057\u305F\u3002",
+      "textHash": "5b117859c95c5e2881cecd1e3149047994979ae79cfaace314b3cbfebf52fb98",
+      "validationState": "validated",
+      "location": {
+        "type": "paragraph",
+        "label": "#i30n-software-deadlock-person-direct-evidence"
+      },
+      "etag": "\u00220500f470-0000-2300-0000-6ac18c360000\u0022"
+    },
+    {
+      "kind": "experience",
+      "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-experience",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "updatedAt": "2026-10-03T23:13:58.2815324\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-direct"
+      },
+      "correctedBy": null,
+      "personId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct",
+      "documentId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-document",
+      "title": "\u67B6\u7A7Ai30n-software-deadlock-person-direct",
+      "description": "\u30BD\u30D5\u30C8\u30A6\u30A7\u30A2\u958B\u767A\u3067\u3001\u8907\u6570\u30C6\u30FC\u30D6\u30EB\u306E\u66F4\u65B0\u9806\u5E8F\u3092\u7D71\u4E00\u3057\u305F\u3002\u30C7\u30C3\u30C9\u30ED\u30C3\u30AF\u691C\u51FA\u6642\u306F\u30C8\u30E9\u30F3\u30B6\u30AF\u30B7\u30E7\u30F3\u5168\u4F53\u3092\u6709\u9650\u56DE\u518D\u8A66\u884C\u3057\u3001\u540C\u6642\u66F4\u65B0\u8A66\u9A13\u3067\u51E6\u7406\u5B8C\u4E86\u3092\u78BA\u8A8D\u3057\u305F\u3002",
+      "evidenceRefs": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence",
+          "documentVersionId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-version",
+          "sourceVersion": 1
+        }
+      ],
+      "period": {
+        "start": null,
+        "end": null,
+        "precision": "unknown",
+        "months": null
+      },
+      "confirmationState": "ai_unconfirmed",
+      "correctionState": "none",
+      "classificationResultId": "classification-e4b012dadc8dd9dad46971bf07f258fa923eb4a8f36f337795e3552ab1af9dea",
+      "decisions": {
+        "choices": {
+          "domain": {
+            "choice": "software",
+            "probabilities": {
+              "sales": 0,
+              "manufacturing": 0,
+              "operations": 0,
+              "unknown": 0,
+              "mechanical": 0,
+              "software": 1
+            },
+            "confidence": 1
+          }
+        },
+        "nouls": {
+          "mechanical": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "software": {
+            "state": 0,
+            "yesProbability": 0.87
+          },
+          "sales": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "manufacturing": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "operations": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "unknown": {
+            "state": 1,
+            "yesProbability": null
+          },
+          "handover": {
+            "state": 1,
+            "yesProbability": null
+          }
+        }
+      },
+      "etag": "\u002205000971-0000-2300-0000-6ac18c380000\u0022"
+    }
+  ],
+  "aiAudits": [
+    {
+      "kind": "aiRun",
+      "id": "ai-run-00e301568718486eb7814307e3c977f4",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-sales-renewal-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:46.6684515\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:46.7283601\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-sales-renewal-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-sales-renewal-person-negative-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-sales-renewal-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "6078a5da82cec755d1589722cd8154ea33cf9af20759c7fc46aadd43de5bd04d",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-sales-renewal-person-negative-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 23,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2361,
+        "cachedFromRunId": "ai-run-aeed49e5afb34d298323c087f0046137"
+      },
+      "etag": "\u00220500b273-0000-2300-0000-6ac18c660000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-08100817de7c43b9870070d11e0b9f81",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:21.8639927\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:22.5239483\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-knowledge-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "38115fb93c8a089290e337508b2d56dd0b338fab5f7981af1c5f7b4eae372ee8",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-knowledge-support-evidence"
+        ],
+        "inputTokens": 779,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0065436,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 626,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2552,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205001072-0000-2300-0000-6ac18c4e0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-0bdb4f45b71b468da26c50b331282b64",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-sales-renewal-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:45.0560698\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:45.1179732\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-sales-renewal-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "41590212ea3f9aee2475e3a4cde19570d5973ac40030551cf5bceeebaae3b653",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 24,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 3008,
+        "cachedFromRunId": "ai-run-3b2d5fd16a7a4d088bb969c4e3b6e941"
+      },
+      "etag": "\u002205009373-0000-2300-0000-6ac18c650000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-12ce7b8cd4cc43a2be33e4d5440f80ad",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:01.0181382\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:01.9642693\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "6cbb955109261b205384653c02b024a90efaaac27caa461dad4a0181fc161664",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence"
+        ],
+        "inputTokens": 866,
+        "outputTokens": 98,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0072744,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 824,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 3081,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205001d71-0000-2300-0000-6ac18c390000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-1756f8b3ae564d6dad11099780ae81a5",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-pagination-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:12.0907611\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:12.2172793\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-pagination-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-pagination-person-direct-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "8b6a60af90a2f94b6ea265445e922d09e4394f0e522ad8b9f3d1e7f5c693af19",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-person-direct-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 26,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2352,
+        "cachedFromRunId": "ai-run-e19151be86ea42b891eb91a49597ded2"
+      },
+      "etag": "\u002205009e71-0000-2300-0000-6ac18c440000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-1c38042217c842feb3dea307214a7894",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-corrosion-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:34.4726412\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:34.5315797\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-corrosion-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-direct-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "61d44765b82fa309249494a1846dfae08633a5c5b6dc8731c26763a1dbfdab4b",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-direct-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 24,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2160,
+        "cachedFromRunId": "ai-run-859060480c3d49e78108412768b4cad4"
+      },
+      "etag": "\u00220500d072-0000-2300-0000-6ac18c5a0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-1d626b2d465b42dd843ebc4f3ca59b95",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:05.7923454\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:05.8529173\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-negative-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "5382b79c3edf6c6f9cf756ee0d0ec0d262c3d0107f9be17b893bd7ef64d90a54",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-person-negative-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 25,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2492,
+        "cachedFromRunId": "ai-run-8faf9f2c5a71460ca1cde9542cb06283"
+      },
+      "etag": "\u002205004d71-0000-2300-0000-6ac18c3d0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-1fcc95875a624b258c1c4fea85a52a10",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-corrosion-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:37.8308011\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:38.2836069\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-corrosion-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-negative-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "fc8b31bcb1b347fbadb6acc89180335ef2b8850542f68900eb66012614d6d4ad",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-negative-evidence"
+        ],
+        "inputTokens": 741,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0062244,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 419,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2368,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205001573-0000-2300-0000-6ac18c5e0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-2c5c33ce1c83494ca3282860b229ee36",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:23.0881746\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:23.7392212\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-knowledge-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "921409ec83bb35f6d3e4ee21b8a8215bc26c29fdc5cb2a1ef410f930e3425f1f",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-knowledge-negative-evidence"
+        ],
+        "inputTokens": 773,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0064932,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 551,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2538,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205002172-0000-2300-0000-6ac18c4f0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-2d94eef7d01444dda3e018321443c4fa",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-corrosion-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:38.5339005\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:38.593999\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-corrosion-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-negative-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "fc8b31bcb1b347fbadb6acc89180335ef2b8850542f68900eb66012614d6d4ad",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-negative-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 25,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2368,
+        "cachedFromRunId": "ai-run-1fcc95875a624b258c1c4fea85a52a10"
+      },
+      "etag": "\u002205001973-0000-2300-0000-6ac18c5e0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-312f072cb7c3481e9dfa187c529749ca",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-resonance-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:28.1684132\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:28.2268364\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-resonance-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "f3e8eebdfb813e694e48d7fa8eb5d4a336df9ce2cdd26ae6715f9f8c0c7f15c3",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 25,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2868,
+        "cachedFromRunId": "ai-run-91152128909a44ccba7d8cb4c8f3dcd3"
+      },
+      "etag": "\u002205006172-0000-2300-0000-6ac18c540000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-33f40040ca2f4ea99d81ec7006f0ecee",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:39.2388842\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:39.687756\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-knowledge-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "3c7dfac2df9f89b1841da9520894e075426f06d299969fd310ab44093c672675",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-knowledge-direct-evidence"
+        ],
+        "inputTokens": 727,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0061068,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 416,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2166,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205003173-0000-2300-0000-6ac18c5f0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-377dee8846534bd9967292842f1b40d8",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-resonance-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:24.4643918\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:24.9236972\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-resonance-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-direct-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "2af2594dbce52a014912681f1cd637baae208e0269d9213d6d9f8dc0ad222a7c",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-direct-evidence"
+        ],
+        "inputTokens": 693,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0058212,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 425,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2040,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205003472-0000-2300-0000-6ac18c500000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-3b2d5fd16a7a4d088bb969c4e3b6e941",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-sales-renewal-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:43.5631116\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:44.0867647\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-sales-renewal-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "41590212ea3f9aee2475e3a4cde19570d5973ac40030551cf5bceeebaae3b653",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-evidence"
+        ],
+        "inputTokens": 852,
+        "outputTokens": 96,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0071568,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 490,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 3008,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205008373-0000-2300-0000-6ac18c640000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-3bcac77730504c67bab3765f36e0a3b6",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-corrosion-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:35.4070474\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:35.8720028\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-corrosion-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "8d55766e30cc8502f8d44a4b8db5f8a9202bb974bcd5d55ec4e5b40e43279b9e",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-evidence"
+        ],
+        "inputTokens": 860,
+        "outputTokens": 100,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.007224,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 430,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2988,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500e972-0000-2300-0000-6ac18c5b0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-473223c6bd0b4429b91ecd16ef5d864e",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:20.6642765\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:21.1878104\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-knowledge-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "3e1815d197af08979422d1ba37cc42a7d97d5718946dfe1a5d4f2b73a0e490b2",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-knowledge-direct-evidence"
+        ],
+        "inputTokens": 747,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0062748,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 489,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2358,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500ff71-0000-2300-0000-6ac18c4d0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-50906c6731c8430ca4b361f0703d7ed8",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:30.5510239\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:31.3144927\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-knowledge-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "00d7d0b0233a985445eee012ec8bfa782e258a41b475f43ea89202c1ad8efbff",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-knowledge-direct-evidence"
+        ],
+        "inputTokens": 699,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0058716,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 729,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2046,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205009872-0000-2300-0000-6ac18c570000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-53050b1cb2de4994be8da06f31f7dad3",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:09.3626752\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:10.1640746\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "4b3f53eef0701b8564ce21cfc67885e6e2c8bfa99057cbc19dc8905ffad78dd6",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-negative-evidence"
+        ],
+        "inputTokens": 767,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0064428,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 711,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2486,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205008871-0000-2300-0000-6ac18c420000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-582a3fd845f74611887539f3b02b1e92",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:02.388571\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:03.0891994\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "0c071c7a020aac343040350edf23b9e030dedf99da19befca8cf09f1078c8610",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence"
+        ],
+        "inputTokens": 790,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.006636,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 665,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2628,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205002a71-0000-2300-0000-6ac18c3b0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-67f3810657dc4d32aaf0c82b360f3cb4",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:13:58.9942552\u002B00:00",
+      "updatedAt": "2026-10-03T23:13:59.7492699\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "9731419a8a2c8bb67a8fb271339a1396468066fc9ddbcb50c063a2225bfc2ddd",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence"
+        ],
+        "inputTokens": 721,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0060564,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 717,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2212,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205000071-0000-2300-0000-6ac18c370000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-69f61cda0b3243c0a673fc2c4d27057b",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-resonance-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:27.2926408\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:27.9218154\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-resonance-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "9323bcabbee5256be9aabc6938b596943025d32c1743c0be9de17d20234d11f5",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-evidence"
+        ],
+        "inputTokens": 760,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.006384,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 596,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2444,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205005d72-0000-2300-0000-6ac18c530000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-79ab5f4ca20248539f5ec09f1a6bd686",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-sales-renewal-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:41.9455207\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:42.4037151\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-sales-renewal-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-sales-renewal-person-direct-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-sales-renewal-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "99d5c56d5305009dce047800ce262024999dcdfdff1ecb2bea6d9509416f041c",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-sales-renewal-person-direct-evidence"
+        ],
+        "inputTokens": 695,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.005838,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 422,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2069,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205006673-0000-2300-0000-6ac18c620000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-859060480c3d49e78108412768b4cad4",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-corrosion-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:33.7608623\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:34.224386\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-corrosion-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-direct-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "61d44765b82fa309249494a1846dfae08633a5c5b6dc8731c26763a1dbfdab4b",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-direct-evidence"
+        ],
+        "inputTokens": 721,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0060564,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 429,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2160,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500cc72-0000-2300-0000-6ac18c5a0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-87fa4a80b18c483e90e42334793c855b",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-resonance-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:29.1042055\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:29.6065739\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-resonance-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-negative-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "ef89b3076a0ae5ffa316ebbcee479628bdf15d73077a33c2413503870d99721b",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-negative-evidence"
+        ],
+        "inputTokens": 757,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0063588,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 469,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2440,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205007c72-0000-2300-0000-6ac18c550000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-8960a024471a485c9c6a6c8f8edd522a",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:32.5384888\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:33.2123941\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-knowledge-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "d135581836e01801b2ec9ae3153f81eefaeb36d4f5077898286f34a7235957a5",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-knowledge-negative-evidence"
+        ],
+        "inputTokens": 761,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0063924,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 638,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2434,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500ba72-0000-2300-0000-6ac18c590000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-8faf9f2c5a71460ca1cde9542cb06283",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:04.8287593\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:05.4072378\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-negative-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "5382b79c3edf6c6f9cf756ee0d0ec0d262c3d0107f9be17b893bd7ef64d90a54",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-person-negative-evidence"
+        ],
+        "inputTokens": 763,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0064092,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 545,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2492,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205004971-0000-2300-0000-6ac18c3d0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-91152128909a44ccba7d8cb4c8f3dcd3",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-resonance-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:26.5882839\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:27.0430527\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-resonance-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "f3e8eebdfb813e694e48d7fa8eb5d4a336df9ce2cdd26ae6715f9f8c0c7f15c3",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-support-evidence"
+        ],
+        "inputTokens": 832,
+        "outputTokens": 100,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0069888,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 421,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2868,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205005172-0000-2300-0000-6ac18c530000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-94a0ab1d17d9449e8a29ef69dc153035",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-resonance-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:29.8492017\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:29.9085634\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-resonance-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-negative-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "ef89b3076a0ae5ffa316ebbcee479628bdf15d73077a33c2413503870d99721b",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-negative-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 23,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2440,
+        "cachedFromRunId": "ai-run-87fa4a80b18c483e90e42334793c855b"
+      },
+      "etag": "\u002205008072-0000-2300-0000-6ac18c550000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-9c782dce30d34eef9ca05e210777ed9a",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:00.0230084\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:00.0914592\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "9731419a8a2c8bb67a8fb271339a1396468066fc9ddbcb50c063a2225bfc2ddd",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-person-direct-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 32,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2212,
+        "cachedFromRunId": "ai-run-67f3810657dc4d32aaf0c82b360f3cb4"
+      },
+      "etag": "\u002205000471-0000-2300-0000-6ac18c380000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-a37ccc50a2864b83b2af738ce1f2b193",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-pagination-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:17.7891155\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:18.689078\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-pagination-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-pagination-person-negative-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "5e162d731d7cabefc1106d268ed8f91857b86920b1cc391e7dacc8bdc2067bcd",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-person-negative-evidence"
+        ],
+        "inputTokens": 769,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0064596,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 800,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2544,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500e271-0000-2300-0000-6ac18c4a0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-aa6903569da34365bc68b3c51af4d716",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-corrosion-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:36.1171741\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:36.57999\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-corrosion-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "216564e392238cd0384ec8093c16af13f0ec42c1775719a83132d744ea6a1b84",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-evidence"
+        ],
+        "inputTokens": 788,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0066192,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 428,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2564,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500f572-0000-2300-0000-6ac18c5c0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-aeed49e5afb34d298323c087f0046137",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-sales-renewal-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:45.981923\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:46.4226858\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-sales-renewal-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-sales-renewal-person-negative-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-sales-renewal-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "6078a5da82cec755d1589722cd8154ea33cf9af20759c7fc46aadd43de5bd04d",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-sales-renewal-person-negative-evidence"
+        ],
+        "inputTokens": 745,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.006258,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 405,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2361,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500ae73-0000-2300-0000-6ac18c660000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-af925377172a4193b21af2d923fd2464",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-pagination-person-negative",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:19.1893701\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:19.3644124\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-pagination-person-negative"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-pagination-person-negative-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-person-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "5e162d731d7cabefc1106d268ed8f91857b86920b1cc391e7dacc8bdc2067bcd",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-person-negative-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 25,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2544,
+        "cachedFromRunId": "ai-run-a37ccc50a2864b83b2af738ce1f2b193"
+      },
+      "etag": "\u00220500e671-0000-2300-0000-6ac18c4b0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-b483e780534942dabaf6b5088c34cfd3",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-sales-renewal-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:42.6535999\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:42.7120519\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-sales-renewal-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-sales-renewal-person-direct-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-sales-renewal-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "99d5c56d5305009dce047800ce262024999dcdfdff1ecb2bea6d9509416f041c",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-sales-renewal-person-direct-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 24,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2069,
+        "cachedFromRunId": "ai-run-79ab5f4ca20248539f5ec09f1a6bd686"
+      },
+      "etag": "\u002205006a73-0000-2300-0000-6ac18c620000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-b6130a695d864967970932b191f1b4e2",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:06.6947476\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:07.3424896\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "dd369775dc0ee1ed3d4bc017f75f0c142fc7e0786a6f7f5546077e24aa7ac650",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-direct-evidence"
+        ],
+        "inputTokens": 727,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0061068,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 554,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2218,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205006671-0000-2300-0000-6ac18c3f0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-b8d83a0d14ee4ba691b3634bc4823186",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:40.0620335\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:40.5071276\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-knowledge-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "dfa35005dc719b2b000c5d2f99ccbe29d4cf207ee7995bddec6e99640c6c9975",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-knowledge-support-evidence"
+        ],
+        "inputTokens": 759,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0063756,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 409,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2360,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205004273-0000-2300-0000-6ac18c600000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-bdbbb0c047304aafa456f6f26284f649",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-pagination-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:13.5642607\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:14.2461174\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-pagination-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-pagination-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "1156be974e2e93dfcf43711afc347e13ee6d5b4b88d6abf6c0da87f3e2734c20",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-person-support-evidence"
+        ],
+        "inputTokens": 886,
+        "outputTokens": 98,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0074424,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 648,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 3221,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500b771-0000-2300-0000-6ac18c460000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-c4d1351be610436fbd30b284080a41f1",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:07.7646091\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:08.5557772\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "1a2b840487549a4d2319152af6481e84c7c3100fb4c5f8a2afa792f0b06cde48",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-knowledge-support-evidence"
+        ],
+        "inputTokens": 759,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0063756,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 756,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2412,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205007771-0000-2300-0000-6ac18c400000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-c794f88bc57246a3bea53aa52818adc2",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:40.9522916\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:41.4078188\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-knowledge-negative-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "e8371f2df0eb8fe2538b20bd50986ebc68ab1de0a474b499b8cf7c47c102d69d",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-knowledge-negative-evidence"
+        ],
+        "inputTokens": 745,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.006258,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 421,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2362,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205005473-0000-2300-0000-6ac18c610000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-cd9b20ffd4fa4b729e744f98de07b683",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:47.3701519\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:47.4552323\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "budget_stopped",
+      "errorCode": "AI_BUDGET_STOPPED",
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-sales-renewal-knowledge-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "d487aacb06e8e440af232cb5ae236f7e4e052e3143d7f988937051443325196b",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-sales-renewal-knowledge-direct-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 52,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2075
+      },
+      "etag": "\u00220500c273-0000-2300-0000-6ac18c670000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-d45b35483d7147579c09bdf41b04fb09",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-pagination-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:14.5893399\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:15.3638258\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-pagination-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-pagination-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "7c09439e7453433ac9bd230378ffa17da0e9a6413038882d4c982887555ebf05",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-person-support-evidence"
+        ],
+        "inputTokens": 810,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.006804,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 721,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2768,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500c371-0000-2300-0000-6ac18c470000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-dd8a3d35e3a948f7845ac4f06aa20b88",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-pagination-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:15.8900385\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:16.0899197\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-pagination-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-pagination-person-support-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "1156be974e2e93dfcf43711afc347e13ee6d5b4b88d6abf6c0da87f3e2734c20",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-person-support-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 100,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 3221,
+        "cachedFromRunId": "ai-run-bdbbb0c047304aafa456f6f26284f649"
+      },
+      "etag": "\u00220500c771-0000-2300-0000-6ac18c480000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-e19151be86ea42b891eb91a49597ded2",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-pagination-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:11.1954474\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:11.7323238\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-pagination-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-pagination-person-direct-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-pagination-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "8b6a60af90a2f94b6ea265445e922d09e4394f0e522ad8b9f3d1e7f5c693af19",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-pagination-person-direct-evidence"
+        ],
+        "inputTokens": 741,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0062244,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 501,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2352,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205009a71-0000-2300-0000-6ac18c430000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-e42edf54fee54148bd29bd53087cc1db",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-issue30-independent-20261004-v2",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:31.6871524\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:32.1679823\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-issue30-independent-20261004-v2"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-knowledge-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 1,
+        "inputHash": "936fa2193d9b6a2ac42c5e1dcd0b11933e05a4ebb4f8cd05aa2118ee943932be",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-knowledge-support-evidence"
+        ],
+        "inputTokens": 731,
+        "outputTokens": 84,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0061404,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 448,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2240,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u00220500a972-0000-2300-0000-6ac18c580000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-e43180bc2b074662a43f5f7100f65ab6",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-sales-renewal-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:44.3323759\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:44.8050251\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-sales-renewal-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-job",
+      "operation": "decide",
+      "status": "succeeded",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": "jev-1.13.0",
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "dac508cfe6465cd00d30f8295455ad26b9c3458766f46d4584e3f918e7a98c66",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-sales-renewal-person-support-evidence"
+        ],
+        "inputTokens": 768,
+        "outputTokens": 80,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0.0064512,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 438,
+        "attemptCount": 1,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2509,
+        "modelVersion": "jev-1.13.0",
+        "region": "typesafe",
+        "sku": "input-token"
+      },
+      "etag": "\u002205008f73-0000-2300-0000-6ac18c640000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-e48c237e9dc04da7a6ced434bdc41871",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-resonance-person-direct",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:25.2641112\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:25.3637903\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-resonance-person-direct"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-direct-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-direct-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "2af2594dbce52a014912681f1cd637baae208e0269d9213d6d9f8dc0ad222a7c",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-resonance-person-direct-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 23,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2040,
+        "cachedFromRunId": "ai-run-377dee8846534bd9967292842f1b40d8"
+      },
+      "etag": "\u002205003872-0000-2300-0000-6ac18c510000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-ea1d470106534b70ab8684e0a1813235",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-mechanical-corrosion-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:36.8564345\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:36.9139002\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-mechanical-corrosion-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "8d55766e30cc8502f8d44a4b8db5f8a9202bb974bcd5d55ec4e5b40e43279b9e",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-mechanical-corrosion-person-support-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 25,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 2988,
+        "cachedFromRunId": "ai-run-3bcac77730504c67bab3765f36e0a3b6"
+      },
+      "etag": "\u00220500fa72-0000-2300-0000-6ac18c5c0000\u0022"
+    },
+    {
+      "kind": "aiRun",
+      "id": "ai-run-f754c08c1de24de991f8d7854fa57a96",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "principal-i30n-software-deadlock-person-support",
+      "scopeIds": [
+        "issue30-independent-20261004-v2"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-03T23:14:03.5161048\u002B00:00",
+      "updatedAt": "2026-10-03T23:14:03.6890526\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-i30n-software-deadlock-person-support"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobId": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-job",
+      "operation": "decide",
+      "status": "not_evaluated",
+      "errorCode": null,
+      "inputSnapshots": [
+        {
+          "id": "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-document",
+          "sourceVersion": 1,
+          "activeVersion": 1,
+          "accessVersion": 1
+        }
+      ],
+      "trace": {
+        "modelId": null,
+        "promptVersion": "profile-v1",
+        "taxonomyVersion": "taxonomy-v1",
+        "dataVersion": 2,
+        "inputHash": "6cbb955109261b205384653c02b024a90efaaac27caa461dad4a0181fc161664",
+        "evidenceIds": [
+          "issue30-independent-20261004-v2-i30n-software-deadlock-person-support-evidence"
+        ],
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "requestUnits": 0,
+        "retryCount": 0,
+        "estimatedCostJpy": 0,
+        "pricingVersion": "azure-luna6-typesafe-20261003",
+        "fxVersion": "validation-planning-ceiling-200JPY-per-USD",
+        "durationMs": 29,
+        "attemptCount": 0,
+        "usageEstimated": false,
+        "providerRequestIds": [],
+        "evidenceCuts": [],
+        "evidenceBytesPerCandidate": null,
+        "inputByteBound": 3081,
+        "cachedFromRunId": "ai-run-12ce7b8cd4cc43a2be33e4d5440f80ad"
+      },
+      "etag": "\u002205002e71-0000-2300-0000-6ac18c3b0000\u0022"
+    }
+  ],
+  "ledger": {
+    "calls": null,
+    "tokens": null,
+    "estimatedJpy": null,
+    "activeReservations": 0,
+    "blocked": null
+  },
+  "inferenceSent": false
+}

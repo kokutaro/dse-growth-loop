@@ -1,0 +1,12 @@
+{
+  "chunks": 1,
+  "bytes": 3523,
+  "sha256": "1f97a0a04b442cba6193a844a8fd5d0c29c44e110caa8348b6cb33538c1d7538",
+  "reportComplete": null,
+  "rows": 0,
+  "aiAudits": 0,
+  "execution": "dse-validation-issue30-p4lk2ul",
+  "startTime": "2026-10-04T04:07:12+00:00",
+  "endTime": "2026-10-04T04:07:42+00:00",
+  "inferenceSent": false
+}

@@ -15,6 +15,16 @@ class ExportDecodeTests(unittest.TestCase):
             path=Path(d)/'log';path.write_text(text);return decode(path)
     def test_log_formatter_escapes_are_normalized_and_checksum_is_verified(self):
         log,data=self.log();decoded,meta=self.run_decode(log);self.assertEqual(decoded,data);self.assertEqual(meta['sha256'],hashlib.sha256(data).hexdigest())
+    def test_independent_diagnostic_requires_explicit_scope(self):
+        report={'plan':{'evaluationId':'issue30-independent-20261004-v2','observedRegressionSet':False,'independentHoldout':True},'units':[],'aiAudits':[],'inferenceSent':False}
+        data=json.dumps(report).encode();chunk={'index':0,'count':1,'sha256':hashlib.sha256(data).hexdigest(),'data':base64.b64encode(gzip.compress(data,mtime=0)).decode()}
+        log='{"Log":"F REGRESSION_CHUNK '+json.dumps(chunk)+'"}'
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/'log';path.write_text(log)
+            with self.assertRaisesRegex(ValueError,'scope'):decode(path)
+            decoded,meta=decode(path,'issue30-independent-20261004-v2',False)
+            self.assertEqual(decoded,data);self.assertIsNone(meta['reportComplete'])
+
     def test_corrupt_checksum_is_rejected(self):
         log,_=self.log('0'*64)
         with self.assertRaisesRegex(ValueError,'checksum'):self.run_decode(log)

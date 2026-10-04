@@ -1,0 +1,12 @@
+[
+  {
+    "execution": "dse-validation-issue30-h07s3am",
+    "label": "service",
+    "mode": "--search",
+    "startChunk": 0,
+    "status": "Succeeded",
+    "startTime": "2026-10-04T08:37:52+00:00",
+    "endTime": "2026-10-04T08:43:50+00:00",
+    "secondsUpperBound": 358.0
+  }
+]

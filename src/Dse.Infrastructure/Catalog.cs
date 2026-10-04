@@ -48,7 +48,7 @@ public sealed class ValidatedCatalog(IProjectionRepository projections, SourceGu
         var units = await projections.FindAsync(request, actor.Search, ct);
         await fence.RunAsync(actor.TenantId, async token =>
         {
-            var result = Retriever.Search(await guard.FilterAsync(actor, units, token), request, actor.Search);
+            var result = Retriever.Search(await guard.FilterUnderFenceAsync(actor, units, token), request, actor.Search);
             await consume(result, token);
             return true;
         }, ct);

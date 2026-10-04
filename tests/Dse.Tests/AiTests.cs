@@ -166,6 +166,35 @@ public class AiTests
     }
 
     [Theory]
+    [InlineData("missing", "Keys")]
+    [InlineData("range", "Probability")]
+    [InlineData("sum", "DistributionSum")]
+    [InlineData("choice", "SelectedMaximum")]
+    public async Task Classification_schema_failure_records_only_a_bounded_validation_tag(string change, string tag)
+    {
+        var payload = JsonNode.Parse(Fixture("choice"))!;
+        var answer = payload["answers"]!["department"]!;
+        switch (change)
+        {
+            case "missing": answer["probabilities"]!.AsObject().Remove("sales"); break;
+            case "range": answer["confidence"] = 1.1; break;
+            case "sum": answer["probabilities"]!["sales"] = .5; break;
+            case "choice": answer["choice"] = "sales"; break;
+        }
+        var store = new MemoryRecordStore();
+        var handler = new Handler((_, _) => Task.FromResult(Response(payload.ToJsonString())));
+        using var service = Service(Config(), store, handler);
+        var result = await Decide(service);
+        Assert.Equal(AiFailure.SchemaMismatch, result.Failure); Assert.Null(result.Value);
+        var audit = (await store.ReadAsync(RecordPartition.Catalog("demo"), result.RunId, default))!.Value;
+        Assert.Equal(tag, audit["trace"]!["validationIssue"]!.GetValue<string>());
+        Assert.DoesNotContain("Dummy billing request", audit.ToJsonString());
+        Assert.DoesNotContain("dummy-secret", audit.ToJsonString());
+        Assert.Null(audit["answers"]);
+        Assert.Equal(1, handler.Calls);
+    }
+
+    [Theory]
     [InlineData(401, 1, AiFailure.Unauthorized)]
     [InlineData(403, 1, AiFailure.Unauthorized)]
     [InlineData(429, 2, AiFailure.RateLimited)]

@@ -1,0 +1,20 @@
+{
+  "chunks": 1,
+  "bytes": 3528,
+  "sha256": "b8c36b63f4aa733d090f1fd6e2630c042c6ec1ac8cf3b2a11e62bcc511c1d408",
+  "reportComplete": null,
+  "rows": 0,
+  "aiAudits": 0,
+  "executions": [
+    {
+      "execution": "dse-validation-issue30-zyavahb",
+      "label": "http-preflight",
+      "mode": "--weekly-budget-initialize",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:52:42+00:00",
+      "endTime": "2026-10-04T08:53:17+00:00",
+      "secondsUpperBound": 35.0
+    }
+  ]
+}

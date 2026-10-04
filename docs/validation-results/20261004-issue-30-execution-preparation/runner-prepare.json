@@ -1,0 +1,32 @@
+{
+  "runId": "issue30-independent-20261004-v2",
+  "mode": "--prepare",
+  "datasetSha256": "d544ca86b70e143b36aa36b94011756bb8636ec5836d8c437279eaee523cb465",
+  "dummyOnly": true,
+  "scope": "issue30-independent-20261004-v2",
+  "evaluationId": "issue30-independent-20261004-v2",
+  "observedRegressionSet": false,
+  "independentHoldout": true,
+  "arms": [
+    "all",
+    "targeted"
+  ],
+  "questions": 24,
+  "documents": 60,
+  "rules": {
+    "version": "retrieval-v2",
+    "questionTopCategories": 3,
+    "questionThreshold": 0.1,
+    "documentThreshold": 0.2,
+    "noulThreshold": 0.5,
+    "rescueSlots": 2,
+    "personLimit": 15,
+    "caseLimit": 15,
+    "evidenceBytesPerCandidate": 1200
+  },
+  "labelApprovalStatus": "pending",
+  "executionEnabled": false,
+  "profileFragments": true,
+  "httpAuthenticationTested": false,
+  "executionScope": "Production Azure services via Managed Identity; public HTTP/JWT and cold scale-out are separate"
+}

@@ -1,0 +1,22 @@
+{
+  "chunks": 44,
+  "bytes": 802310,
+  "sha256": "68d945930fa981f4add6d5480efd01de2bb1f0d1073eab919f85b4511d03300a",
+  "reportComplete": null,
+  "rows": 0,
+  "aiAudits": 288,
+  "executions": [
+    {
+      "execution": "dse-validation-issue30-ppvjhd6",
+      "startChunk": 0
+    },
+    {
+      "execution": "dse-validation-issue30-5b3xpa3",
+      "startChunk": 20
+    },
+    {
+      "execution": "dse-validation-issue30-gf2h4lw",
+      "startChunk": 40
+    }
+  ]
+}

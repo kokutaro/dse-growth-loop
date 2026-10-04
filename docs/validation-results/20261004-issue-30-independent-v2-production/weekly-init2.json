@@ -1,0 +1,112 @@
+{
+  "plan": {
+    "runId": "issue30-independent-20261004-v2",
+    "mode": "--weekly-budget-initialize",
+    "datasetSha256": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+    "dummyOnly": true,
+    "scope": "issue30-independent-20261004-v2",
+    "evaluationId": "issue30-independent-20261004-v2",
+    "observedRegressionSet": false,
+    "independentHoldout": true,
+    "arms": [
+      "all",
+      "targeted"
+    ],
+    "questions": 24,
+    "documents": 60,
+    "rules": {
+      "version": "retrieval-v2",
+      "questionTopCategories": 3,
+      "questionThreshold": 0.1,
+      "documentThreshold": 0.2,
+      "noulThreshold": 0.5,
+      "rescueSlots": 2,
+      "personLimit": 15,
+      "caseLimit": 15,
+      "evidenceBytesPerCandidate": 1200
+    },
+    "labelApprovalStatus": "human-approved",
+    "executionEnabled": true,
+    "profileFragments": true,
+    "httpAuthenticationTested": false,
+    "executionScope": "Production Azure services via Managed Identity; public HTTP/JWT and cold scale-out are separate"
+  },
+  "week": {
+    "kind": "aiUsageWeek",
+    "id": "ai-week-2026-09-28",
+    "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+    "ownerId": "system",
+    "scopeIds": [
+      "system"
+    ],
+    "schemaVersion": "1.0",
+    "sourceVersion": 1,
+    "activeVersion": null,
+    "createdAt": "2026-10-04T03:33:57.8744384\u002B00:00",
+    "updatedAt": "2026-10-04T03:33:57.8744384\u002B00:00",
+    "createdBy": {
+      "type": "principal",
+      "id": "system"
+    },
+    "correctedBy": null,
+    "periodStartUtc": "2026-09-27T15:00:00\u002B00:00",
+    "periodEndUtc": "2026-10-04T15:00:00\u002B00:00",
+    "timeZone": "Asia/Tokyo",
+    "calls": 473,
+    "usd": 0.08027596,
+    "limitJpy": 2000,
+    "callLimit": 1680,
+    "reservedNonRuntimeJpy": 1200,
+    "infrastructureReserveJpy": 1000,
+    "externalAiReserveJpy": 200,
+    "usdToJpy": 162,
+    "approvalReference": "user-20261004-weekly2000-fixed162",
+    "importedReservations": 473,
+    "importedUsd": 0.08027596,
+    "importSha256": "6beebad8ac1e8fa76935e9b52b23e1e157776832eb17078ec4ad402faa8b724d",
+    "etag": "\u002205003088-0000-2300-0000-6ac1c9250000\u0022"
+  },
+  "ledger": {
+    "calls": 202,
+    "tokens": 319459,
+    "estimatedJpy": 7.7958488,
+    "week": {
+      "kind": "aiUsageWeek",
+      "id": "ai-week-2026-09-28",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "system",
+      "scopeIds": [
+        "system"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-04T03:33:57.8744384\u002B00:00",
+      "updatedAt": "2026-10-04T03:33:57.8744384\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "system"
+      },
+      "correctedBy": null,
+      "periodStartUtc": "2026-09-27T15:00:00\u002B00:00",
+      "periodEndUtc": "2026-10-04T15:00:00\u002B00:00",
+      "timeZone": "Asia/Tokyo",
+      "calls": 473,
+      "usd": 0.08027596,
+      "limitJpy": 2000,
+      "callLimit": 1680,
+      "reservedNonRuntimeJpy": 1200,
+      "infrastructureReserveJpy": 1000,
+      "externalAiReserveJpy": 200,
+      "usdToJpy": 162,
+      "approvalReference": "user-20261004-weekly2000-fixed162",
+      "importedReservations": 473,
+      "importedUsd": 0.08027596,
+      "importSha256": "6beebad8ac1e8fa76935e9b52b23e1e157776832eb17078ec4ad402faa8b724d",
+      "etag": "\u002205003088-0000-2300-0000-6ac1c9250000\u0022"
+    },
+    "activeReservations": 0,
+    "blocked": null
+  },
+  "inferenceSent": false
+}

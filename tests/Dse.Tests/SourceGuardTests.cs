@@ -6,6 +6,48 @@ namespace Dse.Tests;
 
 public class SourceGuardTests
 {
+    private sealed class CountingRepository(IPrimaryRepository inner) : IPrimaryRepository
+    {
+        public Dictionary<string, int> Reads { get; } = [];
+        public Task<StoredRecord?> ReadAsync(RecordPartition partition, string id, CancellationToken ct)
+        {
+            Reads[id] = Reads.GetValueOrDefault(id) + 1;
+            return inner.ReadAsync(partition, id, ct);
+        }
+        public Task CommitAsync(RecordPartition partition, IReadOnlyList<RecordWrite> writes, CancellationToken ct) => inner.CommitAsync(partition, writes, ct);
+        public Task<RecordPage> QueryAsync(RecordPartition partition, string kind, string? field, string? parent, int size, string? token, CancellationToken ct) => inner.QueryAsync(partition, kind, field, parent, size, token, ct);
+    }
+
+    [Fact]
+    public async Task Fenced_filter_reads_shared_sources_once_but_rechecks_revocation_in_the_next_phase()
+    {
+        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);
+        var repo = new PrimaryRepository(store); var counted = new CountingRepository(repo);
+        var guard = new SourceGuard(counted); var fence = new AccessFence(repo);
+        var partition = RecordPartition.Catalog("demo");
+        var unit = (await new MemoryProjectionRepository(store).FindAsync(new([], [], []), IdentityResolver.Demo.Search, default))
+            .First(u => u.EntityId == "demo-person-01");
+        var repeated = new[] { unit, unit with { Id = unit.Id + "-fragment" } };
+        var original = await guard.FilterAsync(IdentityResolver.Demo, repeated, default);
+        var oldReads = counted.Reads.Values.Sum(); counted.Reads.Clear();
+        var result = await fence.RunAsync("demo", token => guard.FilterUnderFenceAsync(IdentityResolver.Demo, repeated, token), default);
+        Assert.Equal(original.Select(u => u.Id), result.Select(u => u.Id));
+        Assert.Equal(original.SelectMany(u => u.SourceRefs), result.SelectMany(u => u.SourceRefs)); Assert.True(counted.Reads.Values.Sum() < oldReads);
+        Assert.All(counted.Reads.Values, count => Assert.Equal(1, count));
+        var documentId = unit.EntityId + "-document";
+        await fence.RunAsync("demo", async token =>
+        {
+            var document = (await repo.ReadAsync(partition, documentId, token))!;
+            document.Value["activeVersion"] = null;
+            await repo.CommitAsync(partition, [RecordWrite.Replace(document.Value, document.ETag)], token);
+            return true;
+        }, default);
+        counted.Reads.Clear();
+        Assert.Empty(await fence.RunAsync("demo", token => guard.FilterUnderFenceAsync(IdentityResolver.Demo, repeated, token), default));
+        Assert.Equal(1, counted.Reads[documentId]);
+        await Assert.ThrowsAsync<DomainException>(() => guard.RequireAsync(IdentityResolver.Demo, unit, default));
+    }
+
     [Theory]
     [InlineData("withdrawn", 1, 1, "ready")]
     [InlineData("published", 2, 1, "ready")]

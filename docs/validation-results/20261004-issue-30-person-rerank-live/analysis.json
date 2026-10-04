@@ -1,0 +1,19 @@
+{
+  "completed": true,
+  "independentHoldout": false,
+  "conditions": 24,
+  "calls": 24,
+  "inputTokens": 38604,
+  "outputTokens": 3266,
+  "costUsd": "0.00433744",
+  "noGoldFalseRecommendations": 0,
+  "positiveHitAt5All": true,
+  "noIrrelevantDisplayed": true,
+  "costPlanningJpyAt200": 0.8674879999999999,
+  "inputOrderOrRepeatChangedQuestions": [
+    "v2t-sales-10-query"
+  ],
+  "meanNdcgAt5": 0.992094820590388,
+  "meanPrecisionAt5": 1.0,
+  "meanRecallAt5": 1.0
+}

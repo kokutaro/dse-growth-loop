@@ -1,0 +1,22 @@
+{
+  "checkedAtUtc": "2026-10-04T04:08:21.855955+00:00",
+  "weekCallsBefore": 473,
+  "weekRuntimeJpyBefore": 13.004705519999998,
+  "reservesJpy": 1200,
+  "stageMaxCalls": 48,
+  "stageMaxJpy": 24.1056,
+  "stageMaxTokens": 912000,
+  "independentCallsSoFar": 234,
+  "independentMaxCalls": 362,
+  "apiPriorReplicaMinutesUpperBound": 174,
+  "newApiReplicaMinutesUpperBound": 60,
+  "apiCumulativeLimitMinutes": 240,
+  "jobPriorMinutesUpperBound": 63.483333333333,
+  "newJobMinutesUpperBound": 10,
+  "jobCumulativeLimitMinutes": 120,
+  "pass": true,
+  "apiAbortedWarmPreparationReplicaMinutesUpperBound": 20,
+  "pendingNewCheckBeforeWarm": false,
+  "dailyTokensBefore": 319459,
+  "macUnlockedVerified": true
+}

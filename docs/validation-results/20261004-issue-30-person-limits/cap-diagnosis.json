@@ -1,0 +1,46 @@
+{
+  "source": "docs/validation-results/20261003-issue-30-independent-production/audits.json",
+  "scope": "Prior observed production audit; rank diagnostic only, not replayed projections or post-hardening measurement",
+  "rows": [
+    {
+      "runId": "retrieval-0f7b069f310d4880a628a76bd046a37b",
+      "rules": {
+        "version": "retrieval-v2",
+        "questionTopCategories": 3,
+        "questionThreshold": 0.1,
+        "documentThreshold": 0.2,
+        "noulThreshold": 0.5,
+        "rescueSlots": 2,
+        "personLimit": 10,
+        "caseLimit": 15,
+        "evidenceBytesPerCandidate": 1200
+      },
+      "personMergedRank": 12,
+      "personMergedCount": 16,
+      "selected": false,
+      "routes": [
+        "probability"
+      ]
+    },
+    {
+      "runId": "retrieval-11ef2013c4e74aeeb0b729dc32101515",
+      "rules": {
+        "version": "retrieval-v2",
+        "questionTopCategories": 3,
+        "questionThreshold": 0.1,
+        "documentThreshold": 0.2,
+        "noulThreshold": 0.5,
+        "rescueSlots": 2,
+        "personLimit": 10,
+        "caseLimit": 15,
+        "evidenceBytesPerCandidate": 1200
+      },
+      "personMergedRank": 12,
+      "personMergedCount": 16,
+      "selected": false,
+      "routes": [
+        "probability"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "priorCumulativeSeconds": 5389,
+  "newExecutions": [
+    {
+      "execution": "dse-validation-issue30-mey1hz1",
+      "label": "preflight",
+      "mode": "--seed-status",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:28:26+00:00",
+      "endTime": "2026-10-04T08:29:00+00:00",
+      "secondsUpperBound": 34.0
+    },
+    {
+      "execution": "dse-validation-issue30-ldovaro",
+      "label": "seed",
+      "mode": "--seed",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:30:51+00:00",
+      "endTime": "2026-10-04T08:33:01+00:00",
+      "secondsUpperBound": 130.0
+    },
+    {
+      "execution": "dse-validation-issue30-n3lz3iw",
+      "label": "seed-export",
+      "mode": "--report-export",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:35:31+00:00",
+      "endTime": "2026-10-04T08:36:07+00:00",
+      "secondsUpperBound": 36.0
+    },
+    {
+      "execution": "dse-validation-issue30-h07s3am",
+      "label": "service",
+      "mode": "--search",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:37:52+00:00",
+      "endTime": "2026-10-04T08:43:50+00:00",
+      "secondsUpperBound": 358.0
+    },
+    {
+      "execution": "dse-validation-issue30-j19bj3z",
+      "label": "service-export",
+      "mode": "--report-export",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:47:47+00:00",
+      "endTime": "2026-10-04T08:48:21+00:00",
+      "secondsUpperBound": 34.0
+    },
+    {
+      "execution": "dse-validation-issue30-0n1ngcp",
+      "label": "service-export",
+      "mode": "--report-export",
+      "startChunk": 20,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:48:36+00:00",
+      "endTime": "2026-10-04T08:49:11+00:00",
+      "secondsUpperBound": 35.0
+    },
+    {
+      "execution": "dse-validation-issue30-rjiry3q",
+      "label": "service-export",
+      "mode": "--report-export",
+      "startChunk": 40,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:49:35+00:00",
+      "endTime": "2026-10-04T08:50:06+00:00",
+      "secondsUpperBound": 31.0
+    },
+    {
+      "execution": "dse-validation-issue30-g68sw6h",
+      "label": "service-export",
+      "mode": "--report-export",
+      "startChunk": 60,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:50:21+00:00",
+      "endTime": "2026-10-04T08:50:57+00:00",
+      "secondsUpperBound": 36.0
+    },
+    {
+      "execution": "dse-validation-issue30-0hxle6r",
+      "label": "service-export",
+      "mode": "--report-export",
+      "startChunk": 80,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:51:19+00:00",
+      "endTime": "2026-10-04T08:51:52+00:00",
+      "secondsUpperBound": 33.0
+    },
+    {
+      "execution": "dse-validation-issue30-zyavahb",
+      "label": "http-preflight",
+      "mode": "--weekly-budget-initialize",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:52:42+00:00",
+      "endTime": "2026-10-04T08:53:17+00:00",
+      "secondsUpperBound": 35.0
+    }
+  ],
+  "cumulativeSecondsUpperBound": 6151.0,
+  "limitSeconds": 9000
+}

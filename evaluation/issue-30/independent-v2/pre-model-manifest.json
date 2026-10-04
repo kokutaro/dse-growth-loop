@@ -1,0 +1,15 @@
+{
+  "status": "pending-human-review",
+  "modelCalls": 0,
+  "questions": 24,
+  "positiveQuestions": 20,
+  "noGoldQuestions": 4,
+  "units": 60,
+  "exactQuestionAndSourceOverlapWithV2": 0,
+  "sha256": {
+    "dataset.json": "d544ca86b70e143b36aa36b94011756bb8636ec5836d8c437279eaee523cb465",
+    "sources.md": "b8d3459ba2c5a3829e33bc7bf1a85c106562bed46104540c298e40cce6df86cd",
+    "review.md": "13167654de4c71d17a998165045b62c23ae0b5f9557a0072aee86c07714b7987"
+  },
+  "generatorSha256": "981299fe99db6acc3b8ee64e3f2a0a11041cf1c7908de5d4d87b2f274656e933"
+}

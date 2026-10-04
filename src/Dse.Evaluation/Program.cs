@@ -4,6 +4,11 @@ using Dse.Evaluation;
 
 try
 {
+    if (args.Length == 2 && args[0] == "--issue30-person-limits")
+    {
+        Issue30PersonLimits.Run(args[1]);
+        return 0;
+    }
     if (args.Length == 2 && args[0] == "--issue30-case-limits")
     {
         Issue30CaseLimits.Run(args[1]);

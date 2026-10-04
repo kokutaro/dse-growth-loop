@@ -10,15 +10,15 @@ internal static class AiCodecs
         ? SearchRerankBudget.Serialize(body) : body.ToJsonString();
     internal static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     internal static JsonNode Node<T>(T value) => JsonSerializer.SerializeToNode(value, Json)!;
-    internal static void Require(bool condition, AiFailure failure = AiFailure.SchemaMismatch)
+    internal static void Require(bool condition, AiFailure failure = AiFailure.SchemaMismatch, AiValidationIssue? issue = null)
     {
-        if (!condition) throw new AiException(failure);
+        if (!condition) throw new AiException(failure, validationIssue: issue);
     }
-    private static void Keys(JsonObject obj, params string[] keys) => Require(obj.Select(x => x.Key).ToHashSet().SetEquals(keys));
+    private static void Keys(JsonObject obj, params string[] keys) => Require(obj.Select(x => x.Key).ToHashSet().SetEquals(keys), issue: AiValidationIssue.Keys);
     private static double Probability(JsonNode? node)
     {
         var value = node?.GetValue<double>() ?? double.NaN;
-        Require(double.IsFinite(value) && value >= 0 && value <= 1);
+        Require(double.IsFinite(value) && value >= 0 && value <= 1, issue: AiValidationIssue.Probability);
         return value;
     }
     internal static JsonObject JevRequest(AiModel model, JsonObject input, ChoiceQuestion[] choices, NoulQuestion[] nouls)
@@ -47,8 +47,9 @@ internal static class AiCodecs
             Keys(distribution, q.Options.Keys.ToArray());
             var probabilities = distribution.ToDictionary(x => x.Key, x => Probability(x.Value));
             var selected = answer.Text("choice");
-            Require(Math.Abs(probabilities.Values.Sum() - 1) <= 0.000001 && probabilities.ContainsKey(selected));
-            Require(probabilities[selected] == probabilities.Values.Max());
+            Require(Math.Abs(probabilities.Values.Sum() - 1) <= 0.000001, issue: AiValidationIssue.DistributionSum);
+            Require(probabilities.ContainsKey(selected), issue: AiValidationIssue.SelectedOption);
+            Require(probabilities[selected] == probabilities.Values.Max(), issue: AiValidationIssue.SelectedMaximum);
             choiceResults[q.Id] = new(selected, probabilities, Probability(answer["confidence"]));
         }
         var noulResults = new Dictionary<string, NoulAnswer>();

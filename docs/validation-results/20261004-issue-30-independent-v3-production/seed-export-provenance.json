@@ -1,0 +1,20 @@
+{
+  "chunks": 1,
+  "bytes": 2384,
+  "sha256": "90f523faea4605dc4260927cf02fdafb77eedbdc88e8f3241ac52f94339688a2",
+  "reportComplete": true,
+  "rows": 0,
+  "aiAudits": 0,
+  "executions": [
+    {
+      "execution": "dse-validation-issue30-n3lz3iw",
+      "label": "seed-export",
+      "mode": "--report-export",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:35:31+00:00",
+      "endTime": "2026-10-04T08:36:07+00:00",
+      "secondsUpperBound": 36.0
+    }
+  ]
+}

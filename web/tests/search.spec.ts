@@ -103,3 +103,52 @@ test("事例の指定を検索APIへ送り、人物を混ぜずに取得する",
   await expect(page.locator("article.candidate")).not.toHaveCount(0);
   await expect(page.locator("article.candidate .kind").filter({ hasText: "相談候補" })).toHaveCount(0);
 });
+
+for (const types of [["knowledge", "person", "knowledge", "person"], ["person"], ["knowledge"], []]) {
+  test(`検索結果を種別別に表示する: ${types.join(",") || "空"}`, async ({ page }) => {
+    const candidates = types.map((entityType, i) => ({ entityId: `group-${i}`, entityType, title: `結果${i}`, routes: [],
+      units: [{ summary: "架空の原文", sourceRefs: [], confirmationState: "fixture" }] }));
+    await page.route("**/api/v2/search", route => route.fulfill({ json: { runId: "grouped-run", rerankingStatus: candidates.length ? "succeeded" : "no_candidates",
+      primary: { candidates, rerankingStatus: candidates.length ? "succeeded" : "no_candidates", matchedUnits: candidates.length, beforeLimit: candidates.length }, assessments: [] } }));
+    await page.goto("/");
+    await page.getByLabel("自然文の課題").fill("経験と事例を探したい");
+    await page.getByRole("button", { name: "相談候補を探す" }).click();
+    for (const [type, name] of [["person", "相談候補"], ["knowledge", "参考事例"]]) {
+      const group = page.getByRole("region", { name, exact: true });
+      await expect(group).toBeVisible();
+      await expect(group.locator("article h3")).toHaveText(candidates.filter(c => c.entityType === type).map(c => c.title));
+      if (!types.includes(type)) await expect(group.getByText(`${name}はありません。`, { exact: true })).toBeVisible();
+    }
+  });
+}
+
+for (const code of ["CLASSIFICATION_OUT_OF_SCOPE", "CLASSIFICATION_MANUAL_REQUIRED"]) {
+  test(`分類対象外と障害を分け、前の条件を再送しない: ${code}`, async ({ page }) => {
+    const bodies: Record<string, unknown>[] = [];
+    await page.route("**/api/v2/search", route => {
+      bodies.push(route.request().postDataJSON());
+      return route.fulfill({ status: 422, json: { code } });
+    });
+    await page.goto("/");
+    await page.getByLabel("自然文の課題").fill("以前の課題");
+    await page.getByLabel("複数分野・技術要素の分類ID").fill("software");
+    await page.getByLabel("自然文の課題").fill("対象分野が不明の新しい課題");
+    for (let i = 0; i < 2; i++) {
+      await page.getByRole("button", { name: "相談候補を探す" }).click();
+      if (code === "CLASSIFICATION_OUT_OF_SCOPE") {
+        await expect(page.getByText("自動検索対象外", { exact: false })).toBeVisible();
+        await expect(page.getByText("検索は実行していません。", { exact: false })).toBeVisible();
+        await expect(page.getByRole("region", { name: "相談候補と参考事例", exact: true }).getByRole("alert")).toHaveCount(0);
+      } else await expect(page.getByRole("region", { name: "相談候補と参考事例", exact: true }).getByRole("alert")).toContainText("自動分類を利用できません");
+      await expect(page.getByRole("button", { name: "相談候補を探す" })).toBeEnabled();
+    }
+    expect(bodies).toHaveLength(2);
+    expect(bodies.every(body => !("conditions" in body))).toBe(true);
+    await expect(page.getByText("条件に合う候補はありません。", { exact: true })).toHaveCount(0);
+    await expect(page.getByLabel("複数分野・技術要素の分類ID")).toHaveValue("");
+    await page.getByLabel("複数分野・技術要素の分類ID").fill("operations");
+    await page.getByRole("button", { name: "相談候補を探す" }).click();
+    await expect(page.getByRole("button", { name: "相談候補を探す" })).toBeEnabled();
+    expect(bodies[2]).toHaveProperty("conditions.categories", [{ axis: "domain", categoryId: "operations" }]);
+  });
+}

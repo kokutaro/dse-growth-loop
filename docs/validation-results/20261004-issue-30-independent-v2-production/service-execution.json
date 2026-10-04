@@ -1,0 +1,10 @@
+{
+  "execution": "dse-validation-issue30-dmbz4ne",
+  "startUtc": "2026-10-04T01:32:03Z",
+  "endUtc": "2026-10-04T01:39:40Z",
+  "status": "Succeeded",
+  "capturedSearches": 48,
+  "reportBlob": "validation/issue30/issue30-independent-20261004-v2/repeat-report.json",
+  "meaning": "First independent service search; --search uses repeat-report filename but no earlier searches were executed for this dataset.",
+  "publicHttpTested": false
+}

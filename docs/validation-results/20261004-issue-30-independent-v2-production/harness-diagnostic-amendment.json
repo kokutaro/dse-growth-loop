@@ -1,0 +1,18 @@
+{
+  "beforeRunnerSourceSha256": "d2ef934b1c1fa9f4326197ca638e66e62213c6981f462cb7e932819198c88ba9",
+  "change": "Add read-only --seed-status export for saved per-source receipts, AI audits and shared daily ledger. No inference, no source writes, no retrieval/labels/prompts/threshold changes.",
+  "reason": "Seed stopped at classification failure; ordinary CLI identity has no blob data read permission, and no new RBAC is authorized. Existing Job identity can read saved diagnostics.",
+  "recoveryAmendment": "Explicit --resume-seed validates unchanged approved original records and all completed receipts/projections; skips completed units; only audited budget_stopped attemptCount0 can resume. Reject sent/ambiguous attempts. Stage preflight reserves the full call upper bound before writes. Models, labels, prompts, thresholds and retrieval code unchanged.",
+  "currentSourceSha256": {
+    "src/Dse.ProductionEvaluation/Program.cs": "4f1f2f19a735d13ecfc597504af26229f32a8cabb89844a7f7f9d9d251f80aa9",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "572e4d1a03cc310a0d383919c28702c4db79a0e4455e2457c26f0b7be8cbfdd3",
+    "scripts/issue30_decode_regression_export.py": "ff2fb84b9ccdf0a6c36f8c419eb136c9dbc406986aa860a2467e82f35899beaa"
+  },
+  "unchangedDatasetSha256": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+  "runnerImage": "dseacrypbunss3xh66m.azurecr.io/dse-production-evaluation@sha256:5f24178f78f9fcd1842892e4656a66aa3d1ab318aa0d5c1944f3b862cc6c085e",
+  "searchImplementationChanged": false,
+  "recoveryWillWaitUntilUtcDayReset": true,
+  "recoveryStartedAfterUtcReset": true,
+  "utcAtRecovery": "2026-10-04T01:14Z",
+  "budgetLimitsRaised": false
+}
