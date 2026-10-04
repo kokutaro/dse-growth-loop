@@ -1,0 +1,360 @@
+{
+  "source": "../20261004-issue-30-independent-v2-production/http-warm.json + ledger-weekly-postwarm.json",
+  "limitations": "AI audit duration includes ledger/transport work; residual includes authorization and source validation, not measured Cosmos-only latency. No new inference.",
+  "rows": [
+    {
+      "questionId": "i30n-software-deadlock-person-query",
+      "httpMs": 18697.118000127375,
+      "decisionAuditMs": 704,
+      "rerankAuditMs": 4171,
+      "unattributedMs": 13822.118000127375
+    },
+    {
+      "questionId": "i30n-software-deadlock-knowledge-query",
+      "httpMs": 12489.19599992223,
+      "decisionAuditMs": 546,
+      "rerankAuditMs": 4717,
+      "unattributedMs": 7226.195999922231
+    },
+    {
+      "questionId": "i30n-software-pagination-person-query",
+      "httpMs": 11191.536999975608,
+      "decisionAuditMs": 496,
+      "rerankAuditMs": 3616,
+      "unattributedMs": 7079.536999975608
+    },
+    {
+      "questionId": "i30n-software-pagination-knowledge-query",
+      "httpMs": 12164.857000112534,
+      "decisionAuditMs": 622,
+      "rerankAuditMs": 4657,
+      "unattributedMs": 6885.857000112534
+    },
+    {
+      "questionId": "i30n-mechanical-resonance-person-query",
+      "httpMs": 11010.026999982074,
+      "decisionAuditMs": 478,
+      "rerankAuditMs": 3500,
+      "unattributedMs": 7032.026999982074
+    },
+    {
+      "questionId": "i30n-mechanical-resonance-knowledge-query",
+      "httpMs": 11637.504999991506,
+      "decisionAuditMs": 520,
+      "rerankAuditMs": 4140,
+      "unattributedMs": 6977.504999991506
+    },
+    {
+      "questionId": "i30n-mechanical-corrosion-person-query",
+      "httpMs": 17195.427000056952,
+      "decisionAuditMs": 451,
+      "rerankAuditMs": 4362,
+      "unattributedMs": 12382.427000056952
+    },
+    {
+      "questionId": "i30n-mechanical-corrosion-knowledge-query",
+      "httpMs": 18974.819999886677,
+      "decisionAuditMs": 511,
+      "rerankAuditMs": 5965,
+      "unattributedMs": 12498.819999886677
+    },
+    {
+      "questionId": "i30n-sales-renewal-person-query",
+      "httpMs": 15685.650000115857,
+      "decisionAuditMs": 482,
+      "rerankAuditMs": 3923,
+      "unattributedMs": 11280.650000115857
+    },
+    {
+      "questionId": "i30n-sales-renewal-knowledge-query",
+      "httpMs": 16916.733000194654,
+      "decisionAuditMs": 444,
+      "rerankAuditMs": 5111,
+      "unattributedMs": 11361.733000194654
+    },
+    {
+      "questionId": "i30n-sales-tender-person-query",
+      "httpMs": 8999.743000138551,
+      "decisionAuditMs": 461,
+      "rerankAuditMs": 2371,
+      "unattributedMs": 6167.743000138551
+    },
+    {
+      "questionId": "i30n-sales-tender-knowledge-query",
+      "httpMs": 9524.310999782756,
+      "decisionAuditMs": 497,
+      "rerankAuditMs": 2841,
+      "unattributedMs": 6186.310999782756
+    },
+    {
+      "questionId": "i30n-manufacturing-moisture-person-query",
+      "httpMs": 10059.710999950767,
+      "decisionAuditMs": 722,
+      "rerankAuditMs": 3484,
+      "unattributedMs": 5853.710999950767
+    },
+    {
+      "questionId": "i30n-manufacturing-moisture-knowledge-query",
+      "httpMs": 10848.568999907002,
+      "decisionAuditMs": 452,
+      "rerankAuditMs": 4556,
+      "unattributedMs": 5840.568999907002
+    },
+    {
+      "questionId": "i30n-manufacturing-setup-person-query",
+      "httpMs": 16144.2139998544,
+      "decisionAuditMs": 461,
+      "rerankAuditMs": 3992,
+      "unattributedMs": 11691.2139998544
+    },
+    {
+      "questionId": "i30n-manufacturing-setup-knowledge-query",
+      "httpMs": 16986.629999941215,
+      "decisionAuditMs": 478,
+      "rerankAuditMs": 4908,
+      "unattributedMs": 11600.629999941215
+    },
+    {
+      "questionId": "i30n-operations-visitor-person-query",
+      "httpMs": 10368.09300002642,
+      "decisionAuditMs": 524,
+      "rerankAuditMs": 3554,
+      "unattributedMs": 6290.09300002642
+    },
+    {
+      "questionId": "i30n-operations-visitor-knowledge-query",
+      "httpMs": 11586.125000147149,
+      "decisionAuditMs": 461,
+      "rerankAuditMs": 4922,
+      "unattributedMs": 6203.125000147149
+    },
+    {
+      "questionId": "i30n-operations-expense-person-query",
+      "httpMs": 9719.80300010182,
+      "decisionAuditMs": 501,
+      "rerankAuditMs": 2975,
+      "unattributedMs": 6243.80300010182
+    },
+    {
+      "questionId": "i30n-operations-expense-knowledge-query",
+      "httpMs": 11088.895000051707,
+      "decisionAuditMs": 481,
+      "rerankAuditMs": 4497,
+      "unattributedMs": 6110.895000051707
+    },
+    {
+      "questionId": "i30n-no-answer-01",
+      "httpMs": 9545.417999848723,
+      "decisionAuditMs": 478,
+      "rerankAuditMs": 2252,
+      "unattributedMs": 6815.417999848723
+    },
+    {
+      "questionId": "i30n-no-answer-02",
+      "httpMs": 15554.12200000137,
+      "decisionAuditMs": 572,
+      "rerankAuditMs": 2783,
+      "unattributedMs": 12199.12200000137
+    }
+  ],
+  "initialFailures": [
+    {
+      "id": "ai-run-51b707fcbef74dac9c94fa3359a67d76",
+      "operation": "decide",
+      "errorCode": "AI_SCHEMAMISMATCH",
+      "promptVersion": "search-query-v1",
+      "validationIssue": null
+    },
+    {
+      "id": "ai-run-6efa80a65c814f5cadf5f7a52643df42",
+      "operation": "decide",
+      "errorCode": "AI_SCHEMAMISMATCH",
+      "promptVersion": "search-query-v1",
+      "validationIssue": null
+    },
+    {
+      "id": "ai-run-9be419bf10cd4ea0824d3cfb81f78ec0",
+      "operation": "decide",
+      "errorCode": "AI_SCHEMAMISMATCH",
+      "promptVersion": "search-query-v1",
+      "validationIssue": null
+    }
+  ],
+  "tenderRows": [
+    {
+      "questionId": "i30n-sales-tender-person-query",
+      "arm": "all",
+      "queryClassification": {
+        "status": "Succeeded",
+        "choice": "operations",
+        "failure": null,
+        "runId": "ai-run-5075ca29864b4c2f8ccd6192efe6e0d7",
+        "cached": false
+      },
+      "primary": [
+        "i30n-operations-expense-person-direct",
+        "i30n-operations-visitor-person-direct",
+        "i30n-operations-expense-person-support",
+        "i30n-operations-visitor-person-support",
+        "i30n-operations-expense-person-negative",
+        "i30n-operations-visitor-person-negative",
+        "i30n-operations-expense-knowledge-direct",
+        "i30n-operations-expense-knowledge-support",
+        "i30n-operations-visitor-knowledge-support",
+        "i30n-operations-expense-knowledge-negative",
+        "i30n-operations-visitor-knowledge-direct",
+        "i30n-operations-visitor-knowledge-negative",
+        "i30n-sales-tender-knowledge-support"
+      ],
+      "lostGold": [
+        "i30n-sales-tender-person-direct",
+        "i30n-sales-tender-person-support"
+      ],
+      "routes": {
+        "probability": [
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-support",
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-support",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-negative",
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-support",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-negative",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-support",
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-negative",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-negative",
+          "knowledge:issue30-independent-20261004-v2-i30n-sales-tender-knowledge-support"
+        ],
+        "noul": [],
+        "terms": []
+      }
+    },
+    {
+      "questionId": "i30n-sales-tender-knowledge-query",
+      "arm": "all",
+      "queryClassification": {
+        "status": "Succeeded",
+        "choice": "operations",
+        "failure": null,
+        "runId": "ai-run-182ee8eaafbf4c3eb0709ca559fef4ae",
+        "cached": false
+      },
+      "primary": [
+        "i30n-operations-expense-person-direct",
+        "i30n-operations-visitor-person-direct",
+        "i30n-operations-expense-person-support",
+        "i30n-operations-visitor-person-support",
+        "i30n-operations-expense-person-negative",
+        "i30n-operations-visitor-person-negative",
+        "i30n-operations-expense-knowledge-direct",
+        "i30n-operations-expense-knowledge-support",
+        "i30n-operations-visitor-knowledge-support",
+        "i30n-operations-expense-knowledge-negative",
+        "i30n-operations-visitor-knowledge-direct",
+        "i30n-operations-visitor-knowledge-negative",
+        "i30n-sales-tender-knowledge-support"
+      ],
+      "lostGold": [
+        "i30n-sales-tender-knowledge-direct"
+      ],
+      "routes": {
+        "probability": [
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-support",
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-support",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-negative",
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-support",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-negative",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-support",
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-negative",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-negative",
+          "knowledge:issue30-independent-20261004-v2-i30n-sales-tender-knowledge-support"
+        ],
+        "noul": [],
+        "terms": []
+      }
+    },
+    {
+      "questionId": "i30n-sales-tender-person-query",
+      "arm": "targeted",
+      "queryClassification": {
+        "status": "Succeeded",
+        "choice": "operations",
+        "failure": null,
+        "runId": "ai-run-0703894c70fc4d92a15a42481d285f1c",
+        "cached": true
+      },
+      "primary": [
+        "i30n-operations-expense-person-direct",
+        "i30n-operations-visitor-person-direct",
+        "i30n-operations-expense-person-support",
+        "i30n-operations-visitor-person-support",
+        "i30n-operations-expense-person-negative",
+        "i30n-operations-visitor-person-negative"
+      ],
+      "lostGold": [
+        "i30n-sales-tender-person-direct",
+        "i30n-sales-tender-person-support"
+      ],
+      "routes": {
+        "probability": [
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-direct",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-direct",
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-support",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-support",
+          "person:issue30-independent-20261004-v2-i30n-operations-expense-person-negative",
+          "person:issue30-independent-20261004-v2-i30n-operations-visitor-person-negative"
+        ],
+        "noul": [],
+        "terms": []
+      }
+    },
+    {
+      "questionId": "i30n-sales-tender-knowledge-query",
+      "arm": "targeted",
+      "queryClassification": {
+        "status": "Succeeded",
+        "choice": "operations",
+        "failure": null,
+        "runId": "ai-run-c8cb965394a3492c8e05aada5b6477f5",
+        "cached": true
+      },
+      "primary": [
+        "i30n-operations-expense-knowledge-direct",
+        "i30n-operations-expense-knowledge-support",
+        "i30n-operations-visitor-knowledge-support",
+        "i30n-operations-expense-knowledge-negative",
+        "i30n-operations-visitor-knowledge-direct",
+        "i30n-operations-visitor-knowledge-negative",
+        "i30n-sales-tender-knowledge-support"
+      ],
+      "lostGold": [
+        "i30n-sales-tender-knowledge-direct"
+      ],
+      "routes": {
+        "probability": [
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-support",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-support",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-expense-knowledge-negative",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-direct",
+          "knowledge:issue30-independent-20261004-v2-i30n-operations-visitor-knowledge-negative",
+          "knowledge:issue30-independent-20261004-v2-i30n-sales-tender-knowledge-support"
+        ],
+        "noul": [],
+        "terms": []
+      }
+    }
+  ],
+  "mediansMs": {
+    "httpMs": 11611.815000069328,
+    "decisionAuditMs": 489.0,
+    "rerankAuditMs": 4066.0,
+    "unattributedMs": 7004.76599998679
+  },
+  "sourceReadCountFirstServiceSearch": 298
+}

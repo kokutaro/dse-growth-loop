@@ -1,0 +1,12 @@
+{
+  "chunks": 1,
+  "bytes": 3523,
+  "sha256": "1f97a0a04b442cba6193a844a8fd5d0c29c44e110caa8348b6cb33538c1d7538",
+  "reportComplete": null,
+  "rows": 0,
+  "aiAudits": 0,
+  "execution": "dse-validation-issue30-kraikog",
+  "startTime": "2026-10-04T03:43:06+00:00",
+  "endTime": "2026-10-04T03:43:38+00:00",
+  "inferenceSent": false
+}

@@ -1,0 +1,14 @@
+{
+  "execution": "dse-validation-issue30-0hj44jy",
+  "startUtc": "2026-10-03T23:13:31Z",
+  "lastSuccessfulReceiptUtc": "2026-10-03T23:14:47.1317718Z",
+  "failureUtc": "2026-10-03T23:14:47.484043Z",
+  "successfulUnits": 27,
+  "failedUnit": "i30n-sales-renewal-knowledge-direct",
+  "error": "CLASSIFICATION_FAILED",
+  "automaticRetry": false,
+  "searchExecuted": false,
+  "apiDeployed": false,
+  "workerChanged": false,
+  "stoppedForPartialProjection": true
+}

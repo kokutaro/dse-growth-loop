@@ -1,0 +1,32 @@
+{
+  "evaluationId": "issue30-hardening-20261004-v3",
+  "baselineRunId": "issue30-independent-20261004-v2",
+  "observedRegressionSet": true,
+  "independentHoldout": false,
+  "questions": 24,
+  "arms": [
+    "all"
+  ],
+  "maximumBillableCalls": 48,
+  "priorScopedCalls": 280,
+  "maximumScopedCallsAfter": 328,
+  "originalScopedLimit": 362,
+  "jobTimeoutSeconds": 900,
+  "priorJobSecondsUpperBound": 4000,
+  "jobSecondsLimit": 7200,
+  "apiDeployment": false,
+  "labelChanges": false,
+  "datasetSha256": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+  "sha256": {
+    "src/Dse.Infrastructure/Projections.cs": "e703456a6e9743f722b55c0d4f52d114108a99b293edfb5200d8c4dbed3728c5",
+    "src/Dse.Infrastructure/NaturalSearchService.cs": "c14eb90e45ab675cbb329deabad4dcbd717acba3af5bee061d0e203fd299ff09",
+    "src/Dse.Infrastructure/AiCodecs.cs": "d27a68d4b3361a774f51e1464dcb115fdea7cc6148ca0083bfcc9b05e219f50b",
+    "src/Dse.Infrastructure/AiService.cs": "0b22d2e11cabc57965d5cd99c981a39701f4de3e55fde2a432175375ec694f7f",
+    "src/Dse.Infrastructure/AiLedger.cs": "fcadbc52c5a7beff6386c39c2583c0226aa3dac47533aad78686b865f2867e16",
+    "src/Dse.Infrastructure/ChatAccess.cs": "f48f16fbbfed64e530a99619066c18c247e2d4b5b8399367287fd846c46d9bf7",
+    "src/Dse.Infrastructure/Catalog.cs": "d4ef5a525700b9502071c8538119ea43c8ffb571b1ba367bed6d337548c529f5",
+    "web/src/main.tsx": "b59a1aeb6b253a693a4ad63f499901c21698a9517e5cfb3e5a6bb277205e390f",
+    "src/Dse.ProductionEvaluation/Program.cs": "1bbfb25c7c3c183e4bbd68aec1921d3b2e92ee8dfde192d12f2265d76da53403",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "8f01d20bbd5773a1c7c7b69b4d18b75b82d57cfc62c0c1091253849ac484b978"
+  }
+}

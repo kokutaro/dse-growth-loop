@@ -1,0 +1,17 @@
+{
+  "sha256": {
+    "production-report.json": "b5e2e02595fa5ba69ff5ed92e231719273356cd6ee50b2af1ad4921dd55e7478",
+    "summary.json": "6507bb13b38c8b761305cedf1d1c355ad568a554685bba2d0533cfb06e09027d",
+    "cost-final.json": "607bfc5d886e026f37c6ff51a50ad5839b3f86b68bc8513c09458f0c3f71c5d6",
+    "restoration.json": "4d6cb49d8e91fbd744a6a507a5cde84bca01296aabe01a22a0eec1bbb477ad5a",
+    "execution-plan.json": "e70e0083ac3e4264fe9acec0add60d21bc0c6e15a406e30256c5c6444518e11b",
+    "saved-latency-analysis.json": "b8baf490cb6f05f33b22120f2a3cf7bb11fe685b9f88cc04f3d1d0b3014a3e89",
+    "results.md": "c7460689b78c4c3a9469af3fc61d7e07146bb5cda591d7d262dcdb402613a365"
+  },
+  "checks": {
+    "dotnetTests": 368,
+    "pythonTests": 100,
+    "searchPlaywrightTests": 14,
+    "frontendBuild": true
+  }
+}

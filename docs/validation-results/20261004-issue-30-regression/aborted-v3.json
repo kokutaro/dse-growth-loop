@@ -1,0 +1,9 @@
+{
+  "execution": "dse-validation-issue30-bmq0ecj",
+  "status": "Stopped",
+  "startTime": "2026-10-04T05:49:37+00:00",
+  "logFailure": "ContainerNotFound during startup; stopped before replicas available",
+  "confirmation": "Week calls unchanged519; no v3 tagged audits; active reservations0; original Job restored",
+  "jobSecondsUpperBound": 900,
+  "automaticInferenceRetry": false
+}

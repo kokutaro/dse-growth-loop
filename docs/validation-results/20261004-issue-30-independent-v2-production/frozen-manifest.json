@@ -1,0 +1,16 @@
+{
+  "approvalReference": "user-20261004-issue30-labels-ai310-infra100-temporary-production",
+  "runId": "issue30-independent-20261004-v2",
+  "executionPlanSha256": "d778891657966f5a5ff7ae785f80be6c30e06f18772836df05fba2a22761ae6f",
+  "sha256": {
+    "evaluation/issue-30/independent-v2/dataset.json": "d544ca86b70e143b36aa36b94011756bb8636ec5836d8c437279eaee523cb465",
+    "evaluation/issue-30/independent-v2/pre-model-manifest.json": "f9c57e2c75c0bb39182cb6ad8ff41fbd9be3a1c2a3e632644da3ce4356861550",
+    "src/Dse.ProductionEvaluation/Program.cs": "d2ef934b1c1fa9f4326197ca638e66e62213c6981f462cb7e932819198c88ba9",
+    "src/Dse.ProductionEvaluation/Dockerfile": "1e65ec91fbc2d2edb9e6d742179733533cd15eceafb7fabdeda3a7321e3024a6",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "49b472faa4949db9b53ca1dcfae9dfc68c95afdd0cadabd95ab100bd97e1e3ad",
+    "evaluation/issue-30/independent-v2/approved/dataset.json": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+    "evaluation/issue-30/independent-v2/approved/approval.json": "2ce79b8625538e014548c99819c381388be5ee865fde474395b70890d4b551d4"
+  },
+  "runnerImage": "dseacrypbunss3xh66m.azurecr.io/dse-production-evaluation@sha256:4eab7da35ae28ef3eae9120005e0c6ae02c74f93946ffeb8e1fbcb2dc3399c03",
+  "frozenBeforeIndependentModelCalls": true
+}

@@ -1,0 +1,19 @@
+{
+  "scope": "warm24 approved timing repetitions",
+  "syntheticOnly": true,
+  "savedAtUtc": "2026-10-04T04:31:23.367672+00:00",
+  "sha256": {
+    "http-warm.json": "bf28fdf9ffa6e3d9413b3e9be44c8689602c450e782f2d0a702049b8fe77421c",
+    "http-warm-summary.json": "5fc5313c4540fba331060103023a39fda3c8c4504e5b3b35edbbde3b07acd4c8",
+    "ui-warm-observations.json": "4475c85c0493d6db18eb66cacd3702b089fff98471197e703546e72e413ec88d",
+    "ledger-weekly-postwarm.json": "b2452684a0b40cb43707b8caefcc1d44fab46a2590f201d9ee6b3cffe76638f0",
+    "cost-weekly-final.json": "bd918255aec229d434250ef36414bf75b544ea83b16f4712a7bedd2b29faa757",
+    "warm-ui-failure-proof.pdf": "f0b1f96892858088fb57f125551b389891c973b0fdd82bd9620a8b0300f8e264",
+    "warm-ui-failure-proof-page2.png": "6e8211d10466fbade5df620576d7e08bbd93640b3e93ce73d26316aac160e00e"
+  },
+  "tests": {
+    "dotnetPassed": 361,
+    "pythonPassed": 94,
+    "whitespaceLinksJson": "passed"
+  }
+}

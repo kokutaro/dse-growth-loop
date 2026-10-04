@@ -1,0 +1,1759 @@
+{
+  "scope": "JWT SPA initial 48 observations; six failed request HAR entries unavailable; UI failures retained; primary/cap/rescue are assessed only from service audits",
+  "holdoutTuned": false,
+  "qualityPassed": false,
+  "warm24": "completed after weekly-budget approval:22 successful HAR responses,2 UI failures; p95 18.622s exceeds15s; see http-warm-summary.json",
+  "cold3": "completed; all three successful from actual zero replicas",
+  "arms": {
+    "all": {
+      "metrics": {
+        "person": {
+          "groupHitAt5": 0.9,
+          "groupPrecisionAt5": 0.9,
+          "groupRecallAt5": 0.9,
+          "combinedPrecisionAt5": 0.9
+        },
+        "knowledge": {
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 0.95,
+          "combinedPrecisionAt5": 0.55
+        }
+      },
+      "noGoldFalseQuestions": 0,
+      "wrongTarget": 0,
+      "failedUiQuestions": [
+        "i30n-no-answer-02",
+        "i30n-no-answer-03",
+        "i30n-no-answer-04"
+      ],
+      "groundingChecked": 55,
+      "groundingPassed": 55,
+      "networkTiming": {
+        "count": 21,
+        "p50Ms": 11135.49100002274,
+        "p95Ms": 17685.582000063732,
+        "maxMs": 49399.869000141036
+      },
+      "rows": [
+        {
+          "questionId": "i30n-software-deadlock-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "displayRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 17685.582000063732,
+          "runId": "retrieval-ab1c92f1b8234c679dd451f7e8cb8c0d",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": null,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "observer timing unavailable; use HAR network time"
+        },
+        {
+          "questionId": "i30n-software-deadlock-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support",
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 49399.869000141036,
+          "runId": "retrieval-e7d7dae0d42641f898ceaf0edbe11d0f",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": null,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "observer timing unavailable; use HAR network time"
+        },
+        {
+          "questionId": "i30n-software-pagination-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "displayRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 10884.199999971315,
+          "runId": "retrieval-402e63ec219643abaf7a7bd0c70334fa",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 10946,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-software-pagination-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-person-support",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 11781.14499989897,
+          "runId": "retrieval-4e59a9ecd7804599a597073552ddadc3",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 11904,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-mechanical-resonance-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 10699.46700008586,
+          "runId": "retrieval-925556aff0084f40b34cd22363b3af08",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 10844,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-mechanical-resonance-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support",
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 11987.54999996163,
+          "runId": "retrieval-b6302fcb5b974de392c6efa4e94a6749",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 12100,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-mechanical-corrosion-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 16581.373000051826,
+          "runId": "retrieval-4f522be80a2b470485e39a4382272d6f",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 16748,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-mechanical-corrosion-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-mechanical-corrosion-knowledge-direct",
+            "i30n-mechanical-corrosion-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-corrosion-knowledge-direct",
+            "i30n-mechanical-corrosion-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support",
+            "i30n-mechanical-corrosion-knowledge-direct",
+            "i30n-mechanical-corrosion-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 17178.48200001754,
+          "runId": "retrieval-dffd7383959e4d35aec6d8c563eeff8e",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 17258,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-sales-renewal-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 15569.578000111505,
+          "runId": "retrieval-4fe5793ef39b4640bc1bf0874a9de24b",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 15679,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-sales-renewal-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-knowledge-support",
+            "i30n-sales-renewal-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 17152.681999839842,
+          "runId": "retrieval-56c3cbf9547f49a9859766e199af17dd",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 17258,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-sales-tender-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": 0,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": 0.0,
+          "combinedHitAt5": 0,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "networkMs": 9063.034999882802,
+          "runId": "retrieval-fefe6e2ea14d489cb3078c9ceb341cf9",
+          "httpStatus": 200,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 9168,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-sales-tender-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-sales-tender-knowledge-direct",
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 0.5,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 9306.735000107437,
+          "runId": "retrieval-8e1ea064ae6a4206a2a6443c96c65ec8",
+          "httpStatus": 200,
+          "grounding": [
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 9425,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-manufacturing-moisture-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 9320.94300002791,
+          "runId": "retrieval-d01ffd746d3b4944a7b3c7275b4d544d",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 9433,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-manufacturing-moisture-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-person-support",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 10388.310000067577,
+          "runId": "retrieval-84eaaab886ff44a7a63ad34b1bb5e466",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 10494,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-manufacturing-setup-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 15781.134999822825,
+          "runId": "retrieval-ed834c9c48484692b183da3180d2fcb3",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 15880,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-manufacturing-setup-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-person-support",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 16979.13599992171,
+          "runId": "retrieval-b075eab6bfcc471a976796da4c5aec52",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 17067,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-operations-visitor-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 10089.347999970541,
+          "runId": "retrieval-429b1593b6f74e88b8cc559b87adf7ad",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 10224,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-operations-visitor-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-knowledge-support",
+            "i30n-operations-visitor-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 10817.544999998063,
+          "runId": "retrieval-60ab5d770472404291d396b5e3588628",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 10957,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-operations-expense-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 9574.259999906644,
+          "runId": "retrieval-0d50d11084224a81b1ea835f332d3117",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 9678,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-operations-expense-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-person-support",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 0.5,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 11135.49100002274,
+          "runId": "retrieval-31a459660b1b47e4bfef129644c952ea",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 11261,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-no-answer-01",
+          "entityType": "person",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "networkMs": 9463.81300012581,
+          "runId": "retrieval-c9d3322c2b984f3b8663e9f45de4b01e",
+          "httpStatus": 200,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 9571,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-no-answer-02",
+          "entityType": "knowledge",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "UI_CLASSIFICATION_MANUAL_REQUIRED",
+          "networkMs": null,
+          "httpStatus": null,
+          "runId": null,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 624,
+          "uiStatus": "failed",
+          "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-no-answer-03",
+          "entityType": "person",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "UI_CLASSIFICATION_MANUAL_REQUIRED",
+          "networkMs": null,
+          "httpStatus": null,
+          "runId": null,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 636,
+          "uiStatus": "failed",
+          "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-no-answer-04",
+          "entityType": "knowledge",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "UI_CLASSIFICATION_MANUAL_REQUIRED",
+          "networkMs": null,
+          "httpStatus": null,
+          "runId": null,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "all",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 737,
+          "uiStatus": "failed",
+          "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        }
+      ]
+    },
+    "targeted": {
+      "metrics": {
+        "person": {
+          "groupHitAt5": 0.9,
+          "groupPrecisionAt5": 0.9,
+          "groupRecallAt5": 0.9,
+          "combinedPrecisionAt5": 0.9
+        },
+        "knowledge": {
+          "groupHitAt5": 0.9,
+          "groupPrecisionAt5": 0.9,
+          "groupRecallAt5": 0.85,
+          "combinedPrecisionAt5": 0.9
+        }
+      },
+      "noGoldFalseQuestions": 0,
+      "wrongTarget": 0,
+      "failedUiQuestions": [
+        "i30n-mechanical-corrosion-knowledge-query",
+        "i30n-no-answer-03",
+        "i30n-no-answer-04"
+      ],
+      "groundingChecked": 35,
+      "groundingPassed": 35,
+      "networkTiming": {
+        "count": 21,
+        "p50Ms": 7160.773999989033,
+        "p95Ms": 11404.116000048816,
+        "maxMs": 12845.087999943644
+      },
+      "rows": [
+        {
+          "questionId": "i30n-software-deadlock-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "displayRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-deadlock-person-direct",
+            "i30n-software-deadlock-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 9289.263000013307,
+          "runId": "retrieval-b3b9a019e8144a79ae1f860b4094f0c9",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 9364,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-software-deadlock-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-deadlock-knowledge-direct",
+            "i30n-software-deadlock-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 6122.98099999316,
+          "runId": "retrieval-221755b3a0c6462cb9d1d7f77832a92c",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 6216,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-software-pagination-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "displayRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-pagination-person-direct",
+            "i30n-software-pagination-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 8691.82200008072,
+          "runId": "retrieval-7eb45d8f96b74577ad9673b7e76823b5",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 8860,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-software-pagination-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-software-pagination-knowledge-direct",
+            "i30n-software-pagination-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 5594.7710000909865,
+          "runId": "retrieval-ebfd15b1311c422594730635fd846516",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 5727,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-mechanical-resonance-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-resonance-person-direct",
+            "i30n-mechanical-resonance-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 8492.632000008598,
+          "runId": "retrieval-16c464abd2cd46c88eb3c20f0bf9640f",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 8678,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-mechanical-resonance-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-resonance-knowledge-direct",
+            "i30n-mechanical-resonance-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 6347.935999976471,
+          "runId": "retrieval-2080f4f3d0a84aeaa25fa13113836f7a",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 6420,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-mechanical-corrosion-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "displayRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-mechanical-corrosion-person-direct",
+            "i30n-mechanical-corrosion-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 12845.087999943644,
+          "runId": "retrieval-2f54d1f157a44bcc94a80b4686eef687",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 12984,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-mechanical-corrosion-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-mechanical-corrosion-knowledge-direct",
+            "i30n-mechanical-corrosion-knowledge-support"
+          ],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": 0,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": 0.0,
+          "combinedHitAt5": 0,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "UI_CLASSIFICATION_MANUAL_REQUIRED",
+          "networkMs": null,
+          "httpStatus": null,
+          "runId": null,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 741,
+          "uiStatus": "failed",
+          "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-sales-renewal-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-renewal-person-direct",
+            "i30n-sales-renewal-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 11404.116000048816,
+          "runId": "retrieval-86904851402d4c0498fcafa75eac2488",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 11602,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-sales-renewal-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-renewal-knowledge-direct",
+            "i30n-sales-renewal-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 8013.878000201657,
+          "runId": "retrieval-5b88d806130246d289a50e5cea97e194",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 8115,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-sales-tender-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-sales-tender-person-direct",
+            "i30n-sales-tender-person-support"
+          ],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": 0,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": 0.0,
+          "combinedHitAt5": 0,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "networkMs": 6457.758000120521,
+          "runId": "retrieval-05c894a585534df3a638e65fd8b2a776",
+          "httpStatus": 200,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 6630,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-sales-tender-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-sales-tender-knowledge-direct",
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-sales-tender-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 0.5,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 5665.148000000045,
+          "runId": "retrieval-b09999f9b8754b5588e543f1af0abdce",
+          "httpStatus": 200,
+          "grounding": [
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 5787,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-manufacturing-moisture-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-moisture-person-direct",
+            "i30n-manufacturing-moisture-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 7160.773999989033,
+          "runId": "retrieval-c96c0dd05c204339a4f80779026d32c4",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 7251,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-manufacturing-moisture-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-moisture-knowledge-direct",
+            "i30n-manufacturing-moisture-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 6106.520999921486,
+          "runId": "retrieval-5506a54307134ccc85795ce204513047",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 6225,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-manufacturing-setup-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-setup-person-direct",
+            "i30n-manufacturing-setup-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 11017.630000133067,
+          "runId": "retrieval-a153c80d75654e198e9233034ae71921",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 11172,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-manufacturing-setup-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-manufacturing-setup-knowledge-direct",
+            "i30n-manufacturing-setup-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 8480.825999984518,
+          "runId": "retrieval-d4ffe48ba8cd45b6954fff6def29e547",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 8634,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-operations-visitor-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-visitor-person-direct",
+            "i30n-operations-visitor-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 7627.3809999693185,
+          "runId": "retrieval-25dd68767f534dbcba946262d5c5ee27",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 7796,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-operations-visitor-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-visitor-knowledge-direct",
+            "i30n-operations-visitor-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 6507.716000080109,
+          "runId": "retrieval-44201adb593e47aaa45ec2e1e2995625",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 6629,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-operations-expense-person-query",
+          "entityType": "person",
+          "gold": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-person-direct",
+            "i30n-operations-expense-person-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 7225.039999932051,
+          "runId": "retrieval-2776b9f7134f4c3985454033229756d6",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 7364,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-operations-expense-knowledge-query",
+          "entityType": "knowledge",
+          "gold": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "displayRanking": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "combinedRanking": [
+            "i30n-operations-expense-knowledge-direct",
+            "i30n-operations-expense-knowledge-support"
+          ],
+          "groupHitAt5": 1,
+          "groupPrecisionAt5": 1.0,
+          "groupRecallAt5": 1.0,
+          "combinedHitAt5": 1,
+          "combinedPrecisionAt5": 1.0,
+          "noGoldFalse": false,
+          "status": "succeeded",
+          "networkMs": 7021.483000135049,
+          "runId": "retrieval-db15af69e2e9416a9d91904256034737",
+          "httpStatus": 200,
+          "grounding": [
+            true,
+            true
+          ],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 7151,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-no-answer-01",
+          "entityType": "person",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "networkMs": 7028.014000039548,
+          "runId": "retrieval-2bd64411752f4bf7bff038c7fd8aa903",
+          "httpStatus": 200,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 7139,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-no-answer-02",
+          "entityType": "knowledge",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "all_unsuitable",
+          "networkMs": 6615.195000078529,
+          "runId": "retrieval-228df5c87cdd4586ba9f62d71cc48c76",
+          "httpStatus": 200,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 6719,
+          "uiStatus": "complete",
+          "alert": null,
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-no-answer-03",
+          "entityType": "person",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "UI_CLASSIFICATION_MANUAL_REQUIRED",
+          "networkMs": null,
+          "httpStatus": null,
+          "runId": null,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 622,
+          "uiStatus": "failed",
+          "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        },
+        {
+          "questionId": "i30n-no-answer-04",
+          "entityType": "knowledge",
+          "gold": [],
+          "displayRanking": [],
+          "combinedRanking": [],
+          "groupHitAt5": null,
+          "groupPrecisionAt5": 0,
+          "groupRecallAt5": null,
+          "combinedHitAt5": null,
+          "combinedPrecisionAt5": 0,
+          "noGoldFalse": false,
+          "status": "UI_CLASSIFICATION_MANUAL_REQUIRED",
+          "networkMs": null,
+          "httpStatus": null,
+          "runId": null,
+          "grounding": [],
+          "wrongTarget": false,
+          "arm": "targeted",
+          "phase": "initial",
+          "uiCompletionUpperBoundMs": 738,
+          "uiStatus": "failed",
+          "alert": "自動分類を利用できません。手動で条件を編集して検索してください。",
+          "timingLimitation": "UI polling upper bound, not precise browser render time"
+        }
+      ]
+    }
+  },
+  "overallGate": "failed-quality-and-warm-incomplete"
+}

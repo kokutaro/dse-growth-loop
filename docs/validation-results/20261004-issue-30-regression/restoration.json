@@ -1,0 +1,20 @@
+{
+  "dse-api": {
+    "originalImageEnvResourcesScale": true,
+    "activeRevisions": 0,
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-api:issue9-final5",
+    "latestRevisionReplicaCount": 0
+  },
+  "dse-worker": {
+    "originalImageEnvResourcesScale": true,
+    "activeRevisions": 0,
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-worker:issue13-live3",
+    "latestRevisionReplicaCount": 0
+  },
+  "job": {
+    "originalImageEnvResourcesArgs": true,
+    "runningExecutions": 0,
+    "image": "dseacrypbunss3xh66m.azurecr.io/dse-production-evaluation:issue30-hardening1"
+  },
+  "verifiedAtUtc": "2026-10-04T06:10:37.429419+00:00"
+}

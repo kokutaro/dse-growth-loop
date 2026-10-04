@@ -10,24 +10,33 @@ using Dse.Infrastructure;
 var builder = Host.CreateApplicationBuilder([]);
 var config = builder.Configuration;
 var mode = args.FirstOrDefault() ?? "--prepare";
-if (mode is not ("--prepare" or "--run" or "--resume" or "--search" or "--diagnose" or "--export" or "--export-audits" or "--regression" or "--regression-export")) throw new ArgumentException("Invalid mode");
-var fixture = Runner.Load<Fixture>("data/dataset.json");
-var approval = JsonNode.Parse(File.ReadAllText("data/approval.json"))!.AsObject();
-if (fixture.Origin != "synthetic" || fixture.HumanReviewStatus != "human-approved" || approval.Text("datasetSha256") != Runner.Hash("data/dataset.json") ||
-    fixture.Questions.Length != 24 || fixture.Units.Length != 60) throw new ArgumentException("Approved independent fixture required");
+if (mode is not ("--prepare" or "--run" or "--resume" or "--seed" or "--search" or "--diagnose" or "--export" or "--export-audits" or "--regression" or "--regression-export" or "--report-export" or "--seed-status" or "--ledger-status" or "--resume-seed" or "--weekly-budget-initialize")) throw new ArgumentException("Invalid mode");
+var dataDirectory = config["Validation:DataDirectory"] ?? "data";
+var datasetPath = Path.Combine(dataDirectory, "dataset.json");
+var approvalPath = Path.Combine(dataDirectory, "approval.json");
+var fixture = Runner.Load<Fixture>(datasetPath);
+var approval = File.Exists(approvalPath) ? JsonNode.Parse(File.ReadAllText(approvalPath))!.AsObject() : null;
+ProductionEvaluationPlan.RequireFixture(fixture, Runner.Hash(datasetPath), approval?.Text("datasetSha256"), mode == "--prepare");
+var rules = ProductionEvaluationPlan.Rules(config["Retrieval:PersonLimit"]);
+var bothTargets = config.GetValue<bool>("Validation:BothTargets");
 var run = config["Validation:RunId"] ?? "issue30-independent-20261003-v1";
 var scope = run;
 var evaluationId = config["Validation:EvaluationId"] ?? run;
+var attempt = config.GetValue<int>("Validation:AttemptId", 1);
+if (attempt is < 1 or > 16) throw new ArgumentException("Invalid manual recovery attempt");
+var readOnlyExport = mode is "--regression-export" or "--report-export" or "--seed-status" or "--ledger-status" or "--weekly-budget-initialize";
 var regression = mode is "--regression" or "--regression-export";
 if (regression && (evaluationId == run || !RecordJson.IsId(evaluationId) || !evaluationId.StartsWith("issue30-hardening-")))
     throw new ArgumentException("Separate regression evaluation ID required");
 if (!RecordJson.IsId(run) || !run.StartsWith("issue30-independent-")) throw new ArgumentException("Dedicated run ID required");
+var regressionAllOnly = config.GetValue<bool>("Validation:RegressionAllOnly");
+var arms = ProductionEvaluationPlan.Arms(regression, bothTargets, regressionAllOnly);
 var tenant = config["Auth:TenantId"] ?? throw new ArgumentException("Tenant required");
 var owner = "principal-" + run;
 var person = "operator-" + run;
 var actor = new ActorAccess(tenant, owner, person, ["member", "publisher", "operator"], [scope]);
 // Synthetic identities exist only in this dedicated validation process, not public API auth settings.
-var settings = new Dictionary<string, string?> { ["Retrieval:CaseLimit"] = "15", ["Retrieval:PersonLimit"] = "10", ["Profile:SecondaryWorkFragments"] = "true" };
+var settings = new Dictionary<string, string?> { ["Retrieval:CaseLimit"] = "15", ["Retrieval:PersonLimit"] = rules.PersonLimit.ToString(), ["Profile:SecondaryWorkFragments"] = "true" };
 var index = config.GetSection("Auth:Bindings").GetChildren().Count();
 foreach (var unit in fixture.Units.Where(u => u.Search.EntityType == "person"))
 {
@@ -41,18 +50,18 @@ foreach (var unit in fixture.Units.Where(u => u.Search.EntityType == "person"))
     settings[$"Auth:Grants:{grant}:PrincipalId"] = principal; settings[$"Auth:Grants:{grant}:ScopeIds:0"] = scope;
 }
 config.AddInMemoryCollection(settings);
-var safePlan = new { RunId = run, Mode = mode, DatasetSha256 = Runner.Hash("data/dataset.json"), DummyOnly = true, Scope = scope,
-    EvaluationId = evaluationId, ObservedRegressionSet = regression, IndependentHoldout = !regression, Arms = regression ? new[] { "all", "targeted" } : new[] { "all" },
-    Questions = 24, Documents = 60, Rules = new RetrievalRules(CaseLimit: 15), ProfileFragments = true,
+var safePlan = new { RunId = run, Mode = mode, DatasetSha256 = Runner.Hash(datasetPath), DummyOnly = true, Scope = scope,
+    EvaluationId = evaluationId, ObservedRegressionSet = regression, IndependentHoldout = !regression, Arms = arms,
+    Questions = 24, Documents = 60, Rules = rules, LabelApprovalStatus = fixture.HumanReviewStatus, ExecutionEnabled = mode != "--prepare", ProfileFragments = true,
     HttpAuthenticationTested = false, ExecutionScope = "Production Azure services via Managed Identity; public HTTP/JWT and cold scale-out are separate" };
 Console.WriteLine("INDEPENDENT_PLAN " + JsonSerializer.Serialize(safePlan, Runner.Json));
 if (mode == "--prepare") return;
 if (config["Validation:Approved"] != "true" || config["Data:Mode"] != "Azure" || config["Ai:Mode"] != "Live" ||
-    mode != "--regression-export" && (config["AiUsage:Stopped"] != "false" || config["AiUsage:LiveOptIn"] != "true") || string.IsNullOrWhiteSpace(config["AZURE_CLIENT_ID"]))
+    !readOnlyExport && (config["AiUsage:Stopped"] != "false" || config["AiUsage:LiveOptIn"] != "true") || string.IsNullOrWhiteSpace(config["AZURE_CLIENT_ID"]))
     throw new ArgumentException("Explicit production validation opt-in required");
 var limits = AiLimits.Read(config);
-if (mode != "--regression-export" && (limits.Attempts != 1 || limits.DailyCalls > 240 || limits.DailyCalls < 1 || limits.DailyTokens > 4500000 ||
-    limits.DailyJpy > 200 || limits.DailyJpy <= 0 || limits.InputTokens > 16000 || limits.OutputTokens > 3000 ||
+if (!readOnlyExport && (limits.Attempts != 1 || (!limits.Weekly && (limits.DailyCalls > 240 || limits.DailyCalls < 1)) || limits.DailyTokens > 4500000 ||
+    (!limits.Weekly && (limits.DailyJpy > 200 || limits.DailyJpy <= 0)) || (limits.Weekly && (limits.WeeklyCalls is < 1 or > 1680 || limits.WeeklyTotalJpy is <= 0 or > 2000 || limits.UsdToJpy != 162)) || limits.InputTokens > 16000 || limits.OutputTokens > 3000 ||
     config["Foundry:Deployment"] != "dse-luna6-eval" || config["Jev:Model"] != "jev-1.13.0"))
     throw new ArgumentException("Frozen validation budget/model contract required");
 builder.Logging.SetMinimumLevel(LogLevel.Warning);
@@ -62,6 +71,13 @@ var repo = host.Services.GetRequiredService<IPrimaryRepository>(); var store = h
 var decisions = host.Services.GetRequiredService<IDecisionProvider>(); var pipeline = host.Services.GetRequiredService<ProfilePipeline>();
 var search = host.Services.GetRequiredService<NaturalSearchService>(); var guard = host.Services.GetRequiredService<SourceGuard>();
 var clock = host.Services.GetRequiredService<TimeProvider>();
+ObservedDecisions? observedDecisions = null;
+if (!regression && bothTargets)
+{
+    observedDecisions = new(decisions);
+    search = new NaturalSearchService(host.Services.GetRequiredService<IProjectionRepository>(), repo, guard,
+        host.Services.GetRequiredService<AccessFence>(), observedDecisions, host.Services.GetRequiredService<IReranker>(), config, clock);
+}
 if (regression)
 {
     var tagged = new TaggedAi(decisions, host.Services.GetRequiredService<IReranker>(), evaluationId);
@@ -74,16 +90,77 @@ var blobs = new BlobServiceClient(new Uri(config["Storage:BlobEndpoint"]!), new 
 var prefix = "validation/issue30/" + evaluationId + "/";
 async Task Save(string name, object value) => await blobs.GetBlobContainerClient("extracted").GetBlobClient(prefix + name)
     .UploadAsync(BinaryData.FromString(JsonSerializer.Serialize(value, Runner.Json)), overwrite: false, ct);
-if (mode == "--regression-export")
+if (readOnlyExport)
 {
-    var content = await blobs.GetBlobContainerClient("extracted").GetBlobClient(prefix + "regression-report.json").DownloadContentAsync(ct);
-    var bytes = System.Text.Encoding.UTF8.GetBytes(content.Value.Content.ToString());
+    string exported;
+    if (mode == "--weekly-budget-initialize")
+    {
+        var weeklyApproval = JsonNode.Parse(File.ReadAllText(Path.Combine(dataDirectory, "weekly-budget-approval.json")))!.AsObject();
+        if (!limits.Stopped || limits.LiveOptIn || !limits.Weekly || limits.UsdToJpy != 162 || limits.WeeklyTotalJpy > 2000 ||
+            weeklyApproval.Text("reference") != config["Validation:WeeklyApprovalReference"] || weeklyApproval["totalJpy"]!.GetValue<int>() != 2000)
+            throw new ArgumentException("Stopped operator initialization matching weekly human approval required");
+        var week = await host.Services.GetRequiredService<AiLedger>().InitializeWeekAsync(tenant, limits, weeklyApproval.Text("reference"), true, ct);
+        exported = JsonSerializer.Serialize(new { Plan = safePlan, Week = week, Ledger = await LedgerSnapshot(), InferenceSent = false }, Runner.Json);
+    }
+    else if (mode == "--ledger-status")
+    {
+        var audits = new List<object>(); string? cursor = null; var pages = 0;
+        do
+        {
+            var page = await repo.QueryAsync(partition, "aiRun", null, null, 100, cursor, ct);
+            audits.AddRange(page.Items.Where(r => r.Value.Strings("scopeIds").Contains(scope)).Select(r => (object)new {
+                Id = r.Value.Text("id"), JobId = r.Value.Text("jobId"), Operation = r.Value.Text("operation"),
+                Status = r.Value.Text("status"), ErrorCode = r.Value["errorCode"]?.DeepClone(),
+                CreatedAt = r.Value["createdAt"]?.DeepClone(), Trace = r.Value["trace"]?.DeepClone() }));
+            cursor = page.ContinuationToken;
+            if (++pages > 30) throw new InvalidOperationException("Audit page bound exceeded");
+        } while (cursor is not null);
+        exported = JsonSerializer.Serialize(new { Plan = safePlan, AiAudits = audits, Ledger = await LedgerSnapshot(), InferenceSent = false }, Runner.Json);
+    }
+    else if (mode == "--seed-status")
+    {
+        var units = new List<object>();
+        foreach (var entry in fixture.Units)
+        {
+            var id = run + "-" + entry.Search.EntityId;
+            var primary = await repo.ReadAsync(partition, id, ct);
+            var receipt = blobs.GetBlobContainerClient("extracted").GetBlobClient(prefix + id + ".json");
+            units.Add(new { EntityId = entry.Search.EntityId, PrimaryExists = primary is not null, ReceiptExists = (await receipt.ExistsAsync(ct)).Value });
+        }
+        var audits = new List<JsonObject>(); string? cursor = null; var pages = 0;
+        do
+        {
+            var page = await repo.QueryAsync(partition, "aiRun", null, null, 100, cursor, ct);
+            audits.AddRange(page.Items.Where(r => r.Value.Strings("scopeIds").Contains(scope)).Select(r => r.Value));
+            cursor = page.ContinuationToken;
+            if (++pages > 30) throw new InvalidOperationException("Audit page bound exceeded");
+        } while (cursor is not null);
+        var firstId = run + "-" + fixture.Units[0].Search.EntityId;
+        var firstRecords = new List<JsonObject>();
+        foreach (var id in new[] { firstId, firstId + "-document", firstId + "-version", firstId + "-evidence", firstId + "-experience" })
+        {
+            var record = await repo.ReadAsync(partition, id, ct);
+            if (record is not null) firstRecords.Add(record.Value);
+        }
+        exported = JsonSerializer.Serialize(new { Plan = safePlan, Units = units, FirstRecords = firstRecords, AiAudits = audits, Ledger = await LedgerSnapshot(), InferenceSent = false }, Runner.Json);
+    }
+    else
+    {
+    var reportName = config["Validation:ReportName"] ?? "regression-report.json";
+    if (reportName is not ("regression-report.json" or "repeat-report.json" or "report.json" or "seed-complete.json")) throw new ArgumentException("Invalid export report name");
+    var content = await blobs.GetBlobContainerClient("extracted").GetBlobClient(prefix + reportName).DownloadContentAsync(ct);
+    exported = content.Value.Content.ToString();
+    }
+    var bytes = System.Text.Encoding.UTF8.GetBytes(exported);
     using var buffer = new MemoryStream();
     using (var gzip = new System.IO.Compression.GZipStream(buffer, System.IO.Compression.CompressionLevel.SmallestSize, true)) gzip.Write(bytes);
     var encoded = Convert.ToBase64String(buffer.ToArray());
     var count = (encoded.Length + 1999) / 2000;
-    for (var i = 0; i < count; i++) Console.WriteLine("REGRESSION_CHUNK " + JsonSerializer.Serialize(new {
-        Index = i, Count = count, Sha256 = JevEvaluation.HashText(content.Value.Content.ToString()),
+    var startChunk = config.GetValue<int>("Validation:ExportStartChunk", 0);
+    var chunkLimit = config.GetValue<int>("Validation:ExportChunkCount", count);
+    if (startChunk < 0 || startChunk >= count || chunkLimit < 1) throw new ArgumentException("Invalid export chunk range");
+    for (var i = startChunk; i < Math.Min(count, startChunk + chunkLimit); i++) Console.WriteLine("REGRESSION_CHUNK " + JsonSerializer.Serialize(new {
+        Index = i, Count = count, Sha256 = JevEvaluation.HashText(exported),
         Data = encoded.Substring(i * 2000, Math.Min(2000, encoded.Length - i * 2000)) }, Runner.Json));
     Console.WriteLine("REGRESSION_EXPORT_COMPLETE " + count); return;
 }
@@ -143,18 +220,30 @@ if (mode == "--diagnose")
 }
 async Task<object?> LedgerSnapshot()
 {
-    var day = (await repo.ReadAsync(partition, "ai-day-" + clock.GetUtcNow().ToString("yyyy-MM-dd"), ct))?.Value;
-    var gate = (await repo.ReadAsync(partition, "system-ai-gate", ct))?.Value;
+    var day = (await store.ReadAsync(partition, "ai-day-" + clock.GetUtcNow().ToString("yyyy-MM-dd"), ct))?.Value;
+    var gate = (await store.ReadAsync(partition, "system-ai-gate", ct))?.Value;
     return new { Calls = day?["calls"]?.DeepClone(), Tokens = day?["tokens"]?.DeepClone(), EstimatedJpy = day?["jpy"]?.DeepClone(),
+        Week = (await store.ReadAsync(partition, AiLedger.WeekId(clock.GetUtcNow()), ct))?.Value,
         ActiveReservations = gate?["active"]?.AsArray().Count ?? 0, Blocked = gate?["blocked"]?.DeepClone() };
 }
-var ledgerBefore = regression ? await LedgerSnapshot() : null;
+var ledgerBefore = await LedgerSnapshot();
+var ledgerNode = JsonSerializer.SerializeToNode(ledgerBefore, Runner.Json)!;
+var stageCalls = mode is "--run" or "--resume" ? 196 : mode is "--seed" or "--resume-seed" ? 100 : mode is "--search" or "--regression" ? (arms.Length * 48) : 0;
+if (stageCalls > 0 && !limits.Weekly) ProductionEvaluationPlan.RequireCallBudget(ledgerNode["calls"]?.GetValue<int>() ?? 0, limits.DailyCalls, stageCalls,
+    ledgerNode["activeReservations"]!.GetValue<int>());
+if (stageCalls > 0 && limits.Weekly)
+{
+    var w = ledgerNode["week"]?.AsObject() ?? throw new InvalidOperationException("Weekly approval missing");
+    ProductionEvaluationPlan.RequireWeeklyBudget(w["calls"]!.GetValue<int>(), limits.WeeklyCalls, stageCalls, ledgerNode["activeReservations"]!.GetValue<int>(),
+        w["usd"]!.GetValue<decimal>() * limits.UsdToJpy + w["reservedNonRuntimeJpy"]!.GetValue<decimal>(), limits.WeeklyTotalJpy,
+        ledgerNode["tokens"]?.GetValue<long>() ?? 0, limits.DailyTokens);
+}
 if (regression) Console.WriteLine("REGRESSION_PREFLIGHT " + JsonSerializer.Serialize(ledgerBefore, Runner.Json));
 var stages = new List<object>();
 try
 {
-    await Save(mode == "--regression" ? "regression-start.json" : mode == "--run" ? "start.json" : mode == "--resume" ? "resume-start.json" : "search-start.json", safePlan);
-    if (mode is "--run" or "--resume")
+    await Save(mode == "--regression" ? "regression-start.json" : mode == "--run" ? "start.json" : mode == "--resume" ? "resume-start.json" : mode == "--seed" ? "seed-start.json" : mode == "--resume-seed" ? "resume-seed-start-" + attempt + ".json" : "search-start.json", safePlan);
+    if (mode is "--run" or "--resume" or "--seed" or "--resume-seed")
     {
         foreach (var entry in fixture.Units)
         {
@@ -198,14 +287,50 @@ try
             foreach (var record in records) existing.Add(await repo.ReadAsync(partition, record.Text("id"), ct));
             if (existing.Any(r => r is not null))
             {
-                // Recovery of the first pre-classification seed only. Never overwrite, alter gold, or resend a successful item.
-                if (mode != "--resume" || entry != fixture.Units[0] || existing.Any(r => r is null) ||
-                    existing.Any(r => r!.Value.Number("sourceVersion") != 1 || r.Value.Text("tenantId") != tenant ||
-                        r.Value.Text("ownerId") != primaryOwner || !r.Value.Strings("scopeIds").SequenceEqual([scope])) ||
-                    existing.Single(r => r!.Value.Text("kind") == "evidenceSpan")!.Value.Text("text") != u.Summary ||
-                    existing.Single(r => r!.Value.Text("kind") == "documentVersion")!.Value.Text("sha256") != version.Text("sha256") ||
-                    existing.Single(r => r!.Value.Text("kind") == "experience")!.Value.Text("description") != u.Summary)
-                    throw new InvalidOperationException("Existing seed does not match audited failed-first-item recovery");
+                var receiptBlob = blobs.GetBlobContainerClient("extracted").GetBlobClient(prefix + id + ".json");
+                var completed = (await receiptBlob.ExistsAsync(ct)).Value;
+                if (mode == "--resume-seed")
+                {
+                    ProductionEvaluationPlan.RequireSeedRecovery(records.ToArray(), existing.Select(r => r?.Value).ToArray(), completed);
+                    if (completed)
+                    {
+                        var receipt = JsonNode.Parse((await receiptBlob.DownloadContentAsync(ct)).Value.Content.ToString())!;
+                        if (receipt["entityId"]?.GetValue<string>() != u.EntityId || receipt["kind"]?.GetValue<string>() != u.EntityType ||
+                            receipt["published"]?.GetValue<bool>() != true) throw new InvalidOperationException("Invalid completed seed receipt");
+                        var projectionIds = u.EntityType == "person" ? existing[0]!.Value.Strings("projectionIds") : [id + "-projection"];
+                        if (projectionIds.Length == 0 || u.EntityType == "person" && projectionIds.Length != receipt["projectionCount"]!.GetValue<int>())
+                            throw new InvalidOperationException("Incomplete completed seed projections");
+                        foreach (var projectionId in projectionIds)
+                        {
+                            var projection = await store.ReadAsync(partition, projectionId, ct) ?? throw new InvalidOperationException("Missing completed seed projection");
+                            var unit = projection.Value.Deserialize<SearchUnit>(Runner.Json)!;
+                            if (unit.EntityId != id || unit.ProcessingMode != "live") throw new InvalidOperationException("Invalid completed seed projection");
+                            await guard.RequireAsync(actor, unit, ct);
+                        }
+                        Console.WriteLine("INDEPENDENT_REUSED " + u.EntityId); continue;
+                    }
+                    if (u.EntityType == "person" && existing[0]!.Value.Number("sourceVersion") != 1)
+                        throw new InvalidOperationException("Partial person pipeline cannot be recovered");
+                    var recoveryAudits = new List<JsonObject>(); string? recoveryCursor = null; var recoveryPages = 0;
+                    do
+                    {
+                        var page = await repo.QueryAsync(partition, "aiRun", null, null, 100, recoveryCursor, ct);
+                        recoveryAudits.AddRange(page.Items.Where(r => r.Value.Strings("scopeIds").Contains(scope)).Select(r => r.Value));
+                        recoveryCursor = page.ContinuationToken;
+                        if (++recoveryPages > 30) throw new InvalidOperationException("Audit page bound exceeded");
+                    } while (recoveryCursor is not null);
+                    ProductionEvaluationPlan.RequireUnsentRecovery(recoveryAudits.ToArray(), sourceId);
+                    if (u.EntityType == "knowledge" && await store.ReadAsync(partition, id + "-projection", ct) is not null)
+                        throw new InvalidOperationException("Unreceipted knowledge projection cannot be recovered");
+                    Console.WriteLine("INDEPENDENT_RESUMING_UNSENT " + u.EntityId);
+                }
+                else
+                {
+                    // Historical recovery of the first pre-classification seed only.
+                    if (mode != "--resume" || entry != fixture.Units[0] || completed)
+                        throw new InvalidOperationException("Existing seed requires an explicit verified recovery mode");
+                    ProductionEvaluationPlan.RequireSeedRecovery(records.ToArray(), existing.Select(r => r?.Value).ToArray(), false);
+                }
             }
             else await store.CommitAsync(partition, records.Select(RecordWrite.Create).ToArray(), ct);
             if (u.EntityType == "person")
@@ -236,11 +361,17 @@ try
             Console.WriteLine("INDEPENDENT_SEEDED " + u.EntityId);
         }
     }
+    if (mode is "--seed" or "--resume-seed")
+    {
+        await Save("seed-complete.json", new { Plan = safePlan, Completed = true, LedgerAfter = await LedgerSnapshot() });
+        Console.WriteLine("INDEPENDENT_SEED_COMPLETE " + fixture.Units.Length); return;
+    }
     var rows = new List<object>();
-    foreach (var arm in regression ? new[] { "all", "targeted" } : new[] { "all" })
+    foreach (var arm in arms)
     foreach (var q in fixture.Questions)
     {
         var target = arm == "targeted" ? q.EntityType : "all";
+        observedDecisions?.Reset();
         var timer = Stopwatch.StartNew(); NaturalSearchResponse? response = null; string? error = null;
         try { await search.SearchAndConsumeAsync(new(q.Text, Target: target), actor, (r, _) => { response = r; return Task.CompletedTask; }, ct); }
         catch (DomainException e) { error = e.Code; }
@@ -252,6 +383,7 @@ try
         var targetSelected = selected.Where(i => q.Judgments.Any(j => j.EntityId == i)).ToArray();
         var gold = q.Judgments.Where(j => j.Grade >= 2 && !j.Insufficient).Select(j => j.EntityId).ToArray();
         var record = new { QuestionId = q.Id, Arm = arm, Target = target, q.EntityType, Error = error, RerankingStatus = response?.RerankingStatus,
+            QueryClassification = observedDecisions?.Last is {} decision ? new { Status = decision.Status.ToString(), Choice = decision.Value?.Choices["domain"].Choice, Failure = decision.Failure?.ToString(), decision.RunId, decision.Cached } : null,
             DurationMs = ms, RunId = response?.RunId, AiRunId = response?.AiRunId, Primary = selected, Ranking = ranked,
             TargetRanking = targetRanked, OtherTypeRecommendations = ranked.Except(targetRanked).ToArray(),
             PrimaryRecall = gold.Length == 0 ? (double?)null : gold.Intersect(targetSelected).Count() / (double)gold.Length,
@@ -259,30 +391,30 @@ try
             TargetPrecision = targetRanked.Length == 0 ? (double?)null : gold.Intersect(targetRanked.Take(5)).Count() / (double)Math.Min(5, targetRanked.Length),
             LostGold = gold.Except(targetRanked.Take(5)).ToArray(), NoGoldFalseRecommendation = gold.Length == 0 && ranked.Length > 0,
             RequestUnits = audit?["requestUnits"]?.GetValue<double>(), RuMeasured = audit?["ruMeasured"]?.GetValue<bool>(),
-            Assessments = response?.Assessments, EvidenceCuts = audit?["evidenceCuts"]?.DeepClone() };
-        rows.Add(record); await Save("question-" + q.Id + (regression ? "-" + arm : mode == "--search" ? "-repeat" : "") + ".json", record);
+            Assessments = response?.Assessments, EvidenceCuts = audit?["evidenceCuts"]?.DeepClone(), RetrievalAudit = audit?.DeepClone() };
+        rows.Add(record); await Save("question-" + q.Id + (regression || bothTargets ? "-" + arm + (mode == "--search" ? "-repeat" : "") : mode == "--search" ? "-repeat" : "") + ".json", record);
         Console.WriteLine(regression ? "REGRESSION_QUESTION " + q.Id + " " + arm + " " + (response?.RerankingStatus ?? error) : "INDEPENDENT_QUESTION " + JsonSerializer.Serialize(record, Runner.Json));
     }
     List<JsonObject> aiAudits = [];
-    if (regression)
+    if (regression || bothTargets)
     {
         string? cursor = null; var pages = 0;
         do
         {
             var page = await repo.QueryAsync(partition, "aiRun", null, null, 100, cursor, ct);
-            aiAudits.AddRange(page.Items.Where(r => r.Value.Text("jobId").StartsWith(evaluationId + "-", StringComparison.Ordinal)).Select(r => r.Value));
+            aiAudits.AddRange(page.Items.Where(r => regression ? r.Value.Text("jobId").StartsWith(evaluationId + "-", StringComparison.Ordinal) : r.Value.Strings("scopeIds").Contains(scope)).Select(r => r.Value));
             cursor = page.ContinuationToken;
             if (++pages > 30) throw new InvalidOperationException("Audit page bound exceeded");
         } while (cursor is not null);
     }
-    await Save(regression ? "regression-report.json" : mode == "--search" ? "repeat-report.json" : "report.json", new { Plan = safePlan, Rows = rows, AiAudits = aiAudits, LedgerBefore = ledgerBefore, LedgerAfter = regression ? await LedgerSnapshot() : null, Completed = true });
+    await Save(regression ? "regression-report.json" : mode == "--search" ? "repeat-report.json" : "report.json", new { Plan = safePlan, Rows = rows, AiAudits = aiAudits, LedgerBefore = ledgerBefore, LedgerAfter = await LedgerSnapshot(), Completed = true });
     Console.WriteLine("INDEPENDENT_COMPLETE " + rows.Count);
 }
 catch (Exception e)
 {
-    await Save("failure-" + mode[2..] + ".json", new { Stage = mode, ErrorType = e.GetType().Name, Code = e is DomainException d ? d.Code : null,
-        DataAlreadyWritten = true, AutomaticResend = false });
-    Console.WriteLine("INDEPENDENT_FAILED " + e.GetType().Name + (e is DomainException domainError ? ":" + domainError.Code : ""));
+    await Save("failure-" + mode[2..] + (mode == "--resume-seed" ? "-" + attempt : "") + ".json", new { Stage = mode, ErrorType = e.GetType().Name, Code = e is DomainException d ? d.Code : null,
+        DataAlreadyWritten = true, AutomaticResend = false, Diagnostic = e is InvalidOperationException ? e.Message : null });
+    Console.WriteLine("INDEPENDENT_FAILED " + e.GetType().Name + (e is DomainException domainError ? ":" + domainError.Code : e is InvalidOperationException ? ":" + e.Message : ""));
     Environment.ExitCode = 1;
 }
 
@@ -297,4 +429,15 @@ sealed class TaggedAi(IDecisionProvider decisions, IReranker reranker, string ev
         decisions.DecideAsync(context with { JobId = evaluationId + "-" + context.JobId }, text, choices, nouls, ct);
     public Task<AiResult<Ranking>> RerankAsync(AiContext context, string text, CancellationToken ct) =>
         reranker.RerankAsync(context with { JobId = evaluationId + "-" + context.JobId }, text, ct);
+}
+
+// Read-only observation of the normal query adapter response; context and input are passed unchanged.
+sealed class ObservedDecisions(IDecisionProvider inner) : IDecisionProvider
+{
+    public AiResult<Decisions>? Last { get; private set; }
+    public void Reset() => Last = null;
+    public async Task<AiResult<Decisions>> DecideAsync(AiContext context, string text, ChoiceQuestion[] choices, NoulQuestion[] nouls, CancellationToken ct)
+    {
+        Last = await inner.DecideAsync(context, text, choices, nouls, ct); return Last;
+    }
 }

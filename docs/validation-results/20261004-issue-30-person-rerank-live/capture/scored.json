@@ -1,0 +1,560 @@
+[
+  {
+    "questionId": "v2t-sales-09-query",
+    "order": "original",
+    "attempt": 1,
+    "ranking": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "displayed": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "order": "reversed",
+    "attempt": 1,
+    "ranking": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "displayed": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "order": "original",
+    "attempt": 2,
+    "ranking": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "displayed": [
+      "v2t-sales-09-person-direct",
+      "v2t-sales-09-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "order": "original",
+    "attempt": 1,
+    "ranking": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-10-person-support"
+    ],
+    "displayed": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-10-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "order": "reversed",
+    "attempt": 1,
+    "ranking": [
+      "v2t-sales-10-person-support",
+      "v2t-sales-10-person-direct"
+    ],
+    "displayed": [
+      "v2t-sales-10-person-support",
+      "v2t-sales-10-person-direct"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 0.8339912323981488,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "order": "original",
+    "attempt": 2,
+    "ranking": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-10-person-support"
+    ],
+    "displayed": [
+      "v2t-sales-10-person-direct",
+      "v2t-sales-10-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "order": "original",
+    "attempt": 1,
+    "ranking": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "displayed": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "order": "reversed",
+    "attempt": 1,
+    "ranking": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "displayed": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "order": "original",
+    "attempt": 2,
+    "ranking": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "displayed": [
+      "v2t-manufacturing-14-person-direct",
+      "v2t-manufacturing-14-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "order": "original",
+    "attempt": 1,
+    "ranking": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-09-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-09-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "order": "reversed",
+    "attempt": 1,
+    "ranking": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-09-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-09-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "order": "original",
+    "attempt": 2,
+    "ranking": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-09-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-09-person-direct",
+      "v2f-sales-09-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "order": "original",
+    "attempt": 1,
+    "ranking": [
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "order": "reversed",
+    "attempt": 1,
+    "ranking": [
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "order": "original",
+    "attempt": 2,
+    "ranking": [
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support"
+    ],
+    "displayed": [
+      "v2f-sales-10-person-direct",
+      "v2f-sales-10-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "order": "original",
+    "attempt": 1,
+    "ranking": [
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "order": "reversed",
+    "attempt": 1,
+    "ranking": [
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "order": "original",
+    "attempt": 2,
+    "ranking": [
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-13-person-direct",
+      "v2f-manufacturing-13-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "order": "original",
+    "attempt": 1,
+    "ranking": [
+      "v2f-manufacturing-14-person-direct",
+      "v2f-manufacturing-14-person-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-14-person-direct",
+      "v2f-manufacturing-14-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "order": "reversed",
+    "attempt": 1,
+    "ranking": [
+      "v2f-manufacturing-14-person-direct",
+      "v2f-manufacturing-14-person-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-14-person-direct",
+      "v2f-manufacturing-14-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "order": "original",
+    "attempt": 2,
+    "ranking": [
+      "v2f-manufacturing-14-person-direct",
+      "v2f-manufacturing-14-person-support"
+    ],
+    "displayed": [
+      "v2f-manufacturing-14-person-direct",
+      "v2f-manufacturing-14-person-support"
+    ],
+    "precision": 1.0,
+    "hitRate": 1,
+    "recall": 1.0,
+    "ndcg": 1.0,
+    "primaryRecall": 1.0,
+    "relevantCount": 2,
+    "empty": false,
+    "noGold": false,
+    "falseRecommendation": null,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "order": "original",
+    "attempt": 1,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "order": "reversed",
+    "attempt": 1,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "order": "original",
+    "attempt": 2,
+    "ranking": [],
+    "displayed": [],
+    "precision": null,
+    "hitRate": null,
+    "recall": null,
+    "ndcg": null,
+    "primaryRecall": null,
+    "relevantCount": 0,
+    "empty": true,
+    "noGold": true,
+    "falseRecommendation": 0,
+    "irrelevantRecommended": [],
+    "lostGold": []
+  }
+]

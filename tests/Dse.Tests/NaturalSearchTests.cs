@@ -104,8 +104,20 @@ public class NaturalSearchTests
         Assert.Equal("succeeded", result!.RerankingStatus); Assert.Equal(2, ai.Calls);
         ai.Unknown = true;
         var error = await Assert.ThrowsAsync<DomainException>(() => service.SearchAndConsumeAsync(new("分野不明"), IdentityResolver.Demo, (_, _) => Task.CompletedTask, default));
-        Assert.Equal("CLASSIFICATION_MANUAL_REQUIRED", error.Code); Assert.Equal(422, error.Status);
+        Assert.Equal("CLASSIFICATION_OUT_OF_SCOPE", error.Code); Assert.Equal(422, error.Status);
     }
+    [Theory]
+    [InlineData(AiFailure.SchemaMismatch)]
+    [InlineData(AiFailure.Stopped)]
+    public async Task Classification_failure_is_distinct_from_out_of_scope_and_skips_reranking(AiFailure failure)
+    {
+        var (service, store, ai) = await Setup(); ai.Failure = failure;
+        var error = await Assert.ThrowsAsync<DomainException>(() => service.SearchAndConsumeAsync(new("課題"), IdentityResolver.Demo, (_, _) => Task.CompletedTask, default));
+        Assert.Equal("CLASSIFICATION_MANUAL_REQUIRED", error.Code);
+        Assert.Equal(1, ai.Calls);
+        Assert.Empty((await store.QueryAsync(RecordPartition.Catalog("demo"), "retrievalRun", null, null, 100, null, default)).Items);
+    }
+
     [Theory]
     [InlineData(AiFailure.Refused, "refused")]
     [InlineData(AiFailure.Truncated, "truncated")]

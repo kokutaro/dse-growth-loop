@@ -1,0 +1,33 @@
+{
+  "reference": "user-20261004-weekly2000-fixed162",
+  "totalJpy": 2000,
+  "includes": [
+    "AI",
+    "validation infrastructure"
+  ],
+  "usdToJpy": 162,
+  "week": "Monday 00:00 Asia/Tokyo through next Monday 00:00",
+  "humanEvidence": {
+    "thread": "01a10494-27f7-73e0-8bc8-73cd1b56b098",
+    "messages": [
+      "1791083369.973559",
+      "1791083399.606499",
+      "1791083446.479179"
+    ]
+  },
+  "reserves": {
+    "infrastructureJpy": 1000,
+    "externalAiJpy": 200
+  },
+  "preservedLimits": {
+    "dailyTokens": 4500000,
+    "maxAttempts": 1,
+    "concurrency": 1,
+    "inputTokens": 16000,
+    "outputTokens": 3000,
+    "apiCumulativeHours": 5,
+    "jobCumulativeHours": 2.5
+  },
+  "note": "既存週2,000円・FX162と全留保を維持。独立v3ラベルと同じ検証サイクルの累計時間延長は別の明示承認。時間は週をまたいでもリセットしない。",
+  "runtimeExtensionReference": "user-slack-1791101852.753829-issue30-v3"
+}

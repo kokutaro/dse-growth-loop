@@ -1,0 +1,24 @@
+{
+  "approvalReference": "user-slack-1791101852.753829-issue30-v3",
+  "approvedBy": "repository owner via Slack; transcript relayed from parent task",
+  "approvedAtUtc": "2026-10-04T08:17:32.753829+00:00",
+  "sourceThreadId": "01a10494-27f7-73e0-8bc8-73cd1b56b098",
+  "humanEvidence": {
+    "confirmationMessageId": "1791094800.100489",
+    "confirmationText": "次の独立評価の案がまとまりました。新しい架空データ60件と24問で、改善後の検索精度と応答時間を確認します。\n評価する題材は次の10件で、それぞれ『経験者を探す』『実施済み事例を探す』の2問、計20問です。\n1. 決済イベントの再送による売上の二重計上\n2. 絵文字を含む文章の切り出しによる表示崩れ\n3. 配管の熱伸びによる支持部の損傷\n4. 可動部ケーブルの繰り返し曲げによる断線\n5. 見積の作業範囲が曖昧なことによる認識違い\n6. 代理店と自社の同一顧客への提案の衝突\n7. 製造途中のロット表示混在による追跡不能\n8. 熱処理炉の温度偏りによる硬さのばらつき\n9. 会議室の重複予約\n10. 退職時の会社貸与物の回収漏れ\n正解は、直接経験あり＝3点、共同実施・副業務として経験あり＝2点、案内配布だけ・別題材＝0点とする案です。\n加えて『該当なし』を4問確認します。\n- 画像内の文字領域検出・傾き補正の経験者\n- 油圧回路の急激な圧力上昇を抑えた事例\n- 古代貨幣の刻印から鋳造地を研究した担当者\n- 中世音楽の写譜から旋律の変遷を研究した事例\n前2件は扱える分野だが該当データなし、後2件は分類体系の対象外として区別します。\n実行条件は次のとおりです。\n- 最大262モデル試行、AI費の保守的見積もりは約132円\n- 週合計2,000円・1 USD＝162円の内側。既使用額と留保を引いた現在の余裕は約783円\n- 今回の検証サイクルの累計稼働上限を、APIは4→5時間、検証Jobは2→2時間30分へ延長。日・週が変わっても累計時間はリセットしません\n- 既存Azureリソースと既存モデルを使用。認証付きテストのため、検証用アカウントのアプリ内アクセス範囲を新しい架空データ専用範囲へ一時的に差し替え、終了後に元へ戻します\n- 終了後は元の設定へ復帰し、APIレプリカ・実行中Jobが0であることを確認します\nこの評価内容と、一時的なアクセス範囲の変更・稼働時間延長を含む実行計画で進めてよいですか？",
+    "replyMessageId": "1791101852.753829",
+    "replyText": "お願いします"
+  },
+  "draftDatasetSha256": "03dd398872caf13fd470e85c69758415ca1c57ac7cbdf3dcdc4e25e03e7ac73c",
+  "datasetSha256": "1e0f23a34180237ae437056997c97e1c9c238c7b7ba8f0f567764c88cde88e84",
+  "labelsAndSourcesChanged": false,
+  "metadataOnlyChange": true,
+  "independentAiBudgetJpy": 300,
+  "observedRerankBudgetJpy": 10,
+  "incrementalInfrastructureBudgetJpy": 100,
+  "apiActiveSecondsLimit": 18000,
+  "jobReplicaSecondsLimit": 9000,
+  "maxModelAttempts": 262,
+  "temporaryScopeChangeApproved": true,
+  "permanentAdoptionApproved": false
+}

@@ -1,0 +1,20 @@
+{
+  "chunks": 2,
+  "bytes": 10684,
+  "sha256": "4320ee6967ccaa0fe8f554195763fdd3202aa2ca738030a7977901fbeb0ad134",
+  "reportComplete": null,
+  "rows": 0,
+  "aiAudits": 0,
+  "executions": [
+    {
+      "execution": "dse-validation-issue30-mey1hz1",
+      "label": "preflight",
+      "mode": "--seed-status",
+      "startChunk": 0,
+      "status": "Succeeded",
+      "startTime": "2026-10-04T08:28:26+00:00",
+      "endTime": "2026-10-04T08:29:00+00:00",
+      "secondsUpperBound": 34.0
+    }
+  ]
+}

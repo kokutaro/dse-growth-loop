@@ -1,0 +1,34 @@
+{
+  "dateUtc": "2026-10-04T03:02:45.313090+00:00",
+  "dotnetTests": {
+    "passed": 353,
+    "scope": "Domain/API/AI contracts and frozen evaluation helpers; not AI quality"
+  },
+  "pythonTests": {
+    "passed": 91,
+    "scope": "Local scripts and Bicep compilation; no deployment"
+  },
+  "dotnetBuild": {
+    "passed": true,
+    "warnings": [
+      "Existing ASPIRE010"
+    ]
+  },
+  "webBuild": {
+    "passed": true
+  },
+  "e2e": {
+    "notRepeatedAfterLiveEvaluation": true,
+    "priorSameUiCodeEvidence": "../20261004-issue-30-person-limits/checks.json",
+    "priorPassed": 12
+  },
+  "localMarkdownLinks": {
+    "passed": true
+  },
+  "jsonSyntax": {
+    "passed": true
+  },
+  "diffWhitespace": {
+    "passed": true
+  }
+}

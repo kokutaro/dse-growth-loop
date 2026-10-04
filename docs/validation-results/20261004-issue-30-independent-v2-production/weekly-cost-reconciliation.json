@@ -1,0 +1,57 @@
+{
+  "approvalReference": "user-20261004-weekly2000-fixed162",
+  "usdToJpy": 162,
+  "weeklyTotalJpy": 2000,
+  "periodStartUtc": "2026-09-27T15:00:00Z",
+  "periodEndUtc": "2026-10-04T15:00:00Z",
+  "knownExternalAi": [
+    {
+      "scope": "Issue14 Jev baseline",
+      "usd": "0.018591888",
+      "jpyAt162": "3.011885856"
+    },
+    {
+      "scope": "Issue14 Jev v2",
+      "usd": "0.00943824",
+      "jpyAt162": "1.52899488"
+    },
+    {
+      "scope": "Issue30 Jev",
+      "usd": "0.00658686",
+      "jpyAt162": "1.06707132"
+    },
+    {
+      "scope": "Issue14 Luna6 final (unknown attempts retained)",
+      "usd": "0.29335188",
+      "jpyAt162": "47.52300456"
+    },
+    {
+      "scope": "Issue14 Luna6 pilot (separate)",
+      "usd": "0.0027519",
+      "jpyAt162": "0.4458078"
+    },
+    {
+      "scope": "Issue30 full rerank new96",
+      "usd": "0.01483209",
+      "jpyAt162": "2.40279858"
+    },
+    {
+      "scope": "Issue30 changed-person new24",
+      "usd": "0.00433744",
+      "jpyAt162": "0.70266528"
+    }
+  ],
+  "knownExternalAiSubtotalJpy": "56.682228276",
+  "externalAiReserveJpy": 200,
+  "infrastructureReserveJpy": 1000,
+  "reserveIsNotActualInvoice": true,
+  "appHistorySource": "All durable aiReservation records in current JST week; imported by stopped MI Job, not sum of overlapping evaluation reports.",
+  "previousIssue30IndependentAndChangedRegressionAt162Jpy": "7.184218536",
+  "invoiceReconciled": false,
+  "limits": "Reserve 1200 JPY inside combined 2000, leaving 800 for durable runtime AI. Actual infrastructure invoice and unobserved services not settled; no Azure hard invoice cap.",
+  "runtimeImportedReservations": 473,
+  "runtimeImportedUsd": "0.08027596",
+  "runtimeImportedJpyAt162": "13.00470552",
+  "knownAiConservativeSubtotalJpy": "69.686933796",
+  "runtimeBudgetWithReservesBeforeWarmJpy": "1213.00470552"
+}

@@ -6,6 +6,12 @@ namespace Dse.Infrastructure;
 public sealed record AiLimits(bool Stopped, bool LiveOptIn, long DailyTokens, int DailyCalls, decimal DailyJpy,
     decimal UsdToJpy, string PriceVersion, string FxVersion, int InputTokens, int OutputTokens, int Concurrency, int Attempts, int TimeoutSeconds)
 {
+    public bool Weekly { get; init; }
+    public int WeeklyCalls { get; init; }
+    public decimal WeeklyTotalJpy { get; init; }
+    public decimal InfrastructureReserveJpy { get; init; }
+    public decimal ExternalAiReserveJpy { get; init; }
+
     public static AiLimits Read(IConfiguration c)
     {
         string Get(string key, string legacy, string fallback) => c["AiUsage:" + key] ?? c[legacy] ?? fallback;
@@ -21,8 +27,15 @@ public sealed record AiLimits(bool Stopped, bool LiveOptIn, long DailyTokens, in
             decimal.Parse(Get("UsdToJpy", "AI_USD_TO_JPY", "0"), CultureInfo.InvariantCulture),
             Get("PriceVersion", "AI_PRICE_VERSION", "unapproved"), Get("FxVersion", "AI_FX_VERSION", "unapproved"),
             Limit("MaxInputTokens", 8000, 16000), Limit("MaxOutputTokens", 1000, 8000),
-            Limit("MaxConcurrency", 1, 8), Limit("MaxAttempts", 2, 3), Limit("TimeoutSeconds", 30, 120));
-        if (result.DailyTokens < 0 || result.DailyCalls < 0 || result.DailyJpy < 0 || result.UsdToJpy < 0)
+            Limit("MaxConcurrency", 1, 8), Limit("MaxAttempts", 2, 3), Limit("TimeoutSeconds", 30, 120))
+        {
+            Weekly = (c["AiUsage:BudgetPeriod"] ?? "Daily") switch { "Daily" => false, "Weekly" => true, _ => throw new InvalidOperationException("Invalid AI budget period") },
+            WeeklyCalls = int.Parse(c["AiUsage:WeeklyCallLimit"] ?? "0", CultureInfo.InvariantCulture),
+            WeeklyTotalJpy = decimal.Parse(c["AiUsage:WeeklyTotalJpyLimit"] ?? "0", CultureInfo.InvariantCulture),
+            InfrastructureReserveJpy = decimal.Parse(c["AiUsage:InfrastructureReserveJpy"] ?? "0", CultureInfo.InvariantCulture),
+            ExternalAiReserveJpy = decimal.Parse(c["AiUsage:ExternalAiReserveJpy"] ?? "0", CultureInfo.InvariantCulture)
+        };
+        if (result.DailyTokens < 0 || result.DailyCalls < 0 || result.DailyJpy < 0 || result.UsdToJpy < 0 || result.WeeklyCalls < 0 || result.WeeklyTotalJpy < 0 || result.InfrastructureReserveJpy < 0 || result.ExternalAiReserveJpy < 0)
             throw new InvalidOperationException("Negative AI budget");
         return result;
     }

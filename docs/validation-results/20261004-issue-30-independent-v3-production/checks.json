@@ -1,0 +1,18 @@
+{
+  "verifiedAtUtc": "2026-10-04T08:58:36.250461+00:00",
+  "dotnetTests": 368,
+  "pythonScriptsTestsIncludingBicep": 104,
+  "playwrightSearchTests": 14,
+  "authUnitTests": 4,
+  "openApiContractTests": 17,
+  "evaluationFixtureTests": 5,
+  "lockedRestore": true,
+  "solutionBuild": true,
+  "frontendBuild": true,
+  "existingBuildWarnings": [
+    "ASPIRE010"
+  ],
+  "frozenSourceHashesMatched": 10,
+  "publicCredentialPatternFindings": 0,
+  "liveHttpMeasured": false
+}

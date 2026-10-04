@@ -1,0 +1,477 @@
+{
+  "scope": "JWT SPA warm all-target 24 timing repeats; observed holdout, no tuning; initial independent results retained",
+  "observedQuestions": 24,
+  "failedUiQuestions": [
+    "i30n-no-answer-03",
+    "i30n-no-answer-04"
+  ],
+  "noGoldFalseQuestions": 0,
+  "metrics": {
+    "person": {
+      "groupHitAt5": 0.9,
+      "groupPrecisionAt5": 0.9,
+      "groupRecallAt5": 0.9,
+      "combinedPrecisionAt5": 0.9
+    },
+    "knowledge": {
+      "groupHitAt5": 1.0,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 0.95,
+      "combinedPrecisionAt5": 0.55
+    }
+  },
+  "groundingChecked": 55,
+  "groundingPassed": 55,
+  "networkTiming": {
+    "count": 22,
+    "p50Ms": 11611.815000069328,
+    "p95Ms": 18622.033450123854,
+    "maxMs": 18974.819999886677
+  },
+  "timingLimitation": "Two failed UI requests absent from HAR; HTTP status/time not invented. UI upper bounds include observation overhead. Warm HTTP p95 only successful captures.",
+  "warmSloThresholdMs": 15000,
+  "warmSloPassed": false,
+  "all24AvailabilityMeasured": false,
+  "rows": [
+    {
+      "questionId": "i30n-software-deadlock-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-software-deadlock-person-direct",
+        "i30n-software-deadlock-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 18697.118000127375,
+      "httpStatus": 200,
+      "runId": "retrieval-11d867d211a9405ea04e1e2450c7457c",
+      "uiCompletionUpperBoundMs": 20721
+    },
+    {
+      "questionId": "i30n-software-deadlock-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-software-deadlock-knowledge-direct",
+        "i30n-software-deadlock-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 12489.19599992223,
+      "httpStatus": 200,
+      "runId": "retrieval-c11cbac8897a465db972fc4c45211f00",
+      "uiCompletionUpperBoundMs": 12608
+    },
+    {
+      "questionId": "i30n-software-pagination-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-software-pagination-person-direct",
+        "i30n-software-pagination-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 11191.536999975608,
+      "httpStatus": 200,
+      "runId": "retrieval-3a8ed2f9a3c84a8e948820fb1d0bdcbf",
+      "uiCompletionUpperBoundMs": 11278
+    },
+    {
+      "questionId": "i30n-software-pagination-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-software-pagination-knowledge-direct",
+        "i30n-software-pagination-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 12164.857000112534,
+      "httpStatus": 200,
+      "runId": "retrieval-bc08259012c9481ba181b58a74823138",
+      "uiCompletionUpperBoundMs": 12334
+    },
+    {
+      "questionId": "i30n-mechanical-resonance-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-mechanical-resonance-person-direct",
+        "i30n-mechanical-resonance-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 11010.026999982074,
+      "httpStatus": 200,
+      "runId": "retrieval-7f48271a19394604b1fac41301028482",
+      "uiCompletionUpperBoundMs": 11142
+    },
+    {
+      "questionId": "i30n-mechanical-resonance-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-mechanical-resonance-knowledge-direct",
+        "i30n-mechanical-resonance-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 11637.504999991506,
+      "httpStatus": 200,
+      "runId": "retrieval-dbaed83106694ccf9bb9dbab8bd94fdf",
+      "uiCompletionUpperBoundMs": 11804
+    },
+    {
+      "questionId": "i30n-mechanical-corrosion-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-mechanical-corrosion-person-direct",
+        "i30n-mechanical-corrosion-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 17195.427000056952,
+      "httpStatus": 200,
+      "runId": "retrieval-c8db06fa8d454575814d85cc04d7a798",
+      "uiCompletionUpperBoundMs": 17367
+    },
+    {
+      "questionId": "i30n-mechanical-corrosion-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-mechanical-corrosion-knowledge-direct",
+        "i30n-mechanical-corrosion-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 18974.819999886677,
+      "httpStatus": 200,
+      "runId": "retrieval-a9355586bfe34a24850b556aed30823b",
+      "uiCompletionUpperBoundMs": 19046
+    },
+    {
+      "questionId": "i30n-sales-renewal-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-sales-renewal-person-direct",
+        "i30n-sales-renewal-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 15685.650000115857,
+      "httpStatus": 200,
+      "runId": "retrieval-3c523d5416d540b0abc90a9ef063666a",
+      "uiCompletionUpperBoundMs": 15779
+    },
+    {
+      "questionId": "i30n-sales-renewal-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-sales-renewal-knowledge-direct",
+        "i30n-sales-renewal-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 16916.733000194654,
+      "httpStatus": 200,
+      "runId": "retrieval-56f83d34b9f742f6b4f537fe7e247cd3",
+      "uiCompletionUpperBoundMs": 17050
+    },
+    {
+      "questionId": "i30n-sales-tender-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [],
+      "groupHitAt5": 0,
+      "groupPrecisionAt5": 0,
+      "groupRecallAt5": 0.0,
+      "combinedPrecisionAt5": 0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 8999.743000138551,
+      "httpStatus": 200,
+      "runId": "retrieval-3dc289e5cd424fbab4aada35a1126f16",
+      "uiCompletionUpperBoundMs": 9156
+    },
+    {
+      "questionId": "i30n-sales-tender-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-sales-tender-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 0.5,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 9524.310999782756,
+      "httpStatus": 200,
+      "runId": "retrieval-31c21aa0a9ed498e8d8b43c19a7a1304",
+      "uiCompletionUpperBoundMs": 9661
+    },
+    {
+      "questionId": "i30n-manufacturing-moisture-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-manufacturing-moisture-person-direct",
+        "i30n-manufacturing-moisture-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 10059.710999950767,
+      "httpStatus": 200,
+      "runId": "retrieval-b572a161f0034d6cb0bf5ebaf6d99586",
+      "uiCompletionUpperBoundMs": 10224
+    },
+    {
+      "questionId": "i30n-manufacturing-moisture-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-manufacturing-moisture-knowledge-direct",
+        "i30n-manufacturing-moisture-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 10848.568999907002,
+      "httpStatus": 200,
+      "runId": "retrieval-6c51d83a40044cbc88eccd4c38603c43",
+      "uiCompletionUpperBoundMs": 10951
+    },
+    {
+      "questionId": "i30n-manufacturing-setup-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-manufacturing-setup-person-direct",
+        "i30n-manufacturing-setup-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 16144.2139998544,
+      "httpStatus": 200,
+      "runId": "retrieval-e977fc99ad004486ad8dc8764823b377",
+      "uiCompletionUpperBoundMs": 16306
+    },
+    {
+      "questionId": "i30n-manufacturing-setup-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-manufacturing-setup-knowledge-direct",
+        "i30n-manufacturing-setup-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 16986.629999941215,
+      "httpStatus": 200,
+      "runId": "retrieval-09d3919fdd744fb590a56153abc223c3",
+      "uiCompletionUpperBoundMs": 17156
+    },
+    {
+      "questionId": "i30n-operations-visitor-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-operations-visitor-person-direct",
+        "i30n-operations-visitor-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 10368.09300002642,
+      "httpStatus": 200,
+      "runId": "retrieval-8f458a692a96490f92ee481e0698690d",
+      "uiCompletionUpperBoundMs": 10533
+    },
+    {
+      "questionId": "i30n-operations-visitor-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-operations-visitor-knowledge-direct",
+        "i30n-operations-visitor-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 11586.125000147149,
+      "httpStatus": 200,
+      "runId": "retrieval-80b7e5ee1ec447c4bf2a70ac7720e773",
+      "uiCompletionUpperBoundMs": 11748
+    },
+    {
+      "questionId": "i30n-operations-expense-person-query",
+      "entityType": "person",
+      "positive": true,
+      "ranking": [
+        "i30n-operations-expense-person-direct",
+        "i30n-operations-expense-person-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 1.0,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 9719.80300010182,
+      "httpStatus": 200,
+      "runId": "retrieval-895ede0a479946cfae3726d947e92b83",
+      "uiCompletionUpperBoundMs": 9794
+    },
+    {
+      "questionId": "i30n-operations-expense-knowledge-query",
+      "entityType": "knowledge",
+      "positive": true,
+      "ranking": [
+        "i30n-operations-expense-knowledge-direct",
+        "i30n-operations-expense-knowledge-support"
+      ],
+      "groupHitAt5": 1,
+      "groupPrecisionAt5": 1.0,
+      "groupRecallAt5": 1.0,
+      "combinedPrecisionAt5": 0.5,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 11088.895000051707,
+      "httpStatus": 200,
+      "runId": "retrieval-892c6f5449c545cbb6f8353d782a3969",
+      "uiCompletionUpperBoundMs": 11163
+    },
+    {
+      "questionId": "i30n-no-answer-01",
+      "entityType": "person",
+      "positive": false,
+      "ranking": [],
+      "groupHitAt5": null,
+      "groupPrecisionAt5": null,
+      "groupRecallAt5": null,
+      "combinedPrecisionAt5": null,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 9545.417999848723,
+      "httpStatus": 200,
+      "runId": "retrieval-77d390a1f26b4fecae80a33a5be63a17",
+      "uiCompletionUpperBoundMs": 9679
+    },
+    {
+      "questionId": "i30n-no-answer-02",
+      "entityType": "knowledge",
+      "positive": false,
+      "ranking": [],
+      "groupHitAt5": null,
+      "groupPrecisionAt5": null,
+      "groupRecallAt5": null,
+      "combinedPrecisionAt5": null,
+      "noGoldFalse": false,
+      "uiFailed": false,
+      "networkMs": 15554.12200000137,
+      "httpStatus": 200,
+      "runId": "retrieval-952b8c5ce56d4838a848ead21ee4e7a9",
+      "uiCompletionUpperBoundMs": 15665
+    },
+    {
+      "questionId": "i30n-no-answer-03",
+      "entityType": "person",
+      "positive": false,
+      "ranking": [],
+      "groupHitAt5": null,
+      "groupPrecisionAt5": null,
+      "groupRecallAt5": null,
+      "combinedPrecisionAt5": null,
+      "noGoldFalse": false,
+      "uiFailed": true,
+      "networkMs": null,
+      "httpStatus": null,
+      "runId": null,
+      "uiCompletionUpperBoundMs": 733
+    },
+    {
+      "questionId": "i30n-no-answer-04",
+      "entityType": "knowledge",
+      "positive": false,
+      "ranking": [],
+      "groupHitAt5": null,
+      "groupPrecisionAt5": null,
+      "groupRecallAt5": null,
+      "combinedPrecisionAt5": null,
+      "noGoldFalse": false,
+      "uiFailed": true,
+      "networkMs": null,
+      "httpStatus": null,
+      "runId": null,
+      "uiCompletionUpperBoundMs": 741
+    }
+  ]
+}

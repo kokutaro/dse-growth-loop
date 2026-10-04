@@ -1,0 +1,15 @@
+{
+  "approvalReference": "user-20261004-issue30-labels-ai310-infra100-temporary-production",
+  "approvedBy": "repository owner via explicit user reply",
+  "approvedAtUtc": "2026-10-03T23:04:06.966837+00:00",
+  "draftDatasetSha256": "d544ca86b70e143b36aa36b94011756bb8636ec5836d8c437279eaee523cb465",
+  "datasetSha256": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+  "labelsAndSourcesChanged": false,
+  "metadataOnlyChange": true,
+  "independentAiBudgetJpy": 300,
+  "observedRerankBudgetJpy": 10,
+  "incrementalInfrastructureBudgetJpy": 100,
+  "apiActiveSecondsLimit": 14400,
+  "jobReplicaSecondsLimit": 7200,
+  "permanentAdoptionApproved": false
+}

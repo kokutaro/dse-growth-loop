@@ -1,0 +1,206 @@
+{
+  "version": "issue30-independent-v2-execution-draft-v1",
+  "status": "user-approved-for-controlled-execution",
+  "executionEnabled": true,
+  "modelCallsSoFar": 280,
+  "models": {
+    "classification": "jev-1.13.0",
+    "rerank": "gpt-6-luna-2026-09-22",
+    "deployment": "dse-luna6-eval",
+    "availabilityMustBeRecheckedBeforeApproval": false,
+    "foundryDeploymentObserved": {
+      "name": "gpt-6-luna",
+      "version": "2026-09-22",
+      "sku": "GlobalStandard",
+      "state": "Succeeded"
+    }
+  },
+  "rules": {
+    "version": "retrieval-v2",
+    "personLimit": 15,
+    "caseLimit": 15,
+    "rescueSlots": 2,
+    "questionTopCategories": 3,
+    "questionThreshold": 0.1,
+    "documentThreshold": 0.2,
+    "noulThreshold": 0.5,
+    "evidenceBytesPerCandidate": 1200
+  },
+  "promptVersion": "search-rerank-v2",
+  "inputBudgetVersion": "search-total-bytes-v1",
+  "secondaryWorkFragments": true,
+  "stages": [
+    {
+      "name": "seed",
+      "classificationCallsUpperBound": 100,
+      "sources": 60
+    },
+    {
+      "name": "service",
+      "queries": 24,
+      "arms": [
+        "all",
+        "targeted"
+      ],
+      "requests": 48
+    },
+    {
+      "name": "authenticated-http",
+      "queries": 24,
+      "arms": [
+        "all",
+        "targeted"
+      ],
+      "requests": 48
+    },
+    {
+      "name": "warm-repeat",
+      "queries": 24,
+      "arm": "all",
+      "requests": 24
+    },
+    {
+      "name": "cold",
+      "representativeQueries": 3,
+      "requests": 3,
+      "requireZeroReplicasAndNoServerCacheBeforeEach": true
+    }
+  ],
+  "budget": {
+    "automaticRetries": 0,
+    "concurrency": 1,
+    "seedCallsUpperBound": 100,
+    "searchRequests": 123,
+    "classificationAndRerankCallsPerSearchUpperBound": 2,
+    "baseCallsUpperBound": 346,
+    "manualFailureRetryReserve": 16,
+    "maximumBillableCalls": 362,
+    "inputTokensPerCallBound": 16000,
+    "outputTokensPerCallBound": 3000,
+    "totalTokenBound": 6878000,
+    "estimatedAiJpyBound": 224.44,
+    "requestedAiJpyCeiling": 300,
+    "fxJpyPerUsd": 200,
+    "planningPricesOnly": {
+      "jevInputUsdPerMillion": 0.042,
+      "jevOutputUsdPerMillion": 0,
+      "foundryInputUsdPerMillion": 0.1,
+      "foundryOutputUsdPerMillion": 0.5
+    },
+    "estimateFormula": "362 * (16000 * 0.10 + 3000 * 0.50) / 1000000 * 200; all calls priced conservatively as Foundry, no cache discount",
+    "dailyExistingLimitsPreserved": {
+      "calls": 240,
+      "tokens": 4500000,
+      "estimatedJpy": 200
+    },
+    "schedule": "At least two UTC budget days; read remaining shared budget before every stage; stop rather than increase limits",
+    "infrastructureCostIncluded": false,
+    "infrastructureBudgetApprovalRequiredBeforeDeployment": false,
+    "priceStatus": "Official TypeSafe models page and Microsoft Azure launch pricing table reconfirmed 2026-10-04; billing agreement may differ",
+    "priceSources": [
+      "https://docs.typesafe.ai/models",
+      "https://azure.microsoft.com/en-us/blog/gpt-6-astra-sol-and-luna-for-production-agents-in-microsoft-foundry/"
+    ],
+    "infrastructureProposal": {
+      "requestedIncrementalJpy": 100,
+      "apiActiveSecondsLimit": 14400,
+      "jobReplicaSecondsLimit": 7200,
+      "cpu": 0.25,
+      "memoryGiB": 0.5,
+      "vcpuActiveUsdPerSecond": 2.4e-05,
+      "memoryActiveUsdPerGiBSecond": 3e-06,
+      "computeEstimatedJpyWithoutFreeGrant": 64.8,
+      "otherIncrementalServicesReserveJpy": 35.2,
+      "constraints": "No new resources, no RBAC changes, no ACR Tasks, local build; return API/Worker to original images/config/scale and stopped AI; hard invoice cap is not provided by Azure budgets",
+      "apiCpu": 0.5,
+      "apiMemoryGiB": 1,
+      "jobCpu": 0.25,
+      "jobMemoryGiB": 0.5
+    },
+    "infrastructureBudgetApproved": true
+  },
+  "gates": {
+    "primaryRecallPerTypeMinimum": 0.9,
+    "specifiedMultipleCareerRescue": "all approved positives retrieved",
+    "groupHitAt5Minimum": 0.9,
+    "groupPrecisionAt5Minimum": 0.9,
+    "noGoldFalseRecommendationsMaximum": 0,
+    "groundingFraction": 1,
+    "warmHttpP95MaximumMs": 15000,
+    "cold": "report separately"
+  },
+  "reuse": "Reuse only exact matching candidate/input hash, actor/access/source/model/prompt/budget versions and valid adapter cache; never resend recorded successful payload solely for scoring. Explicit timing/cold repeats are new calls included in budget.",
+  "freeze": "After human review freeze dataset, judgments, approved models, source code, rules, budgets and gates before any model call. Independent results must not tune these values.",
+  "restoreOriginalApiAfterValidation": true,
+  "sha256": {
+    "evaluation/issue-30/independent-v2/dataset.json": "d544ca86b70e143b36aa36b94011756bb8636ec5836d8c437279eaee523cb465",
+    "evaluation/issue-30/independent-v2/pre-model-manifest.json": "f9c57e2c75c0bb39182cb6ad8ff41fbd9be3a1c2a3e632644da3ce4356861550",
+    "src/Dse.ProductionEvaluation/Program.cs": "b8046b7061752124481a6fe3140b49cf818774586f87006f98af42024a8f0b09",
+    "src/Dse.ProductionEvaluation/Dockerfile": "1e65ec91fbc2d2edb9e6d742179733533cd15eceafb7fabdeda3a7321e3024a6",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "80718024944fad08dc82d5864f285ea8b6b8dc3430e86db9ee0313992233b445",
+    "evaluation/issue-30/independent-v2/approved/dataset.json": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+    "evaluation/issue-30/independent-v2/approved/approval.json": "2ce79b8625538e014548c99819c381388be5ee865fde474395b70890d4b551d4"
+  },
+  "preflightVerifiedAtJst": "2026-10-04",
+  "runner": {
+    "dataDirectory": "approved dataset copy after explicit label approval",
+    "buildArgument": "VALIDATION_DATA",
+    "commands": [
+      "--prepare",
+      "--seed",
+      "--resume-seed",
+      "--seed-status",
+      "--search",
+      "--report-export"
+    ],
+    "configuration": {
+      "Validation:BothTargets": "true",
+      "Retrieval:PersonLimit": "15",
+      "Validation:RunId": "issue30-independent-20261004-v2"
+    },
+    "automaticPaidExecution": false
+  },
+  "approvalReference": "user-20261004-issue30-labels-ai310-infra100-temporary-production",
+  "approvedDataset": "evaluation/issue-30/independent-v2/approved/dataset.json",
+  "modelCallsSnapshotScope": "Independent seed/service/initial JWT/cold3/warm24 through 2026-10-04; changed-regression24 separate",
+  "harnessAmendments": [
+    {
+      "date": "2026-10-04",
+      "change": "--ledger-status adds read-only compressed audit/day-ledger export; no model/prompt/retrieval/query changes",
+      "reason": "Check remaining shared daily call budget before warm and cold HTTP tests",
+      "afterInitialHoldoutQueries": true
+    }
+  ],
+  "executionResult": {
+    "service": "completed-quality-failed",
+    "authenticatedHttp": "48 initial observations completed; 42 successful HAR responses and 6 UI failures",
+    "cold": "3 actual zero-replica starts completed",
+    "warm": "24 completed:22 successful HTTP captures,2 UI manual-classification failures; p95 18.622 seconds exceeds15-second gate",
+    "restored": true,
+    "results": "docs/validation-results/20261004-issue-30-independent-v2-production/results.md",
+    "weeklyBudgetResults": "docs/validation-results/20261004-issue-30-independent-v2-production/cost-weekly-final.json"
+  },
+  "originalSha256BeforeWeeklyAmendment": {
+    "evaluation/issue-30/independent-v2/dataset.json": "d544ca86b70e143b36aa36b94011756bb8636ec5836d8c437279eaee523cb465",
+    "evaluation/issue-30/independent-v2/pre-model-manifest.json": "f9c57e2c75c0bb39182cb6ad8ff41fbd9be3a1c2a3e632644da3ce4356861550",
+    "src/Dse.ProductionEvaluation/Program.cs": "5f6f010fdf7619be059678342a0fc1228896ca5f306c0c63e3e917da538538f7",
+    "src/Dse.ProductionEvaluation/Dockerfile": "1e65ec91fbc2d2edb9e6d742179733533cd15eceafb7fabdeda3a7321e3024a6",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "a9be9ce88da51deef2090bddc755e5d27c0176bb7c43093c4c6475f631b09920",
+    "evaluation/issue-30/independent-v2/approved/dataset.json": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+    "evaluation/issue-30/independent-v2/approved/approval.json": "2ce79b8625538e014548c99819c381388be5ee865fde474395b70890d4b551d4"
+  },
+  "weeklyBudgetAmendment": {
+    "approvalReference": "user-20261004-weekly2000-fixed162",
+    "approvalFile": "approved/weekly-budget-approval.json",
+    "description": "人による予算方針変更。検索設定・原文・正解・モデル・単価は凍結を維持。旧実行の証跡と200円/USDの記録を保存し、新しい24問計時反復だけ週次台帳・162円/USDで実行。",
+    "budgetPeriod": "Monday 00:00 Asia/Tokyo",
+    "combinedTotalJpy": 2000,
+    "usdToJpy": 162,
+    "weeklyCallLimit": 1680,
+    "infraReserveJpy": 1000,
+    "externalAiReserveJpy": 200,
+    "perRunCallLimit": 362,
+    "remainingWarmRequests": 24,
+    "remainingWarmCallBound": 48
+  }
+}

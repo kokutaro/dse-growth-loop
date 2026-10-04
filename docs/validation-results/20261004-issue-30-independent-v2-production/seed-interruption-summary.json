@@ -1,0 +1,27 @@
+{
+  "scope": "Interrupted seed only; not retrieval quality",
+  "completed": false,
+  "successfulUnits": 27,
+  "primaryUnits": 28,
+  "auditStatuses": {
+    "not_evaluated": 15,
+    "succeeded": 32,
+    "budget_stopped": 1
+  },
+  "billableAttempts": 32,
+  "cacheHits": 15,
+  "inputTokens": 24532,
+  "outputTokens": 2700,
+  "estimatedAiJpy": 0.2060688,
+  "ledger": {
+    "calls": 240,
+    "tokens": 351752,
+    "estimatedJpy": 6.9138356,
+    "activeReservations": 0,
+    "blocked": null
+  },
+  "reason": "Shared UTC daily call cap; failing unit attemptCount=0",
+  "nextBudgetDayUtc": "2026-10-04T00:00:00Z",
+  "automaticRetry": false,
+  "qualityGate": "not_measured"
+}

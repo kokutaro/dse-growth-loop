@@ -1,0 +1,28 @@
+{
+  "chunks": 52,
+  "bytes": 1010743,
+  "sha256": "b2452684a0b40cb43707b8caefcc1d44fab46a2590f201d9ee6b3cffe76638f0",
+  "reportComplete": null,
+  "rows": 0,
+  "aiAudits": 334,
+  "executions": [
+    {
+      "execution": "dse-validation-issue30-3rj3ppp",
+      "startChunk": 0,
+      "startTime": "2026-10-04T05:51:33+00:00",
+      "endTime": "2026-10-04T05:52:04+00:00"
+    },
+    {
+      "execution": "dse-validation-issue30-b99bfo1",
+      "startChunk": 20,
+      "startTime": "2026-10-04T05:52:07+00:00",
+      "endTime": "2026-10-04T05:52:39+00:00"
+    },
+    {
+      "execution": "dse-validation-issue30-z3ai0uw",
+      "startChunk": 40,
+      "startTime": "2026-10-04T05:52:46+00:00",
+      "endTime": "2026-10-04T05:53:24+00:00"
+    }
+  ]
+}

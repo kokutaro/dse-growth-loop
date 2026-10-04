@@ -1,0 +1,19 @@
+{
+  "image": "dseacrypbunss3xh66m.azurecr.io/dse-production-evaluation:issue30-v2-service-20261004",
+  "sha256": {
+    "evaluation/issue-30/independent-v2/dataset.json": "d544ca86b70e143b36aa36b94011756bb8636ec5836d8c437279eaee523cb465",
+    "evaluation/issue-30/independent-v2/pre-model-manifest.json": "f9c57e2c75c0bb39182cb6ad8ff41fbd9be3a1c2a3e632644da3ce4356861550",
+    "src/Dse.ProductionEvaluation/Program.cs": "9d7aaa81a69858fccb0adfb2b0277b6c9ba5eb9efd531e3c45226825f8c93211",
+    "src/Dse.ProductionEvaluation/Dockerfile": "1e65ec91fbc2d2edb9e6d742179733533cd15eceafb7fabdeda3a7321e3024a6",
+    "src/Dse.Evaluation/ProductionEvaluationPlan.cs": "a9be9ce88da51deef2090bddc755e5d27c0176bb7c43093c4c6475f631b09920",
+    "evaluation/issue-30/independent-v2/approved/dataset.json": "7f8e3f465b61fc423a92c55b6c12ebceb320a6a5c31d2dd874cc70f6a318af4d",
+    "evaluation/issue-30/independent-v2/approved/approval.json": "2ce79b8625538e014548c99819c381388be5ee865fde474395b70890d4b551d4",
+    "scripts/issue30_independent_v2_report.py": "ecb3fa6d4944c4b05543c75485d2b2da13d31b7f2759faa0dd89bf7aac3830c3"
+  },
+  "queryResultsNotYetObserved": true,
+  "retrievalAlgorithmChanged": false,
+  "labelsChanged": false,
+  "observationOnlyAmendment": "Capture normal classifier status/choice without changing context or input; capture full existing retrieval audit. Export chunk ranges are read-only.",
+  "manualUnknownPolicy": "No-gold unknown/other with successful classifier is recorded separately; budget/adapter failures do not count as valid manual unknown.",
+  "imageDigest": "sha256:2c13db15d4c33fbafb1421a7406820da96361856dec75ada96300294cd0af1f2"
+}

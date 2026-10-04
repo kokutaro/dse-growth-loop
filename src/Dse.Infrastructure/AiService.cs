@@ -250,7 +250,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         catch (IOException) { retry = new(AiFailure.Unavailable, true); }
                         catch (JsonException) { retry = new(AiFailure.InvalidJson); }
                         catch (Exception e) when (e is InvalidOperationException or FormatException or KeyNotFoundException or NullReferenceException or OverflowException or ArgumentException)
-                        { retry = new(AiFailure.SchemaMismatch); }
+                        { retry = new(AiFailure.SchemaMismatch, validationIssue: AiValidationIssue.ResponseShape); }
                         finally
                         {
                             using var settlement = new CancellationTokenSource(TimeSpan.FromSeconds(10));
@@ -276,7 +276,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             if (pendingCacheKey is not null)
                 cache.Set(pendingCacheKey, new Cached(JsonSerializer.SerializeToUtf8Bytes(result, AiCodecs.Json), runId), new MemoryCacheEntryOptions { Size = 1, AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
         }
-        catch (AiException e) { failure = e.Failure; }
+        catch (AiException e) { failure = e.Failure; if (e.ValidationIssue is not null) trace["validationIssue"] = e.ValidationIssue.ToString(); }
         catch (OperationCanceledException) { failure = ct.IsCancellationRequested ? AiFailure.Cancelled : AiFailure.Timeout; }
         catch (Azure.RequestFailedException) { failure = AiFailure.Unavailable; }
         catch (Exception e) when (e is Azure.Identity.AuthenticationFailedException or Azure.Identity.CredentialUnavailableException)

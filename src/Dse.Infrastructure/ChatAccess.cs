@@ -24,7 +24,7 @@ public sealed class ChatAccess(IPrimaryRepository repository, SourceGuard guard,
     {
         var (_, participants) = await RequireAsync(context, ct);
         var result = units.Where(u => u.EntityType == "knowledge").ToArray();
-        foreach (var actor in participants) result = await guard.FilterAsync(actor, result, ct);
+        foreach (var actor in participants) result = await guard.FilterUnderFenceAsync(actor, result, ct);
         return result;
     }
     public async Task<string> ContextTextAsync(AiContext context, CancellationToken ct)

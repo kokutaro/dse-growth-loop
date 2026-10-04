@@ -1,0 +1,37 @@
+{
+  "checkedAtUtc": "2026-10-04T03:46:39.812593+00:00",
+  "newInferenceSent": 0,
+  "pending": "Mac unlock for HAR timing capture; warm24 not sent",
+  "weeklyLedgerRetained": true,
+  "previousImportedReservations": 473,
+  "previousImportedUsd": "0.08027596",
+  "weeklyGuardInitialized": "dse-validation-issue30-kraikog",
+  "restored": {
+    "api": {
+      "image": true,
+      "env": true,
+      "scale": true,
+      "activeRevisions": 0,
+      "newAndRestoredReplicas": 0
+    },
+    "worker": {
+      "image": true,
+      "env": true,
+      "scale": true,
+      "activeRevisions": 0
+    },
+    "job": {
+      "image": true,
+      "env": true,
+      "scale": true,
+      "runningExecutions": 0
+    }
+  },
+  "addedComputeBounds": {
+    "apiReplicaMinutes": 20,
+    "jobSeconds": 62,
+    "usd": 0.018465,
+    "jpyAt162": 2.99133,
+    "invoiceReconciled": false
+  }
+}

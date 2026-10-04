@@ -86,14 +86,19 @@ function App() {
       const response = await fetch("/api/v2/search/conditions", { method: "POST", headers, body: JSON.stringify({ query }) });
       if (!response.ok) throw new Error("条件の生成に失敗しました。機密ログイン情報を除き、手動条件を確認してください。");
       const value = await response.json();
-      setConditionsReady(true);
+      setConditionsReady(!!value.conditions);
       if (value.conditions) {
         setCategoryIds(value.conditions.categories.map((c: { categoryId: string }) => c.categoryId).join(" "));
         setSignalIds(value.conditions.signalIds.join(" "));
         setTerms(value.conditions.terms.join(" "));
         setConversionStatus("条件を生成しました。複数分野・技術要素・経験条件を編集できます。");
-      } else setConversionStatus("分類できませんでした。手動で条件を入力してください（" + value.status + "）。");
-      setStage("条件の確認待ち");
+      } else {
+        setCategoryIds(""); setSignalIds(""); setTerms("");
+        setConversionStatus(value.status === "manual_required:unknown"
+          ? "自動検索の対象分野を判断できませんでした。検索は実行していません。必要な条件を手動で入力できます。"
+          : "分類できませんでした。手動で条件を入力してください。");
+      }
+      setStage(value.status === "manual_required:unknown" ? "自動検索対象外" : "条件の確認待ち");
     } catch (e) { setError(e instanceof Error ? e.message : "条件の生成に失敗しました。"); setStage("条件生成失敗"); }
     finally { setBusy(false); }
   }
@@ -121,7 +126,13 @@ function App() {
       });
       if (generation !== searchGeneration.current) return;
       if (response.status === 422) {
-        setConditionsReady(true);
+        const failure = await response.json();
+        setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms("");
+        if (failure.code === "CLASSIFICATION_OUT_OF_SCOPE") {
+          setConversionStatus("自動検索の対象分野を判断できませんでした。検索は実行していません。必要な条件を手動で入力できます。");
+          setStage("自動検索対象外");
+          return;
+        }
         throw new Error("自動分類を利用できません。手動で条件を編集して検索してください。");
       }
       if (!response.ok)
@@ -189,7 +200,7 @@ function App() {
             <h2 id="search-title">探したい経験は？</h2>
             <form onSubmit={search}>
               <label htmlFor="query">自然文の課題</label>
-              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
+              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
               <small>ダミーの課題を入力してください。パスワード・キーなどのログイン情報は入力できません。</small>
               <button type="button" disabled={busy || !config || !query.trim()} onClick={() => { void convert(); }}>自然文から条件を生成</button>
               {conversionStatus && <p role="status">{conversionStatus}</p>}
@@ -279,46 +290,53 @@ function App() {
                 {result.candidates.length === 0 && !rerankFailed && (
                   <p>条件に合う候補はありません。</p>
                 )}
-                {result.candidates.map((candidate) => (
-                  <article
-                    className="panel candidate"
-                    key={`${candidate.entityType}:${candidate.entityId}`}
-                  >
-                    <div className="candidate-top">
-                      <span className="kind">
-                        {candidate.entityType === "person"
-                          ? "相談候補"
-                          : "参考事例"}
-                      </span>
-                      <span className="fixture">架空データ</span>
-                    </div>
-                    <h3>{candidate.title}</h3>
-                    {result.assessments?.filter(a => a.entityId === candidate.entityId && a.entityType === candidate.entityType).map(a => <div key={a.entityId}>
-                      <p>適合理由（根拠引用）：{a.reason}</p>
-                      <small>不足情報：{a.missingInformation.join(" ")}</small>
-                    </div>)}
-                    {candidate.entityType === "person" && <small>相談する人物ID：{candidate.entityId}</small>}
-                    <p>{candidate.units[0].summary}</p>
-                    <small>{candidate.units.some(u => u.confirmationState === "reviewed") ? "参加者確認・公開承認済み" : candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>
-                    <div className="routes">
-                      {candidate.routes.map((route) => (
-                        <span key={route}>{routeNames[route] ?? route}</span>
-                      ))}
-                    </div>
-                    <details>
-                      <summary>根拠を見る</summary>
-                      {candidate.units
-                        .flatMap((u) => u.sourceRefs)
-                        .map((source, i) => (
-                          <blockquote key={`${source.id}:${i}`}>
-                            <p>{source.text}</p>
-                            <cite>
-                              {source.documentTitle} / {source.location}
-                            </cite>
-                          </blockquote>
-                        ))}
-                    </details>
-                  </article>
+                {!rerankFailed && (["person", "knowledge"] as const).filter(type => !result.runId || target === "all" || target === type).map(type => (
+                  <section key={type} aria-label={type === "person" ? "相談候補" : "参考事例"}>
+                    <h3>{type === "person" ? "相談候補" : "参考事例"}</h3>
+                    {!result.candidates.some(c => (c.entityType === "person" ? "person" : "knowledge") === type) &&
+                      <p>{type === "person" ? "相談候補" : "参考事例"}はありません。</p>}
+                    {result.candidates.filter(c => (c.entityType === "person" ? "person" : "knowledge") === type).map((candidate) => (
+                      <article
+                        className="panel candidate"
+                        key={`${candidate.entityType}:${candidate.entityId}`}
+                      >
+                        <div className="candidate-top">
+                          <span className="kind">
+                            {candidate.entityType === "person"
+                              ? "相談候補"
+                              : "参考事例"}
+                          </span>
+                          <span className="fixture">架空データ</span>
+                        </div>
+                        <h3>{candidate.title}</h3>
+                        {result.assessments?.filter(a => a.entityId === candidate.entityId && a.entityType === candidate.entityType).map(a => <div key={a.entityId}>
+                          <p>適合理由（根拠引用）：{a.reason}</p>
+                          <small>不足情報：{a.missingInformation.join(" ")}</small>
+                        </div>)}
+                        {candidate.entityType === "person" && <small>相談する人物ID：{candidate.entityId}</small>}
+                        <p>{candidate.units[0].summary}</p>
+                        <small>{candidate.units.some(u => u.confirmationState === "reviewed") ? "参加者確認・公開承認済み" : candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>
+                        <div className="routes">
+                          {candidate.routes.map((route) => (
+                            <span key={route}>{routeNames[route] ?? route}</span>
+                          ))}
+                        </div>
+                        <details>
+                          <summary>根拠を見る</summary>
+                          {candidate.units
+                            .flatMap((u) => u.sourceRefs)
+                            .map((source, i) => (
+                              <blockquote key={`${source.id}:${i}`}>
+                                <p>{source.text}</p>
+                                <cite>
+                                  {source.documentTitle} / {source.location}
+                                </cite>
+                              </blockquote>
+                            ))}
+                        </details>
+                      </article>
+                    ))}
+                  </section>
                 ))}
                 <p className="note">
                   一致した職歴・事例 {result.matchedUnits}件 ／ 重複排除後{" "}

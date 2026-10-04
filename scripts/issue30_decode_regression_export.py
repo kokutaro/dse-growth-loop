@@ -3,7 +3,7 @@
 import base64,gzip,hashlib,json,re,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-def decode(path):
+def decode(path, expected_run="issue30-hardening-20261003-v1", regression=True):
     lines=[]
     for line in Path(path).read_text().splitlines():
         match=re.search(r'"Log":"(.*)"\}\s*$',line)
@@ -26,8 +26,8 @@ def decode(path):
     data=gzip.decompress(base64.b64decode(''.join(chunks[i]['data'] for i in range(count)),validate=True))
     if hashlib.sha256(data).hexdigest()!=expected:raise ValueError('Report checksum mismatch')
     report=json.loads(data)
-    if report['plan']['evaluationId']!='issue30-hardening-20261003-v1' or not report['plan']['observedRegressionSet'] or report['plan']['independentHoldout']:raise ValueError('Wrong report scope')
-    return data,{'chunks':count,'bytes':len(data),'sha256':expected,'reportComplete':report['completed'],'rows':len(report['rows']),'aiAudits':len(report['aiAudits'])}
+    if report['plan']['evaluationId']!=expected_run or report['plan']['observedRegressionSet']!=regression or report['plan']['independentHoldout']==regression:raise ValueError('Wrong report scope')
+    return data,{'chunks':count,'bytes':len(data),'sha256':expected,'reportComplete':report.get('completed'),'rows':len(report.get('rows',[])),'aiAudits':len(report.get('aiAudits',[]))}
 def main():
     data,meta=decode(sys.argv[1]);out=ROOT/'docs/validation-results/20261003-issue-30-hardening-production'
     (out/'production-report.json').write_bytes(data);(out/'export-provenance.json').write_text(json.dumps(meta,indent=2)+'\n');print(json.dumps(meta))

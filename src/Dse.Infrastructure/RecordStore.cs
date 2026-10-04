@@ -101,7 +101,7 @@ internal static class QueryRules
 {
     public static void Validate(string kind, string? field, int size)
     {
-        if ((!RecordJson.ContractKinds.ContainsKey(kind) && kind != "idempotency") || field is not (null or "personId" or "documentId" or "documentVersionId" or "entityId" or "jobId") || size is < 1 or > 100)
+        if ((!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "aiReservation")) || field is not (null or "personId" or "documentId" or "documentVersionId" or "entityId" or "jobId") || size is < 1 or > 100)
             throw new ArgumentException("Invalid query");
     }
 }

@@ -21,6 +21,20 @@ class CostControlsTests(unittest.TestCase):
                 raise
         return [call.args[0] for call in run.call_args_list]
 
+    def test_weekly_budget_is_combined_and_fixed_fx(self):
+        from cost_config import parameters
+        env = {'AI_BUDGET_PERIOD': 'Weekly', 'AI_STOPPED': 'false', 'AI_WEEKLY_CALL_LIMIT': '1680',
+               'AI_WEEKLY_TOTAL_JPY_LIMIT': '2000', 'AI_INFRASTRUCTURE_RESERVE_JPY': '1000',
+               'AI_EXTERNAL_AI_RESERVE_JPY': '200', 'AI_USD_TO_JPY': '162',
+               'AI_DAILY_TOKEN_LIMIT': '4500000', 'AI_PRICE_VERSION': 'approved', 'AI_FX_VERSION': 'fixed162'}
+        runtime = {e['name']: e['value'] for e in parameters(env)['runtimeSettings']}
+        self.assertEqual(runtime['AiUsage__BudgetPeriod'], 'Weekly')
+        self.assertEqual(runtime['AiUsage__WeeklyTotalJpyLimit'], '2000')
+        for override in ({'AI_USD_TO_JPY': '200'}, {'AI_WEEKLY_TOTAL_JPY_LIMIT': '2001'},
+                         {'AI_INFRASTRUCTURE_RESERVE_JPY': '1800'}, {'AI_WEEKLY_CALL_LIMIT': '1681'}):
+            with self.subTest(override=override), self.assertRaises(ValueError):
+                parameters(env | override)
+
     def test_build_defaults_to_local_without_azure_or_push(self):
         commands = self.invoke(['build'])
         self.assertEqual(len(commands), 2)

@@ -8,15 +8,15 @@ namespace Dse.Tests;
 
 public class SearchRerankBudgetTests
 {
-    private static JsonObject Input() => new()
+    private static JsonObject Input(int count = 25) => new()
     {
         ["text"] = "兼務で実施した運用改善の事例を探したい",
         ["groundingPolicy"] = "exact quotation",
         ["evidence"] = new JsonArray(),
-        ["candidates"] = new JsonArray(Enumerable.Range(0, 25).Select(i => (JsonNode)new JsonObject
+        ["candidates"] = new JsonArray(Enumerable.Range(0, count).Select(i => (JsonNode)new JsonObject
         {
             ["id"] = "issue30-independent-20261003-v1-long-candidate-" + i,
-            ["entityType"] = i < 10 ? "person" : "knowledge",
+            ["entityType"] = i < count - 15 ? "person" : "knowledge",
             ["evidence"] = new JsonArray(new JsonObject
             {
                 ["id"] = "issue30-independent-20261003-v1-long-source-" + i,
@@ -24,16 +24,18 @@ public class SearchRerankBudgetTests
             })
         }).ToArray())
     };
-    [Fact]
-    public void Twenty_five_long_ID_candidates_fit_total_budget_without_dropping_candidates()
+    [Theory]
+    [InlineData(25)]
+    [InlineData(30)]
+    public void Long_ID_candidates_fit_total_budget_without_dropping_candidates(int count)
     {
-        var input = Input(); var originals = input.DeepClone(); List<EvidenceCut> cuts = [];
+        var input = Input(count); var originals = input.DeepClone(); List<EvidenceCut> cuts = [];
         var body = SearchRerankBudget.Prepare(MockAiTransport.Model("rerank"), input, 3000, 16000, 1200, cuts);
         Assert.True(Encoding.UTF8.GetByteCount(SearchRerankBudget.Serialize(body)) + 256 <= 16000);
         var sent = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!;
-        Assert.Equal(25, sent["candidates"]!.AsArray().Count);
-        Assert.Equal(25, cuts.Count);
-        for (var i = 0; i < 25; i++)
+        Assert.Equal(count, sent["candidates"]!.AsArray().Count);
+        Assert.Equal(count, cuts.Count);
+        for (var i = 0; i < count; i++)
         {
             var text = sent["candidates"]![i]!["evidence"]![0]!["text"]!.GetValue<string>();
             Assert.True(Encoding.UTF8.GetByteCount(text) >= 60);

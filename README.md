@@ -87,8 +87,18 @@ AI Search、PostgreSQL、埋め込み・ベクトル検索は初期構成から�
 
 自然文の条件生成・編集、人物/事例別の一次取得、根拠引用による再順位付けと失敗時の表示を`/api/v2`で追加した。既存の手動`/api/search`を維持し、v1の自然文検索は計画契約として区別する。同期APIなので202/pollは使わない。版付き設定・候補上限・根拠予算・検索履歴と再現の範囲は[自然文検索手順](docs/natural-search.md)を参照。fixture試験はライブRecall/順位品質の合否ではなく、ライブ評価はIssue #14で行う。
 
+Issue #30では混在結果を人物・事例別に表示するローカル改修と、人物上限10／15の保存応答比較を追加した。[結果と残課題](docs/validation-results/20261004-issue-30-person-limits/results.md)、[承認済み新規独立集合・実行計画](evaluation/issue-30/independent-v2/execution-plan.md)を参照。本番設定の恒久変更は行っていない。
+
 解決評価・根拠付き要約レビュー・公開知識の検索と撤回は[知識公開手順](docs/knowledge-publication.md)を参照してください。ローカルダミーでは架空人物01が参加publisherです。実運用の公開責任者・尺度・分析方針は暫定のままです。
 
 検索比較の実行・承認条件は[Issue #14の比較手順](docs/retrieval-experiments.md)を参照。[実JEV分類と語一致の比較結果](docs/validation-results/20261003-issue-14-jev/results.md)と、ラベル承認後の[追加20問による再評価](docs/validation-results/20261003-issue-14-jev-v2/results.md)を追加した。[Luna6の実再順位付け](docs/validation-results/20261003-issue-14-luna6/results.md)では最終HitRate@5が19/20、正解なしの誤推薦0/4。[評価グラフ](docs/validation-results/20261003-issue-14-luna6/figures.md)で品質・順位安定性・費用を確認できる。合成fixture・実AI応答の測定・未測定の検索全体SLOを区別する。
 
 実Cosmosの投影RU・少量利用の費用推計は[検証結果](docs/validation-results/20261003-issue-14-cosmos/results.md)を参照。追加AI呼出しなしで既存候補との一致を確認した。
+
+2026-10-04の[新規独立集合の本番検証結果](docs/validation-results/20261004-issue-30-independent-v2-production/results.md)を追加。サービス48検索とJWT画面48検索を実施し、分類・一次取得の漏れにより品質ゲート不合格。再検索24問は共有日次上限を維持するため日次リセット後に残し、恒久採用・Issue #30完了は保留する。
+
+検証費用は追加承認によりAI・検証用インフラの合計2,000円/週、固定162円/USDへ変更。[週次予算の制御・過去利用の移行](docs/validation-results/20261004-issue-30-independent-v2-production/weekly-budget.md)を記録した。
+
+2026-10-04の[観測後修正・実AI回帰](docs/validation-results/20261004-issue-30-regression/results.md)で、入札の正解取得漏れを解消し、全対象24問の人物・事例Recall100%／スキーマ不一致0を確認した。独立確認への転用はしない。HTTPの15秒基準と新しい独立集合の確認が残る。この時点では新規v3ラベルと累計稼働延長案は承認待ちだった。後続の新規承認と実測を以下に記録する。
+
+2026-10-04の新規承認後、[独立v3の実サービス48検索](docs/validation-results/20261004-issue-30-independent-v3-production/results.md)を完了。全対象・対象指定とも人物／事例の一次Recall、種別欄HitRate／Precision／Recallは100%、誤推薦0/4、根拠整合120/120。v3結果を見た調整なし。Mac再ロックにより認証付きHTTP・画面・coldは未実施で、APIを再展開せず元設定・実レプリカ0・Job0を確認した。Issue #30と恒久採用は保留。

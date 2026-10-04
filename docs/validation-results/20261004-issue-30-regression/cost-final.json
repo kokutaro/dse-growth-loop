@@ -1,0 +1,22 @@
+{
+  "fxJpyPerUsd": 162,
+  "weekRuntimeCalls": 565,
+  "weekRuntimeJpy": "16.84874844",
+  "reservedNonRuntimeJpy": 1200,
+  "runtimePlusReservesJpy": "1216.84874844",
+  "activeReservations": 0,
+  "newAiCalls": 46,
+  "newEstimatedAiJpy": "1.941358428",
+  "priorScopedCalls": 280,
+  "scopedCallsAfter": 326,
+  "scopedLimit": 362,
+  "apiCumulativeReplicaSecondsUpperBound": 12480,
+  "apiLimitSeconds": 14400,
+  "jobCumulativeSecondsUpperBound": 5389.0,
+  "jobLimitSeconds": 7200,
+  "abortedJobReservedSeconds": 900,
+  "newCompletedJobSeconds": 489.0,
+  "computeJpyUpperBound": "36.87403500",
+  "invoiceReconciled": false,
+  "restoration": "restoration.json"
+}

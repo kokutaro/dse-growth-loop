@@ -1,0 +1,77 @@
+{
+  "plan": {
+    "runId": "issue30-independent-20261004-v3",
+    "mode": "--seed",
+    "datasetSha256": "1e0f23a34180237ae437056997c97e1c9c238c7b7ba8f0f567764c88cde88e84",
+    "dummyOnly": true,
+    "scope": "issue30-independent-20261004-v3",
+    "evaluationId": "issue30-independent-20261004-v3",
+    "observedRegressionSet": false,
+    "independentHoldout": true,
+    "arms": [
+      "all",
+      "targeted"
+    ],
+    "questions": 24,
+    "documents": 60,
+    "rules": {
+      "version": "retrieval-v2",
+      "questionTopCategories": 3,
+      "questionThreshold": 0.1,
+      "documentThreshold": 0.2,
+      "noulThreshold": 0.5,
+      "rescueSlots": 2,
+      "personLimit": 15,
+      "caseLimit": 15,
+      "evidenceBytesPerCandidate": 1200
+    },
+    "labelApprovalStatus": "human-approved",
+    "executionEnabled": true,
+    "profileFragments": true,
+    "httpAuthenticationTested": false,
+    "executionScope": "Production Azure services via Managed Identity; public HTTP/JWT and cold scale-out are separate"
+  },
+  "completed": true,
+  "ledgerAfter": {
+    "calls": 364,
+    "tokens": 565457,
+    "estimatedJpy": 12.004803848,
+    "week": {
+      "kind": "aiUsageWeek",
+      "id": "ai-week-2026-09-28",
+      "tenantId": "7308395f-81ec-4cc5-be21-109c9575ef92",
+      "ownerId": "system",
+      "scopeIds": [
+        "system"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-10-04T03:33:57.8744384\u002B00:00",
+      "updatedAt": "2026-10-04T03:33:57.8744384\u002B00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "system"
+      },
+      "correctedBy": null,
+      "periodStartUtc": "2026-09-27T15:00:00\u002B00:00",
+      "periodEndUtc": "2026-10-04T15:00:00\u002B00:00",
+      "timeZone": "Asia/Tokyo",
+      "calls": 635,
+      "usd": 0.106257164,
+      "limitJpy": 2000,
+      "callLimit": 1680,
+      "reservedNonRuntimeJpy": 1200,
+      "infrastructureReserveJpy": 1000,
+      "externalAiReserveJpy": 200,
+      "usdToJpy": 162,
+      "approvalReference": "user-20261004-weekly2000-fixed162",
+      "importedReservations": 473,
+      "importedUsd": 0.08027596,
+      "importSha256": "6beebad8ac1e8fa76935e9b52b23e1e157776832eb17078ec4ad402faa8b724d",
+      "etag": "\u002205006a9f-0000-2300-0000-6ac20f3a0000\u0022"
+    },
+    "activeReservations": 0,
+    "blocked": null
+  }
+}

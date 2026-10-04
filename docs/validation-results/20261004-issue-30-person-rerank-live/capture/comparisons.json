@@ -1,0 +1,3509 @@
+[
+  {
+    "questionId": "v2t-sales-09-query",
+    "candidateSha256": "936cee29f2ca88e84a2edbcf525cf19ad719b0bf4aeb1c84990d7824d40278a3",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-sales-09-person-direct",
+        "reason": "営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め、見積の利益率を維持した。",
+        "evidenceIds": [
+          "v2t-sales-09-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-sales-09-person-support",
+        "reason": "営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め、見積の利益率を維持した。",
+        "evidenceIds": [
+          "v2t-sales-09-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1690,
+        "outputTokens": 168,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-sales-09-person-direct\",\"reason\":\"営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め、見積の利益率を維持した。\",\"evidenceIds\":[\"v2t-sales-09-person-direct-evidence\"]},{\"candidateId\":\"v2t-sales-09-person-support\",\"reason\":\"営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め、見積の利益率を維持した。\",\"evidenceIds\":[\"v2t-sales-09-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068720,
+          "id": "chatcmpl-EV356bANDbK3B8ZXIjNIbalNt8BIa",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r1-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 168,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 73,
+              "engine_ttlt_ms": 638,
+              "pre_inference_ms": 101,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 716,
+              "service_ttlt_ms": 1285,
+              "user_visible_ttft_ms": 614
+            },
+            "prompt_tokens": 1690,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1687,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1858
+          }
+        },
+        "durationMs": 2062.033,
+        "costUsd": "0.000253",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1690,
+    "outputTokens": 168,
+    "costUsd": "0.000253"
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "candidateSha256": "936cee29f2ca88e84a2edbcf525cf19ad719b0bf4aeb1c84990d7824d40278a3",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-sales-09-person-direct",
+        "reason": "営業で、案件の粗利と契約規模に基づく割引承認表を作成した。",
+        "evidenceIds": [
+          "v2t-sales-09-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-sales-09-person-support",
+        "reason": "営業で、案件の粗利と契約規模に基づく割引承認表を作成した。",
+        "evidenceIds": [
+          "v2t-sales-09-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1690,
+        "outputTokens": 126,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-sales-09-person-direct\",\"reason\":\"営業で、案件の粗利と契約規模に基づく割引承認表を作成した。\",\"evidenceIds\":[\"v2t-sales-09-person-direct-evidence\"]},{\"candidateId\":\"v2t-sales-09-person-support\",\"reason\":\"営業で、案件の粗利と契約規模に基づく割引承認表を作成した。\",\"evidenceIds\":[\"v2t-sales-09-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068721,
+          "id": "chatcmpl-EV357I9XjFmMkj6z4IGkss48hxKuh",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 126,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 65,
+              "engine_ttlt_ms": 472,
+              "pre_inference_ms": 95,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 705,
+              "service_ttlt_ms": 1108,
+              "user_visible_ttft_ms": 609
+            },
+            "prompt_tokens": 1690,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1687,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1816
+          }
+        },
+        "durationMs": 1497.837,
+        "costUsd": "0.000232",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1690,
+    "outputTokens": 126,
+    "costUsd": "0.000232"
+  },
+  {
+    "questionId": "v2t-sales-09-query",
+    "candidateSha256": "936cee29f2ca88e84a2edbcf525cf19ad719b0bf4aeb1c84990d7824d40278a3",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-sales-09-person-direct",
+        "reason": "営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め",
+        "evidenceIds": [
+          "v2t-sales-09-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-sales-09-person-support",
+        "reason": "営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め",
+        "evidenceIds": [
+          "v2t-sales-09-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1690,
+        "outputTokens": 146,
+        "cachedTokens": 1687,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-sales-09-person-direct\",\"reason\":\"営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め\",\"evidenceIds\":[\"v2t-sales-09-person-direct-evidence\"]},{\"candidateId\":\"v2t-sales-09-person-support\",\"reason\":\"営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め\",\"evidenceIds\":[\"v2t-sales-09-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068723,
+          "id": "chatcmpl-EV359Jx3hRfLFShsHvj41ixwN99F5",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r1-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 146,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 77,
+              "engine_ttlt_ms": 557,
+              "pre_inference_ms": 98,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 708,
+              "service_ttlt_ms": 1184,
+              "user_visible_ttft_ms": 610
+            },
+            "prompt_tokens": 1690,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1687
+            },
+            "total_tokens": 1836
+          }
+        },
+        "durationMs": 1622.943,
+        "costUsd": "0.00009017",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1690,
+    "outputTokens": 146,
+    "costUsd": "0.00009017"
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "candidateSha256": "1d88196b467d3a7f56ae50c80428e51e9cd8efbefe1123f329f3e0f75e1f404f",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-sales-10-person-direct",
+        "reason": "代理店向けの製品説明研修を企画し、実演と理解度確認を行った。",
+        "evidenceIds": [
+          "v2t-sales-10-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-sales-10-person-support",
+        "reason": "代理店向けの製品説明研修を企画し、実演と理解度確認を行った。",
+        "evidenceIds": [
+          "v2t-sales-10-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1607,
+        "outputTokens": 124,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-sales-10-person-direct\",\"reason\":\"代理店向けの製品説明研修を企画し、実演と理解度確認を行った。\",\"evidenceIds\":[\"v2t-sales-10-person-direct-evidence\"]},{\"candidateId\":\"v2t-sales-10-person-support\",\"reason\":\"代理店向けの製品説明研修を企画し、実演と理解度確認を行った。\",\"evidenceIds\":[\"v2t-sales-10-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068724,
+          "id": "chatcmpl-EV35AigtC6lxFDM77IHgCYZGP8WcV",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 124,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 72,
+              "engine_ttlt_ms": 465,
+              "pre_inference_ms": 88,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 701,
+              "service_ttlt_ms": 1079,
+              "user_visible_ttft_ms": 612
+            },
+            "prompt_tokens": 1607,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1604,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1731
+          }
+        },
+        "durationMs": 1387.518,
+        "costUsd": "0.0002227",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1607,
+    "outputTokens": 124,
+    "costUsd": "0.0002227"
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "candidateSha256": "1d88196b467d3a7f56ae50c80428e51e9cd8efbefe1123f329f3e0f75e1f404f",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-sales-10-person-support",
+        "reason": "営業で、代理店向けの製品説明研修を企画し、実演と理解度確認を行った。",
+        "evidenceIds": [
+          "v2t-sales-10-person-support-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-sales-10-person-direct",
+        "reason": "営業で、代理店向けの製品説明研修を企画し、実演と理解度確認を行った。",
+        "evidenceIds": [
+          "v2t-sales-10-person-direct-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1607,
+        "outputTokens": 130,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-sales-10-person-support\",\"reason\":\"営業で、代理店向けの製品説明研修を企画し、実演と理解度確認を行った。\",\"evidenceIds\":[\"v2t-sales-10-person-support-evidence\"]},{\"candidateId\":\"v2t-sales-10-person-direct\",\"reason\":\"営業で、代理店向けの製品説明研修を企画し、実演と理解度確認を行った。\",\"evidenceIds\":[\"v2t-sales-10-person-direct-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068726,
+          "id": "chatcmpl-EV35CjnhMa3woyf9xaeDrBqkA0UsI",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 130,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 66,
+              "engine_ttlt_ms": 515,
+              "pre_inference_ms": 103,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 722,
+              "service_ttlt_ms": 1153,
+              "user_visible_ttft_ms": 620
+            },
+            "prompt_tokens": 1607,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1604,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1737
+          }
+        },
+        "durationMs": 1592.208,
+        "costUsd": "0.0002257",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1607,
+    "outputTokens": 130,
+    "costUsd": "0.0002257"
+  },
+  {
+    "questionId": "v2t-sales-10-query",
+    "candidateSha256": "1d88196b467d3a7f56ae50c80428e51e9cd8efbefe1123f329f3e0f75e1f404f",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-sales-10-person-direct",
+        "reason": "代理店向けの製品説明研修を企画し、実演と理解度確認を行った。",
+        "evidenceIds": [
+          "v2t-sales-10-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-sales-10-person-support",
+        "reason": "代理店向けの製品説明研修を企画し、実演と理解度確認を行った。",
+        "evidenceIds": [
+          "v2t-sales-10-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1607,
+        "outputTokens": 124,
+        "cachedTokens": 1604,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-sales-10-person-direct\",\"reason\":\"代理店向けの製品説明研修を企画し、実演と理解度確認を行った。\",\"evidenceIds\":[\"v2t-sales-10-person-direct-evidence\"]},{\"candidateId\":\"v2t-sales-10-person-support\",\"reason\":\"代理店向けの製品説明研修を企画し、実演と理解度確認を行った。\",\"evidenceIds\":[\"v2t-sales-10-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068727,
+          "id": "chatcmpl-EV35DcTVXOMJHGwQ2XhGSCbS6yVhP",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 124,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 56,
+              "engine_ttlt_ms": 442,
+              "pre_inference_ms": 94,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 551,
+              "service_ttlt_ms": 930,
+              "user_visible_ttft_ms": 457
+            },
+            "prompt_tokens": 1607,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1604
+            },
+            "total_tokens": 1731
+          }
+        },
+        "durationMs": 1332.538,
+        "costUsd": "0.00007834",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1607,
+    "outputTokens": 124,
+    "costUsd": "0.00007834"
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "candidateSha256": "d826b7d95f71f21fd543381bb7d78e875d7992a8d8bdbcd80cf19208c35ca4c1",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-manufacturing-14-person-direct",
+        "reason": "照合不一致では印刷を止め、誤表示による出荷を防いだ。",
+        "evidenceIds": [
+          "v2t-manufacturing-14-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-manufacturing-14-person-support",
+        "reason": "照合不一致では印刷を止め、誤表示による出荷を防いだ。",
+        "evidenceIds": [
+          "v2t-manufacturing-14-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1488,
+        "outputTokens": 128,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-manufacturing-14-person-direct\",\"reason\":\"照合不一致では印刷を止め、誤表示による出荷を防いだ。\",\"evidenceIds\":[\"v2t-manufacturing-14-person-direct-evidence\"]},{\"candidateId\":\"v2t-manufacturing-14-person-support\",\"reason\":\"照合不一致では印刷を止め、誤表示による出荷を防いだ。\",\"evidenceIds\":[\"v2t-manufacturing-14-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068729,
+          "id": "chatcmpl-EV35FhfWPiZWwErVAVmYYIOXWFJsJ",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r3-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 128,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 74,
+              "engine_ttlt_ms": 512,
+              "pre_inference_ms": 92,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 706,
+              "service_ttlt_ms": 1134,
+              "user_visible_ttft_ms": 614
+            },
+            "prompt_tokens": 1488,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1485,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1616
+          }
+        },
+        "durationMs": 1448.547,
+        "costUsd": "0.0002128",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1488,
+    "outputTokens": 128,
+    "costUsd": "0.0002128"
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "candidateSha256": "d826b7d95f71f21fd543381bb7d78e875d7992a8d8bdbcd80cf19208c35ca4c1",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-manufacturing-14-person-direct",
+        "reason": "照合不一致では印刷を止め、誤表示による出荷を防いだ。",
+        "evidenceIds": [
+          "v2t-manufacturing-14-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-manufacturing-14-person-support",
+        "reason": "照合不一致では印刷を止め、誤表示による出荷を防いだ。",
+        "evidenceIds": [
+          "v2t-manufacturing-14-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1488,
+        "outputTokens": 128,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-manufacturing-14-person-direct\",\"reason\":\"照合不一致では印刷を止め、誤表示による出荷を防いだ。\",\"evidenceIds\":[\"v2t-manufacturing-14-person-direct-evidence\"]},{\"candidateId\":\"v2t-manufacturing-14-person-support\",\"reason\":\"照合不一致では印刷を止め、誤表示による出荷を防いだ。\",\"evidenceIds\":[\"v2t-manufacturing-14-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068730,
+          "id": "chatcmpl-EV35GuzW5l6lJJNyrxZLZ5lTWqZ6A",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 128,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 61,
+              "engine_ttlt_ms": 502,
+              "pre_inference_ms": 108,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 720,
+              "service_ttlt_ms": 1142,
+              "user_visible_ttft_ms": 612
+            },
+            "prompt_tokens": 1488,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1485,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1616
+          }
+        },
+        "durationMs": 1576.527,
+        "costUsd": "0.0002128",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1488,
+    "outputTokens": 128,
+    "costUsd": "0.0002128"
+  },
+  {
+    "questionId": "v2t-manufacturing-14-query",
+    "candidateSha256": "d826b7d95f71f21fd543381bb7d78e875d7992a8d8bdbcd80cf19208c35ca4c1",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2t-manufacturing-14-person-direct",
+        "reason": "製造で、梱包対象の識別番号と印字内容を読み合わせる工程を設計した。照合不一致では印刷を止め、誤表示による出荷を防いだ。",
+        "evidenceIds": [
+          "v2t-manufacturing-14-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2t-manufacturing-14-person-support",
+        "reason": "製造で、梱包対象の識別番号と印字内容を読み合わせる工程を設計した。照合不一致では印刷を止め、誤表示による出荷を防いだ。",
+        "evidenceIds": [
+          "v2t-manufacturing-14-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1488,
+        "outputTokens": 180,
+        "cachedTokens": 1485,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2t-manufacturing-14-person-direct\",\"reason\":\"製造で、梱包対象の識別番号と印字内容を読み合わせる工程を設計した。照合不一致では印刷を止め、誤表示による出荷を防いだ。\",\"evidenceIds\":[\"v2t-manufacturing-14-person-direct-evidence\"]},{\"candidateId\":\"v2t-manufacturing-14-person-support\",\"reason\":\"製造で、梱包対象の識別番号と印字内容を読み合わせる工程を設計した。照合不一致では印刷を止め、誤表示による出荷を防いだ。\",\"evidenceIds\":[\"v2t-manufacturing-14-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068732,
+          "id": "chatcmpl-EV35IdbdVAA12qODV4x5S9X9Cq97Y",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r3-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 180,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 61,
+              "engine_ttlt_ms": 637,
+              "pre_inference_ms": 98,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 704,
+              "service_ttlt_ms": 1274,
+              "user_visible_ttft_ms": 605
+            },
+            "prompt_tokens": 1488,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1485
+            },
+            "total_tokens": 1668
+          }
+        },
+        "durationMs": 1556.53,
+        "costUsd": "0.00010515",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1488,
+    "outputTokens": 180,
+    "costUsd": "0.00010515"
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "candidateSha256": "72843a70e2f9a8bdb03f9201afa658633f289e995e54e3c102fe7a2eba6a5376",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-sales-09-person-direct",
+        "reason": "顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。",
+        "evidenceIds": [
+          "v2f-sales-09-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-sales-09-person-support",
+        "reason": "顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。",
+        "evidenceIds": [
+          "v2f-sales-09-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1672,
+        "outputTokens": 176,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-sales-09-person-direct\",\"reason\":\"顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。\",\"evidenceIds\":[\"v2f-sales-09-person-direct-evidence\"]},{\"candidateId\":\"v2f-sales-09-person-support\",\"reason\":\"顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。\",\"evidenceIds\":[\"v2f-sales-09-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068733,
+          "id": "chatcmpl-EV35JLE10o0MOMOLU6rXuQpnEXZh7",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 176,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 66,
+              "engine_ttlt_ms": 629,
+              "pre_inference_ms": 91,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 691,
+              "service_ttlt_ms": 1249,
+              "user_visible_ttft_ms": 600
+            },
+            "prompt_tokens": 1672,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1669,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1848
+          }
+        },
+        "durationMs": 1740.824,
+        "costUsd": "0.0002552",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1672,
+    "outputTokens": 176,
+    "costUsd": "0.0002552"
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "candidateSha256": "72843a70e2f9a8bdb03f9201afa658633f289e995e54e3c102fe7a2eba6a5376",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-sales-09-person-direct",
+        "reason": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。",
+        "evidenceIds": [
+          "v2f-sales-09-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-sales-09-person-support",
+        "reason": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。",
+        "evidenceIds": [
+          "v2f-sales-09-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1672,
+        "outputTokens": 182,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-sales-09-person-direct\",\"reason\":\"営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。\",\"evidenceIds\":[\"v2f-sales-09-person-direct-evidence\"]},{\"candidateId\":\"v2f-sales-09-person-support\",\"reason\":\"営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。\",\"evidenceIds\":[\"v2f-sales-09-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068735,
+          "id": "chatcmpl-EV35LQj3mDMbUlWlC0dObF0yUSuuy",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 182,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 82,
+              "engine_ttlt_ms": 651,
+              "pre_inference_ms": 86,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 695,
+              "service_ttlt_ms": 1260,
+              "user_visible_ttft_ms": 609
+            },
+            "prompt_tokens": 1672,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1669,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1854
+          }
+        },
+        "durationMs": 1685.164,
+        "costUsd": "0.0002582",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1672,
+    "outputTokens": 182,
+    "costUsd": "0.0002582"
+  },
+  {
+    "questionId": "v2f-sales-09-query",
+    "candidateSha256": "72843a70e2f9a8bdb03f9201afa658633f289e995e54e3c102fe7a2eba6a5376",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-sales-09-person-direct",
+        "reason": "顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し",
+        "evidenceIds": [
+          "v2f-sales-09-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-sales-09-person-support",
+        "reason": "顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し",
+        "evidenceIds": [
+          "v2f-sales-09-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1672,
+        "outputTokens": 148,
+        "cachedTokens": 1669,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-sales-09-person-direct\",\"reason\":\"顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し\",\"evidenceIds\":[\"v2f-sales-09-person-direct-evidence\"]},{\"candidateId\":\"v2f-sales-09-person-support\",\"reason\":\"顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し\",\"evidenceIds\":[\"v2f-sales-09-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068737,
+          "id": "chatcmpl-EV35NcCflY2rj1X9m1g1iayyNxQOl",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 148,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 80,
+              "engine_ttlt_ms": 588,
+              "pre_inference_ms": 85,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 700,
+              "service_ttlt_ms": 1204,
+              "user_visible_ttft_ms": 615
+            },
+            "prompt_tokens": 1672,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1669
+            },
+            "total_tokens": 1820
+          }
+        },
+        "durationMs": 1577.175,
+        "costUsd": "0.00009099",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1672,
+    "outputTokens": 148,
+    "costUsd": "0.00009099"
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "candidateSha256": "72843a70e2f9a8bdb03f9201afa658633f289e995e54e3c102fe7a2eba6a5376",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-sales-10-person-direct",
+        "reason": "既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。",
+        "evidenceIds": [
+          "v2f-sales-10-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-sales-10-person-support",
+        "reason": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。",
+        "evidenceIds": [
+          "v2f-sales-10-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1664,
+        "outputTokens": 187,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-sales-10-person-direct\",\"reason\":\"既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。\",\"evidenceIds\":[\"v2f-sales-10-person-direct-evidence\"]},{\"candidateId\":\"v2f-sales-10-person-support\",\"reason\":\"営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。\",\"evidenceIds\":[\"v2f-sales-10-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068738,
+          "id": "chatcmpl-EV35O2aVcmz6bp7XjDlfEVNssknvK",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 187,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 56,
+              "engine_ttlt_ms": 645,
+              "pre_inference_ms": 87,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 674,
+              "service_ttlt_ms": 1258,
+              "user_visible_ttft_ms": 587
+            },
+            "prompt_tokens": 1664,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1661,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1851
+          }
+        },
+        "durationMs": 1632.501,
+        "costUsd": "0.0002599",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1664,
+    "outputTokens": 187,
+    "costUsd": "0.0002599"
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "candidateSha256": "72843a70e2f9a8bdb03f9201afa658633f289e995e54e3c102fe7a2eba6a5376",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-sales-10-person-direct",
+        "reason": "既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。",
+        "evidenceIds": [
+          "v2f-sales-10-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-sales-10-person-support",
+        "reason": "既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。",
+        "evidenceIds": [
+          "v2f-sales-10-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1664,
+        "outputTokens": 140,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-sales-10-person-direct\",\"reason\":\"既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。\",\"evidenceIds\":[\"v2f-sales-10-person-direct-evidence\"]},{\"candidateId\":\"v2f-sales-10-person-support\",\"reason\":\"既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。\",\"evidenceIds\":[\"v2f-sales-10-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068740,
+          "id": "chatcmpl-EV35QJBvsuGluDxarJpEudppgEYsD",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 140,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 72,
+              "engine_ttlt_ms": 508,
+              "pre_inference_ms": 91,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 709,
+              "service_ttlt_ms": 1141,
+              "user_visible_ttft_ms": 618
+            },
+            "prompt_tokens": 1664,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1661,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1804
+          }
+        },
+        "durationMs": 1511.197,
+        "costUsd": "0.0002364",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1664,
+    "outputTokens": 140,
+    "costUsd": "0.0002364"
+  },
+  {
+    "questionId": "v2f-sales-10-query",
+    "candidateSha256": "72843a70e2f9a8bdb03f9201afa658633f289e995e54e3c102fe7a2eba6a5376",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-sales-10-person-direct",
+        "reason": "既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。",
+        "evidenceIds": [
+          "v2f-sales-10-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-sales-10-person-support",
+        "reason": "既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。",
+        "evidenceIds": [
+          "v2f-sales-10-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1664,
+        "outputTokens": 140,
+        "cachedTokens": 1661,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-sales-10-person-direct\",\"reason\":\"既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。\",\"evidenceIds\":[\"v2f-sales-10-person-direct-evidence\"]},{\"candidateId\":\"v2f-sales-10-person-support\",\"reason\":\"既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。\",\"evidenceIds\":[\"v2f-sales-10-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068742,
+          "id": "chatcmpl-EV35SYaVlpg8hkW9CkFoFLHVT8znp",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 140,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 80,
+              "engine_ttlt_ms": 548,
+              "pre_inference_ms": 86,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 803,
+              "service_ttlt_ms": 1266,
+              "user_visible_ttft_ms": 717
+            },
+            "prompt_tokens": 1664,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1661
+            },
+            "total_tokens": 1804
+          }
+        },
+        "durationMs": 1646.648,
+        "costUsd": "0.00008691",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1664,
+    "outputTokens": 140,
+    "costUsd": "0.00008691"
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "candidateSha256": "8dc9ad9b8b954323a075aabc4d15b90b32d4a6fb81e1751496ab17e5ca28ddfc",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-13-person-direct",
+        "reason": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。",
+        "evidenceIds": [
+          "v2f-manufacturing-13-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-13-person-support",
+        "reason": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。",
+        "evidenceIds": [
+          "v2f-manufacturing-13-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1514,
+        "outputTokens": 184,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-13-person-direct\",\"reason\":\"製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。\",\"evidenceIds\":[\"v2f-manufacturing-13-person-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-13-person-support\",\"reason\":\"製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。\",\"evidenceIds\":[\"v2f-manufacturing-13-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068743,
+          "id": "chatcmpl-EV35TsFbUIsGWQDe9TXBhEMd8eddG",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 184,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 64,
+              "engine_ttlt_ms": 662,
+              "pre_inference_ms": 90,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 688,
+              "service_ttlt_ms": 1281,
+              "user_visible_ttft_ms": 598
+            },
+            "prompt_tokens": 1514,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1511,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1698
+          }
+        },
+        "durationMs": 1771.148,
+        "costUsd": "0.0002434",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1514,
+    "outputTokens": 184,
+    "costUsd": "0.0002434"
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "candidateSha256": "8dc9ad9b8b954323a075aabc4d15b90b32d4a6fb81e1751496ab17e5ca28ddfc",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-13-person-direct",
+        "reason": "機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。",
+        "evidenceIds": [
+          "v2f-manufacturing-13-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-13-person-support",
+        "reason": "機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。",
+        "evidenceIds": [
+          "v2f-manufacturing-13-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1514,
+        "outputTokens": 150,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-13-person-direct\",\"reason\":\"機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。\",\"evidenceIds\":[\"v2f-manufacturing-13-person-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-13-person-support\",\"reason\":\"機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。\",\"evidenceIds\":[\"v2f-manufacturing-13-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068745,
+          "id": "chatcmpl-EV35VJduA0qexetZ9If0bSohWHlW4",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r5-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 150,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 78,
+              "engine_ttlt_ms": 556,
+              "pre_inference_ms": 93,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 711,
+              "service_ttlt_ms": 1184,
+              "user_visible_ttft_ms": 618
+            },
+            "prompt_tokens": 1514,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1511,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1664
+          }
+        },
+        "durationMs": 1617.581,
+        "costUsd": "0.0002264",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1514,
+    "outputTokens": 150,
+    "costUsd": "0.0002264"
+  },
+  {
+    "questionId": "v2f-manufacturing-13-query",
+    "candidateSha256": "8dc9ad9b8b954323a075aabc4d15b90b32d4a6fb81e1751496ab17e5ca28ddfc",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-13-person-direct",
+        "reason": "段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。",
+        "evidenceIds": [
+          "v2f-manufacturing-13-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-13-person-support",
+        "reason": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。",
+        "evidenceIds": [
+          "v2f-manufacturing-13-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1514,
+        "outputTokens": 180,
+        "cachedTokens": 1511,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-13-person-direct\",\"reason\":\"段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。\",\"evidenceIds\":[\"v2f-manufacturing-13-person-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-13-person-support\",\"reason\":\"製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。\",\"evidenceIds\":[\"v2f-manufacturing-13-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068747,
+          "id": "chatcmpl-EV35X5EHrd21ecFk8KApoxRMBXlcU",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 180,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 69,
+              "engine_ttlt_ms": 652,
+              "pre_inference_ms": 91,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 703,
+              "service_ttlt_ms": 1272,
+              "user_visible_ttft_ms": 612
+            },
+            "prompt_tokens": 1514,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1511
+            },
+            "total_tokens": 1694
+          }
+        },
+        "durationMs": 1600.862,
+        "costUsd": "0.00010541",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1514,
+    "outputTokens": 180,
+    "costUsd": "0.00010541"
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "candidateSha256": "8dc9ad9b8b954323a075aabc4d15b90b32d4a6fb81e1751496ab17e5ca28ddfc",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-14-person-direct",
+        "reason": "欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。",
+        "evidenceIds": [
+          "v2f-manufacturing-14-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-14-person-support",
+        "reason": "欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。",
+        "evidenceIds": [
+          "v2f-manufacturing-14-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1513,
+        "outputTokens": 152,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-14-person-direct\",\"reason\":\"欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。\",\"evidenceIds\":[\"v2f-manufacturing-14-person-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-14-person-support\",\"reason\":\"欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。\",\"evidenceIds\":[\"v2f-manufacturing-14-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068748,
+          "id": "chatcmpl-EV35YzFPuF2pIWT7amkM2AU2S5YAW",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 152,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 57,
+              "engine_ttlt_ms": 534,
+              "pre_inference_ms": 99,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 695,
+              "service_ttlt_ms": 1171,
+              "user_visible_ttft_ms": 596
+            },
+            "prompt_tokens": 1513,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1510,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1665
+          }
+        },
+        "durationMs": 1628.297,
+        "costUsd": "0.0002273",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1513,
+    "outputTokens": 152,
+    "costUsd": "0.0002273"
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "candidateSha256": "8dc9ad9b8b954323a075aabc4d15b90b32d4a6fb81e1751496ab17e5ca28ddfc",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-14-person-direct",
+        "reason": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。",
+        "evidenceIds": [
+          "v2f-manufacturing-14-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-14-person-support",
+        "reason": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。",
+        "evidenceIds": [
+          "v2f-manufacturing-14-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1513,
+        "outputTokens": 188,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-14-person-direct\",\"reason\":\"製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。\",\"evidenceIds\":[\"v2f-manufacturing-14-person-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-14-person-support\",\"reason\":\"製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。\",\"evidenceIds\":[\"v2f-manufacturing-14-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068750,
+          "id": "chatcmpl-EV35a0ZTJVGzOBGOgmYVdgipPsifa",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 188,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 70,
+              "engine_ttlt_ms": 686,
+              "pre_inference_ms": 91,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 695,
+              "service_ttlt_ms": 1308,
+              "user_visible_ttft_ms": 604
+            },
+            "prompt_tokens": 1513,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1510,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1701
+          }
+        },
+        "durationMs": 1604.734,
+        "costUsd": "0.0002453",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1513,
+    "outputTokens": 188,
+    "costUsd": "0.0002453"
+  },
+  {
+    "questionId": "v2f-manufacturing-14-query",
+    "candidateSha256": "8dc9ad9b8b954323a075aabc4d15b90b32d4a6fb81e1751496ab17e5ca28ddfc",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [
+      {
+        "entityId": "v2f-manufacturing-14-person-direct",
+        "reason": "欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。",
+        "evidenceIds": [
+          "v2f-manufacturing-14-person-direct-evidence"
+        ]
+      },
+      {
+        "entityId": "v2f-manufacturing-14-person-support",
+        "reason": "欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。",
+        "evidenceIds": [
+          "v2f-manufacturing-14-person-support-evidence"
+        ]
+      }
+    ],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1513,
+        "outputTokens": 152,
+        "cachedTokens": 1510,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[{\"candidateId\":\"v2f-manufacturing-14-person-direct\",\"reason\":\"欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。\",\"evidenceIds\":[\"v2f-manufacturing-14-person-direct-evidence\"]},{\"candidateId\":\"v2f-manufacturing-14-person-support\",\"reason\":\"欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。\",\"evidenceIds\":[\"v2f-manufacturing-14-person-support-evidence\"]}]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068752,
+          "id": "chatcmpl-EV35cltcmKYdlw2FQKRthZ6gXqMfM",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 152,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 3,
+              "engine_ttft_ms": 57,
+              "engine_ttlt_ms": 559,
+              "pre_inference_ms": 89,
+              "service_tbt_ms": 3,
+              "service_ttft_ms": 678,
+              "service_ttlt_ms": 1176,
+              "user_visible_ttft_ms": 589
+            },
+            "prompt_tokens": 1513,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1510
+            },
+            "total_tokens": 1665
+          }
+        },
+        "durationMs": 1477.052,
+        "costUsd": "0.0000914",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1513,
+    "outputTokens": 152,
+    "costUsd": "0.0000914"
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "candidateSha256": "acd8382ef32001a54d106db94d4bd28c478e2441484f53d90531ddae4d88d17a",
+    "order": "original",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1720,
+        "outputTokens": 11,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068753,
+          "id": "chatcmpl-EV35dS2z6HIwg90THJ0DTFYVunKxb",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 11,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 10,
+              "engine_ttft_ms": 64,
+              "engine_ttlt_ms": 179,
+              "pre_inference_ms": 88,
+              "service_tbt_ms": 12,
+              "service_ttft_ms": 876,
+              "service_ttlt_ms": 1013,
+              "user_visible_ttft_ms": 788
+            },
+            "prompt_tokens": 1720,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1717,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1731
+          }
+        },
+        "durationMs": 1384.043,
+        "costUsd": "0.0001775",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1720,
+    "outputTokens": 11,
+    "costUsd": "0.0001775"
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "candidateSha256": "acd8382ef32001a54d106db94d4bd28c478e2441484f53d90531ddae4d88d17a",
+    "order": "reversed",
+    "attempt": 1,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1720,
+        "outputTokens": 11,
+        "cachedTokens": 0,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068754,
+          "id": "chatcmpl-EV35e3vfw8YpU9gb0zceACKrYj6Fz",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 11,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 8,
+              "engine_ttft_ms": 60,
+              "engine_ttlt_ms": 158,
+              "pre_inference_ms": 94,
+              "service_tbt_ms": 9,
+              "service_ttft_ms": 694,
+              "service_ttlt_ms": 788,
+              "user_visible_ttft_ms": 600
+            },
+            "prompt_tokens": 1720,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 1717,
+              "cached_tokens": 0
+            },
+            "total_tokens": 1731
+          }
+        },
+        "durationMs": 1102.333,
+        "costUsd": "0.0001775",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1720,
+    "outputTokens": 11,
+    "costUsd": "0.0001775"
+  },
+  {
+    "questionId": "v2f-no-answer-01",
+    "candidateSha256": "acd8382ef32001a54d106db94d4bd28c478e2441484f53d90531ddae4d88d17a",
+    "order": "original",
+    "attempt": 2,
+    "modelVersion": "gpt-6-luna-2026-09-22",
+    "promptVersion": "rerank-eval-v1",
+    "evidenceBytes": 1000,
+    "includeProbabilities": false,
+    "status": "success",
+    "failure": null,
+    "items": [],
+    "wireAttempts": [
+      {
+        "attempt": 1,
+        "inputTokens": 1720,
+        "outputTokens": 11,
+        "cachedTokens": 1717,
+        "reasoningTokens": 0,
+        "usageEstimated": false,
+        "body": {
+          "choices": [
+            {
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "protected_material_code": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "protected_material_text": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "annotations": [],
+                "content": "{\"items\":[]}",
+                "refusal": null,
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1791068756,
+          "id": "chatcmpl-EV35gBusIFOeTiYDY539uW1WMf0Y1",
+          "model": "gpt-6-luna-2026-09-22",
+          "object": "chat.completion",
+          "prompt_filter_results": [
+            {
+              "prompt_index": 0,
+              "content_filter_results": {
+                "hate": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "jailbreak": {
+                  "detected": false,
+                  "filtered": false
+                },
+                "self_harm": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "sexual": {
+                  "filtered": false,
+                  "severity": "safe"
+                },
+                "violence": {
+                  "filtered": false,
+                  "severity": "safe"
+                }
+              }
+            }
+          ],
+          "routing": {
+            "serving_pipereplica": "d20260924234300-83baef64-prefill-r4-dp0-prefill"
+          },
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 11,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "latency_checkpoint": {
+              "engine_tbt_ms": 7,
+              "engine_ttft_ms": 158,
+              "engine_ttlt_ms": 243,
+              "pre_inference_ms": 88,
+              "service_tbt_ms": 7,
+              "service_ttft_ms": 786,
+              "service_ttlt_ms": 866,
+              "user_visible_ttft_ms": 698
+            },
+            "prompt_tokens": 1720,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cache_write_tokens": 0,
+              "cached_tokens": 1717
+            },
+            "total_tokens": 1731
+          }
+        },
+        "durationMs": 1252.651,
+        "costUsd": "0.00002297",
+        "failure": null
+      }
+    ],
+    "parseRetries": 0,
+    "inputTokens": 1720,
+    "outputTokens": 11,
+    "costUsd": "0.00002297"
+  }
+]
