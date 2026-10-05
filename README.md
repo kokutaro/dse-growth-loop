@@ -102,3 +102,7 @@ Issue #30では混在結果を人物・事例別に表示するローカル改�
 2026-10-04の[観測後修正・実AI回帰](docs/validation-results/20261004-issue-30-regression/results.md)で、入札の正解取得漏れを解消し、全対象24問の人物・事例Recall100%／スキーマ不一致0を確認した。独立確認への転用はしない。HTTPの15秒基準と新しい独立集合の確認が残る。この時点では新規v3ラベルと累計稼働延長案は承認待ちだった。後続の新規承認と実測を以下に記録する。
 
 2026-10-04の新規承認後、[独立v3の実サービス48検索](docs/validation-results/20261004-issue-30-independent-v3-production/results.md)を完了。全対象・対象指定とも人物／事例の一次Recall、種別欄HitRate／Precision／Recallは100%、誤推薦0/4、根拠整合120/120。v3結果を見た調整なし。Mac再ロックにより認証付きHTTP・画面・coldは未実施で、APIを再展開せず元設定・実レプリカ0・Job0を確認した。Issue #30と恒久採用は保留。
+
+## Web UI デザイン初案
+
+社員向けの検索・課題相談・経験共有の導線を整理した初案は[デザインレビュー](docs/design-review.md)を参照してください。[ローカル画面画像の一覧](docs/design-preview/index.html)と起動・検証手順を含みます。業務API・認証認可の変更やクラウド展開は含みません。

@@ -1,0 +1,91 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> playwright test tests/profiles.spec.ts --workers=1
+
+[WebServer] (node:5622) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:5635) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:5659) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/profiles.spec.ts:4:1 › 副業務を原文付きの検索断片として追加し経験月数を重複加算しない (4.2s)
+  ✓  2 tests/profiles.spec.ts:32:3 › docxから本人訂正と手動一次検索までfake AIで通る (6.8s)
+  ✓  3 tests/profiles.spec.ts:32:3 › xlsxから本人訂正と手動一次検索までfake AIで通る (7.7s)
+  ✘  4 tests/profiles.spec.ts:59:1 › 公開撤回を検索に反映し、明示再公開で復旧する (8.5s)
+
+
+  1) tests/profiles.spec.ts:59:1 › 公開撤回を検索に反映し、明示再公開で復旧する ──────────────────────────────────────────
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "有効版："
+    Received string:    "自分のプロフィール・経験·
+    根拠のあるAI抽出値は本人未確認でも検索対象です。訂正は再取込より優先されます。·
+    プロフィールを更新·
+    保存しました。検索投影の更新後に検索へ反映されます。·
+    データ版：11 ／ 検索投影待ち・非公開 ／ self_corrected·
+    表示名
+    相談への参加が可能·
+    公開状態：公開 ／ 日付から算出した経験月数（重複除外）：84·
+    Probabilityは分類への適合度で、経験年数・経験割合・熟練度ではありません。Confidenceは分類の確信度です。·
+    経験の説明
+    開始日
+    終了日·
+    月数：48 ／ ai_unconfirmed ／ 根拠：doc-c552ba40c170f98ca5e3221a12f4cf03f33494002ea00a56191607adb7ea9dc6-v1-e00000000·
+    分類・分野別経験判定
+    経験の説明
+    開始日
+    終了日·
+    月数：36 ／ self_corrected ／ 根拠：doc-9390ffbdae41a98b0ce01d8861338f77306697d004f849cdf487ba7cbae40077-v1-e00000001·
+    分類・分野別経験判定
+    経験の説明
+    開始日
+    終了日·
+    月数：48 ／ self_corrected ／ 根拠：doc-c462a46e7407391265b97eefa6ebdbdf1823736e74ac3dbfdb979751960d25d3-v1-e00000000·
+    分類・分野別経験判定
+    経験の説明
+    開始日
+    終了日·
+    月数：36 ／ ai_unconfirmed ／ 根拠：doc-c462a46e7407391265b97eefa6ebdbdf1823736e74ac3dbfdb979751960d25d3-v1-e00000001·
+    分類・分野別経験判定
+    経験の説明
+    開始日
+    終了日·
+    月数：48 ／ ai_unconfirmed ／ 根拠：doc-9390ffbdae41a98b0ce01d8861338f77306697d004f849cdf487ba7cbae40077-v1-e00000000·
+    分類・分野別経験判定
+    経験の説明
+    開始日
+    終了日·
+    月数：36 ／ ai_unconfirmed ／ 根拠：doc-f6270c9b7beb1f554db58752a4d7459fff29cea109da466c8fbdf4a422e4bf69-v1-e00000001·
+    分類・分野別経験判定
+    経験の説明
+    開始日
+    終了日·
+    月数：48 ／ ai_unconfirmed ／ 根拠：doc-f6270c9b7beb1f554db58752a4d7459fff29cea109da466c8fbdf4a422e4bf69-v1-e00000000·
+    分類・分野別経験判定
+    訂正を保存 内容を本人確認 公開を撤回"
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+      75 |     await page.getByRole("button", { name: "プロフィールを更新", exact: true }).click();
+      76 |     return await page.locator(".profiles").innerText();
+    > 77 |   }).toContain("有効版：");
+         |      ^
+      78 | });
+      79 |
+        at /workspace/dse-growth-loop/web/tests/profiles.spec.ts:77:6
+
+    Error Context: test-results/profiles-公開撤回を検索に反映し、明示再公開で復旧する/error-context.md
+
+  1 failed
+    tests/profiles.spec.ts:59:1 › 公開撤回を検索に反映し、明示再公開で復旧する ───────────────────────────────────────────
+  3 passed (33.6s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

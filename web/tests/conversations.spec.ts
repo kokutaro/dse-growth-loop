@@ -42,7 +42,9 @@ test("二人で承諾・会話・退会し、AI停止中も保存できる", asy
   await page.getByRole("button", { name: "相談を依頼" }).click();
   await expect(page.getByText("demo-person-02：依頼中", { exact: true })).toBeVisible();
   const context = await browser.newContext(); const guest = await context.newPage();
-  await guest.goto("/"); await guest.getByLabel("ローカルテスト主体").selectOption("demo-person-02");
+  await guest.goto("/");
+  await guest.getByText("検証用操作（架空人物の切替）", { exact: true }).click();
+  await guest.getByLabel("ローカルテスト主体").selectOption("demo-person-02");
   await guest.getByRole("button", { name: title, exact: true }).click();
   await expect(guest.getByLabel("メッセージ", { exact: true })).not.toBeVisible();
   await guest.getByRole("button", { name: "参加を承諾" }).click();

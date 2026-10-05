@@ -1,0 +1,24 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> playwright test tests/profiles.spec.ts --workers=1
+
+[WebServer] (node:6962) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:6975) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:6999) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/profiles.spec.ts:4:1 › 副業務を原文付きの検索断片として追加し経験月数を重複加算しない (4.2s)
+  ✓  2 tests/profiles.spec.ts:32:3 › docxから本人訂正と手動一次検索までfake AIで通る (5.8s)
+  ✓  3 tests/profiles.spec.ts:32:3 › xlsxから本人訂正と手動一次検索までfake AIで通る (6.8s)
+  ✓  4 tests/profiles.spec.ts:59:1 › 公開撤回を検索に反映し、明示再公開で復旧する (7.4s)
+
+  4 passed (30.5s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

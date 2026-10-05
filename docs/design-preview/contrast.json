@@ -1,0 +1,44 @@
+[
+  {
+    "role": "body",
+    "foreground": "#243b38",
+    "background": "#f5f7f6",
+    "ratio": 11.1
+  },
+  {
+    "role": "secondary",
+    "foreground": "#526661",
+    "background": "#ffffff",
+    "ratio": 6.12
+  },
+  {
+    "role": "placeholder",
+    "foreground": "#657972",
+    "background": "#ffffff",
+    "ratio": 4.63
+  },
+  {
+    "role": "primary",
+    "foreground": "#ffffff",
+    "background": "#195d4c",
+    "ratio": 7.74
+  },
+  {
+    "role": "focus",
+    "foreground": "#1675a4",
+    "background": "#ffffff",
+    "ratio": 5.1
+  },
+  {
+    "role": "error",
+    "foreground": "#8b3524",
+    "background": "#fff0ec",
+    "ratio": 7.19
+  },
+  {
+    "role": "input boundary",
+    "foreground": "#789488",
+    "background": "#ffffff",
+    "ratio": 3.29
+  }
+]

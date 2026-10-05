@@ -15,16 +15,17 @@ export function Conversations({ config, candidates, onKnowledgeChanged }: { onKn
   return <section className="panel conversations" aria-labelledby="conversations-title">
     <h2 id="conversations-title">課題と相談チャット</h2>
     <p>参加を承諾した人だけが会話を閲覧できます。AI支援が停止中でも会話を続けられます。</p>
-    {config.mode === "Demo" && <label>ローカルテスト主体
+    {config.mode === "Demo" && <details className="demo-tools"><summary>検証用操作（架空人物の切替）</summary><label>ローカルテスト主体
       <select value={person} onChange={e => setPerson(e.target.value)}>
         {["01", "02", "03"].map(id => <option key={id} value={`demo-person-${id}`}>架空人物 {id}</option>)}
       </select>
-    </label>}
+    </label></details>}
     <Workspace key={person} config={config} person={person} candidates={candidates} onKnowledgeChanged={onKnowledgeChanged} />
   </section>;
 }
 function Workspace({ config, person, candidates, onKnowledgeChanged }: { onKnowledgeChanged?: () => void; config: AppConfig; person: string; candidates: { entityId: string; title: string; entityType: string }[] }) {
   const [principal, setPrincipal] = useState("");
+  const [loaded, setLoaded] = useState(false);
   const [rows, setRows] = useState<Row[]>([]), [selected, setSelected] = useState<Row>();
   const [title, setTitle] = useState(""), [summary, setSummary] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
   const createKey = useRef(crypto.randomUUID());
@@ -46,6 +47,7 @@ function Workspace({ config, person, candidates, onKnowledgeChanged }: { onKnowl
       found.push(...page.items); token = page.continuationToken;
     } while (token);
     setRows(found);
+    setLoaded(true);
     setPrincipal((await api<{ principalId: string }>("/conversation-context")).principalId);
   }
   useEffect(() => { if (config.mode === "Demo") void load().catch(() => setError("課題を取得できませんでした。再読み込みしてください。")); }, [api]);
@@ -58,14 +60,22 @@ function Workspace({ config, person, candidates, onKnowledgeChanged }: { onKnowl
     finally { setBusy(false); }
   }
   return <>
+    <div className="consultation-grid">
+    <div><h3>新しい課題を投稿</h3>
     <form onSubmit={create}>
-      <label>課題名<input required maxLength={300} value={title} onChange={e => { setTitle(e.target.value); createKey.current = crypto.randomUUID(); }} /></label>
-      <label>困っていること<textarea required maxLength={8000} value={summary} onChange={e => { setSummary(e.target.value); createKey.current = crypto.randomUUID(); }} /></label>
-      <button disabled={busy}>課題を作成</button>
+      <label>課題名<input id="challenge-title" placeholder="例：制御ソフトの不具合調査を相談したい" required maxLength={300} value={title} onChange={e => { setTitle(e.target.value); createKey.current = crypto.randomUUID(); }} /></label>
+      <label>困っていること<textarea placeholder="起きていること、試したこと、相談したいことを記入してください。" required maxLength={8000} value={summary} onChange={e => { setSummary(e.target.value); createKey.current = crypto.randomUUID(); }} /></label>
+      <button className="primary" disabled={busy}>{busy ? "作成中…" : "課題を作成"}</button>
     </form>
+    </div>
+    <div><h3>参加する課題・相談</h3>
+    <p className="note">依頼された相談の確認や、進行中の会話はこちらから。</p>
     <button type="button" onClick={() => { setError(""); void load().catch(() => setError("課題を取得できませんでした。")); }}>課題を読み込む</button>
     {error && <p role="alert">{error}</p>}
+    {!loaded && !error && <p role="status">{config.mode === "Demo" ? "課題を読み込み中…" : "「課題を読み込む」で参加できる相談を確認できます。"}</p>}
+    {loaded && rows.length === 0 && <p className="list-empty">表示できる課題はまだありません。新しい課題を投稿して相談を始めましょう。</p>}
     <ul className="challenge-list">{rows.map(row => <li key={row.id}><button type="button" onClick={() => setSelected(row)}>{row.title}</button></li>)}</ul>
+    </div></div>
     {selected && principal && <><button type="button" onClick={() => setSelected(undefined)}>相談画面を閉じる</button>
       <Chat key={selected.sessionId} challenge={selected} principal={principal} api={api} config={config} person={person} candidates={candidates} onKnowledgeChanged={onKnowledgeChanged} /></>}
   </>;

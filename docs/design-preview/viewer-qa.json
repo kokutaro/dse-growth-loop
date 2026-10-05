@@ -1,0 +1,62 @@
+{
+  "results": [
+    {
+      "viewport": 1440,
+      "device": "1440",
+      "screen": "home",
+      "image": "home-1440.png",
+      "overflow": false
+    },
+    {
+      "viewport": 1440,
+      "device": "1440",
+      "screen": "results",
+      "image": "results-1440.png",
+      "overflow": false
+    },
+    {
+      "viewport": 1440,
+      "device": "390",
+      "screen": "home",
+      "image": "home-390.png",
+      "overflow": false
+    },
+    {
+      "viewport": 1440,
+      "device": "390",
+      "screen": "results",
+      "image": "results-390.png",
+      "overflow": false
+    },
+    {
+      "viewport": 390,
+      "device": "1440",
+      "screen": "home",
+      "image": "home-1440.png",
+      "overflow": false
+    },
+    {
+      "viewport": 390,
+      "device": "1440",
+      "screen": "results",
+      "image": "results-1440.png",
+      "overflow": false
+    },
+    {
+      "viewport": 390,
+      "device": "390",
+      "screen": "home",
+      "image": "home-390.png",
+      "overflow": false
+    },
+    {
+      "viewport": 390,
+      "device": "390",
+      "screen": "results",
+      "image": "results-390.png",
+      "overflow": false
+    }
+  ],
+  "failures": [],
+  "external": []
+}

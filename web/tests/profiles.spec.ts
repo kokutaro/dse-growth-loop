@@ -3,6 +3,7 @@ import path from "node:path";
 
 test("副業務を原文付きの検索断片として追加し経験月数を重複加算しない", async ({ page }) => {
   await page.goto("/");
+  await page.getByText("検索条件を確認・編集", { exact: true }).click();
   await page.getByLabel("文書名", { exact: true }).fill("副業務を含む架空プロフィール");
   await page.getByLabel("原本ファイル").setInputFiles(path.resolve("tests/fixtures/secondary-work.docx"));
   const accepted = page.waitForResponse(r => r.url().endsWith("/api/v1/documents") && r.request().method() === "POST");
@@ -30,6 +31,7 @@ test("副業務を原文付きの検索断片として追加し経験月数を�
 for (const extension of ["docx", "xlsx"]) {
   test(`${extension}から本人訂正と手動一次検索までfake AIで通る`, async ({ page }) => {
     await page.goto("/");
+    await page.getByText("検索条件を確認・編集", { exact: true }).click();
     await page.getByLabel("文書名", { exact: true }).fill(`プロフィール統合 ${extension}`);
     await page.getByLabel("原本ファイル").setInputFiles(path.resolve(`tests/fixtures/profile.${extension}`));
     const acceptedResponse = page.waitForResponse(r => r.url().endsWith("/api/v1/documents") && r.request().method() === "POST");
@@ -56,6 +58,7 @@ for (const extension of ["docx", "xlsx"]) {
 
 test("公開撤回を検索に反映し、明示再公開で復旧する", async ({ page }) => {
   await page.goto("/");
+  await page.getByText("検索条件を確認・編集", { exact: true }).click();
   await page.getByLabel("文書名", { exact: true }).fill("公開撤回用の架空プロフィール");
   await page.getByLabel("原本ファイル").setInputFiles(path.resolve("tests/fixtures/profile.docx"));
   await page.getByRole("button", { name: "アップロード", exact: true }).click();

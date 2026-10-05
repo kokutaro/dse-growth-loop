@@ -5,6 +5,8 @@ export default defineConfig({
   workers: 1,
   use: {
     baseURL: "http://127.0.0.1:5173",
+    // Cloud environments may provide Chromium while blocking browser downloads.
+    launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH },
     viewport: { width: 1280, height: 900 },
   },
   webServer: [

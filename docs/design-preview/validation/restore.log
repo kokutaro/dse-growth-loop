@@ -1,0 +1,33 @@
+
+Welcome to .NET 10.0!
+---------------------
+SDK Version: 10.0.401
+
+Telemetry
+---------
+The .NET tools collect usage data in order to help us improve your experience. It is collected by Microsoft and shared with the community. You can opt-out of telemetry by setting the DOTNET_CLI_TELEMETRY_OPTOUT environment variable to '1' or 'true' using your favorite shell.
+
+Read more about .NET CLI Tools telemetry: https://aka.ms/dotnet-cli-telemetry
+
+----------------
+Installed an ASP.NET Core HTTPS development certificate.
+To trust the certificate, run 'dotnet dev-certs https --trust'
+Learn about HTTPS: https://aka.ms/dotnet-https
+
+----------------
+Write your first app: https://aka.ms/dotnet-hello-world
+Find out what's new: https://aka.ms/dotnet-whats-new
+Explore documentation: https://aka.ms/dotnet-docs
+Report issues and find source on GitHub: https://github.com/dotnet/core
+Use 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli
+--------------------------------------------------------------------------------------
+  Determining projects to restore...
+/workspace/dse-growth-loop/src/Dse.AppHost/Dse.AppHost.csproj : error NU1004: A new package reference was found Aspire.Dashboard.Sdk.linux-x64 for the project target framework net10.0.The packages lock file is inconsistent with the project dependencies so restore can't be run in locked mode. Disable the RestoreLockedMode MSBuild property or pass an explicit --force-evaluate option to run restore to update the lock file. [/workspace/dse-growth-loop/DseGrowthLoop.slnx]
+  Restored /workspace/dse-growth-loop/src/Dse.Domain/Dse.Domain.csproj (in 155 ms).
+  Failed to restore /workspace/dse-growth-loop/src/Dse.AppHost/Dse.AppHost.csproj (in 157 ms).
+  Restored /workspace/dse-growth-loop/src/Dse.CosmosEvaluation/Dse.CosmosEvaluation.csproj (in 18.92 sec).
+  Restored /workspace/dse-growth-loop/tests/Dse.Tests/Dse.Tests.csproj (in 18.71 sec).
+  Restored /workspace/dse-growth-loop/src/Dse.Evaluation/Dse.Evaluation.csproj (in 2 ms).
+  Restored /workspace/dse-growth-loop/src/Dse.Api/Dse.Api.csproj (in 18.92 sec).
+  Restored /workspace/dse-growth-loop/src/Dse.Worker/Dse.Worker.csproj (in 18.66 sec).
+  Restored /workspace/dse-growth-loop/src/Dse.Infrastructure/Dse.Infrastructure.csproj (in 7 ms).

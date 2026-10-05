@@ -165,52 +165,66 @@ function App() {
   const rerankFailed = !!result?.runId && !["succeeded", "all_unsuitable", "no_candidates"].includes(result.rerankingStatus);
   return (
     <>
-      <header>
+      <a className="skip-link" href="#main-content">本文へ移動</a>
+      <header className="site-header">
         <a className="brand" href="/">
           DSE <span>Growth Loop</span>
         </a>
         <span className="mode">
           {config?.mode === "Demo"
             ? "ローカル・ダミーデータ"
-            : "ダミーデータ検証"}
+            : config ? "検証環境" : "接続確認中"}
         </span>
         {config?.mode === "Azure" && !sessionEnded && <button onClick={() => { void logout(); }}>ログアウト</button>}
       </header>
-      {sessionEnded ? <main>
+      {!sessionEnded && <nav className="workspace-nav" aria-label="主な機能">
+        <a href="#search">人・事例を探す</a>
+        <a href="#consultations">課題・相談</a>
+        <a href="#experience">自分の経験</a>
+        <a className="nav-action" href="#challenge-title">課題を投稿する <span aria-hidden="true">＋</span></a>
+      </nav>}
+      {sessionEnded ? <main id="main-content" tabIndex={-1}>
         <h1>接続を終了しました</h1>
         <p>この画面の会話接続と認証情報を解除しました。</p>
         {logoutError && <p role="alert">Microsoftのログアウトを完了できませんでした。再ログイン時にアカウントを確認してください。</p>}
         <button onClick={() => location.reload()}>ログインし直す</button>
-      </main> : <main>
-        <div className="intro">
-          <p className="eyebrow">経験をつなぐ。解決を次へ。</p>
-          <h1>
-            その困りごとに、
-            <br />
-            別の部署の経験を。
-          </h1>
-          <p>経験のある人や過去の事例を見つけ、相談のきっかけにします。</p>
+      </main> : <main id="main-content" tabIndex={-1}>
+        <div className="intro" id="search">
+          <div>
+            <p className="eyebrow">経験をつなぐ。解決を次へ。</p>
+            <h1>解決の糸口を、社内の経験から。</h1>
+            <p>不具合調査や設計・開発の課題に、経験のある人と過去の事例を。<br />根拠を確かめて、次の相談につなげましょう。</p>
+          </div>
+          <p className="intro-aside">一人で抱えず、<br /><strong>部署を越えて相談する。</strong></p>
         </div>
         <div className="layout">
           <section
             className="panel search-panel"
             aria-labelledby="search-title"
           >
-            <p className="eyebrow">01 / 相談先を探す</p>
-            <h2 id="search-title">探したい経験は？</h2>
+            <p className="eyebrow">SEARCH / 経験を探す</p>
+            <h2 id="search-title">どんな課題でお困りですか？</h2>
             <form onSubmit={search}>
               <label htmlFor="query">自然文の課題</label>
-              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
-              <small>ダミーの課題を入力してください。パスワード・キーなどのログイン情報は入力できません。</small>
-              <button type="button" disabled={busy || !config || !query.trim()} onClick={() => { void convert(); }}>自然文から条件を生成</button>
-              {conversionStatus && <p role="status">{conversionStatus}</p>}
-              {query.trim() && <>
+              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setConversionStatus(""); setResult(undefined); }} aria-describedby="query-help" placeholder="例：ソフトウェアの引き継ぎを改善したい" />
+              <small id="query-help">ダミーの課題を入力してください。パスワード・キーなどのログイン情報は入力できません。</small>
+              {query.trim() && <div className="search-target">
                 <label htmlFor="search-target">検索対象</label>
                 <select id="search-target" value={target} disabled={busy} onChange={e => { setTarget(e.target.value); setResult(undefined); }}>
                   <option value="all">人物と事例</option>
                   <option value="person">人物</option>
                   <option value="knowledge">事例</option>
                 </select>
+              </div>}
+              <button className="primary search-submit" disabled={busy || !config}>
+                {busy ? "検索中…" : "相談候補を探す"}
+              </button>
+              {!query.trim() && <small>課題を入力するか、詳細条件で検索できます。初期条件：業務改善・引き継ぎ。</small>}
+              <details className="search-options">
+                <summary>検索条件を確認・編集</summary>
+                <p className="note">自然文のまま検索できます。条件を調整したい場合はこちらを使ってください。</p>
+                <button type="button" disabled={busy || !config || !query.trim()} onClick={() => { void convert(); }}>自然文から条件を生成</button>
+                {query.trim() && <>
                 <label htmlFor="category-ids">複数分野・技術要素の分類ID</label>
                 <input id="category-ids" disabled={busy} value={categoryIds} onChange={e => { setCategoryIds(e.target.value); setConditionsReady(true); }} />
                 <small>operations sales manufacturing software mechanical（スペース区切り）</small>
@@ -249,15 +263,12 @@ function App() {
                 />
                 引き継ぎ経験の補助判定を加える
               </label>}
-              <button disabled={busy || !config}>
-                {busy ? "検索中…" : "相談候補を探す"}
-              </button>
+              </details>
+              {conversionStatus && <p role="status">{conversionStatus}</p>}
             </form>
-            <p className="note">
-              自然文は条件を確認・編集して検索できます。人物・経験・分類値はすべて架空の検証用データです。
-            </p>
+
           </section>
-          <section aria-labelledby="results-title" aria-live="polite">
+          <section className="search-results" aria-labelledby="results-title" aria-live="polite" aria-busy={busy}>
             {stage && <p role="status">処理段階：{stage}</p>}
             <div className="results-heading">
               <h2 id="results-title">相談候補と参考事例</h2>
@@ -268,17 +279,20 @@ function App() {
                 {error}
               </p>
             )}
-            {!result && !error && (
+            {!result && !error && !busy && (
               <div className="empty">
-                <span className="loop">↗</span>
-                <h3>部署を越えたヒントを見つける</h3>
-                <p>
-                  「引き継ぎ」で、営業と製造の経験を
-                  <br />
-                  つなぐ検索を試してみてください。
-                </p>
+                <span className="empty-mark" aria-hidden="true">↗</span>
+                <p className="eyebrow">経験から、次の一歩へ</p>
+                <h3>相談できる人と、参考になる事例を一緒に。</h3>
+                <p>課題を入力すると、関わりのある経験や事例を表示します。<br />適合理由・出典・不足情報を確認して、相談先を検討できます。</p>
+                <ol className="usage-steps">
+                  <li><strong>01</strong><span>課題を言葉にする</span></li>
+                  <li><strong>02</strong><span>経験と根拠を確かめる</span></li>
+                  <li><strong>03</strong><span>課題を投稿して相談する</span></li>
+                </ol>
               </div>
             )}
+            {busy && <div className="empty" role="status"><h3>関連する経験を探しています</h3><p>条件と根拠を確認しています。このままお待ちください。</p></div>}
             {result && (
               <>
                 <p className="notice">
@@ -288,7 +302,7 @@ function App() {
                   {result.runId && <small>検索履歴：{result.runId} ／ {result.rerankingStatus}</small>}
                 </p>
                 {result.candidates.length === 0 && !rerankFailed && (
-                  <p>条件に合う候補はありません。</p>
+                  <div className="empty"><h3>条件に合う候補はありません。</h3><p>検索語を短くする、または詳細条件の分野を広げて再検索してください。</p></div>
                 )}
                 {!rerankFailed && (["person", "knowledge"] as const).filter(type => !result.runId || target === "all" || target === type).map(type => (
                   <section key={type} aria-label={type === "person" ? "相談候補" : "参考事例"}>
@@ -346,12 +360,16 @@ function App() {
             )}
           </section>
         </div>
-        {config && <Conversations config={config} candidates={result?.candidates ?? []} onKnowledgeChanged={invalidateKnowledge} />}
-        {config && <Documents config={config} />}
-        {config && <Profiles config={config} />}
+        {config && <>
+          <div className="section-heading" id="consultations"><p className="eyebrow">COLLABORATE / 課題を解決する</p><h2>経験を持ち寄り、相談を進める</h2><p>課題を投稿し、検索で見つけた人に参加を依頼。本人の承諾後にチャットで相談できます。</p></div>
+          <Conversations config={config} candidates={result?.candidates ?? []} onKnowledgeChanged={invalidateKnowledge} />
+          <div className="section-heading" id="experience"><p className="eyebrow">PROFILE / 経験を共有する</p><h2>あなたの経験が、誰かの手がかりに</h2><p>職歴やスキルの資料を登録し、抽出された内容を確認・訂正できます。</p></div>
+          <div className="experience-grid"><Profiles config={config} /><Documents config={config} /></div>
+        </>}
       </main>}
       <footer>
-        人の優劣ではなく、経験との接点を探す。DSE Growth Loop / 開発初期版
+        DSE Growth Loop — 人の優劣ではなく、経験との接点を探す。
+        <br />現在は架空データによる検証環境です。事業化提案は未実装です。
       </footer>
     </>
   );
