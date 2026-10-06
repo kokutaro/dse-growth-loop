@@ -1,4 +1,6 @@
-# DSE Growth Loop：社員向けWeb UI 初案
+# DSE Growth Loop：社員向けWeb UI 旧初案
+
+> この初案は匿名の課題起点のコンセプトを十分反映していなかったため、デザイン採用対象から外した。[修正版と既存APIの課題](design-revision-anonymous.md)を先に参照。以下は過去の変更・検証記録。
 
 2026-10-05。基点はリモートmainと一致する `78f182a30f106a8d34f7989d39d23f622e5d5c08`。作業ブランチは `design/employee-workspace`。着手時の作業ツリーはclean。初案完成時は未commit。後続のユーザー承認により、このブランチへのcommit・pushが許可された。PR・mainへのmerge・Azure deployは対象外。
 

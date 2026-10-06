@@ -1,0 +1,30 @@
+[WebServer] (node:13728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:13741) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 1 worker
+
+(node:13765) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/search.spec.ts:3:1 › ダミーの相談候補と根拠を検索できる (999ms)
+  ✓   2 tests/search.spec.ts:21:1 › 副分類のソフトウェア経験を拾う (880ms)
+  ✓   3 tests/search.spec.ts:34:1 › 空結果と障害を区別する (896ms)
+  ✓   4 tests/search.spec.ts:47:1 › fake AIで自然文・条件編集・結果・出典を確認できる (1.1s)
+  ✓   5 tests/search.spec.ts:65:1 › 分類停止時に手動条件へ戻せる (1.0s)
+  ✓   6 tests/search.spec.ts:77:1 › 自然文だけでも一度の検索で条件生成から結果へ進む (801ms)
+  ✓   7 tests/search.spec.ts:88:1 › リランク失敗を正解なしと区別し、未評価候補を推薦しない (852ms)
+  ✓   8 tests/search.spec.ts:102:1 › 事例の指定を検索APIへ送り、人物を混ぜずに取得する (1.2s)
+  ✓   9 tests/search.spec.ts:116:3 › 検索結果を種別別に表示する: knowledge,person,knowledge,person (727ms)
+  ✓  10 tests/search.spec.ts:116:3 › 検索結果を種別別に表示する: person (760ms)
+  ✓  11 tests/search.spec.ts:116:3 › 検索結果を種別別に表示する: knowledge (796ms)
+  ✓  12 tests/search.spec.ts:116:3 › 検索結果を種別別に表示する: 空 (749ms)
+  ✓  13 tests/search.spec.ts:135:3 › 分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_OUT_OF_SCOPE (945ms)
+  ✓  14 tests/search.spec.ts:135:3 › 分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_MANUAL_REQUIRED (966ms)
+
+  14 passed (19.1s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

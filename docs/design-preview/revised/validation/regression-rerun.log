@@ -1,0 +1,118 @@
+[WebServer] (node:11937) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:11950) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 20 tests using 1 worker
+
+(node:11974) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/conversations.spec.ts:14:1 › 履歴取得中に相談を依頼しても参加者一覧を更新する (1.1s)
+  ✓   2 tests/conversations.spec.ts:38:1 › 二人で承諾・会話・退会し、AI停止中も保存できる (12.2s)
+  ✓   3 tests/conversations.spec.ts:65:1 › DB失敗と応答消失は未保存表示になり、同じキーで再送して一件だけ保存する (1.1s)
+  ✓   4 tests/conversations.spec.ts:87:1 › 通知なしでも履歴をページング回復し、画面の開き直しで重複しない (1.1s)
+  ✓   5 tests/conversations.spec.ts:99:1 › 表示済みAI引用は新着なしでも履歴を再照合して撤回表示へ更新する（応答fixture） (890ms)
+  ✘   6 tests/knowledge.spec.ts:3:1 › resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy case (5.8s)
+(node:12430) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   7 tests/search.spec.ts:3:1 › ダミーの相談候補と根拠を検索できる (30.1s)
+(node:12926) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 tests/search.spec.ts:21:1 › 副分類のソフトウェア経験を拾う (906ms)
+  ✘   9 tests/search.spec.ts:34:1 › 空結果と障害を区別する (906ms)
+(node:13113) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 tests/search.spec.ts:47:1 › fake AIで自然文・条件編集・結果・出典を確認できる (1.1s)
+  ✓  11 tests/search.spec.ts:65:1 › 分類停止時に手動条件へ戻せる (932ms)
+  ✓  12 tests/search.spec.ts:77:1 › 自然文だけでも一度の検索で条件生成から結果へ進む (872ms)
+  ✓  13 tests/search.spec.ts:88:1 › リランク失敗を正解なしと区別し、未評価候補を推薦しない (815ms)
+  ✓  14 tests/search.spec.ts:102:1 › 事例の指定を検索APIへ送り、人物を混ぜずに取得する (703ms)
+  ✓  15 tests/search.spec.ts:116:3 › 検索結果を種別別に表示する: knowledge,person,knowledge,person (790ms)
+  ✓  16 tests/search.spec.ts:116:3 › 検索結果を種別別に表示する: person (740ms)
+  ✓  17 tests/search.spec.ts:116:3 › 検索結果を種別別に表示する: knowledge (736ms)
+  ✓  18 tests/search.spec.ts:116:3 › 検索結果を種別別に表示する: 空 (728ms)
+  ✓  19 tests/search.spec.ts:135:3 › 分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_OUT_OF_SCOPE (963ms)
+  ✓  20 tests/search.spec.ts:135:3 › 分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_MANUAL_REQUIRED (886ms)
+
+
+  1) tests/knowledge.spec.ts:3:1 › resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy case 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('region', { name: '課題と相談チャット' }).getByRole('list', { name: '保存済みの会話' })
+    Expected substring: "ソフトウェア 引き継ぎを試した"
+    Received string:    ""
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('region', { name: '課題と相談チャット' }).getByRole('list', { name: '保存済みの会話' }) with timeout 5000ms
+      - waiting for getByRole('region', { name: '課題と相談チャット' }).getByRole('list', { name: '保存済みの会話' })
+        14 × locator resolved to <ol aria-label="保存済みの会話"></ol>
+           - unexpected value ""
+
+
+      10 |   await panel.getByLabel('メッセージ', { exact: true }).fill('ソフトウェア 引き継ぎを試した');
+      11 |   await panel.getByRole('button', { name: '送信', exact: true }).click();
+    > 12 |   await expect(panel.getByRole('list', { name: '保存済みの会話' })).toContainText('ソフトウェア 引き継ぎを試した');
+         |                                                              ^
+      13 |   await panel.getByRole('button', { name: '評価と知識化を開く', exact: true }).click();
+      14 |   await panel.getByLabel('解決状態').selectOption('resolved');
+      15 |   await panel.getByLabel('相談の結果').fill('引き継ぎ手順ができた');
+        at /workspace/dse-growth-loop/web/tests/knowledge.spec.ts:12:62
+
+    Error Context: test-results/knowledge-resolve-rate-dra-4bb28-h-and-withdraw-a-dummy-case/error-context.md
+
+  2) tests/search.spec.ts:3:1 › ダミーの相談候補と根拠を検索できる ──────────────────────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForResponse: Test timeout of 30000ms exceeded.
+
+      3 | test("ダミーの相談候補と根拠を検索できる", async ({ page }) => {
+      4 |   // Initial upload authorization holds the tenant fence. Wait for that read before searching.
+    > 5 |   const uploadContext = page.waitForResponse(response => response.url().endsWith("/api/v1/upload-context") && response.ok());
+        |                              ^
+      6 |   await page.goto("/");
+      7 |   await page.getByText("検索条件を確認・編集", { exact: true }).click();
+      8 |   await (await uploadContext).finished();
+        at /workspace/dse-growth-loop/web/tests/search.spec.ts:5:30
+
+    Error Context: test-results/search-ダミーの相談候補と根拠を検索できる/error-context.md
+
+  3) tests/search.spec.ts:34:1 › 空結果と障害を区別する ───────────────────────────────────────────────────────
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: "検索に失敗しました"
+    Error: strict mode violation: getByRole('alert') resolved to 3 elements:
+        1) <p role="alert" class="error">検索に失敗しました（503）。時間をおいて再実行してください。</p> aka getByText('検索に失敗しました（503')
+        2) <p role="alert">課題を取得できませんでした。再読み込みしてください。</p> aka getByText('課題を取得できませんでした。再読み込みしてください。')
+        3) <p role="alert">Error: RATE_LIMITED（429） 60秒後に再試行してください。</p> aka getByText('Error: RATE_LIMITED（429） 60')
+
+    Call log:
+      - Expect "toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+
+
+      42 |   await page.route("**/api/search", (route) => route.fulfill({ status: 503 }));
+      43 |   await page.getByRole("button", { name: "相談候補を探す" }).click();
+    > 44 |   await expect(page.getByRole("alert")).toContainText("検索に失敗しました");
+         |                                         ^
+      45 | });
+      46 |
+      47 | test("fake AIで自然文・条件編集・結果・出典を確認できる", async ({ page }) => {
+        at /workspace/dse-growth-loop/web/tests/search.spec.ts:44:41
+
+    Error Context: test-results/search-空結果と障害を区別する/error-context.md
+
+  3 failed
+    tests/knowledge.spec.ts:3:1 › resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy case 
+    tests/search.spec.ts:3:1 › ダミーの相談候補と根拠を検索できる ───────────────────────────────────────────────────
+    tests/search.spec.ts:34:1 › 空結果と障害を区別する ────────────────────────────────────────────────────────
+  17 passed (1.2m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

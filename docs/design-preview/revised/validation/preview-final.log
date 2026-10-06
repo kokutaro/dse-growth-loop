@@ -1,0 +1,18 @@
+
+Running 6 tests using 1 worker
+
+(node:12601) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 preview-tests/prototype.spec.ts:7:1 › 参加・実名・公開の同意を分離し、変更時は公開確認を取り消す (1.7s)
+  ✓  2 preview-tests/prototype.spec.ts:26:1 › API通信・永続化なし、入力をHTMLとして実行しない (689ms)
+  ✓  3 preview-tests/prototype.spec.ts:35:37 › 7段階の表示・スクリーンショット 1440px (1.5s)
+  ✓  4 preview-tests/prototype.spec.ts:35:37 › 7段階の表示・スクリーンショット 390px (1.3s)
+  ✓  5 preview-tests/prototype.spec.ts:35:37 › 7段階の表示・スクリーンショット 320px (1.2s)
+  ✓  6 preview-tests/prototype.spec.ts:45:1 › キーボードで投稿でき、段階変更後に本文へフォーカスする (401ms)
+
+  6 passed (8.0s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

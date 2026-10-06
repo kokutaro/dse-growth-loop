@@ -105,4 +105,6 @@ Issue #30では混在結果を人物・事例別に表示するローカル改�
 
 ## Web UI デザイン初案
 
-社員向けの検索・課題相談・経験共有の導線を整理した初案は[デザインレビュー](docs/design-review.md)を参照してください。[ローカル画面画像の一覧](docs/design-preview/index.html)と起動・検証手順を含みます。業務API・認証認可の変更やクラウド展開は含みません。
+匿名の課題投稿から知見蓄積までを確認する[操作可能な修正版](docs/design-revision-anonymous.md)を追加しました（API非接続・架空データ限定）。
+
+過去の検索中心の初案は[デザインレビュー](docs/design-review.md)を参照してください。[ローカル画面画像の一覧](docs/design-preview/index.html)と起動・検証手順を含みます。業務API・認証認可の変更やクラウド展開は含みません。
