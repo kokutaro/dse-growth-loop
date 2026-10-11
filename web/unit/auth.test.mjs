@@ -38,6 +38,16 @@ test('failed logout popup still clears local credentials and blocks token refres
   await assert.rejects(getToken(config));
 });
 
+test('logout clears only upload resume IDs immediately even when the popup fails', async () => {
+  const values = new Map([['dse-upload-job', 'old'], ['dse-upload-job:v2:Azure:tenant:person-a', 'private-id'], ['unrelated', 'preserved']]);
+  globalThis.sessionStorage = { get length() { return values.size; }, key: index => [...values.keys()][index] ?? null, removeItem: key => values.delete(key) };
+  await initializeAuth(config); failLogout = true;
+  const logout = endAuth();
+  assert.deepEqual([...values], [['unrelated', 'preserved']]);
+  await assert.rejects(logout);
+  delete globalThis.sessionStorage;
+});
+
 test('simultaneous initial requests share one login popup', async () => {
   failLogout = false;
   let release;

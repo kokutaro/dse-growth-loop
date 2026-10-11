@@ -68,8 +68,40 @@ test("公開撤回を検索に反映し、明示再公開で復旧する", async
   await page.getByRole("button", { name: "相談候補を探す", exact: true }).click();
   await expect(page.getByRole("region", { name: "相談候補と参考事例" }).getByRole("heading", { name, exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "再公開する", exact: true }).click();
+  await expect(page.locator(".profiles")).toContainText("保存しました");
   await expect.poll(async () => {
     await page.getByRole("button", { name: "プロフィールを更新", exact: true }).click();
     return await page.locator(".profiles").innerText();
   }).toContain("有効版：");
+});
+
+test("再公開のACCESS_BUSYだけを同じ冪等キーで再試行し、412は本人確認に戻す", async ({ page }) => {
+  let state = "withdrawn", attempts = 0, conflict = false;
+  const writes: { key: string | undefined; etag: string | undefined; body: unknown }[] = [];
+  await page.route("**/api/v1/upload-context", route => route.fulfill({ json: { personId: "fixture-person", departmentId: "fixture", scopeIds: [], maxBytes: 1000000 } }));
+  await page.route("**/api/v1/people/fixture-person/experiences*", route => route.fulfill({ json: { items: [], continuationToken: null } }));
+  await page.route("**/api/v1/people/fixture-person", async route => {
+    const request = route.request();
+    if (request.method() === "PATCH") {
+      attempts++;
+      writes.push({ key: request.headers()['idempotency-key'], etag: request.headers()['if-match'], body: request.postDataJSON() });
+      if (conflict) { await route.fulfill({ status: 412, json: { code: "ETAG_MISMATCH" } }); return; }
+      if (attempts <= 2) { await route.fulfill({ status: 503, json: { code: "ACCESS_BUSY", retryable: true } }); return; }
+      state = "published";
+    }
+    await route.fulfill({ headers: { ETag: '"fixture-etag"' }, json: { id: "fixture-person", displayName: "ダミー", available: true, publicationState: state, sourceVersion: 3, activeVersion: state === "published" ? 3 : null, confirmationState: "self_corrected" } });
+  });
+  await page.goto("/validation.html");
+  await page.getByRole("button", { name: "プロフィールを更新", exact: true }).click();
+  await expect(page.locator(".profiles")).toContainText("撤回済み");
+  await page.getByRole("button", { name: "再公開する", exact: true }).click();
+  await expect(page.locator(".profiles")).toContainText("有効版：3");
+  expect(attempts).toBe(3);
+  expect(writes[0].key).toBeTruthy(); expect(writes[0].etag).toBeTruthy();
+  expect(writes[1]).toEqual(writes[0]); expect(writes[2]).toEqual(writes[0]);
+  conflict = true;
+  await page.getByRole("button", { name: "公開を撤回", exact: true }).click();
+  await expect(page.locator(".profiles").getByRole("alert")).toContainText("別の更新があります");
+  expect(attempts).toBe(4);
+  await expect(page.locator(".profiles")).toContainText("公開状態：公開");
 });

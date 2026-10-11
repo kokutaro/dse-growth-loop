@@ -17,7 +17,9 @@ export function Profiles({ config, person: demoPerson }: { config: AppConfig; pe
       const response = await fetch(path, { ...init, headers });
       if (response.ok) return response;
       const body = await response.json().catch(() => ({}));
-      if (response.status === 503 && body.code === "ACCESS_BUSY" && attempt < 4 && !init?.method) { await new Promise(r => setTimeout(r, 250 * 2 ** attempt)); continue; }
+      // ACCESS_BUSY rejects before the access fence is acquired. Reuse the same
+      // request and idempotency key for writes; never retry a stale If-Match (412).
+      if (response.status === 503 && body.code === "ACCESS_BUSY" && attempt < 4) { await new Promise(r => setTimeout(r, 250 * 2 ** attempt)); continue; }
       throw new Error(response.status === 412 ? "別の更新があります。プロフィールを更新してから訂正し直してください。" : `${body.code ?? "接続エラー"}（${response.status}）`);
     }
   }
