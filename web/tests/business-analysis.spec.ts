@@ -48,9 +48,21 @@ for (const committed of [true, false]) {
     await expect(page.getByRole('alert')).toBeVisible();
     await page.getByRole('link', { name: 'ホーム', exact: true }).first().click();
     await page.goto('/#profile');
+    await page.route('**/api/v1/business-analysis/capabilities', async route => {
+      const response = await route.fetch(); const value = await response.json();
+      await route.fulfill({ json: { ...value, enabled: false, reason: 'AI_BUDGET_STOPPED' } });
+    });
     await page.reload();
     await page.getByText('許可済み課題の分析（ローカル検証）', { exact: true }).click();
     await page.getByRole('button', { name: '同じ分析の結果を確認する', exact: true }).click();
+    expect(bodies).toHaveLength(1); // A stopped executor permits GET confirmation, never POST.
+    if (!committed) {
+      await expect(page.getByRole('alert')).toBeVisible();
+      expect(bodies).toHaveLength(1);
+      await page.unroute('**/api/v1/business-analysis/capabilities'); await page.reload();
+      await page.getByText('許可済み課題の分析（ローカル検証）', { exact: true }).click();
+      await page.getByRole('button', { name: '同じ分析の結果を確認する', exact: true }).click();
+    }
     await expect(page.getByRole('heading', { name: '共通課題の候補' })).toBeVisible();
     expect(bodies).toHaveLength(committed ? 1 : 2);
     expect(keys.every(key => key === JSON.parse(bodies[0]).runId)).toBe(true);

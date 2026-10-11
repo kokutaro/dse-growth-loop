@@ -17,7 +17,12 @@ public static class BusinessAnalysisLiveRuntime
     public static bool IsFixture(IConfiguration config) => config["Data:Mode"] == "Demo" && config["Ai:Mode"] == "Mock";
     public static void ValidateForStart(IConfiguration config)
     {
-        if (IsFixture(config)) return;
+        if (IsFixture(config))
+        {
+            if (!bool.TryParse(config["AiUsage:Stopped"] ?? "true",out var stopped) || stopped)
+                throw new DomainException(409,"AI_BUDGET_STOPPED");
+            return;
+        }
         if (config["Data:Mode"] != "Azure" || config["Ai:Mode"] != "Live" || config["BusinessAnalysis:Enabled"] != "true")
             throw new DomainException(501, "ANALYSIS_LIVE_NOT_ENABLED");
         try

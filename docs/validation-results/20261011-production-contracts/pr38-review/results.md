@@ -64,3 +64,9 @@ Copilotレビュー5482327233の2指摘（4240672814/4240672836）を修正。�
 - Fake Live fixtureは有効なGUID tenant/Binding/Grant/本人プロフィールと保存済みpinを持つように修正。実Entra/実APIの設定を変更していない。
 
 [.NET全体](dotnet-consent-binding-pass.log)566成功、失敗0、skip0。[分析E2E](e2e-consent-analysis-final.log)4成功、[公開同意・編集失効E2E](e2e-consent-publication-final.log)1成功。新回帰の前提不足（outcome）と一覧除外の期待値を直した途中ログもローカルに保持する。現在状態の照合であり、未観測の設定変更後に全状態が復元される問題を検出する認可epoch設計は引き続きPR外・未実装。
+
+## Fixtureの共通停止境界
+
+Copilot5482385732の4240725016に対応。Demo/MockでもAiUsage:Stopped未指定/true/不正値はAPI境界のValidateForStartでAI_BUDGET_STOPPEDとして拒否。capabilitiesはenabled=false、POSTはrun/slot/fence保存とdrafter呼び出し前に409。6回帰（Service3+HTTP3）を追加。通常のFake fixtureで実行するテストだけStopped=falseを明示し、実環境の設定は変更しない。
+
+UIは停止中に未確定の保存済みrunをGET確認できるが、404の未保存runへPOSTを送らない。停止解除後は元のbody/keyを使う。応答消失→画面移動/reload→停止中確認→必要なら停止解除後再送の保存済み/未保存回帰を拡張。[.NET全体](dotnet-fixture-stop-fixed-final.log)572成功、失敗0、skip0。[分析E2E](e2e-fixture-stop-final.log)4成功、[型チェック/build](build-fixture-stop-final.log)成功。

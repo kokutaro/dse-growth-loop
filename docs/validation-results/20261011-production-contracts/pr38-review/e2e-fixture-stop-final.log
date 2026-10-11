@@ -1,0 +1,62 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs business-analysis.spec.ts
+
+
+[isolated 1/4] 許可済みダミー課題を手動分析し、人の判断を保存する
+[WebServer] (node:94063) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:94089) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/business-analysis.spec.ts:3:1 › 許可済みダミー課題を手動分析し、人の判断を保存する
+  1 passed (5.5s)
+
+[isolated 2/4] 分析後に許可確認が失敗すると候補と集計を閉じる
+[WebServer] (node:94146) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:94147) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/business-analysis.spec.ts:20:1 › 分析後に許可確認が失敗すると候補と集計を閉じる
+  1 passed (4.0s)
+
+[isolated 3/4] 分析の応答が失われても画面移動と再読み込み後に同じ要求を確認する (保存済み)
+[WebServer] (node:94207) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:94208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/business-analysis.spec.ts:33:3 › 分析の応答が失われても画面移動と再読み込み後に同じ要求を確認する (保存済み)
+  1 passed (4.1s)
+
+[isolated 4/4] 分析の応答が失われても画面移動と再読み込み後に同じ要求を確認する (未保存)
+[WebServer] (node:94294) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:94295) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/business-analysis.spec.ts:33:3 › 分析の応答が失われても画面移動と再読み込み後に同じ要求を確認する (未保存)
+  1 passed (4.3s)
+
+Isolated E2E: 4 passed, 0 failed (4 tests).

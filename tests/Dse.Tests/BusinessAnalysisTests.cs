@@ -28,7 +28,7 @@ public sealed class BusinessAnalysisTests
     private static async Task<Setup> Create(Dictionary<string, string?>? options = null)
     {
         var store = new MemoryRecordStore(); var repo = new PrimaryRepository(store); await BusinessAnalysisDemoFixtures.SeedAsync(store, default);
-        options ??= []; options["Data:Mode"] = "Demo"; options["Ai:Mode"] = "Mock";
+        options ??= []; options.TryAdd("AiUsage:Stopped","false"); options["Data:Mode"] = "Demo"; options["Ai:Mode"] = "Mock";
         var config = new ConfigurationBuilder().AddInMemoryCollection(options).Build(); var fake = new Fake();
         return new(store, repo, new(repo, store, new(repo), fake, config, TimeProvider.System), fake);
     }
@@ -121,6 +121,32 @@ public sealed class BusinessAnalysisTests
         s = await Create(); s.Ai.Budget = true; request = Request(); first = await Start(s, request); replay = await Start(s, request);
         Assert.Equal("partial_failure", replay.Text("status")); Assert.Equal(1, s.Ai.Calls); Assert.Empty(replay["groups"]!.AsArray());
     }
+    [Theory] [InlineData(null)] [InlineData("true")] [InlineData("invalid")]
+    public async Task Fixture_stop_rejects_before_any_run_slot_fence_or_drafter(string? stopped)
+    {
+        var s = await Create(new() { ["AiUsage:Stopped"] = stopped }); var request = Request();
+        Assert.Equal("AI_BUDGET_STOPPED",(await Assert.ThrowsAsync<DomainException>(() => Start(s,request))).Code);
+        Assert.Equal(0,s.Ai.Calls); var p=RecordPartition.Catalog(Analyst.TenantId);
+        foreach (var id in new[] { BusinessAnalysisService.StorageId(Analyst.PrincipalId,request.RunId),"business-analysis-slot","system-access-fence" })
+            Assert.Null(await s.Repo.ReadAsync(p,id,default));
+    }
+    [Theory] [InlineData(null)] [InlineData("true")] [InlineData("invalid")]
+    public async Task Fixture_capabilities_and_post_obey_stop_before_persistence(string? stopped)
+    {
+        using var factory = new Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory<Program>().WithWebHostBuilder(b =>
+        {
+            b.UseSetting("Data:Mode","Demo"); b.UseSetting("Ai:Mode","Mock"); b.UseEnvironment("Development");
+            b.ConfigureAppConfiguration((_,config) => config.AddInMemoryCollection(new Dictionary<string,string?> { ["AiUsage:Stopped"]=stopped }));
+        });
+        using var client=factory.CreateClient(); var caps=(await client.GetFromJsonAsync<JsonObject>("/api/v1/business-analysis/capabilities"))!;
+        Assert.True(caps["allowed"]!.GetValue<bool>()); Assert.False(caps["enabled"]!.GetValue<bool>()); Assert.Equal("AI_BUDGET_STOPPED",caps.Text("reason"));
+        var input=Request("fixture-stopped-http"); using var message=new HttpRequestMessage(HttpMethod.Post,"/api/v1/business-analysis") { Content=JsonContent.Create(input) };
+        message.Headers.Add("Idempotency-Key",input.RunId); var response=await client.SendAsync(message); Assert.Equal(System.Net.HttpStatusCode.Conflict,response.StatusCode);
+        Assert.Equal("AI_BUDGET_STOPPED",(await response.Content.ReadFromJsonAsync<JsonObject>())!.Text("code"));
+        using var scope=factory.Services.CreateScope(); var repo=scope.ServiceProvider.GetRequiredService<IPrimaryRepository>();var p=RecordPartition.Catalog("demo");
+        foreach (var id in new[] { BusinessAnalysisService.StorageId(Analyst.PrincipalId,input.RunId),"business-analysis-slot","system-access-fence" })
+            Assert.Null(await repo.ReadAsync(p,id,default));
+    }
     [Fact] public async Task Missing_or_default_cutoff_is_rejected_before_saving_a_run_or_drafting()
     {
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<BusinessAnalysisRequest>("{\"runId\":\"missing-cutoff\",\"configVersion\":\"business-analysis-demo-v1\"}",Json));
@@ -173,7 +199,7 @@ public sealed class BusinessAnalysisTests
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         s.Ai.During = async () => { entered.SetResult(); await release.Task; };
         var first = Start(s, Request()); await entered.Task;
-        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Data:Mode"] = "Demo", ["Ai:Mode"] = "Mock" }).Build();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Data:Mode"] = "Demo", ["Ai:Mode"] = "Mock", ["AiUsage:Stopped"] = "false" }).Build();
         var secondService = new BusinessAnalysisService(s.Repo, s.Store, new(s.Repo), s.Ai, config, TimeProvider.System);
         var second = Request();
         Assert.Equal("ANALYSIS_BUSY", (await Assert.ThrowsAsync<DomainException>(() => secondService.StartAsync(Analyst, second, second.RunId, default))).Code);
@@ -331,7 +357,7 @@ public sealed class BusinessAnalysisTests
     {
         var s = await Create(); var request = Request(); await Start(s, request); var id = KnowledgeService.Id("demo-business-session-1");
         var fault = new FailingSourceStore(s.Store, id) { Fail = true }; var repo = new PrimaryRepository(fault);
-        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Data:Mode"] = "Demo", ["Ai:Mode"] = "Mock" }).Build();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Data:Mode"] = "Demo", ["Ai:Mode"] = "Mock", ["AiUsage:Stopped"] = "false" }).Build();
         var service = new BusinessAnalysisService(repo, fault, new(repo), s.Ai, config, TimeProvider.System); var exposed = false;
         var error = await Assert.ThrowsAsync<DomainException>(() => service.ConsumeSourceAsync(Analyst, request.RunId, id, (body, ct) => { exposed = true; return Task.FromResult(true); }, default));
         Assert.Equal(503, error.Status); Assert.Equal("DEPENDENCY_UNAVAILABLE", error.Code); Assert.False(exposed);

@@ -79,7 +79,7 @@ function BusinessAnalysis({ api, capabilities }: { api: Api; capabilities: Capab
     return () => { active = false; clearInterval(timer); };
   }, [api, run?.runId, run?.status, busy]);
   async function start() {
-    if (busy || !capabilities.enabled || resumeBlocked || !storageKey || run?.status === 'processing' || run?.recoveryRequired) return;
+    if (busy || (!capabilities.enabled && !pending.current) || resumeBlocked || !storageKey || run?.status === 'processing' || run?.recoveryRequired) return;
     const version = ++requestVersion.current;
     const resuming = !!pending.current;
     const request = pending.current ?? { runId: `analysis-${crypto.randomUUID()}`, cutoff: new Date().toISOString(), configVersion: capabilities.configVersion };
@@ -91,6 +91,7 @@ function BusinessAnalysis({ api, capabilities }: { api: Api; capabilities: Capab
         try { result = await api<Run>(`/business-analysis/${encodeURIComponent(request.runId)}`); }
         catch (e) {
           if (!(e instanceof WorkspaceError) || e.status !== 404) throw e;
+          if (!capabilities.enabled) throw new WorkspaceError(409, capabilities.reason ?? 'AI_BUDGET_STOPPED');
           result = await api<Run>('/business-analysis', 'POST', request, request.runId);
         }
       } else result = await api<Run>('/business-analysis', 'POST', request, request.runId);
@@ -116,7 +117,7 @@ function BusinessAnalysis({ api, capabilities }: { api: Api; capabilities: Capab
   return <section aria-label="事業仮説の手動分析">
     <h2>共通する課題から、次に調べる仮説へ</h2>
     <p>双方が事業分析を許可した公開要約だけを使います。個別の会話は入力に含めません。候補は人が調査して判断し、市場規模・売上・ROIを確定しません。</p>
-    <button className="primary" disabled={busy || !capabilities.enabled || resumeBlocked || !storageKey || run?.status === 'processing' || run?.recoveryRequired} onClick={() => void start()}>{busy ? '分析を確認中…' : hasPending ? '同じ分析の結果を確認する' : capabilities.mode === 'fixture' ? '今すぐ分析（ローカル）' : '今すぐ分析'}</button>
+    <button className="primary" disabled={busy || (!capabilities.enabled && !hasPending) || resumeBlocked || !storageKey || run?.status === 'processing' || run?.recoveryRequired} onClick={() => void start()}>{busy ? '分析を確認中…' : hasPending ? '同じ分析の結果を確認する' : capabilities.mode === 'fixture' ? '今すぐ分析（ローカル）' : '今すぐ分析'}</button>
     {!storageKey && <p role="status">本人の分析保存先を確認できないため、新しい分析は開始していません。</p>}
     {!capabilities.enabled && <p role="status">現在、分析の実行は有効になっていません。管理者による接続・停止状態の確認が必要です。</p>}
     {error && <p role="alert">{error}</p>}
