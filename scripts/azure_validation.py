@@ -179,18 +179,22 @@ def confirmed_stopped(checks):
     """A control-plane snapshot, never a billing or future-stop guarantee."""
     if not isinstance(checks, list) or any(not isinstance(c, dict) for c in checks):
         return False
-    if len(checks) < 3 or any(c.get("status") != "passed" for c in checks):
+    if len(checks) < 4 or any(c.get("status") != "passed" for c in checks):
         return False
     if checks[0].get("id") != "app-environment" or checks[1].get("id") != "all-revisions":
         return False
     revisions = checks[1].get("data")
-    if not isinstance(revisions, list) or not revisions or len(checks) != len(revisions) + 2:
+    if (not isinstance(revisions, list) or not revisions or len(checks) != len(revisions) + 3
+            or checks[-1].get("id") != "all-revisions-final"):
         return False
     try:
-        revision_inventory(revisions)
+        initial = revision_inventory(revisions)
+        final = revision_inventory(checks[-1].get("data"))
     except (ValueError, TypeError):
         return False
-    for revision_row, check in zip(revisions, checks[2:]):
+    if {r['name']: r for r in initial} != {r['name']: r for r in final}:
+        return False
+    for revision_row, check in zip(initial, checks[2:-1]):
         if not isinstance(check.get("data"), dict):
             return False
         if (revision_row.get("active") is not False or type(revision_row.get("replicas")) is not int
@@ -224,6 +228,8 @@ def replicas(subscription, app, environment=None):
             command = ["containerapp", "replica", "list", "--name", app, "--resource-group", RG,
                        "--revision", name, "--query", "[].{name:name}"]
             checks.append(check_command("replicas-" + name, az(command, subscription), lambda v: {"count": len(rows(v))}))
+        checks.append(check_command("all-revisions-final", az(base, subscription), revision_inventory,
+            lambda v: bool(v) and {r['name']: r for r in v} == {r['name']: r for r in revisions['data']}))
     return checks
 
 

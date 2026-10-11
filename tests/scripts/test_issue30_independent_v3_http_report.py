@@ -44,6 +44,12 @@ class IndependentV3HttpTests(unittest.TestCase):
                 with self.subTest(field=field, value=value), self.assertRaises(ValueError):
                     score(self.fixture, http, ui)
 
+    def test_ui_completion_cannot_precede_its_http_response(self):
+        for index in (0,next(i for i,r in enumerate(self.http) if r['httpStatus']==422)):
+            ui=copy.deepcopy(self.ui)
+            ui[index]['uiCompletionUpperBoundMs']=self.http[index]['networkMs']-1
+            with self.subTest(index=index),self.assertRaises(ValueError):score(self.fixture,self.http,ui)
+
     def test_expected_outside_is_not_failure_or_empty_search(self):
         result = score(self.fixture, self.http, self.ui)
         self.assertTrue(result['qualityPassed'])
@@ -67,6 +73,7 @@ class IndependentV3HttpTests(unittest.TestCase):
         with self.assertRaises(ValueError): score(self.fixture, bad, self.ui)
         for r in self.http:
             r['networkMs'] = 16000 if r['httpStatus'] == 200 else 1
+        for r,o in zip(self.http,self.ui):o['uiCompletionUpperBoundMs']=r['networkMs']+500
         self.assertFalse(score(self.fixture, self.http, self.ui)['warmSloPassed'])
 
     def test_missing_assessment_and_invented_reason_cannot_pass_grounding(self):
@@ -94,11 +101,13 @@ class IndependentV3HttpTests(unittest.TestCase):
     def test_both_linear_p95_populations_must_pass(self):
         inside = [r for r in self.http if r['httpStatus'] == 200]
         inside[-2]['networkMs'], inside[-1]['networkMs'] = 15001, 16000
+        for r,o in zip(self.http,self.ui):o['uiCompletionUpperBoundMs']=r['networkMs']+500
         result = score(self.fixture, self.http, self.ui)
         self.assertAlmostEqual(result['networkTiming']['p95Ms'], 14300.95)
         self.assertTrue(result['warmSloPassed'])
         for r in self.http:
             if r['httpStatus'] == 422: r['networkMs'] = 20000
+        for r,o in zip(self.http,self.ui):o['uiCompletionUpperBoundMs']=r['networkMs']+500
         result = score(self.fixture, self.http, self.ui)
         self.assertGreater(result['allResponseTiming']['p95Ms'], 15000)
         self.assertFalse(result['warmSloPassed'])

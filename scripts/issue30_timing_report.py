@@ -78,7 +78,7 @@ def score_cold(fixture, planned_ids, records, subscription, warm_run_ids=()):
             raise ValueError('New API/environment zero snapshot required')
         checks = snapshot.get('checks', [])
         rows(checks)
-        if len(checks) < 3:
+        if len(checks) < 4:
             raise ValueError('Missing revision/actual replica inventory')
         revision_inventory(checks[1].get('data'))
         identity = checks[0].get('data') or {}

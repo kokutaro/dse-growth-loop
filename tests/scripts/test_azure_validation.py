@@ -72,8 +72,8 @@ class ValidationTests(unittest.TestCase):
     def test_replica_snapshot_includes_inactive_revisions_and_actual_replicas(self):
         with patch.object(validation.subprocess, "run", side_effect=self.replica_run) as run:
             checks = validation.replicas("sub", "dse-api-vnet", "dse-environment-vnet-jpe")
-        self.assertEqual(run.call_count, 4)
-        self.assertEqual([c["data"]["count"] for c in checks[2:]], [1, 1])
+        self.assertEqual(run.call_count, 5)
+        self.assertEqual([c["data"]["count"] for c in checks[2:-1]], [1, 1])
         revision_command = run.call_args_list[1].args[0]
         self.assertIn("--all", revision_command)
         self.assertNotIn("[?properties.active]", " ".join(revision_command))
@@ -86,6 +86,30 @@ class ValidationTests(unittest.TestCase):
             checks = validation.replicas("sub", "dse-api-vnet", "dse-environment-vnet-jpe")
         self.assertEqual(run.call_count, 1)
         self.assertEqual(checks[0]["status"], "failed")
+        self.assertFalse(validation.confirmed_stopped(checks))
+
+    def test_revision_changes_during_replica_reads_cannot_confirm_snapshot(self):
+        original=[{'name':'rev','active':False,'replicas':0,'status':'Stopped'}]
+        for final in (original+[{'name':'new','active':True,'replicas':1,'status':'Running'}],
+                      [{'name':'rev','active':True,'replicas':1,'status':'Running'}],
+                      [],[{'name':'replacement','active':False,'replicas':0,'status':'Stopped'}],None):
+            revision_reads=0
+            def run(command,**kwargs):
+                nonlocal revision_reads
+                if command[2]=='show':return self.replica_run(command,**kwargs)
+                if 'revision' in command:
+                    revision_reads+=1;value=original if revision_reads==1 else final
+                else:value=[]
+                return subprocess.CompletedProcess(command,0,json.dumps(value),'')
+            with self.subTest(final=final),patch.object(validation.subprocess,'run',side_effect=run):
+                checks=validation.replicas('sub','dse-api-vnet')
+            self.assertFalse(validation.confirmed_stopped(checks))
+            self.assertEqual(revision_reads,2)
+
+    def test_saved_snapshot_without_final_revision_read_is_unknown(self):
+        checks=[{'id':'app-environment','status':'passed'},
+                {'id':'all-revisions','status':'passed','data':[{'name':'rev','active':False,'replicas':0,'status':'Stopped'}]},
+                {'id':'replicas-rev','status':'passed','data':{'count':0}}]
         self.assertFalse(validation.confirmed_stopped(checks))
 
     def test_unknown_inventory_never_confirms_zero(self):

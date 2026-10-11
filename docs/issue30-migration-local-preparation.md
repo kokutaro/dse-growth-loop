@@ -23,12 +23,12 @@ Issue #30 は retrieval-v2 の Recall と分類漏れを扱う。保存された
 
 ## ローカル実装
 
-- `scripts/azure_validation.py`：旧/新AppとEnvironmentの明示組を検証。App実参照先が違えばrevision読取前に止まる。`--all` の全revisionと各revisionの実replica一覧を取得し、active=false・runningState=Stopped・metadata replica=0・実一覧0の全条件が揃う場合だけ `stopSnapshotConfirmed=true`。欠落・重複・未知値を0としない。新Environmentのpreflightは旧Environmentの存在からquota再利用を認めない。
+- `scripts/azure_validation.py`：旧/新AppとEnvironmentの明示組を検証。App実参照先が違えばrevision読取前に止まる。`--all` の全revisionと各revisionの実replica一覧を取得後、`all-revisions-final` で全revisionを再読する。初回/最終の名前・active・replicas・statusが一致し、active=false・runningState=Stopped・metadata replica=0・実一覧0の全条件が揃う場合だけ `stopSnapshotConfirmed=true`。最終読戻しのない過去snapshot、取得中の追加/削除/状態変化、欠落・重複・未知値は停止未確認。新Environmentのpreflightは旧Environmentの存在からquota再利用を認めない。
 - `scripts/validation_safety/`：移行時API用post watchdogとWorker用queued watchdogを変更せず取り込み、source/hashを `provenance.json` に保存。既定plan-onlyはAzure呼出し0。旧Appへの操作拒否、環境違い、全revision停止、inactive残存replica、CLI timeout、停止未確認をMockで確認する。
 - `scripts/issue30_timing_report.py`：ネットワークを使わない保存記録の採点器。既存warm24の品質/双方の線形p95採点と、別のcold3の完全性を集約。coldは固定3問の順序、単一試行、各回別の停止snapshot、時刻順、事前API要求0、HTTP/UI時間、失敗標本保持を検証する。coldに合否時間閾値を作らない。固定3問の既存@5品質基準（Precision/Recall各90%以上）と基本応答契約を確認する保存応答回帰であり、新規独立評価ではない。
-- `scripts/issue30_safety_supervisor.py`：新API/Workerの両方を固定対象にし、親PIDをMacのkqueue（process handle）で監視。親終了・SIGTERM/SIGINT・実行期限から停止へ移る。実行窓+停止余裕の単調時計期限を固定し、停止段階の共通残量を全App/revision/CLIへ渡す。各CLI timeoutはmin(設定値,残量)、期限後の新規呼出しをしない。両Appの対象/環境とrevisionを準備し、Appごとに1 revisionずつ交互に停止要求を発行してから確認へ進む。APIの確認でWorkerの停止要求を遅らせない。CLI不在・権限拒否・不正JSON/shapeは停止未確認。成功/失敗いずれも専用CLI process groupを回収し、標準出力/エラーを閉じた子も残さない。有界waitを使う。
+- `scripts/issue30_safety_supervisor.py`：新API/Workerの両方を固定対象にし、親PIDをMacのkqueue（process handle）で監視。親終了・SIGTERM/SIGINT・実行期限から停止へ移る。実行窓+停止余裕の単調時計期限を固定し、停止段階の共通残量を全App/revision/CLIへ渡す。各CLI timeoutはmin(設定値,残量)、期限後の新規呼出しをしない。共通残量を未準備App数で分け、各Appの枠の2/3を対象/環境/revisionの準備に、少なくとも1/3を初回停止要求に確保する。確認できたAppから初回停止を要求し、残りrevisionもApp間で予算を分けて交互に要求した後に停止確認する。APIの準備・要求・確認でWorkerの停止要求を遅らせない。準備が期限内に完了しなければ未確認を保ち、対象未確認のまま停止を要求しない。CLI不在・権限拒否・不正JSON/shapeは停止未確認。成功/失敗いずれも専用CLI process groupを回収し、標準出力/エラーを閉じた子も残さない。有界waitを使う。
 - `scripts/issue30_restore_plan.py`：private元snapshotをtarget照合後に0600/exclusiveで保存。既存file/symlinkを上書きしない。SHA・新App/Environment・Single/max1・両App停止証跡を照合するオフライン計画検証。未確認はplanValid=false、keepStoppedRequired=true、executionEnabled=false。実復元もrestorationConfirmedの成立も行わない。
-- v3 warm/cold採点：bool・負数・NaN・Infinity・未取得を時間として採用しない。応答のrun/group順序/assessment一意性と原本・対象entityへ結び付いた根拠を共用契約で確認。coldは空本文、不正/借用根拠、HTTPエラー、UI alert、正解ありの空候補、既存@5品質基準未達を失敗として保持する。
+- v3 warm/cold採点：bool・負数・NaN・Infinity・未取得を時間として採用せず、HTTP応答より早いUI完了時間も拒否する。応答のrun/group順序/assessment一意性と原本・対象entityへ結び付いた根拠を共用契約で確認。coldは空本文、不正/借用根拠、HTTPエラー、UI alert、正解ありの空候補、既存@5品質基準未達を失敗として保持する。
 
 採点器が扱う値は提供された記録であり、操作者の申告だけで独立証跡が成立するとは判定しない。`liveAcceptance=pending`・請求額nullを維持する。Mockの `qualityPassed` やCLI exit0は実Entra/実Cosmos/実AI・費用・停止保証の合格ではない。
 
@@ -60,7 +60,7 @@ watchdogの既定plan-onlyは安全にローカル確認できる。実行flag�
 
 停止期限は `min(起動時の全体期限, trigger時刻+承認停止余裕)` に固定する。signal/親終了/再確認で期限を延長しない。全CLIへ残量を渡し、revision追加/変化を最後にも再確認する。deadline/CLI故障で確認できなければexit2・stopConfirmed=false・restorationConfirmed=false。OSのprocess終了後の回収に有界50msの余裕を持ち、scheduler遅延を0秒と保証しない。これを課金hard capとは呼ばない。
 
-Mac kqueueを使う実親子processで、親終了後のdetached supervisor継続、SIGTERM、停止中の追加SIGTERM、実行期限、fake CLIの認証失効/権限拒否/不正JSON/無応答/停止不成立、および成功CLIから標準出力/エラーを閉じて残る子の回収をローカル確認する。API4revision/Worker1revision、CLI各1秒、共通8秒のMockでもWorker停止要求を確認し、期限切れを停止完了へ昇格しない。Linuxのpidfd分岐はこのMacで実OS確認していない。
+Mac kqueueを使う実親子processで、親終了後のdetached supervisor継続、SIGTERM、停止中の追加SIGTERM、実行期限、fake CLIの認証失効/権限拒否/不正JSON/無応答/停止不成立、および成功CLIから標準出力/エラーを閉じて残る子の回収をローカル確認する。API4revision/Worker1revision、CLI各1秒、共通8秒のMockでもWorker停止要求を確認する。API準備の無応答でWorkerの予算を消費しないことをMockと実OS fake CLIでも確認し、期限切れを停止完了へ昇格しない。Linuxのpidfd分岐はこのMacで実OS確認していない。
 
 **Mac sleep・電源断・supervisor自身のSIGKILL・Azure/credential不通では停止を保証できない。別hostの停止担当が必要。** 別hostの既存権限・対象・絶対期限・連絡/停止未確認時の手順を別途確認する。sleep中のmonotonic期限の進行や、resume後の費用は未検証で、実測承認へ代用しない。
 

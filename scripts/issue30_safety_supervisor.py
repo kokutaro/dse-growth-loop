@@ -174,22 +174,35 @@ def stop_apps(cli, apps, deadline, poll_seconds):
         while pending:
             deadline.remaining()
             requests = {}
-            for app in pending[:]:
-                deadline.remaining()
+            preparing = pending[:]
+            for index, app in enumerate(preparing):
+                # Each app keeps its own share of the common deadline. Reserve
+                # one third for its first request; slow preparation must neither
+                # consume that slot nor the next app's validation/request window.
+                now = deadline.clock()
+                share = deadline.remaining() / (len(preparing) - index)
+                app_budget = Deadline.at(min(deadline.end, now + share), deadline.clock)
+                preparation_budget = Deadline.at(now + share * 2 / 3, deadline.clock)
                 try:
-                    requests[app] = prepare_stop(cli, app, deadline)
+                    requests[app] = prepare_stop(cli, app, preparation_budget)
+                    if requests[app]:
+                        request_stop(cli, app, requests[app].pop(0), app_budget)
                 except SafetyError as error:
                     failures.append({'app': app, 'code': error.code})
                     # Invalid/denied reads are never reclassified as an empty list.
                     # Continue to the other app within the same remaining budget.
                     pending.remove(app)
+                    requests.pop(app, None)
             # Request one revision per app each round before spending any budget
             # on confirmation. Many API revisions must not starve Worker requests.
             while any(requests.values()):
-                for app in pending[:]:
-                    if not requests.get(app): continue
+                requesting = [app for app in pending if requests.get(app)]
+                for index, app in enumerate(requesting):
                     try:
-                        request_stop(cli, app, requests[app].pop(0), deadline)
+                        now = deadline.clock()
+                        share = deadline.remaining() / (len(requesting) - index)
+                        request_budget = Deadline.at(min(deadline.end, now + share), deadline.clock)
+                        request_stop(cli, app, requests[app].pop(0), request_budget)
                     except SafetyError as error:
                         failures.append({'app': app, 'code': error.code})
                         pending.remove(app); requests.pop(app, None)

@@ -28,7 +28,8 @@ def stop_reports():
     return {name:{'mode':'replicas','target':dict(restore.TARGET,app=name),
                   'checks':[{'id':'app-environment','status':'passed','data':{'name':name,'environment':safety.ENV}},
                             {'id':'all-revisions','status':'passed','data':[{'name':name+'-rev','active':False,'replicas':0,'status':'Stopped'}]},
-                            {'id':'replicas-'+name+'-rev','status':'passed','data':{'count':0}}]}
+                            {'id':'replicas-'+name+'-rev','status':'passed','data':{'count':0}},
+                            {'id':'all-revisions-final','status':'passed','data':[{'name':name+'-rev','active':False,'replicas':0,'status':'Stopped'}]}]}
             for name in safety.ALLOWED}
 
 

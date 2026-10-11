@@ -29,7 +29,8 @@ class ColdTimingTests(unittest.TestCase):
                         'target': {'subscription': SUB, 'resourceGroup': 'dse-growth-loop-rg', 'app': 'dse-api-vnet', 'environment': 'dse-environment-vnet-jpe'},
                         'checks': [{'id': 'app-environment', 'status': 'passed', 'data': {'name': 'dse-api-vnet', 'environment': env}},
                                    {'id': 'all-revisions', 'status': 'passed', 'data': [{'name': 'rev', 'active': False, 'replicas': 0, 'status': 'Stopped'}]},
-                                   {'id': 'replicas-rev', 'status': 'passed', 'data': {'count': 0}}]}
+                                   {'id': 'replicas-rev', 'status': 'passed', 'data': {'count': 0}},
+                                   {'id': 'all-revisions-final', 'status': 'passed', 'data': [{'name': 'rev', 'active': False, 'replicas': 0, 'status': 'Stopped'}]}]}
             self.rows.append({'questionId': q['id'], 'cycleId': f'cycle-{i}', 'attempt': 1,
                               'request': {'query': q['text'], 'target': 'all'}, 'httpStatus': 200,
                               'networkMs': 5000, 'uiCompletionUpperBoundMs': 5500,

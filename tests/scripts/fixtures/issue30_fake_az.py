@@ -22,6 +22,8 @@ if scenario in ('denied','expired-auth') or (scenario == 'deactivate-denied' and
 if args[:1] != ['containerapp'] or any(x in args for x in ('activate', 'create', 'update', 'delete', 'start')):
     raise SystemExit(3)
 name = args[args.index('--name') + 1]
+if scenario == 'api-preparation-hang' and name == 'dse-api-vnet' and args[1] == 'show':
+    time.sleep(30)
 if name not in ('dse-api-vnet', 'dse-worker-vnet'):
     raise SystemExit(3)
 state = json.loads(state_file.read_text())

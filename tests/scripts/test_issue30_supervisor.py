@@ -88,6 +88,30 @@ class SupervisorUnitTests(unittest.TestCase):
         self.assertEqual(error.exception.code, 'CLI_UNAVAILABLE')
         self.assertNotIn('secret', str(error.exception))
 
+    def test_hung_api_preparation_preserves_worker_request_budget(self):
+        clock=Clock();calls=[]
+        state={app:[{'name':app+'-rev','active':True,'replicas':1,'status':'Running'}] for app in safety.ALLOWED}
+        def call(parts,budget):
+            remaining=budget.remaining();calls.append(parts)
+            app=parts[parts.index('--name')+1]
+            elapsed=30 if app=='dse-api-vnet' and 'show' in parts else .25
+            if elapsed>=remaining:
+                clock.now+=remaining
+                raise safety.SafetyError('CLI_TIMEOUT')
+            clock.now+=elapsed
+            if 'show' in parts:return {'name':app,'environment':safety.ENV}
+            if 'deactivate' in parts:
+                state[app][0].update(active=False,replicas=0,status='Stopped');return None
+            if 'revision' in parts:return [dict(r) for r in state[app]]
+            return []
+        cli=type('Cli',(),{'call':staticmethod(call)})()
+        with patch.object(safety.time,'sleep',side_effect=clock.sleep):
+            result=safety.stop_apps(cli,list(safety.ALLOWED),safety.Deadline(8,clock.monotonic),.1)
+        self.assertFalse(state['dse-worker-vnet'][0]['active'])
+        self.assertIn('dse-worker-vnet',result['confirmedApps'])
+        self.assertFalse(result['stopConfirmed'])
+        self.assertTrue(any(f.get('app')=='dse-api-vnet' and f['code']=='CLI_TIMEOUT' for f in result['failures']))
+
     def test_timeout_kills_cli_group_even_if_cli_parent_has_already_exited(self):
         from unittest.mock import Mock
         process=Mock(pid=123,returncode=0)
@@ -135,12 +159,12 @@ class SupervisorOsTests(unittest.TestCase):
             except ProcessLookupError: pass
         self.temp.cleanup()
 
-    def launch(self, scenario='success', run_seconds=10, stop_seconds=3):
+    def launch(self, scenario='success', run_seconds=10, stop_seconds=3, call_timeout_seconds=.3):
         env = dict(self.env, DSE_FAKE_AZ_SCENARIO=scenario)
         cli_command=[str(self.folder/'missing-cli')] if scenario=='missing-cli' else [sys.executable,str(ROOT/'tests/scripts/fixtures/issue30_fake_az.py')]
         command = [sys.executable, str(ROOT/'scripts/issue30_safety_supervisor.py'), '--execute-after-approval',
                    '--parent-pid',str(self.parent.pid),'--run-seconds',str(run_seconds),'--stop-seconds',str(stop_seconds),
-                   '--poll-seconds','.03','--call-timeout-seconds','.3', '--cli-command',*cli_command]
+                   '--poll-seconds','.03','--call-timeout-seconds',str(call_timeout_seconds), '--cli-command',*cli_command]
         process = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env=env,start_new_session=True)
         self.supervisors.append(process)
         # Wait for actual readiness, not an arbitrary startup sleep.
@@ -266,3 +290,12 @@ with log.open('w') as output:
                 time.sleep(.02)
             else:self.fail('Successful CLI left child process alive')
         self.record_evidence({'event':'CLI_CHILD_RECOVERED','cliSucceeded':True,'childCount':len(children),'childrenAlive':0})
+
+    def test_real_api_preparation_hang_does_not_starve_worker_stop(self):
+        process,first=self.launch('api-preparation-hang',run_seconds=.05,stop_seconds=1.2,call_timeout_seconds=2)
+        result,_,_=self.finish(process,first)
+        self.assertEqual(process.returncode,2)
+        self.assertFalse(result['stopConfirmed'])
+        self.assertIn('dse-worker-vnet',result['confirmedApps'])
+        self.assertFalse(json.loads(self.state.read_text())['dse-worker-vnet'][0]['active'])
+        self.assertTrue(result['keepStoppedRequired'])

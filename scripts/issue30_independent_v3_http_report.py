@@ -41,6 +41,7 @@ def score(fixture,http,ui):
         if type(r['networkMs']) not in (int,float) or not math.isfinite(r['networkMs']) or r['networkMs']<0:raise ValueError('Observed finite HTTP duration required')
         ui_ms=o['uiCompletionUpperBoundMs']
         if type(ui_ms) not in (int,float) or not math.isfinite(ui_ms) or ui_ms<0:raise ValueError('Observed finite UI completion duration required')
+        if ui_ms<r['networkMs']:raise ValueError('UI completion cannot precede HTTP completion')
         if r['httpStatus']==200:
             candidates,checked=response_evidence(fixture,body,o)
             grounded.extend(checked)
