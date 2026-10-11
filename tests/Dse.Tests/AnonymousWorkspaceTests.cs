@@ -39,7 +39,7 @@ public sealed class AnonymousWorkspaceTests
         var guest = azure ? identities.ResolvePerson(tenant,"demo-person-02")! : IdentityResolver.DemoPerson("demo-person-02")!;
         var fence = new AccessFence(repo); var chat = new ConversationService(repo,new(),identities,TimeProvider.System,fence); var ai = new FakeAi();
         var knowledge = new KnowledgeService(repo,store,chat,fence,ai,ai,identities,config,TimeProvider.System);
-        var workspace = new AnonymousWorkspaceService(repo,new MemoryProjectionRepository(store),new SourceGuard(repo),fence,chat,knowledge,identities,config,TimeProvider.System);
+        var workspace = new AnonymousWorkspaceService(repo,new MemoryProjectionRepository(store),new SourceGuard(repo,config),fence,chat,knowledge,identities,config,TimeProvider.System);
         var challenge = await workspace.CreateAsync(owner,Key(),new("ソフトの相談","引き継ぎとチェックリストを標準化したい"),default);
         var room = await workspace.ResolveRoomAsync(owner,challenge.RoomId!,default);
         return new(repo,store,fence,chat,workspace,owner,guest,challenge.RoomId!,challenge.Id,room.SessionId,config);
@@ -143,7 +143,7 @@ public sealed class AnonymousWorkspaceTests
         IProjectionRepository browse = new MemoryProjectionRepository(s.Store);
         List<SearchUnit> browseUnits = [];
         await foreach (var page in browse.BrowseKnowledgePagesAsync(new([],[],[]),s.Owner.Search,default)) browseUnits.AddRange(page);
-        var guarded = await new SourceGuard(s.Repo).FilterAsync(s.Owner,browseUnits,default);
+        var guarded = await new SourceGuard(s.Repo,s.Config).FilterAsync(s.Owner,browseUnits,default);
         Assert.Equal(100,guarded.Count(u => u.EntityId.StartsWith("000-legacy-case-",StringComparison.Ordinal)));
         var cases = await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default); var published = Assert.Single(cases.Items); PrivateIdentifiersAbsent(s,published);
         foreach (var query in new[] { "software 改善", "ＳＯＦＴＷＡＲＥ 改善", "ソフトウェア 無関係" })
@@ -194,7 +194,7 @@ public sealed class AnonymousWorkspaceTests
         Assert.Equal("SEARCH_LIMIT_EXCEEDED",previous.Code);
         var counted = new CountedBrowse(memory); var ai = new FakeAi(); var identities = new IdentityResolver(s.Config);
         var knowledge = new KnowledgeService(s.Repo,s.Store,s.Chat,s.Fence,ai,ai,identities,s.Config,TimeProvider.System);
-        var workspace = new AnonymousWorkspaceService(s.Repo,counted,new SourceGuard(s.Repo),s.Fence,s.Chat,knowledge,identities,s.Config,TimeProvider.System);
+        var workspace = new AnonymousWorkspaceService(s.Repo,counted,new SourceGuard(s.Repo,s.Config),s.Fence,s.Chat,knowledge,identities,s.Config,TimeProvider.System);
         var cases = await workspace.ConsumeAsync(s.Owner,ct => workspace.CasesUnderFenceAsync(s.Owner,query,ct),default);
         Assert.Equal(100,cases.Items.Length); Assert.Equal(100,cases.Items.Select(c => c.Id).Distinct().Count()); Assert.Equal(2,counted.Pages);
         PrivateIdentifiersAbsent(s,cases);
@@ -248,8 +248,44 @@ public sealed class AnonymousWorkspaceTests
             if (change == "rebound") { s.Config["Auth:Bindings:1:PrincipalId"] = "principal-replacement"; s.Config["Auth:Grants:1:PrincipalId"] = "principal-replacement"; }
         }
         Assert.Equal("SOURCE_REVOKED",(await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CaseUnderFenceAsync(s.Owner,published.Id,ct),default))).Code);
-        if (change == "missing_pin") Assert.Empty((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default)).Items);
-        else await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default));
+        Assert.Empty((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default)).Items);
+    }
+    [Theory] [InlineData("rebound")] [InlineData("missing_pin")] [InlineData("profile_owner")] [InlineData("disabled")] [InlineData("scope")] [InlineData("role")] [InlineData("missing_config")]
+    public async Task Normal_knowledge_search_rechecks_consent_principals_before_AI_evidence_and_display(string change)
+    {
+        var s = await Create(true); await Join(s); var room = await s.Workspace.ResolveRoomAsync(s.Owner,s.Room,default);
+        await s.Workspace.SendAsync(s.Owner,s.Room,Key(),room.SessionEtag,new(Guid.NewGuid().ToString(),"ソフト 引き継ぎを試した"),default);
+        await Change(s,"outcome",new { resolution="partial",result="一部だけ解決" }); var state = await Change(s,"draft",new {});
+        await Change(s,"request-review",new { version=state.SourceVersion });
+        await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false });
+        await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false },s.Guest);
+        await Change(s,"approve",new { version=state.SourceVersion });
+        var unit = (await new MemoryProjectionRepository(s.Store).FindAsync(new([],[],["ソフト"]),s.Owner.Search,default))
+            .Single(u => u.EntityId == KnowledgeService.Id(s.Sid));
+        var guard = new SourceGuard(s.Repo,s.Config); var validated = await guard.RequireAsync(s.Owner,unit,default);
+        var reference = Assert.Single(unit.EvidenceRefs!); Assert.NotNull(await guard.EvidenceAsync(s.Owner,reference,default));
+        if(change == "missing_config") guard = new SourceGuard(s.Repo);
+        else if(change == "missing_pin")
+        {
+            var p = RecordPartition.Conversation(s.Owner.TenantId,s.Sid); var row = (await s.Repo.ReadAsync(p,KnowledgeService.Id(s.Sid),default))!;
+            row.Value["consents"]![s.Guest.PersonId]!.AsObject().Remove("principalId"); await s.Repo.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],default);
+        }
+        else if(change == "disabled") s.Config["Auth:Bindings:1:Enabled"] = "false";
+        else if(change == "scope") s.Config["Auth:Grants:1:ScopeIds:0"] = "outside";
+        else if(change == "role") s.Config["Auth:Bindings:1:Roles:0"] = "publisher";
+        else
+        {
+            var p = RecordPartition.Catalog(s.Owner.TenantId); var row = (await s.Repo.ReadAsync(p,s.Guest.PersonId,default))!;
+            row.Value["ownerId"] = "principal-replacement"; await s.Repo.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],default);
+            if(change == "rebound") { s.Config["Auth:Bindings:1:PrincipalId"] = "principal-replacement"; s.Config["Auth:Grants:1:PrincipalId"] = "principal-replacement"; }
+        }
+        Assert.Empty(await s.Fence.RunAsync(s.Owner.TenantId,ct => guard.FilterUnderFenceAsync(s.Owner,[unit],ct),default));
+        Assert.Null(await guard.EvidenceAsync(s.Owner,reference,default));
+        Assert.Equal("SOURCE_REVOKED",(await Assert.ThrowsAsync<DomainException>(() => guard.RequireSnapshotsAsync(s.Owner,validated.Snapshots,default))).Code);
+        var use = new SourceUseService(s.Repo,guard,s.Fence,new(s.Config)); var callbacks = 0;
+        Assert.Equal("SOURCE_REVOKED",(await Assert.ThrowsAsync<DomainException>(() => use.UseAsync(s.Owner,unit,(_,_) => { callbacks++; return Task.FromResult(true); },default))).Code);
+        Assert.Equal("SOURCE_REVOKED",(await Assert.ThrowsAsync<DomainException>(() => use.DisplayAsync(s.Owner,validated.Snapshots,_ => { callbacks++; return Task.FromResult(true); },default))).Code);
+        Assert.Equal(0,callbacks);
     }
     [Fact] public async Task Published_case_never_drops_an_unresolved_participants_identifier_check()
     {
@@ -270,7 +306,7 @@ public sealed class AnonymousWorkspaceTests
         s.Config["Auth:Bindings:1:Enabled"] = "false";
         var unresolved = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CaseUnderFenceAsync(s.Owner,published.Id,ct),default));
         Assert.Equal("SOURCE_REVOKED",unresolved.Code);
-        await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default));
+        Assert.Empty((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default)).Items);
     }
     [Fact] public async Task Azure_candidate_checks_current_binding_after_token_issuance()
     {

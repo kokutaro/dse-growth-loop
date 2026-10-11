@@ -9,10 +9,12 @@ public sealed record AccessGrant(string PrincipalId, string[] ScopeIds);
 
 public sealed class IdentityResolver
 {
+    internal IConfiguration Configuration { get; }
     private readonly IdentityBinding[] bindings;
     private readonly AccessGrant[] grants;
     public IdentityResolver(IConfiguration config)
     {
+        Configuration = config;
         bindings = config.GetSection("Auth:Bindings").Get<IdentityBinding[]>() ?? [];
         grants = config.GetSection("Auth:Grants").Get<AccessGrant[]>() ?? [];
         var active = bindings.Where(x => x.Enabled).ToArray();

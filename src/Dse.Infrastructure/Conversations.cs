@@ -290,7 +290,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         await SessionAsync(actor, sid, ct); Id(messageId);
         var message = await repository.ReadAsync(Partition(actor, sid), messageId, ct);
         if (message?.Value.Text("authorType") != "ai" || message.Value.Text("messageKind") != "ai_case") throw new DomainException(404, "NOT_FOUND");
-        var guard = new SourceGuard(repository);
+        var guard = new SourceGuard(repository, identities.Configuration);
         var snapshots = message.Value["sourceSnapshots"]!.Deserialize<SourceSnapshot[]>(ProjectionRules.Json)!;
         await guard.RequireSnapshotsAsync(actor, snapshots, ct);
         var knowledge = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), message.Value.Text("caseId"), ct))!.Value;
@@ -318,7 +318,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
             var message = await repository.ReadAsync(Partition(actor, sid), MessageId(sid, sequence), ct) ?? throw new DomainException(503, "HISTORY_INCOMPLETE");
             if (message.Value.Text("authorType") == "ai" && message.Value["sourceSnapshots"] is JsonArray { Count: > 0 })
             {
-                try { await new SourceGuard(repository).RequireSnapshotsAsync(actor, message.Value["sourceSnapshots"]!.Deserialize<SourceSnapshot[]>(ProjectionRules.Json)!, ct); }
+                try { await new SourceGuard(repository, identities.Configuration).RequireSnapshotsAsync(actor, message.Value["sourceSnapshots"]!.Deserialize<SourceSnapshot[]>(ProjectionRules.Json)!, ct); }
                 catch (DomainException e) when (e.Code == "SOURCE_REVOKED")
                 {
                     message.Value["body"] = "参照知識が撤回または変更されたため、この引用は表示できません。";

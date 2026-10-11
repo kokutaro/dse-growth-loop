@@ -110,7 +110,7 @@ public static class ProjectionRules
 public sealed record SourceSnapshot(string Id, int SourceVersion, int ActiveVersion, int AccessVersion);
 public sealed record ValidatedSource(SearchUnit Unit, SourceSnapshot[] Snapshots);
 
-public sealed class SourceGuard(IPrimaryRepository repository)
+public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? configuration = null)
 {
     public async Task<SearchUnit[]> FilterAsync(ActorAccess actor, IEnumerable<SearchUnit> units, CancellationToken ct)
     {
@@ -125,7 +125,7 @@ public sealed class SourceGuard(IPrimaryRepository repository)
     // Caller must hold the tenant access fence. This read set lives only for this
     // filtering phase; validation after AI always starts a new read set.
     public Task<SearchUnit[]> FilterUnderFenceAsync(ActorAccess actor, IEnumerable<SearchUnit> units, CancellationToken ct) =>
-        new SourceGuard(new PhaseReads(repository)).FilterAsync(actor, units, ct);
+        new SourceGuard(new PhaseReads(repository), configuration).FilterAsync(actor, units, ct);
 
     private sealed class PhaseReads(IPrimaryRepository inner) : IPrimaryRepository
     {
@@ -145,6 +145,15 @@ public sealed class SourceGuard(IPrimaryRepository repository)
     public async Task<ValidatedSource> RequireAsync(ActorAccess actor, SearchUnit unit, CancellationToken ct) =>
         await ValidateAsync(actor, unit, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
 
+    private async Task<JsonObject?> CurrentKnowledgeAuthorityAsync(ActorAccess actor, JsonObject source, int version, CancellationToken ct)
+    {
+        // An adapter without the current identity configuration cannot authorize a published conversation.
+        if (configuration is null) return null;
+        var authority = await KnowledgeService.PublishedAsync(repository, actor.TenantId, source.Text("sessionId"), version, ct);
+        return authority is not null && await KnowledgeService.CurrentConsentParticipantsAsync(repository,
+            configuration, actor.TenantId, authority, false, ct) is not null ? authority : null;
+    }
+
     private async Task<ValidatedSource?> ValidateAsync(ActorAccess actor, SearchUnit unit, CancellationToken ct)
     {
         if (unit.TenantId != actor.TenantId || unit.Status != "active" || !unit.Available ||
@@ -156,7 +165,7 @@ public sealed class SourceGuard(IPrimaryRepository repository)
         if (source is null || source.Text("kind") != unit.EntityType || !AccessPolicy.CanUse(actor, source) ||
             source.Number("activeVersion") != unit.SourceVersion || source.Number("accessVersion") != unit.AccessVersion) return null;
         if (source.Text("kind") == "knowledge" && source.Text("contractVersion") == "knowledge-v1" &&
-            await KnowledgeService.PublishedAsync(repository, actor.TenantId, source.Text("sessionId"), unit.SourceVersion.Value, ct) is null) return null;
+            await CurrentKnowledgeAuthorityAsync(actor, source, unit.SourceVersion.Value, ct) is null) return null;
         List<SourceSnapshot> snapshots = [Snapshot(source)];
         List<SourceRef> refs = [];
         foreach (var reference in unit.EvidenceRefs)
@@ -174,7 +183,7 @@ public sealed class SourceGuard(IPrimaryRepository repository)
         var span = (await repository.ReadAsync(partition, reference.Id, ct))?.Value;
         if (span?.Text("kind") == "knowledge" && span.Text("contractVersion") == "knowledge-v1")
         {
-            var authority = await KnowledgeService.PublishedAsync(repository, actor.TenantId, span.Text("sessionId"), reference.SourceVersion, ct);
+            var authority = await CurrentKnowledgeAuthorityAsync(actor, span, reference.SourceVersion, ct);
             if (authority is null || reference.DocumentVersionId != reference.Id || !AccessPolicy.CanUse(actor, span) || span.Number("activeVersion") != reference.SourceVersion ||
                 authority.Number("accessVersion") != span.Number("accessVersion")) return null;
             var evidence = new JsonObject { ["text"] = span.Text("summary"), ["location"] = new JsonObject { ["label"] = "承認済み要約" } };
@@ -197,7 +206,7 @@ public sealed class SourceGuard(IPrimaryRepository repository)
             var current = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), snapshot.Id, ct))?.Value;
             if (current is null || !AccessPolicy.CanUse(actor, current) || Snapshot(current) != snapshot ||
                 current.Text("kind") == "knowledge" && current.Text("contractVersion") == "knowledge-v1" &&
-                await KnowledgeService.PublishedAsync(repository, actor.TenantId, current.Text("sessionId"), snapshot.ActiveVersion, ct) is null)
+                await CurrentKnowledgeAuthorityAsync(actor, current, snapshot.ActiveVersion, ct) is null)
                 throw new DomainException(409, "SOURCE_REVOKED");
         }
     }

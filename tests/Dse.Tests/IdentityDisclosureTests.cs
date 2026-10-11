@@ -91,7 +91,7 @@ public sealed class IdentityDisclosureTests
         var guest = azure ? identities.ResolvePerson(tenant, "demo-person-02")! : IdentityResolver.DemoPerson("demo-person-02")!;
         var chat = new ConversationService(repo, new(), identities, TimeProvider.System, fence);
         var ai = new UnusedAi(); var knowledge = new KnowledgeService(repo, store, chat, fence, ai, ai, identities, config, TimeProvider.System);
-        var workspace = new AnonymousWorkspaceService(repo, new MemoryProjectionRepository(store), new SourceGuard(repo), fence,
+        var workspace = new AnonymousWorkspaceService(repo, new MemoryProjectionRepository(store), new SourceGuard(repo,config), fence,
             chat, knowledge, identities, config, TimeProvider.System);
         var challenge = await workspace.CreateAsync(owner, Key(), new("架空の相談", "技術の引き継ぎを相談する"), default);
         var room = await workspace.ResolveRoomAsync(owner, challenge.RoomId!, default);

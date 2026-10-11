@@ -42,7 +42,7 @@ def score(fixture,http,ui):
     def timing(values):return {'count':len(values),'p50Ms':quantile(values,.5),'p95Ms':quantile(values,.95),'maxMs':max(values)}
     successful=timing(times);overall=timing(all_times)
     slo=successful['p95Ms']<=15000 and overall['p95Ms']<=15000
-    false=sum(r['noGoldFalse'] for r in rows);quality=all(r['outcomePassed'] for r in rows) and all(m['groupHitAt5']>=.9 and m['groupPrecisionAt5']>=.9 for m in metrics.values()) and not false and all(grounded)
+    false=sum(r['noGoldFalse'] for r in rows);quality=all(r['outcomePassed'] for r in rows) and all(m['groupHitAt5']>=.9 and m['groupPrecisionAt5']>=.9 and m['groupRecallAt5']>=.9 for m in metrics.values()) and not false and all(grounded)
     return {'scope':SCOPE,'observedQuestions':24,'all24HttpStatusAndTimeMeasured':True,'qualityPassed':quality,'warmSloThresholdMs':15000,'warmSloPassed':slo,'networkTiming':successful,'allResponseTiming':overall,'timingDefinition':'Linear p95; both all24 responses and searched requests must meet15s. Expected out-of-scope422 durations reported separately, never used to hide slower searches. UI upper bounds include observation overhead.','metrics':metrics,'noGoldFalseQuestions':false,'groundingChecked':len(grounded),'groundingPassed':sum(grounded),'failedQuestions':[r['questionId'] for r in rows if not r['outcomePassed']],'rows':rows}
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--directory',required=True,type=Path);args=parser.parse_args();p=args.directory

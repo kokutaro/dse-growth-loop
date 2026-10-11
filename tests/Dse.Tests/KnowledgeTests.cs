@@ -21,7 +21,7 @@ public class KnowledgeTests
             new(choices.ToDictionary(q => q.Id, q => new ChoiceAnswer("software", q.Options.ToDictionary(x => x.Key, x => x.Key == "software" ? 1d : 0d), .7)),
                 nouls.ToDictionary(q => q.Id, _ => new NoulAnswer(NoulState.Unknown, null))), "fixture-classify", null));
     }
-    private sealed record Setup(IRecordStore Store, IPrimaryRepository Repo, ConversationService Chat, KnowledgeService Service, Fake Ai, string Sid);
+    private sealed record Setup(IRecordStore Store, IPrimaryRepository Repo, ConversationService Chat, KnowledgeService Service, Fake Ai, string Sid, IConfiguration Config);
     private static async Task<Setup> Create(IRecordStore? supplied = null)
     {
         var store = supplied ?? new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);
@@ -35,7 +35,7 @@ public class KnowledgeTests
         await chat.DecideAsync(Guest, sid, Key(), invite.ETag, new("accepted"), default);
         session = await chat.SessionAsync(Owner, sid, default);
         await chat.SendAsync(Owner, sid, Key(), session.ETag, new(Key(), "ソフト 引き継ぎを試した"), default);
-        return new(store, repo, chat, service, ai, sid);
+        return new(store, repo, chat, service, ai, sid, config);
     }
     private sealed class FaultStore : IRecordStore
     {
@@ -101,7 +101,7 @@ public class KnowledgeTests
         var s = await Create(); await Publish(s);
         var feedback = await s.Repo.QueryAsync(RecordPartition.Conversation("demo", s.Sid), "feedback", null, null, 100, null, default);
         Assert.Null(feedback.Items.Single().Value["value"]); Assert.Equal("usefulness-v1", feedback.Items.Single().Value.Text("scaleVersion"));
-        var projections = new MemoryProjectionRepository(s.Store); var guard = new SourceGuard(s.Repo);
+        var projections = new MemoryProjectionRepository(s.Store); var guard = new SourceGuard(s.Repo,s.Config);
         var units = await projections.FindAsync(new([], [], ["ソフト"], .1, .5, 20), Owner.Search, default);
         Assert.Single(await guard.FilterAsync(Guest, units, default), x => x.EntityId == KnowledgeService.Id(s.Sid));
         Assert.Single(await s.Service.AnalysisInputsAsync(Owner, default));
@@ -140,7 +140,7 @@ public class KnowledgeTests
         foreach (var actor in new[] { Owner, Guest }) await Change(s, actor, "consent", new { version = version + 1, publication = true, analysis = false });
         await Change(s, Owner, "approve", new { version = version + 1 });
         await s.Service.ProcessPublicationAsync("demo", s.Sid, version + 1, default);
-        var guard = new SourceGuard(s.Repo);
+        var guard = new SourceGuard(s.Repo,s.Config);
         var units = await new MemoryProjectionRepository(s.Store).FindAsync(new([], [], ["ソフト"], .1, .5, 20), Guest.Search, default);
         Assert.Single(await guard.FilterAsync(Guest, units, default), x => x.EntityId == KnowledgeService.Id(s.Sid));
         Assert.Empty(await s.Service.AnalysisInputsAsync(Owner, default));
@@ -157,7 +157,7 @@ public class KnowledgeTests
     public async Task Consent_revocation_and_membership_changes_block_AI_cache_and_existing_citations()
     {
         var s = await Create(); await Publish(s);
-        var guard = new SourceGuard(s.Repo); var sourceUse = new SourceUseService(s.Repo, guard, new(s.Repo), new(new ConfigurationBuilder().Build()));
+        var guard = new SourceGuard(s.Repo,s.Config); var sourceUse = new SourceUseService(s.Repo, guard, new(s.Repo), new(new ConfigurationBuilder().Build()));
         var units = await new MemoryProjectionRepository(s.Store).FindAsync(new([], [], ["引き継ぎ"]), Guest.Search, default);
         var source = await guard.RequireAsync(Guest, units.Single(x => x.EntityId == KnowledgeService.Id(s.Sid)), default);
         // A persisted AI citation in the same session must be hidden on the next authoritative history read.
@@ -311,7 +311,7 @@ public class KnowledgeTests
         Assert.Equal(previous + 1, state.Number("sourceVersion")); Assert.Equal("draft", state.Text("status"));
         Assert.Null(state["activeVersion"]); Assert.Null(state["approvedBy"]); Assert.Empty(state["consents"]!.AsObject()); Assert.Equal("not_granted", state.Text("analysisConsent"));
         Assert.Empty(await s.Service.AnalysisInputsAsync(Owner, default));
-        Assert.DoesNotContain(await new SourceGuard(s.Repo).FilterAsync(Owner, [oldUnit], default), x => x.EntityId == oldUnit.EntityId);
+        Assert.DoesNotContain(await new SourceGuard(s.Repo,s.Config).FilterAsync(Owner, [oldUnit], default), x => x.EntityId == oldUnit.EntityId);
         await Change(s, Owner, "request-review", new { version = state.Number("sourceVersion") });
         foreach (var actor in new[] { Owner, Guest }) await Change(s, actor, "consent", new { version = state.Number("sourceVersion"), publication = true, analysis = true });
         await Change(s, Owner, "approve", new { version = state.Number("sourceVersion") });
