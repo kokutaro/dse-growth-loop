@@ -1,0 +1,271 @@
+{
+  "checkedAt": "2026-10-11T05:08:34.221334+00:00",
+  "originalRepositoryClean": true,
+  "oldCheckoutFiles": 59,
+  "checks": [
+    {
+      "path": "repo/README.md",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/anonymous-workspace-ui.md",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/implementation-status.md",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/azure-api-revisions-readonly.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/azure-apps-readonly.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/azure-issue30-executions-readonly.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/azure-jobs-readonly.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/azure-jobs-status-readonly.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/azure-worker-revisions-readonly.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/final-dotnet.trx",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/isolated-summary.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/auth-final.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/contracts-final.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/dotnet-build-final.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/dotnet-final.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/e2e-final.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/fixtures-final.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/python-final.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/restore-final.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/logs/ui-build.log",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/manual-browser-errors.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/manual-layout-metrics.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/results.md",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/resume-issue30.md",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-home-320.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-home-390.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-home-desktop.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-invitations-320.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-invitations-390.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-knowledge-320.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-knowledge-390.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-profile-320.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-profile-390.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-rooms-320.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-rooms-390.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-tasks-320.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/docs/validation-results/20261008-workspace-ui/screenshots/final-tasks-390.png",
+      "unchanged": true
+    },
+    {
+      "path": "repo/scripts/issue30_independent_v3_http_report.py",
+      "unchanged": true
+    },
+    {
+      "path": "repo/tests/scripts/test_issue30_independent_v3_http_report.py",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/scripts/test-e2e.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/src/documents.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/src/knowledge.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/src/main.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/src/profiles.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/src/validation-entry.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/src/workspace-api.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/src/workspace.css",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/src/workspace.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/tests/chat-assistance.spec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/tests/conversations.spec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/tests/documents.spec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/tests/knowledge.spec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/tests/logout.spec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/tests/profiles.spec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/tests/search.spec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/tests/workspace.spec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/validation.html",
+      "unchanged": true
+    },
+    {
+      "path": "repo/web/vite.config.ts",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/dse-anonymous-workspace-ui.patch",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/dse-anonymous-workspace-ui-changes.zip",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/README.txt",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/issues-20261011/dse-remaining-issues-20261011.patch",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/issues-20261011/dse-remaining-issues-20261011-changes.zip",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/issues-20261011/manifest.json",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/issues-20261011/README.txt",
+      "unchanged": true
+    }
+  ]
+}

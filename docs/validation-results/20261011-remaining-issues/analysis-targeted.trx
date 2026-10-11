@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="906ce5b8-8211-4017-a098-1df7f1c84d12" name="@oharanoMac-mini 2026-10-11 13:00:05" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-11T13:00:05.9622540+09:00" queuing="2026-10-11T13:00:05.9622540+09:00" start="2026-10-11T13:00:04.2431770+09:00" finish="2026-10-11T13:00:05.9728970+09:00" />
+  <TestSettings name="default" id="ebd973ff-9f88-484b-8f16-a19bee91734f">
+    <Deployment runDeploymentRoot="_oharanoMac-mini_2026-10-11_13_00_05" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="736768fd-7ca6-433b-a166-f2145a9acaff" testId="0778a5e9-9a79-1e87-b97a-8591e35b5542" testName="Dse.Tests.BusinessAnalysisTests.Replays_pin_cutoff_config_input_hash_and_do_not_repeat_failed_AI" computerName="oharanoMac-mini" duration="00:00:00.0093706" startTime="2026-10-11T13:00:05.7932040+09:00" endTime="2026-10-11T13:00:05.8025490+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="736768fd-7ca6-433b-a166-f2145a9acaff" />
+    <UnitTestResult executionId="649bbb0f-2695-4626-9a75-424d128209b7" testId="75e18963-eb51-1de0-d7ba-d78813f02c1b" testName="Dse.Tests.BusinessAnalysisTests.Forged_evidence_is_rejected_without_automatic_retry" computerName="oharanoMac-mini" duration="00:00:00.0047400" startTime="2026-10-11T13:00:04.7665880+09:00" endTime="2026-10-11T13:00:04.7692500+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="649bbb0f-2695-4626-9a75-424d128209b7" />
+    <UnitTestResult executionId="90718a3b-ab5f-452f-8fe3-6b20e485f5c6" testId="8c20bbf6-047e-95e2-4b38-8a03a1032d32" testName="Dse.Tests.BusinessAnalysisTests.Concurrent_run_is_rejected_across_service_instances_and_timeout_has_no_AI_retry" computerName="oharanoMac-mini" duration="00:00:01.0081831" startTime="2026-10-11T13:00:04.7693570+09:00" endTime="2026-10-11T13:00:05.7783100+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="90718a3b-ab5f-452f-8fe3-6b20e485f5c6" />
+    <UnitTestResult executionId="84bae4af-c5aa-4ec9-a37b-9b56c2de966a" testId="e557e43f-3c61-363f-269a-72bfd5e2372f" testName="Dse.Tests.BusinessAnalysisTests.Missing_public_metadata_is_unknown_and_does_not_pass_department_threshold" computerName="oharanoMac-mini" duration="00:00:00.0398964" startTime="2026-10-11T13:00:04.7041350+09:00" endTime="2026-10-11T13:00:04.7467000+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="84bae4af-c5aa-4ec9-a37b-9b56c2de966a" />
+    <UnitTestResult executionId="7a929311-e70e-4292-991e-bdd1082c26c3" testId="647775ac-b4ca-2f60-11c0-79080eee32c2" testName="Dse.Tests.BusinessAnalysisTests.Input_limits_apply_before_AI_and_configurable_demo_thresholds_are_reported" computerName="oharanoMac-mini" duration="00:00:00.0027619" startTime="2026-10-11T13:00:04.7529830+09:00" endTime="2026-10-11T13:00:04.7549210+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7a929311-e70e-4292-991e-bdd1082c26c3" />
+    <UnitTestResult executionId="c23235b5-6393-4c46-ac65-a685793a4c64" testId="34559d51-117d-f075-a819-de4c2477c8b5" testName="Dse.Tests.BusinessAnalysisTests.Duplicated_weekly_reports_revisions_and_transitive_challenge_session_aliases_count_once" computerName="oharanoMac-mini" duration="00:00:00.0035117" startTime="2026-10-11T13:00:04.7528600+09:00" endTime="2026-10-11T13:00:04.7528790+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c23235b5-6393-4c46-ac65-a685793a4c64" />
+    <UnitTestResult executionId="e912f362-c49f-408f-9422-915e8f687d4f" testId="c06f44fc-9e13-f8ac-afed-742efee0c491" testName="Dse.Tests.BusinessAnalysisTests.Code_metrics_match_known_independent_sources_and_no_model_numbers_are_used" computerName="oharanoMac-mini" duration="00:00:00.0056789" startTime="2026-10-11T13:00:05.7879960+09:00" endTime="2026-10-11T13:00:05.7892930+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e912f362-c49f-408f-9422-915e8f687d4f" />
+    <UnitTestResult executionId="7f50b25a-a542-47c6-8f5b-1cdc7d09b42e" testId="000e77ab-5e43-84df-6dbd-32357098d86a" testName="Dse.Tests.BusinessAnalysisTests.Secondary_probabilities_join_sources_with_different_top_categories" computerName="oharanoMac-mini" duration="00:00:00.0006715" startTime="2026-10-11T13:00:04.7529250+09:00" endTime="2026-10-11T13:00:04.7529430+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7f50b25a-a542-47c6-8f5b-1cdc7d09b42e" />
+    <UnitTestResult executionId="ea0f5798-6453-48a5-ad80-a5017be209de" testId="ecaeb95d-b715-291a-ffa9-a3bb2e9b75e7" testName="Dse.Tests.BusinessAnalysisTests.No_analysis_consent_unpublished_or_inaccessible_data_never_reaches_the_model" computerName="oharanoMac-mini" duration="00:00:00.0016441" startTime="2026-10-11T13:00:05.7894600+09:00" endTime="2026-10-11T13:00:05.7909830+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ea0f5798-6453-48a5-ad80-a5017be209de" />
+    <UnitTestResult executionId="27c4f697-b6f3-4be5-b478-4c1a99c99f5c" testId="c2dcebd0-4095-fa7e-035c-68e4535040ee" testName="Dse.Tests.BusinessAnalysisTests.Live_drafter_is_explicitly_unwired_and_makes_no_external_call" computerName="oharanoMac-mini" duration="00:00:00.0020546" startTime="2026-10-11T13:00:05.7910720+09:00" endTime="2026-10-11T13:00:05.7930950+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="27c4f697-b6f3-4be5-b478-4c1a99c99f5c" />
+    <UnitTestResult executionId="f1a49d61-2626-41ab-8937-9da95cb0ef15" testId="9dcf4674-a512-4905-6887-f05fb100e40d" testName="Dse.Tests.BusinessAnalysisTests.Live_start_rejects_before_any_repository_or_drafter_operation" computerName="oharanoMac-mini" duration="00:00:00.0012233" startTime="2026-10-11T13:00:04.7526210+09:00" endTime="2026-10-11T13:00:04.7526570+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f1a49d61-2626-41ab-8937-9da95cb0ef15" />
+    <UnitTestResult executionId="cd332b0b-bc58-42fc-9fcc-131936d9abcd" testId="457de64a-cfe1-3d1d-e6e6-f3c5c70fc6b2" testName="Dse.Tests.BusinessAnalysisTests.Withdrawal_during_drafting_and_after_persistence_hides_all_derived_metrics_and_hypotheses" computerName="oharanoMac-mini" duration="00:00:00.0047989" startTime="2026-10-11T13:00:05.7787150+09:00" endTime="2026-10-11T13:00:05.7835600+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cd332b0b-bc58-42fc-9fcc-131936d9abcd" />
+    <UnitTestResult executionId="dd86245e-318f-45ed-a57d-f9eef13ef63c" testId="91057ae0-71aa-2643-bd96-c97dc0548165" testName="Dse.Tests.BusinessAnalysisTests.Human_decision_requires_owner_scope_current_sources_ETag_and_idempotency" computerName="oharanoMac-mini" duration="00:00:00.0061444" startTime="2026-10-11T13:00:04.7550290+09:00" endTime="2026-10-11T13:00:04.7647430+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dd86245e-318f-45ed-a57d-f9eef13ef63c">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "STALE_VERSION"
+Actual:   "INVALID_INPUT"
+           ↑ (pos 0)</Message>
+          <StackTrace>   at Dse.Tests.BusinessAnalysisTests.Human_decision_requires_owner_scope_current_sources_ETag_and_idempotency() in /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/BusinessAnalysisTests.cs:line 145
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Replays_pin_cutoff_config_input_hash_and_do_not_repeat_failed_AI" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="0778a5e9-9a79-1e87-b97a-8591e35b5542">
+      <Execution id="736768fd-7ca6-433b-a166-f2145a9acaff" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Replays_pin_cutoff_config_input_hash_and_do_not_repeat_failed_AI" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Forged_evidence_is_rejected_without_automatic_retry" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="75e18963-eb51-1de0-d7ba-d78813f02c1b">
+      <Execution id="649bbb0f-2695-4626-9a75-424d128209b7" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Forged_evidence_is_rejected_without_automatic_retry" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Live_drafter_is_explicitly_unwired_and_makes_no_external_call" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="c2dcebd0-4095-fa7e-035c-68e4535040ee">
+      <Execution id="27c4f697-b6f3-4be5-b478-4c1a99c99f5c" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Live_drafter_is_explicitly_unwired_and_makes_no_external_call" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Input_limits_apply_before_AI_and_configurable_demo_thresholds_are_reported" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="647775ac-b4ca-2f60-11c0-79080eee32c2">
+      <Execution id="7a929311-e70e-4292-991e-bdd1082c26c3" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Input_limits_apply_before_AI_and_configurable_demo_thresholds_are_reported" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Code_metrics_match_known_independent_sources_and_no_model_numbers_are_used" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="c06f44fc-9e13-f8ac-afed-742efee0c491">
+      <Execution id="e912f362-c49f-408f-9422-915e8f687d4f" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Code_metrics_match_known_independent_sources_and_no_model_numbers_are_used" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Secondary_probabilities_join_sources_with_different_top_categories" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="000e77ab-5e43-84df-6dbd-32357098d86a">
+      <Execution id="7f50b25a-a542-47c6-8f5b-1cdc7d09b42e" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Secondary_probabilities_join_sources_with_different_top_categories" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Live_start_rejects_before_any_repository_or_drafter_operation" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="9dcf4674-a512-4905-6887-f05fb100e40d">
+      <Execution id="f1a49d61-2626-41ab-8937-9da95cb0ef15" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Live_start_rejects_before_any_repository_or_drafter_operation" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Concurrent_run_is_rejected_across_service_instances_and_timeout_has_no_AI_retry" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="8c20bbf6-047e-95e2-4b38-8a03a1032d32">
+      <Execution id="90718a3b-ab5f-452f-8fe3-6b20e485f5c6" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Concurrent_run_is_rejected_across_service_instances_and_timeout_has_no_AI_retry" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.No_analysis_consent_unpublished_or_inaccessible_data_never_reaches_the_model" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="ecaeb95d-b715-291a-ffa9-a3bb2e9b75e7">
+      <Execution id="ea0f5798-6453-48a5-ad80-a5017be209de" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="No_analysis_consent_unpublished_or_inaccessible_data_never_reaches_the_model" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Duplicated_weekly_reports_revisions_and_transitive_challenge_session_aliases_count_once" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="34559d51-117d-f075-a819-de4c2477c8b5">
+      <Execution id="c23235b5-6393-4c46-ac65-a685793a4c64" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Duplicated_weekly_reports_revisions_and_transitive_challenge_session_aliases_count_once" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Missing_public_metadata_is_unknown_and_does_not_pass_department_threshold" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="e557e43f-3c61-363f-269a-72bfd5e2372f">
+      <Execution id="84bae4af-c5aa-4ec9-a37b-9b56c2de966a" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Missing_public_metadata_is_unknown_and_does_not_pass_department_threshold" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Withdrawal_during_drafting_and_after_persistence_hides_all_derived_metrics_and_hypotheses" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="457de64a-cfe1-3d1d-e6e6-f3c5c70fc6b2">
+      <Execution id="cd332b0b-bc58-42fc-9fcc-131936d9abcd" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Withdrawal_during_drafting_and_after_persistence_hides_all_derived_metrics_and_hypotheses" />
+    </UnitTest>
+    <UnitTest name="Dse.Tests.BusinessAnalysisTests.Human_decision_requires_owner_scope_current_sources_ETag_and_idempotency" storage="/users/nyanpass/documents/codex/2026-10-08/task-3/repo-issues-20261011/tests/dse.tests/bin/debug/net10.0/dse.tests.dll" id="91057ae0-71aa-2643-bd96-c97dc0548165">
+      <Execution id="dd86245e-318f-45ed-a57d-f9eef13ef63c" />
+      <TestMethod codeBase="/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Dse.Tests.BusinessAnalysisTests" name="Human_decision_requires_owner_scope_current_sources_ETag_and_idempotency" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="0778a5e9-9a79-1e87-b97a-8591e35b5542" executionId="736768fd-7ca6-433b-a166-f2145a9acaff" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="75e18963-eb51-1de0-d7ba-d78813f02c1b" executionId="649bbb0f-2695-4626-9a75-424d128209b7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8c20bbf6-047e-95e2-4b38-8a03a1032d32" executionId="90718a3b-ab5f-452f-8fe3-6b20e485f5c6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e557e43f-3c61-363f-269a-72bfd5e2372f" executionId="84bae4af-c5aa-4ec9-a37b-9b56c2de966a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="647775ac-b4ca-2f60-11c0-79080eee32c2" executionId="7a929311-e70e-4292-991e-bdd1082c26c3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="34559d51-117d-f075-a819-de4c2477c8b5" executionId="c23235b5-6393-4c46-ac65-a685793a4c64" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c06f44fc-9e13-f8ac-afed-742efee0c491" executionId="e912f362-c49f-408f-9422-915e8f687d4f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="000e77ab-5e43-84df-6dbd-32357098d86a" executionId="7f50b25a-a542-47c6-8f5b-1cdc7d09b42e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ecaeb95d-b715-291a-ffa9-a3bb2e9b75e7" executionId="ea0f5798-6453-48a5-ad80-a5017be209de" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c2dcebd0-4095-fa7e-035c-68e4535040ee" executionId="27c4f697-b6f3-4be5-b478-4c1a99c99f5c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9dcf4674-a512-4905-6887-f05fb100e40d" executionId="f1a49d61-2626-41ab-8937-9da95cb0ef15" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="457de64a-cfe1-3d1d-e6e6-f3c5c70fc6b2" executionId="cd332b0b-bc58-42fc-9fcc-131936d9abcd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="91057ae0-71aa-2643-bd96-c97dc0548165" executionId="dd86245e-318f-45ed-a57d-f9eef13ef63c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="13" executed="13" passed="12" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v4.0.0+05679a7ab5 (64-bit .NET 10.0.11)
+[xUnit.net 00:00:00.05]   Discovering: Dse.Tests
+[xUnit.net 00:00:00.09]   Discovered:  Dse.Tests
+[xUnit.net 00:00:00.26]   Starting:    Dse.Tests
+[xUnit.net 00:00:00.33]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.33]                  ↓ (pos 0)
+[xUnit.net 00:00:00.33]       Expected: "STALE_VERSION"
+[xUnit.net 00:00:00.33]       Actual:   "INVALID_INPUT"
+[xUnit.net 00:00:00.33]                  ↑ (pos 0)
+[xUnit.net 00:00:00.33]       Stack Trace:
+[xUnit.net 00:00:00.33]         /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/tests/Dse.Tests/BusinessAnalysisTests.cs(145,0): at Dse.Tests.BusinessAnalysisTests.Human_decision_requires_owner_scope_current_sources_ETag_and_idempotency()
+[xUnit.net 00:00:00.33]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:01.37]   Finished:    Dse.Tests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="oharanoMac-mini" outcome="Error" timestamp="2026-10-11T13:00:04.7659170+09:00">
+        <Text>[xUnit.net 00:00:00.33]     Dse.Tests.BusinessAnalysisTests.Human_decision_requires_owner_scope_current_sources_ETag_and_idempotency [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

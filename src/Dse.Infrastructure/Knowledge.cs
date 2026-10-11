@@ -21,7 +21,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
         var state = RecordJson.New("knowledgeDraft", Id(session.Text("id")), a.TenantId, session.Text("ownerId"), session.Strings("scopeIds"), now);
         state["contractVersion"] = "knowledge-v1"; state["sessionId"] = session.Text("id"); state["status"] = "absent"; state["sections"] = new JsonArray();
         state["sourceVersion"] = 0; state["accessVersion"] = 1; state["consents"] = new JsonObject();
-        state["approvedBy"] = null; state["activeVersion"] = null; state["analysisConsent"] = "not_granted";
+        state["approvedBy"] = null; state["activeVersion"] = null; state["analysisConsent"] = "not_granted"; state["analysisMetadata"] = null;
         return state;
     }
     public async Task<JsonObject> StateAsync(ActorAccess a, string sid, CancellationToken ct)
@@ -133,7 +133,9 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                     var summary = new KnowledgeSummary(input["sections"]!.Deserialize<SummarySection[]>(Json)!); ValidateSections(summary, state.Strings("evidenceIds").ToHashSet());
                     var scopes = input.Strings("scopeIds");
                     if (scopes.Length is < 1 or > 20 || scopes.Distinct().Count() != scopes.Length || scopes.Any(s => !session.Value.Strings("scopeIds").Contains(s) || !a.ScopeIds.Contains(s))) throw new DomainException(403, "FORBIDDEN");
-                    Invalidate(); state["sections"] = Node(summary.Sections); state["scopeIds"] = RecordJson.Array(scopes); break;
+                    Invalidate(); state["sections"] = Node(summary.Sections); state["scopeIds"] = RecordJson.Array(scopes);
+                    if (input.ContainsKey("analysisMetadata")) state["analysisMetadata"] = JsonSerializer.SerializeToNode(BusinessAnalysisMetadataContract.Parse(input["analysisMetadata"]), Json);
+                    break;
                 case "request-review":
                     Owner(a, session.Value); Version(state, input); if (state.Text("status") != "draft") throw new DomainException(409, "INVALID_TRANSITION");
                     state["status"] = "review_requested"; state["membershipVersion"] = session.Value.Number("membershipVersion");
@@ -173,9 +175,10 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
     }
     public static void ValidateInput(string operation, JsonObject input)
     {
-        var allowed = operation switch { "outcome" => new[] { "resolution", "result" }, "feedback" => ["value", "comment"], "edit" => ["sections", "scopeIds"],
+        var allowed = operation switch { "outcome" => new[] { "resolution", "result" }, "feedback" => ["value", "comment"], "edit" => ["sections", "scopeIds", "analysisMetadata"],
             "request-review" or "approve" => ["version"], "consent" => ["version", "publication", "analysis"], "withdraw" => [], _ => throw new ArgumentException("Invalid operation") };
-        if (input.Any(p => !allowed.Contains(p.Key)) || operation != "feedback" && allowed.Any(k => input[k] is null)) throw new ArgumentException("Invalid input");
+        var required = operation == "edit" ? new[] { "sections", "scopeIds" } : allowed;
+        if (input.Any(p => !allowed.Contains(p.Key)) || operation != "feedback" && required.Any(k => input[k] is null)) throw new ArgumentException("Invalid input");
         try
         {
             switch (operation)
@@ -186,6 +189,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                     _ = input.Strings("scopeIds");
                     var sections = input["sections"]!.Deserialize<SummarySection[]>(Json);
                     if (sections is null || sections.Any(x => x is null || x.EvidenceIds is null)) throw new ArgumentException("Invalid sections");
+                    if (input.ContainsKey("analysisMetadata")) _ = BusinessAnalysisMetadataContract.Parse(input["analysisMetadata"]);
                     break;
                 case "consent": _ = input["publication"]!.GetValue<bool>(); _ = input["analysis"]!.GetValue<bool>(); goto case "approve";
                 case "approve": case "request-review": if (input.Number("version") < 1) throw new ArgumentException("Invalid version"); break;
@@ -245,6 +249,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                 k["contractVersion"] = "knowledge-v1"; k["sessionId"] = sid; k["title"] = state.Text("title"); k["summary"] = Summary(state).Text; k["sections"] = Node(Summary(state).Sections.Select(x => new { x.Field, x.Text, x.Basis }));
                 k["sourceVersion"] = version; k["activeVersion"] = version; k["accessVersion"] = state.Number("accessVersion"); k["approvedBy"] = state["approvedBy"]!.DeepClone(); k["status"] = "published";
                 k["processingMode"] = state.Text("processingMode");
+                k["analysisMetadata"] = state["analysisMetadata"]?.DeepClone();
                 var evidence = new[] { new EvidenceReference(id, id, version) };
                 var answer = classified.Value;
                 var unit = new SearchUnit(projectionId, id, "knowledge", tenant, id, k.Text("title"), k.Text("summary"), k.Strings("scopeIds"), "active", true, Retriever.TaxonomyVersion,

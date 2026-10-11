@@ -1,0 +1,96 @@
+{
+  "capturedAt": "2026-10-11T04:18:38.574Z",
+  "browser": "Google Chrome",
+  "version": "154.0.8037.99",
+  "headed": true,
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "checks": [
+    {
+      "mode": "pc",
+      "route": "home",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "mode": "pc",
+      "route": "tasks",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "mode": "pc",
+      "route": "invitations",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "mode": "pc",
+      "route": "rooms",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "mode": "pc",
+      "route": "knowledge",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "mode": "pc",
+      "route": "profile",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "mode": "pc",
+      "route": "analysis",
+      "sourceCount": 3,
+      "reportedHours": 12,
+      "decision": "investigating"
+    },
+    {
+      "mode": "mobile",
+      "route": "home",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "mode": "mobile",
+      "route": "tasks",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "mode": "mobile",
+      "route": "invitations",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "mode": "mobile",
+      "route": "rooms",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "mode": "mobile",
+      "route": "knowledge",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "mode": "mobile",
+      "route": "profile",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "mode": "mobile",
+      "route": "analysis",
+      "sourceCount": 3,
+      "reportedHours": 12,
+      "decision": "investigating"
+    }
+  ],
+  "externalModelCalls": 0
+}

@@ -58,6 +58,95 @@ class ContractsTests(unittest.TestCase):
                     self.assertIn("#/components/parameters/IdempotencyKey", refs)
                     self.assertIn("#/components/parameters/IfMatch", refs)
 
+    def test_business_analysis_runtime_openapi(self):
+        api = read("openapi-business-analysis-v1.json")
+        validate(api)
+        self.assertEqual(5, len(api["paths"]))
+        for path, methods in api["paths"].items():
+            for method, operation in methods.items():
+                self.assertTrue(operation["security"])
+                capability = path.endswith("capabilities")
+                self.assertEqual([] if capability else ["member", "analyst"], operation["x-required-roles"])
+                self.assertEqual(not capability, operation["x-requires-owner"])
+                self.assertEqual(not capability, operation["x-revalidates-current-analysis-consent"])
+                headers = operation["responses"]["200"]["headers"]
+                self.assertEqual("no-store", headers["Cache-Control"]["schema"]["const"])
+                self.assertEqual("ETag" in headers, not path.endswith(("{knowledgeId}", "capabilities")))
+                if method in ("post", "patch"):
+                    refs = [p.get("$ref") for p in operation["parameters"]]
+                    self.assertIn("#/components/parameters/IdempotencyKey", refs)
+                    self.assertEqual("#/components/parameters/IfMatch" in refs, method == "patch")
+        start = api["paths"]["/api/v1/business-analysis"]["post"]
+        self.assertIn("ANALYSIS_RECOVERY_REQUIRED", start["responses"]["409"]["description"])
+        self.assertIn("ANALYSIS_LIVE_NOT_ENABLED", start["responses"]["501"]["description"])
+        self.assertIn("AI_BUDGET_STOPPED", start["responses"]["409"]["description"])
+        self.assertIn("ANALYSIS_LIVE_CONFIGURATION_INVALID", start["responses"]["422"]["description"])
+        self.assertFalse(api["x-offline-recovery"]["httpEndpoint"])
+        self.assertEqual(0, api["x-offline-recovery"]["refundJpy"])
+        self.assertFalse(api["x-production-restrictions"]["automaticRetry"])
+        schemas = api["components"]["schemas"]
+        request = Draft202012Validator(schemas["StartRequest"], format_checker=FormatChecker())
+        request.validate({"runId": "analysis-run-20261011", "cutoff": "2026-10-11T00:00:00Z", "configVersion": "business-analysis-demo-v1"})
+        self.assertFalse(request.is_valid({"runId": "bad/id", "cutoff": "tomorrow", "configVersion": "live-v1"}))
+        decision = Draft202012Validator(schemas["DecisionRequest"])
+        decision.validate({"status": "investigating", "groupId": None})
+        self.assertFalse(decision.is_valid({"status": "market_validated"}))
+        capabilities = Draft202012Validator(schemas["Capabilities"])
+        forbidden = {"allowed": False, "enabled": False, "configVersion": "business-analysis-live-v1", "mode": "live", "reason": "FORBIDDEN", "automaticRetry": False}
+        capabilities.validate(forbidden)
+        self.assertFalse(capabilities.is_valid({**forbidden, "enabled": True}))
+
+    def test_workspace_contract_opaque_dtos_and_independent_name_consent(self):
+        api = read("openapi-workspace-v1.json")
+        validate(api)
+        boundary = api["x-privacy-boundary"]
+        self.assertTrue(boundary["structuredIdentifiersRemoved"])
+        self.assertFalse(boundary["freeTextAnonymized"])
+        self.assertTrue(boundary["casePublicationConsentIndependent"])
+        self.assertTrue(boundary["identityDisclosureRequiresAllCurrentConsents"])
+        for methods in api["paths"].values():
+            for operation in methods.values():
+                self.assertTrue(operation["security"])
+                success = operation["responses"].get("200", operation["responses"].get("201"))
+                self.assertEqual("no-store", success["headers"]["Cache-Control"]["schema"]["const"])
+        components = api["components"]
+        def check(name, value):
+            return Draft202012Validator({"$ref": "#/components/schemas/" + name, "components": components}, format_checker=FormatChecker()).is_valid(value)
+        room = "awr-" + "1" * 32
+        alias = "awa-" + "2" * 32
+        self.assertTrue(check("RoomId", room))
+        self.assertFalse(check("RoomId", "demo-session-01"))
+        participant = {"aliasId": alias, "aliasLabel": "協力者1", "sharedName": None}
+        view = {"roomId": room, "reviewedVersion": "a" * 64, "fieldSet": "profile-display-name-v1", "etag": '"current"', "selfConsent": True, "state": "pending", "participants": [participant]}
+        self.assertTrue(check("IdentityView", view))
+        leaked = copy.deepcopy(view)
+        leaked["participants"][0]["sharedName"] = "本人表示名"
+        self.assertFalse(check("IdentityView", leaked), "Names cannot be disclosed in a pending consent view")
+        for private_field in ("personId", "principalId", "ownerId", "tenantId", "sessionId", "sourceId"):
+            self.assertFalse(check("IdentityView", {**view, private_field: "internal-id"}))
+        consent = {"granted": True, "reviewedVersion": "a" * 64, "fieldSet": "profile-display-name-v1"}
+        self.assertTrue(check("IdentityConsentRequest", consent))
+        self.assertFalse(check("IdentityConsentRequest", {**consent, "personId": "someone-else"}))
+        self.assertFalse(check("IdentityConsentRequest", {**consent, "publication": True}))
+        candidate = {"token": "awt-" + "3" * 32, "aliasLabel": "協力候補1", "matchingRoutes": ["terms"]}
+        self.assertTrue(check("Candidate", candidate))
+        self.assertFalse(check("Candidate", {**candidate, "token": "person-01"}))
+        self.assertFalse(check("Candidate", {**candidate, "personId": "person-01"}))
+        metadata = {"departmentId": "awd-" + "4" * 32, "resolution": None, "reportedHours": None, "recurrences": None, "feedback": None}
+        self.assertTrue(check("AnalysisMetadata", metadata))
+        self.assertFalse(check("AnalysisMetadata", {**metadata, "departmentId": "internal-department"}))
+
+    def test_operation_export_contract_keeps_partial_unknown_and_private_fields_out(self):
+        api = read("openapi-workspace-v1.json")
+        operation = api["paths"]["/api/v1/operation-measurements"]["get"]
+        self.assertEqual(["operator"], operation["x-required-roles"])
+        validator = Draft202012Validator({"$ref": "#/components/schemas/MeasurementExport", "components": api["components"]}, format_checker=FormatChecker())
+        report = {"schemaVersion": "issue34-operation-export-v1", "runId": "a" * 32, "evidenceKind": "fixture", "state": "incomplete", "observedAt": "2026-10-11T00:00:00Z", "operations": [], "observedSdkRequestUnits": None, "completeRequestUnits": None, "completeMeasurement": False, "acceptanceGatePassed": False, "droppedOperations": 0, "missingExpectedKinds": [], "unknownComponents": ["invoice_reconciliation"], "limitations": ["Partial observations only"]}
+        validator.validate(report)
+        for patch in ({"completeMeasurement": True}, {"acceptanceGatePassed": True}, {"completeRequestUnits": 0}, {"unknownComponents": []}, {"tenantId": "internal"}, {"requestBody": "private"}):
+            with self.subTest(patch=patch):
+                self.assertFalse(validator.is_valid({**report, **patch}))
+
     def test_generated_knowledge_contracts(self):
         path = ROOT / "tests/Dse.Tests/TestResults/knowledge-contract-fixture.json"
         if not path.exists():

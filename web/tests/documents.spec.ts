@@ -3,7 +3,7 @@ import path from "node:path";
 
 for (const extension of ["docx", "xlsx"]) {
   test(`${extension}をアップロードして機械抽出結果と出典を確認できる`, async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/validation.html");
     await page.getByLabel("文書名", { exact: true }).fill(`架空資料 ${extension}`);
     await page.getByLabel("原本ファイル").setInputFiles(path.resolve(`../evaluation/documents/tuning.${extension}`));
     await page.getByRole("button", { name: "アップロード", exact: true }).click();
@@ -18,7 +18,7 @@ for (const extension of ["docx", "xlsx"]) {
   });
 }
 test("偽装Officeファイルは拒否して入力を保持する", async ({ page }) => {
-  await page.goto("/"); await page.getByLabel("文書名", { exact: true }).fill("壊れたダミー");
+  await page.goto("/validation.html"); await page.getByLabel("文書名", { exact: true }).fill("壊れたダミー");
   await page.getByLabel("原本ファイル").setInputFiles({ name: "bad.docx", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", buffer: Buffer.from("invalid") });
   await page.getByRole("button", { name: "アップロード", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("INVALID_PACKAGE");
@@ -31,7 +31,7 @@ test("処理待ちと失敗を区別して手動再実行できる（状態API f
   await page.route("**/api/v1/documents/fixture-doc", route => route.fulfill({ json: { warnings: [] } }));
   await page.route("**/api/v1/jobs/fixture-job", route => route.fulfill({ headers: { ETag: '"fixture"' }, json: { status: state, lastErrorCode: state === "failed" ? "RETRY_EXHAUSTED" : null } }));
   await page.route("**/api/v1/jobs/fixture-job/retry", async route => { state = "queued"; await route.fulfill({ status: 202, json: { jobId: "fixture-job" } }); });
-  await page.goto("/"); await page.getByLabel("文書名", { exact: true }).fill("状態試験");
+  await page.goto("/validation.html"); await page.getByLabel("文書名", { exact: true }).fill("状態試験");
   await page.getByLabel("原本ファイル").setInputFiles(path.resolve("../evaluation/documents/tuning.docx"));
   await page.getByRole("button", { name: "アップロード", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("処理待ち");

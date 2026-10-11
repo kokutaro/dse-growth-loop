@@ -1,0 +1,5064 @@
+{
+  "version": "offline-quality-v1",
+  "fields": [
+    "description",
+    "start",
+    "end",
+    "precision",
+    "months",
+    "skills",
+    "domain",
+    "evidenceIds"
+  ],
+  "origin": "human-review-draft-no-gold-labels",
+  "datasetSha256": "6e9724acadf1d9c7dff61531f5e02df4c1bd3543c451e785f237e693356b437d",
+  "approval": {
+    "status": "pending",
+    "reviewer": null,
+    "reviewedAt": null,
+    "evidenceReference": null,
+    "recordsSha256": null
+  },
+  "records": [
+    {
+      "id": "v2t-software-01-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-01-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-01-person-direct-evidence",
+          "text": "通知APIの開発で、一過性の通信エラーを識別し、指数バックオフと送信回数上限を実装した。失敗を再現するテストも作成した。"
+        }
+      ],
+      "sourceSha256": "daeb8708f49955443d93d46958c8da407e8b4d25e1f9150c7736388d890a4d37",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-01-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-01-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-01-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。通知APIの開発で、一過性の通信エラーを識別し、指数バックオフと送信回数上限を実装した。失敗を再現するテストも作成した。"
+        }
+      ],
+      "sourceSha256": "230cd3b333bec92bf94f7074ed1e5255cf7b77eb3d8482f3e1132e173d0d9a07",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-01-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-01-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-01-person-negative-evidence",
+          "text": "ソフトウェアの資料に「外部通知が一時的に失敗しても、時間を空けて再送できる仕組みを作った人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "bfd9575ed1d00d6c79dc42135c83bb88f7ba1fc2aeee5c1e8ea8821aa1c8a1b6",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-02-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-02-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-02-person-direct-evidence",
+          "text": "ソフトウェア開発で、新旧両方の列へ書き込み、既存データの移行後に読み取り先を切り替えた。稼働中の業務システムを停止せずテーブルを変更した。"
+        }
+      ],
+      "sourceSha256": "cb4dc474196c9edd7c2fc9afed8d609da951d2797facd4543e922b495ebf1901",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-02-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-02-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-02-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、新旧両方の列へ書き込み、既存データの移行後に読み取り先を切り替えた。稼働中の業務システムを停止せずテーブルを変更した。"
+        }
+      ],
+      "sourceSha256": "027fc4174c16c6befb7df2cd4102101db65bcb3bfa28b3573738bdd41095590c",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-02-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-02-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-02-person-negative-evidence",
+          "text": "ソフトウェアの資料に「サービスを止めずにデータベースの構造を変更した経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "50c6ceeb20bc89edc5f59ebeaf7a771d85eea129d64c39f50f227c1adecebc04",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-03-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-03-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-03-knowledge-direct-evidence",
+          "text": "ソフトウェア運用の解決事例。認証状態が端末間で上書きされる不具合を調査し、セッション識別子を端末ごとに分離して再ログイン要求を解消した。"
+        }
+      ],
+      "sourceSha256": "c87c0af6582499a885c34ff6f1abafcc56517269fc19ac45cc88f312f4f8d790",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-03-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-03-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-03-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。ソフトウェア運用の解決事例。認証状態が端末間で上書きされる不具合を調査し、セッション識別子を端末ごとに分離して再ログイン要求を解消した。"
+        }
+      ],
+      "sourceSha256": "6aee6ec53fbb6fad605e932bc761f971919821cbedf7c816149007a23f555467",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-03-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-03-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-03-knowledge-negative-evidence",
+          "text": "ソフトウェアの資料に「同じ人が複数回ログインすると認証状態が消える問題を解決した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "60e5bbde22b817de3ed11fc6bc563dd8bdd20906311674726f8668ceb8c796a2",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-04-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-04-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-04-knowledge-direct-evidence",
+          "text": "ソフトウェア開発の事例。過去に使用した認証秘密のハッシュ履歴を照合し、同一の秘密への変更を拒否する処理と検証手順を追加した。"
+        }
+      ],
+      "sourceSha256": "b1f799df7e65fc52494f1704036f9621587acc3745df7debf9bf9357b5399ab0",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-04-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-04-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-04-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。過去に使用した認証秘密のハッシュ履歴を照合し、同一の秘密への変更を拒否する処理と検証手順を追加した。"
+        }
+      ],
+      "sourceSha256": "78b0b2a2699dafb051d87a2f549751a2d46f6b650f7cfab958cead4f87d53bd3",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-software-04-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-software-04-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-software-04-knowledge-negative-evidence",
+          "text": "ソフトウェアの資料に「一度変えた認証用の文字列にすぐ戻せないようにした実装例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "d3f19b638efef1173065675d07185bfd2368b02c5fa160782adcbccd91ac18f1",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-05-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-05-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-05-person-direct-evidence",
+          "text": "機械設計で、回転体の偏心と支持剛性を測定した。軸受間隔と支持部の寸法を変更し、振動耐久試験で寿命改善を確認した。"
+        }
+      ],
+      "sourceSha256": "43072ca06ec6278b181b38d105ef3cf53c7df2e129ea77030ba1215d360005be",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-05-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-05-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-05-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、回転体の偏心と支持剛性を測定した。軸受間隔と支持部の寸法を変更し、振動耐久試験で寿命改善を確認した。"
+        }
+      ],
+      "sourceSha256": "436eb736e254ddc467433a62b0ba232d69980c8b97397c256bc31db010c90ae3",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-05-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-05-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-05-person-negative-evidence",
+          "text": "機械設計の資料に「ポンプの軸がぶれて短期間で壊れる問題を、設計変更で直した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "ec03b5499b6bd5c4234a2b7270ac8fa2de12ef8748dc07f6bff9f9633ba49686",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-06-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-06-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-06-person-direct-evidence",
+          "text": "機械設計で、シール溝の加工公差と温度による膨張を解析した。溝寸法と密封材を変更し、高温での漏洩試験に合格した。"
+        }
+      ],
+      "sourceSha256": "667451c580575712de76a0f5054b269e1dd1f254d36baf22a8bf4d9972191a27",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-06-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-06-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-06-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、シール溝の加工公差と温度による膨張を解析した。溝寸法と密封材を変更し、高温での漏洩試験に合格した。"
+        }
+      ],
+      "sourceSha256": "e2294c888192a9a6d38f605fbf93fb31e141f75021b9fa838f1daf967f84ed1f",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-06-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-06-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-06-person-negative-evidence",
+          "text": "機械設計の資料に「油圧機器の継ぎ目から液体が漏れる問題を解決した経験者に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "9977ab1f27a9f2f9254c08773d56aecf91ed2463f64a24be4a0c6e5045625506",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-07-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-07-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-07-knowledge-direct-evidence",
+          "text": "機械設計の解決事例。締結部の疲労亀裂を破面観察で特定し、初期締付力と荷重経路を見直した。繰り返し負荷による破断が再発しなかった。"
+        }
+      ],
+      "sourceSha256": "1a0b3ead9d8c8f925a20867031f441835d1ae60dc11144514f64e95875034efb",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-07-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-07-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-07-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。機械設計の解決事例。締結部の疲労亀裂を破面観察で特定し、初期締付力と荷重経路を見直した。繰り返し負荷による破断が再発しなかった。"
+        }
+      ],
+      "sourceSha256": "44532df0fb9f40120095aa72a3da889c6d6d5c9f76565d773d8414c554302d57",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-07-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-07-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-07-knowledge-negative-evidence",
+          "text": "機械設計の資料に「繰り返し荷重でボルトが折れる問題の対策事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "2bbd618cf47eadf775f2c2046ec3893d86d48d5c980cebeb5048da5627e4fd80",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-08-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-08-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-08-knowledge-direct-evidence",
+          "text": "機械設計の事例。公差の累積による摺動部の干渉を解析し、基準面と逃げ寸法を改訂した。量産前の組立検証で干渉を検出しないことを確認した。"
+        }
+      ],
+      "sourceSha256": "95f39c908429bdc28e440f102f28809fb0c89e3c446e7e4bf74db9b8b4e40b1b",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-08-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-08-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-08-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。機械設計の事例。公差の累積による摺動部の干渉を解析し、基準面と逃げ寸法を改訂した。量産前の組立検証で干渉を検出しないことを確認した。"
+        }
+      ],
+      "sourceSha256": "3db5c805111fd752f0900fcc1ac1e40ce6f875065edeb0957ebfa6c593b30fef",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-mechanical-08-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-mechanical-08-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-mechanical-08-knowledge-negative-evidence",
+          "text": "機械設計の資料に「組み付けると部品同士が当たって動かない問題を、図面段階で防いだ事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "5aca52605e3198d08a68454369f90324502cae03c9984cd83345159373c9a54b",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-09-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-09-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-09-person-direct-evidence",
+          "text": "営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め、見積の利益率を維持した。"
+        }
+      ],
+      "sourceSha256": "d8f23950e4bf3a788c656f0daaf687f4025cbfcc58709aa2d254652ccab7f08e",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-09-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-09-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-09-person-support-evidence",
+          "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、案件の粗利と契約規模に基づく割引承認表を作成した。承認者と例外条件を定め、見積の利益率を維持した。"
+        }
+      ],
+      "sourceSha256": "ff70eed458f3da3b6f343a06868d38703ff80270368ce2a2381b37afe12352de",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-09-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-09-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-09-person-negative-evidence",
+          "text": "営業の資料に「案件ごとに値引きの判断がばらつく問題を改善した担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "6e34a71e78b7ffce962ccff98526f20f3f6cb08e1a2dd22286db5609deb9a9d6",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-10-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-10-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-10-person-direct-evidence",
+          "text": "営業で、代理店向けの製品説明研修を企画し、実演と理解度確認を行った。商談同席で説明内容を確認し、担当者へ営業資料を引き継いだ。"
+        }
+      ],
+      "sourceSha256": "464d709280b757d1885889ce35507310207130873e1063d230a3f08ee0860399",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-10-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-10-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-10-person-support-evidence",
+          "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、代理店向けの製品説明研修を企画し、実演と理解度確認を行った。商談同席で説明内容を確認し、担当者へ営業資料を引き継いだ。"
+        }
+      ],
+      "sourceSha256": "7a2485fa73a92163d56e8f2be59d48afeb3b6376a377c8ad168080ab57c0a5fc",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-10-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-10-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-10-person-negative-evidence",
+          "text": "営業の資料に「販売代理店が新製品を説明できない状況を改善した経験者に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "3a5be851a7368eca723f933134deb1b34427904fad45a2a4d3089724f334bab9",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-11-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-11-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-11-knowledge-direct-evidence",
+          "text": "営業の解決事例。更新失注を顧客別に分析し、利用低下と未解決の問い合わせを早期に検知した。更新前の面談を実施して継続率を改善した。"
+        }
+      ],
+      "sourceSha256": "5d4e461c8f1c35dac120b7c349276a05de68237b89a4551b1cf9e9a50f05ea67",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-11-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-11-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-11-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。営業の解決事例。更新失注を顧客別に分析し、利用低下と未解決の問い合わせを早期に検知した。更新前の面談を実施して継続率を改善した。"
+        }
+      ],
+      "sourceSha256": "aed98da55958df28ed4d3b9b0935bc208ffaec7f54f383b0579bdc759b604a12",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-11-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-11-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-11-knowledge-negative-evidence",
+          "text": "営業の資料に「契約更新直前に顧客が離れてしまう問題を減らした事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "be1292f0a417970fd7c7bc508935871f0a48789313558f37c843b2116c39e371",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-12-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-12-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-12-knowledge-direct-evidence",
+          "text": "営業の事例。提案段階で顧客要件と対象外範囲を一覧にし、技術担当と顧客が共同確認した。合意書を納入担当へ引き継ぎ、追加要求の扱いを明確にした。"
+        }
+      ],
+      "sourceSha256": "7759ddc9404681d92582a1bbe1c7700a7444d72374f19d25e13fd9161908d47c",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-12-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-12-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-12-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。営業の事例。提案段階で顧客要件と対象外範囲を一覧にし、技術担当と顧客が共同確認した。合意書を納入担当へ引き継ぎ、追加要求の扱いを明確にした。"
+        }
+      ],
+      "sourceSha256": "53d60850155103c3deca7195926cf5a6270316df8049f247cb38ed33022b0c92",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-sales-12-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-sales-12-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-sales-12-knowledge-negative-evidence",
+          "text": "営業の資料に「受注後に仕様の認識違いが判明する問題を防いだ商談事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "b925566fa9263b1df406e54ffbc5d3eed53ec4ce57622ccc15ecfee2804be7f4",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-13-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-13-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-13-person-direct-evidence",
+          "text": "製造で、外観が似た二種類の部品の取り違えを分析した。専用治具と部品照合の工程を導入し、誤組立を検出できるようにした。"
+        }
+      ],
+      "sourceSha256": "dcf1d8eef598aae2a551a5688111a9534ac03fde015074b2908fdd0a88e7077d",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-13-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-13-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-13-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観が似た二種類の部品の取り違えを分析した。専用治具と部品照合の工程を導入し、誤組立を検出できるようにした。"
+        }
+      ],
+      "sourceSha256": "f978e4dd30e77a802af7b0829551dc11cd5bd67d36c31d30ffd5332026707c7c",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-13-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-13-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-13-person-negative-evidence",
+          "text": "製造の資料に「似た部品を取り違えて組み立てるミスを防いだ担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "c45b607d91f1fb96e95c2c08fe4a50cdcf52bea7392342674f9488bf82bef33d",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-14-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-14-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-14-person-direct-evidence",
+          "text": "製造で、梱包対象の識別番号と印字内容を読み合わせる工程を設計した。照合不一致では印刷を止め、誤表示による出荷を防いだ。"
+        }
+      ],
+      "sourceSha256": "01cae00b598c51d4f047253d68aa6c2a7beaceecab486ffa7fc77869616c2c1f",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-14-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-14-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-14-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、梱包対象の識別番号と印字内容を読み合わせる工程を設計した。照合不一致では印刷を止め、誤表示による出荷を防いだ。"
+        }
+      ],
+      "sourceSha256": "b48084dabc7d0fbddf925d059a721370455286787424b68e3df38df828ba8c3c",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-14-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-14-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-14-person-negative-evidence",
+          "text": "製造の資料に「出荷時に別の製品のラベルを貼ってしまう問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "78f6a94940b452f0ff455bd8fa2fe38144527bd14fbf37f50079feaedc3858ca",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-15-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-15-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-15-knowledge-direct-evidence",
+          "text": "製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
+        }
+      ],
+      "sourceSha256": "b4ea8e3d11c592b204273bcb3defd6bf9e0e113e000c8857886301e11ffad94b",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-15-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-15-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-15-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。製造の解決事例。工程ごとの処理時間を計測し、律速工程へ人員を再配置した。投入量の上限を定め、滞留数と納期を短縮した。"
+        }
+      ],
+      "sourceSha256": "b8714625d01212f5b2dba82557e7153d98e9d3a691d6669ab50ea65e570d1a53",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-15-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-15-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-15-knowledge-negative-evidence",
+          "text": "製造の資料に「工程の間に仕掛品が積み上がって納期が延びる問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "a7f86a515c9e37b9ef4ccba0880dfbdf44bfd89f7e3a616ede0cf7532420c57f",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-16-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-16-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-16-knowledge-direct-evidence",
+          "text": "製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
+        }
+      ],
+      "sourceSha256": "e4c307750569496fb55fd5b00ebad5637ce4d9fa7efa20fb563087e14d85a58f",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-16-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-16-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-16-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。製造の事例。前処理の洗浄濃度と乾燥時間を追跡し、付着不良の原因を特定した。管理条件を統一し、密着試験で再発を確認しなかった。"
+        }
+      ],
+      "sourceSha256": "4535840b26331cd3eb1f7bffbe95b66352a79a3dde1618c1f2560a831b066496",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-manufacturing-16-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-manufacturing-16-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-manufacturing-16-knowledge-negative-evidence",
+          "text": "製造の資料に「塗装後に表面が剥がれる不良を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "a80d62e6eac390e93824646869737b2cc5ecd4ad799eac8b0bb9746723b078c3",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-17-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-17-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-17-person-direct-evidence",
+          "text": "業務運用で、受付した依頼に担当者と回答期限を付与する手順を設計した。未割当の一覧を毎日確認し、代理担当への振り分けを導入した。"
+        }
+      ],
+      "sourceSha256": "379a08607d40080a6e59b37b7b4952c28aa019e594791b2dd6136e33e60cd40a",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-17-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-17-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-17-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、受付した依頼に担当者と回答期限を付与する手順を設計した。未割当の一覧を毎日確認し、代理担当への振り分けを導入した。"
+        }
+      ],
+      "sourceSha256": "e9e85a6ccba8a57a2c2def9bc3c7a8ccbbde58a0c099f250ce32204c6970a28a",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-17-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-17-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-17-person-negative-evidence",
+          "text": "業務運用の資料に「問い合わせが誰にも割り当てられず放置される状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "69f145499fef5e2b40a11f5be6152e00aa0f32e33584bc4b0e26e56df6b2f8c7",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-18-person-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-18-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-18-person-direct-evidence",
+          "text": "業務運用で、月次締めの作業順、照合方法、例外時の連絡先を手順書へ記載した。後任と並走して処理し、単独で実施できることを確認して引き継いだ。"
+        }
+      ],
+      "sourceSha256": "3ba6ae544cb2fd5567afaae8c60b9613feabe5d21c01e07f570127528eb73111",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-18-person-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-18-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-18-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、月次締めの作業順、照合方法、例外時の連絡先を手順書へ記載した。後任と並走して処理し、単独で実施できることを確認して引き継いだ。"
+        }
+      ],
+      "sourceSha256": "86e4696f4f82687e64443fcf2853a4817868e7836ceefc00cc3c6340ac488445",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-18-person-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-18-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-18-person-negative-evidence",
+          "text": "業務運用の資料に「担当者の異動後も毎月の締め処理を継続できるようにした経験者に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "3fe787a3ecbb21be71f150b2a757d57fb4bcf1f16c6db4ff391e44ad93b24250",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-19-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-19-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-19-knowledge-direct-evidence",
+          "text": "業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
+        }
+      ],
+      "sourceSha256": "ba525b92bb3cddfcae20744ddb80ed26264c2bacabcfa99ab317a74354f64242",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-19-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-19-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-19-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。入出庫の登録時刻と現物移動を照合し、未入力の返品を特定した。返品受付と記帳を同時に行う手順へ変更した。"
+        }
+      ],
+      "sourceSha256": "8770faa542713e3fed7f774297ba8a1f3e1ddc233666a1985eca84c89d79794e",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-19-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-19-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-19-knowledge-negative-evidence",
+          "text": "業務運用の資料に「倉庫の帳簿にある数量と実際の在庫が合わない問題を直した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "962c305cd41267074a6514e345cfed9457f8f0d67fcf3c0df8e230af2f3b7fa3",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-20-knowledge-direct-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-20-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-20-knowledge-direct-evidence",
+          "text": "業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
+        }
+      ],
+      "sourceSha256": "aa375fac20c2b5fcda2d45614d9c53ad8077b059111d7e7e433d9f44ab6d34ce",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-20-knowledge-support-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-20-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-20-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。業務運用の事例。設備番号ごとに点検予定を集約し、拠点横断の予約窓口を一本化した。同一設備の重複予約を照合し、役割分担を周知した。"
+        }
+      ],
+      "sourceSha256": "3d1552ee4aa069f0d7fda4c6bced7441ec7f3a36c53b237401c84c42f30915fb",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2t-operations-20-knowledge-negative-unit",
+      "split": "tuning",
+      "source": [
+        {
+          "id": "v2t-operations-20-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2t-operations-20-knowledge-negative-evidence",
+          "text": "業務運用の資料に「複数の拠点で同じ設備点検を重複して予約する問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "96ddfb7c888f9e936149f155fa9de167374ce1d620e1209b1425bc131747653d",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-01-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-01-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-01-person-direct-evidence",
+          "text": "ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+        }
+      ],
+      "sourceSha256": "6bed2f8ca922ac38e823248fae06aa1d347d18f199c79983951aad8f10bf4904",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-01-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-01-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-01-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、検索時に組織識別子が抜ける経路を調査した。全取得処理でテナント条件を必須にし、他組織の記録が返らない回帰試験を追加した。"
+        }
+      ],
+      "sourceSha256": "0335354cd593fd52a3091754bede53ba22601f65cf97290a89bc022f7c2a58d9",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-01-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-01-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-01-person-negative-evidence",
+          "text": "ソフトウェアの資料に「利用者ごとに見えてよいデータを分ける不具合を修正した開発者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "4495a16a7bef1f8baac76da8a4bf43b9b4c7b232dc632d93e2c86c334db6897f",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-02-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-02-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-02-person-direct-evidence",
+          "text": "ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+        }
+      ],
+      "sourceSha256": "08f655060985bb33950a593543908e7382b2ab5b6090877b3cf0099770de0da9",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-02-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-02-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-02-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。ソフトウェア開発で、現場端末の入力をローカルに永続化した。再接続時に未送信データを同期し、送信済み状態を保存して記録の欠落を防いだ。"
+        }
+      ],
+      "sourceSha256": "e778411b6d24833f5c1b17a83f495d1dc4dc13082c254b8190895d517a7df97e",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-02-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-02-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-02-person-negative-evidence",
+          "text": "ソフトウェアの資料に「通信できない現場でも記録を続け、復旧後にまとめて送れるアプリを作った人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "549959987cbeb18f1c177b7ee12c65059a76fb831bda3c122634c6a888b310af",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-03-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-03-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-03-knowledge-direct-evidence",
+          "text": "ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
+        }
+      ],
+      "sourceSha256": "e6d35f8814a19f75d789f6765e73a2053edb40e3d75e41a9362224c9e2d331d9",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-03-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-03-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-03-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の解決事例。氏名と連絡先を分析用出力から除外し、人物キーを不可逆な値へ置換した。再識別に使える自由記述も検査して除去した。"
+        }
+      ],
+      "sourceSha256": "6959b279b056ef10f8fea4f3336203e7f0cfd626a498428215ebbac4958c54ce",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-03-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-03-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-03-knowledge-negative-evidence",
+          "text": "ソフトウェアの資料に「分析用データから個人を特定できる情報を消した実装事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "dfe065e5ef66d131c3185f0df05dbca9b46140d3fb994c32fe787d456bf6519e",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-04-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-04-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-04-knowledge-direct-evidence",
+          "text": "ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+        }
+      ],
+      "sourceSha256": "12ed6557a7799140dd980621c34683a73797e584aae0533035d79594c346e623",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-04-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-04-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-04-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。ソフトウェア開発の事例。決済要求の識別子に一意制約を設け、処理済み要求には保存済みの結果を返した。並行した重複要求でも課金を一度だけ行うことを検証した。"
+        }
+      ],
+      "sourceSha256": "ce63a5db2227b384275d6fd70363e017b4c9c9da8aba4e3e8e79473b00d8edc0",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-software-04-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-software-04-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-software-04-knowledge-negative-evidence",
+          "text": "ソフトウェアの資料に「同じ処理依頼を二度受けても、二重に請求しない仕組みの事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "b69031ad1c4d73c74c4fb25e78122c4812642c453f3f910fe8ef863bbc547438",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-05-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-05-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-05-person-direct-evidence",
+          "text": "機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+        }
+      ],
+      "sourceSha256": "eb4b97a5b0d4797af1299e87ef1872db1b85f2dda64bcbb4b339796441253f93",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-05-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-05-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-05-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、筐体の熱膨張と温度分布を評価した。材料の組合せと固定位置を変更し、高温でも開閉できる隙間を確保した。"
+        }
+      ],
+      "sourceSha256": "7c9c116a8b17736d428c87c5c3e8a7b73a6a780a3ace3abff8fae8172fa83473",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-05-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-05-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-05-person-negative-evidence",
+          "text": "機械設計の資料に「熱で筐体が変形してふたが閉まらなくなる問題を直した設計者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "c0e983cfe52f0564fb35a5cadf0cd15ac1a3bee229e3e1a11249627b4ffa3a60",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-06-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-06-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-06-person-direct-evidence",
+          "text": "機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+        }
+      ],
+      "sourceSha256": "633e4e147058b456e63fc01cb94f36c149ed067ef31514c5714536a85008a4e1",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-06-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-06-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-06-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。機械設計で、装置の重心と吊上げ荷重を計算した。専用の保持治具を製作し、落下防止機構と負荷試験を含む移送方法を引き継いだ。"
+        }
+      ],
+      "sourceSha256": "36a07c77b73f9230951324284861d84af378e601e469ee0d3805733e3b92075b",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-06-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-06-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-06-person-negative-evidence",
+          "text": "機械設計の資料に「重い装置を手作業で持ち上げる作業を減らす治具を設計した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "b987f56e9afa429025399d78b0ecc0814c9a52e66f55ebcf24b89ae8df27be5c",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-07-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-07-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-07-knowledge-direct-evidence",
+          "text": "機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
+        }
+      ],
+      "sourceSha256": "4f2692316a30e34f440a1d2fd1933035eba7e6b28c7518fc5bc3315d7fbc9067",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-07-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-07-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-07-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。機械設計の解決事例。流体の脈動周期と管路の固有振動数を計測した。支持間隔と緩衝部を変更し、運転条件下で騒音を低減した。"
+        }
+      ],
+      "sourceSha256": "e6251c1acf084306ea0a9b2f421f15bafc410f6d5b25ba264c09dd2ed34b0687",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-07-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-07-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-07-knowledge-negative-evidence",
+          "text": "機械設計の資料に「配管が共振して大きな音が出る問題を改善した事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "0d876e247c537311d068deb39073d8d2a834b8369ff40a9af6fc7980a2443c20",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-08-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-08-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-08-knowledge-direct-evidence",
+          "text": "機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
+        }
+      ],
+      "sourceSha256": "7332cdea06d456644d93a5d7d58f9bd444fbb61440e014635787a123e071a0ec",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-08-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-08-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-08-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。機械設計の事例。板金カバーの接触箇所を調査し、端部に折返しと丸みを追加した。組立や清掃時の接触試験で鋭利な部分を除いたことを確認した。"
+        }
+      ],
+      "sourceSha256": "a3c4fa1597c1408b6100b13ff00c10a6aab7ae60312895017c96823ca80af09e",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-mechanical-08-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-mechanical-08-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-mechanical-08-knowledge-negative-evidence",
+          "text": "機械設計の資料に「カバーの縁で作業者がけがをする危険を、形状変更で減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "5ccb24ac9552f61de080747724f982b5a387faaa7b0972cca8e2046826442efd",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-09-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-09-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-09-person-direct-evidence",
+          "text": "営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+        }
+      ],
+      "sourceSha256": "d745b3f32251597c3d610e3d155fd29a7f038731af0cb725e9970fe9fedadfc9",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-09-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-09-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-09-person-support-evidence",
+          "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、顧客の要求を必須項目と将来項目に分けた。予算と納期に合う提案範囲を合意し、対象外の項目を契約に明記した。"
+        }
+      ],
+      "sourceSha256": "c31dfd0a44a09e236366103f4e6c955ed1d9c4bdc6227cce2def4c19ae4be0b7",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-09-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-09-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-09-person-negative-evidence",
+          "text": "営業の資料に「顧客の要求が多すぎて提案範囲が決まらない商談をまとめた担当者を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "c682bbcddde8c1bf7db5ae4bdbd45cdcb866e748849c653c40988c81c7019b92",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-10-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-10-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-10-person-direct-evidence",
+          "text": "営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+        }
+      ],
+      "sourceSha256": "c4791c0a808bde60795b12a19d992c94f5d71c860576884bfcfb4e560b14b3b4",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-10-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-10-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-10-person-support-evidence",
+          "text": "主業務は機械設計。副業務として次の対応を共同実施した。営業で、既存部門の利用効果を聞き取り、別部門の業務課題に合わせた試行提案を実施した。利用部門を横断する担当者と調整し、追加導入を受注した。"
+        }
+      ],
+      "sourceSha256": "2a2b7c711da3632146381fd884afe345320fc348f3384b46365dc9cfa09c8eef",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-10-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-10-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-10-person-negative-evidence",
+          "text": "営業の資料に「既存顧客の別部署へ製品を広げた経験がある人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "db89f7a31107690de7bfa94f20f9d22082c01eed7d52c0f774c014a8de8131b1",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-11-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-11-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-11-knowledge-direct-evidence",
+          "text": "営業の解決事例。稼働停止と保守作業の削減量を顧客と確認し、購入費用だけでなく運用費用を含めた比較資料を作成した。効果の根拠を説明して受注した。"
+        }
+      ],
+      "sourceSha256": "4b74b2961946f61749e699d54d2ca373b21670d50354bdbd09be381b096fff7e",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-11-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-11-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-11-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。営業の解決事例。稼働停止と保守作業の削減量を顧客と確認し、購入費用だけでなく運用費用を含めた比較資料を作成した。効果の根拠を説明して受注した。"
+        }
+      ],
+      "sourceSha256": "c360790b2c74afd79cbdefa00285effb8d258160602a4cabb633b8082904ee3d",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-11-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-11-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-11-knowledge-negative-evidence",
+          "text": "営業の資料に「顧客が価格だけで比較する入札で、提案の価値を伝えた事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "5fb4af4c7b6c16a85c2102ff117a0803c9cb5422340f0e4544514d672cae809a",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-12-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-12-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-12-knowledge-direct-evidence",
+          "text": "営業の事例。意思決定者と調達時期を再確認し、導入計画が消えた案件を見込みから除外した。継続する案件には次回判断日を合意し、予測を更新した。"
+        }
+      ],
+      "sourceSha256": "a2af8cbb4f3ab1c6f08eb3bb4a4976d5f1121ce55116d5f8cac6e3874a334f61",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-12-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-12-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-12-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。営業の事例。意思決定者と調達時期を再確認し、導入計画が消えた案件を見込みから除外した。継続する案件には次回判断日を合意し、予測を更新した。"
+        }
+      ],
+      "sourceSha256": "ecba82614439956097beeaa7a24c9e870b5d3a8cddc7f749c7c9ee752a07d358",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-sales-12-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-sales-12-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-sales-12-knowledge-negative-evidence",
+          "text": "営業の資料に「長く返事がない商談について、失注か継続かを判断した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "797372f8666ccfabc4ca0fc78b9c827c2873b2732cbbfa10fa33e0d257e49795",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-13-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-13-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-13-person-direct-evidence",
+          "text": "製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+        }
+      ],
+      "sourceSha256": "ae87392782fdaffcee81ca06daf3528faf3fde6aa696102f4676ff7e15095d46",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-13-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-13-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-13-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、段取り替えの各作業を計測した。機械を止めずにできる準備を外段取りに分け、工具と材料を事前配置して停止時間を短縮した。"
+        }
+      ],
+      "sourceSha256": "cbfbb11f74a30e187085ab4e0bf6c9919af99de8abc7b45a0b4aa10e746276a4",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-13-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-13-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-13-person-negative-evidence",
+          "text": "製造の資料に「生産する品種が変わるたびに長く機械を止める問題を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "df13044b5a47a352bc552546d2681a9715304ed3db358a5e38f8c75d7bea3fbd",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-14-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-14-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-14-person-direct-evidence",
+          "text": "製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+        }
+      ],
+      "sourceSha256": "efd2b54184985bc654ba308267eca3d8b22f8f7145d0ff77d83de5b2d1481a44",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-14-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-14-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-14-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。製造で、外観検査の境界見本を作成した。欠陥の大きさと位置による合否基準を定め、検査員の一致率を確認して教育内容を改訂した。"
+        }
+      ],
+      "sourceSha256": "c3c8579a2bce10fc0011f149ef7b64e5a52cf4b13187a9531accd2a1659c0876",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-14-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-14-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-14-person-negative-evidence",
+          "text": "製造の資料に「検査員ごとに良品と不良品の判断が変わる問題を直した担当者に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "8360ff7e27da3089d2c2b7467bc8fa54871b576c507846556168161c975f42d5",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-15-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-15-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-15-knowledge-direct-evidence",
+          "text": "製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+        }
+      ],
+      "sourceSha256": "e5a1f56ade7c7c1357c4e6e8b620f7887dff0431dad8bb3e9392eefe9a8033f0",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-15-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-15-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-15-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。製造の解決事例。加工回数と工具摩耗の関係を測定した。寸法の傾向を管理図で監視し、不良発生前に補正と工具交換を行う条件を定めた。"
+        }
+      ],
+      "sourceSha256": "2c94f0e3bb89af48b4d69df62a0390d89df913bfab38bc730cc4242ebdd31ba9",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-15-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-15-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-15-knowledge-negative-evidence",
+          "text": "製造の資料に「加工した穴の寸法が徐々にずれていく問題を防いだ事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "3e0a0467937096cef7c1470cc89b003b373e6d6063b834004de0dca0caa371d3",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-16-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-16-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-16-knowledge-direct-evidence",
+          "text": "製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+        }
+      ],
+      "sourceSha256": "b3ae5dd0eb22637b0b17e75e9a8af217180c8daacf897544bc25694908f7a7ae",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-16-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-16-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-16-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。製造の事例。搬送速度と投入間隔を記録し、詰まりが発生する組合せを特定した。整列ガイドと速度同期を変更し、連続運転で停止頻度を低減した。"
+        }
+      ],
+      "sourceSha256": "36dffffc704c4e0359778257bc581cee3db655e25d100cca30373303a67f5dd8",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-manufacturing-16-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-manufacturing-16-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-manufacturing-16-knowledge-negative-evidence",
+          "text": "製造の資料に「包装機で製品が詰まって停止する問題を減らした事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "125032dcf16b7d107363519d40ea6d1a30d2857fe146d6ef8836023405177430",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-17-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-17-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-17-person-direct-evidence",
+          "text": "業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+        }
+      ],
+      "sourceSha256": "862944d1b0fd2a952b861d8ba0acb00c7a0a1b6635d5eb2f426016a299f46228",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-17-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-17-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-17-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、障害種別と影響度ごとの連絡順を整理した。夜間の模擬訓練を行い、当番交代時に判断表と未解決事項を引き継いだ。"
+        }
+      ],
+      "sourceSha256": "2304bbc982c65aac07d4602cf06b99dbcb27ecb83fc24141c812dcf22386fb90",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-17-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-17-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-17-person-negative-evidence",
+          "text": "業務運用の資料に「夜間当番が障害の連絡先を判断できない状況を改善した人を探したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "1bc485f706436c17d7c814dd7c71e14d04b8d8dee2f3213e7e7a74a0805538e1",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-18-person-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-18-person-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-18-person-direct-evidence",
+          "text": "業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+        }
+      ],
+      "sourceSha256": "908e576a94267815a859f5b1f0a2b127dbdae9f6a341bfc00e84bdebe1a196b2",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-18-person-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-18-person-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-18-person-support-evidence",
+          "text": "主業務は営業。副業務として次の対応を共同実施した。業務運用で、購入申請から承認までの滞留を調査した。金額別の承認経路と代理承認者を定め、差戻し理由を一覧化して処理期間を短縮した。"
+        }
+      ],
+      "sourceSha256": "0cbfa5b3b59973c8f8af4fd59bce13965cb5ebb0b2ea9776963bc3a55bd1b4a9",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-18-person-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-18-person-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-18-person-negative-evidence",
+          "text": "業務運用の資料に「備品購入の申請が複数の部署で止まる問題を改善した人に相談したい。」という相談を記録した。本人の担当は会議案内の送付のみで、設計・実装・改善は担当していない。"
+        }
+      ],
+      "sourceSha256": "e457e9dcadf97bb138c3f518b8ba07a51454be381c5b2fcdfa78e93118e52ef2",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-19-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-19-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-19-knowledge-direct-evidence",
+          "text": "業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
+        }
+      ],
+      "sourceSha256": "b47d2db8c31b97864ea9f2f240d373510bd4a5d54916738c277e5af231004cbb",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-19-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-19-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-19-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。業務運用の解決事例。重要業務の代替拠点と担当者を定め、通常拠点を使用しない訓練を行った。受注と連絡の手順を切り替え、継続できることを確認した。"
+        }
+      ],
+      "sourceSha256": "e89a29c156728f856a6ab228912f4c9478e642dfd967fb9923474a38c186ca39",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-19-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-19-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-19-knowledge-negative-evidence",
+          "text": "業務運用の資料に「災害時に一つの拠点が使えなくても業務を続けた事例がほしい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "69ce1bf7781903ede83912a85b6e1897ae2962eec64d901c098ac6cf8b722e34",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-20-knowledge-direct-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-20-knowledge-direct-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-20-knowledge-direct-evidence",
+          "text": "業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
+        }
+      ],
+      "sourceSha256": "2d13f87ef531ae11d01e7660c9f6590890f49a99a4424667507bbf7921e3550a",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-20-knowledge-support-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-20-knowledge-support-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-20-knowledge-support-evidence",
+          "text": "類似課題に対する補助的な参考事例。業務運用の事例。入金名義と請求番号の対応表を整備し、照合できない取引を例外一覧へ分けた。確認窓口を統一して未消込の滞留を減らした。"
+        }
+      ],
+      "sourceSha256": "4a6548c5c6a8f76404cf13f00fa3079453dbe721aaf01af8759c7336f9555b28",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    },
+    {
+      "id": "v2f-operations-20-knowledge-negative-unit",
+      "split": "final",
+      "source": [
+        {
+          "id": "v2f-operations-20-knowledge-negative-evidence",
+          "documentTitle": "sources.md",
+          "location": "#v2f-operations-20-knowledge-negative-evidence",
+          "text": "業務運用の資料に「請求書と入金の突合せに時間がかかる問題を整理した事例を探したい。」という相談を記録した。検討会の案内資料であり、原因分析・対策の実施・結果の記録はない。"
+        }
+      ],
+      "sourceSha256": "c3dee84c82a8f9bd36876007d04ca93b99cf44faf5f00d4fc2daf63bfacfd515",
+      "modelVersion": null,
+      "promptVersion": null,
+      "configSha256": null,
+      "expected": {
+        "description": {
+          "state": "unreviewed"
+        },
+        "start": {
+          "state": "unreviewed"
+        },
+        "end": {
+          "state": "unreviewed"
+        },
+        "precision": {
+          "state": "unreviewed"
+        },
+        "months": {
+          "state": "unreviewed"
+        },
+        "skills": {
+          "state": "unreviewed"
+        },
+        "domain": {
+          "state": "unreviewed"
+        },
+        "evidenceIds": {
+          "state": "unreviewed"
+        }
+      }
+    }
+  ]
+}

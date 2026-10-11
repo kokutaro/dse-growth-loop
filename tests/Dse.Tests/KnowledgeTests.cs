@@ -82,9 +82,15 @@ public class KnowledgeTests
         await Change(s, Owner, "edit", new { sections = state["sections"]!.DeepClone(), scopeIds = new[] { "demo" } });
         return await Change(s, Owner, "request-review", new { version = (await s.Service.StateAsync(Owner, s.Sid, default)).Number("sourceVersion") });
     }
-    private static async Task Publish(Setup s)
+    private static async Task Publish(Setup s, object? analysisMetadata = null)
     {
-        var state = await Review(s); var version = state.Number("sourceVersion");
+        var state = await Review(s);
+        if (analysisMetadata is not null)
+        {
+            state = await Change(s, Owner, "edit", new { sections = state["sections"]!.DeepClone(), scopeIds = state.Strings("scopeIds"), analysisMetadata });
+            state = await Change(s, Owner, "request-review", new { version = state.Number("sourceVersion") });
+        }
+        var version = state.Number("sourceVersion");
         foreach (var actor in new[] { Owner, Guest }) await Change(s, actor, "consent", new { version, publication = true, analysis = true });
         await Change(s, Owner, "approve", new { version });
         await s.Service.ProcessPublicationAsync("demo", s.Sid, version, default);
@@ -222,7 +228,7 @@ public class KnowledgeTests
     [Fact]
     public async Task Export_knowledge_records_for_shared_contract_validation()
     {
-        var s = await Create(); await Publish(s); List<object> rows = [];
+        var s = await Create(); await Publish(s, new { departmentId = "public-demo-department", resolution = "unresolved", reportedHours = 2.25m, recurrences = 2, feedback = (int?)null }); List<object> rows = [];
         foreach (var (partition, kinds) in new[] {
             (RecordPartition.Catalog("demo"), new[] { "knowledge", "classificationResult", "searchUnit" }),
             (RecordPartition.Conversation("demo", s.Sid), new[] { "knowledgeDraft", "outcome", "feedback", "job" }) })
@@ -295,4 +301,65 @@ public class KnowledgeTests
         var after = await Body(await Post(owner, "/api/search", new { categories = Array.Empty<object>(), signalIds = Array.Empty<string>(), terms = new[] { "ソフトウェア" } }));
         Assert.DoesNotContain(after["candidates"]!.AsArray(), x => x!["entityId"]!.GetValue<string>() == id);
     }
+    [Fact]
+    public async Task Public_analysis_metadata_is_versioned_and_metadata_only_edit_revokes_all_prior_consents()
+    {
+        var s = await Create(); await Publish(s); var state = await s.Service.StateAsync(Owner, s.Sid, default); var previous = state.Number("sourceVersion");
+        var oldUnit = (await new MemoryProjectionRepository(s.Store).FindAsync(new([], [], ["ソフト"]), Owner.Search, default)).Single(x => x.EntityId == KnowledgeService.Id(s.Sid));
+        var metadata = new { departmentId = "public-demo-department", resolution = "unresolved", reportedHours = 2.25m, recurrences = 2, feedback = 2 };
+        state = await Change(s, Owner, "edit", new { sections = state["sections"]!.DeepClone(), scopeIds = state.Strings("scopeIds"), analysisMetadata = metadata });
+        Assert.Equal(previous + 1, state.Number("sourceVersion")); Assert.Equal("draft", state.Text("status"));
+        Assert.Null(state["activeVersion"]); Assert.Null(state["approvedBy"]); Assert.Empty(state["consents"]!.AsObject()); Assert.Equal("not_granted", state.Text("analysisConsent"));
+        Assert.Empty(await s.Service.AnalysisInputsAsync(Owner, default));
+        Assert.DoesNotContain(await new SourceGuard(s.Repo).FilterAsync(Owner, [oldUnit], default), x => x.EntityId == oldUnit.EntityId);
+        await Change(s, Owner, "request-review", new { version = state.Number("sourceVersion") });
+        foreach (var actor in new[] { Owner, Guest }) await Change(s, actor, "consent", new { version = state.Number("sourceVersion"), publication = true, analysis = true });
+        await Change(s, Owner, "approve", new { version = state.Number("sourceVersion") });
+        await s.Service.ProcessPublicationAsync("demo", s.Sid, state.Number("sourceVersion"), default);
+        var source = await KnowledgeService.PublishedAsync(s.Repo, "demo", s.Sid, state.Number("sourceVersion"), default);
+        var catalog = (await s.Repo.ReadAsync(RecordPartition.Catalog("demo"), KnowledgeService.Id(s.Sid), default))!.Value;
+        Assert.True(JsonNode.DeepEquals(source!["analysisMetadata"], catalog["analysisMetadata"])); Assert.Equal(source.Number("sourceVersion"), catalog.Number("sourceVersion"));
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        { ["Data:Mode"] = "Demo", ["Ai:Mode"] = "Mock", ["AiUsage:Stopped"] = "false", ["BusinessAnalysis:MinimumIndependentChallenges"] = "1", ["BusinessAnalysis:MinimumDepartments"] = "1" }).Build();
+        var analysis = new BusinessAnalysisService(s.Repo, s.Store, new(s.Repo), new BusinessAnalysisDrafter(config), config, TimeProvider.System);
+        var request = new BusinessAnalysisRequest(Key(), DateTimeOffset.UtcNow, BusinessAnalysisService.ConfigVersion);
+        var result = await analysis.StartAsync(Owner, request, request.RunId, default);
+        Assert.Equal(2.25m, result["groups"]![0]!["metrics"]!["reportedHours"]!.GetValue<decimal>());
+        state = await s.Service.StateAsync(Owner, s.Sid, default);
+        await Change(s, Owner, "edit", new { sections = state["sections"]!.DeepClone(), scopeIds = state.Strings("scopeIds"), analysisMetadata = (object?)null });
+        result = await analysis.GetAsync(Owner, request.RunId, default); Assert.Equal("invalidated", result.Text("status")); Assert.False(result.ContainsKey("sourceCount"));
+    }
+    [Theory]
+    [InlineData("{\"departmentId\":\"private person name\"}")]
+    [InlineData("{\"reportedHours\":-1}")]
+    [InlineData("{\"reportedHours\":100000.01}")]
+    [InlineData("{\"reportedHours\":0.001}")]
+    [InlineData("{\"reportedHours\":\"2\"}")]
+    [InlineData("{\"recurrences\":0}")]
+    [InlineData("{\"recurrences\":\"2\"}")]
+    [InlineData("{\"feedback\":\"2\"}")]
+    [InlineData("{\"recurrences\":10001}")]
+    [InlineData("{\"feedback\":0}")]
+    [InlineData("{\"feedback\":6}")]
+    [InlineData("{\"resolution\":\"automatic_market_success\"}")]
+    [InlineData("{\"personId\":\"demo-person-01\"}")]
+    [InlineData("[]")]
+    public void Public_analysis_metadata_rejects_private_fields_wrong_types_and_unbounded_values(string metadata)
+    {
+        var sections = KnowledgeSummary.Fields.Select(f => new SummarySection(f, "ダミー", "unknown", [])).ToArray();
+        var input = new JsonObject { ["sections"] = System.Text.Json.JsonSerializer.SerializeToNode(sections, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web)),
+            ["scopeIds"] = RecordJson.Array(["demo"]), ["analysisMetadata"] = JsonNode.Parse(metadata) };
+        Assert.Throws<ArgumentException>(() => KnowledgeService.ValidateInput("edit", input));
+    }
+    [Fact]
+    public async Task Public_analysis_metadata_is_nullable_and_omission_preserves_values_but_still_revokes_consent()
+    {
+        var s = await Create(); await Publish(s, new { departmentId = "public-demo-department", reportedHours = (decimal?)null, resolution = (string?)null });
+        var state = await s.Service.StateAsync(Owner, s.Sid, default); var original = state["analysisMetadata"]!.DeepClone();
+        state = await Change(s, Owner, "edit", new { sections = state["sections"]!.DeepClone(), scopeIds = state.Strings("scopeIds") });
+        Assert.True(JsonNode.DeepEquals(original, state["analysisMetadata"])); Assert.Equal("not_granted", state.Text("analysisConsent")); Assert.Null(state["activeVersion"]);
+        state = await Change(s, Owner, "edit", new { sections = state["sections"]!.DeepClone(), scopeIds = state.Strings("scopeIds"), analysisMetadata = (object?)null });
+        Assert.Null(state["analysisMetadata"]);
+    }
+
 }

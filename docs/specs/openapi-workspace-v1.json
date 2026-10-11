@@ -1,0 +1,3428 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DSE anonymous workspace, identity disclosure and operation measurement APIs",
+    "version": "anonymous-workspace-v1",
+    "description": "構造化識別子は明示allowlistのroom/operation局所opaque DTOへ置換。自由文の本人名・所属・引用等の完全匿名化は保証しない(freeTextAnonymized=false)。実名開示は公開/分析同意と独立し、全現参加者が同じ最新版へ同意した場合だけprofile表示名を共有。計測はoperator限定の部分観測で受入ゲートは常にfalse。今回Live環境での実JWT/有料呼出しは未実行。"
+  },
+  "paths": {
+    "/api/v1/workspace/rooms/{roomId}/identity-consent": {
+      "get": {
+        "summary": "本人の独立した表示名開示同意",
+        "description": "同意対象は本人のみ。全現参加者の現profile/identity binding/grant/membership/room版へ同意した場合だけ全員の表示名を返す。shared以外は自分含むsharedName=null。profile全内容/参加者/権限変更で旧同意失効。granted=falseは全員のgrantとgenerationを失効。公開同意とは独立。profile表示名であり公的氏名確認ではない。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "STALE_IDENTITY_REVIEW / IDENTITY_UNAVAILABLE / IDEMPOTENCY_CONFLICT。旧冪等再送は現在状態を返し、撤回した同意を復元しない。"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityView"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "identity-disclosure-v1",
+        "x-all-current-name-consents": true
+      },
+      "post": {
+        "summary": "本人の独立した表示名開示同意",
+        "description": "同意対象は本人のみ。全現参加者の現profile/identity binding/grant/membership/room版へ同意した場合だけ全員の表示名を返す。shared以外は自分含むsharedName=null。profile全内容/参加者/権限変更で旧同意失効。granted=falseは全員のgrantとgenerationを失効。公開同意とは独立。profile表示名であり公的氏名確認ではない。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "STALE_IDENTITY_REVIEW / IDENTITY_UNAVAILABLE / IDEMPOTENCY_CONFLICT。旧冪等再送は現在状態を返し、撤回した同意を復元しない。"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityView"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "STALE_VERSION: If-Match不一致"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityConsentRequest"
+              }
+            }
+          }
+        },
+        "x-contract-family": "identity-disclosure-v1",
+        "x-all-current-name-consents": true
+      }
+    },
+    "/api/v1/operation-measurements": {
+      "get": {
+        "summary": "operatorだけが部分操作計測を取得",
+        "description": "process内の有界ring buffer(最大64report/20000operations)。固定kind/生成ID/時刻/数値のみ。SDK public response単位でattempt=1はwire retry数ではない。欠落項目を0にせずunknown/nullを保持し、completeMeasurement/acceptanceGatePassed=false。データ本文/route/tenant/principal/source/例外messageを返さない。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MeasurementExport"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "issue34-operation-export-v1",
+        "x-complete-measurement": false
+      }
+    },
+    "/api/v1/workspace/capabilities": {
+      "get": {
+        "summary": "匿名APIの契約境界と実行mode",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Capabilities"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/challenges": {
+      "get": {
+        "summary": "本人の許可範囲の一覧",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "continuationToken",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "主体/一覧filterに結び付く署名cursor。別主体や変更filterで400。"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChallengePage"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      },
+      "post": {
+        "summary": "匿名課題を作成",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "412": {
+            "description": "STALE_VERSION: If-Match不一致"
+          },
+          "201": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "作成されたopaque課題のURL"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Challenge"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequest"
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/rooms": {
+      "get": {
+        "summary": "本人の許可範囲の一覧",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "continuationToken",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "主体/一覧filterに結び付く署名cursor。別主体や変更filterで400。"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomPage"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/invitations": {
+      "get": {
+        "summary": "本人の許可範囲の一覧",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "continuationToken",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "主体/一覧filterに結び付く署名cursor。別主体や変更filterで400。"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationPage"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/challenges/{id}": {
+      "get": {
+        "summary": "現在課題を取得",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ChallengeId"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Challenge"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/rooms/{id}": {
+      "get": {
+        "summary": "現参加者が活動ルームを取得",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      },
+      "patch": {
+        "summary": "相談者が活動設定/完了状態を更新",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "STALE_VERSION: 現在のIf-Match不一致"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRequest"
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/challenges/{id}/candidates": {
+      "get": {
+        "summary": "課題に対する匿名協力候補tokenを取得",
+        "description": "課題所有者だけ。課題本文の決定論的条件・参加可否とscope/原本を再検証。人物検索結果/内部人物IDを返さない。tokenは主体/課題/room/課題ETagに結び付く10分有効操作token。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ChallengeId"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidatePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "SEARCH_CONDITIONS_REQUIRED: 課題から有効検索条件を得られない。"
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/rooms/{id}/invitations": {
+      "post": {
+        "summary": "opaque候補を協力へ招待",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "CANDIDATE_EXPIRED / SOURCE_REVOKED / PARTICIPANT_LIMIT / IDEMPOTENCY_CONFLICT。候補token・参加資格・原本・課題版を送信時に再検証。"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "412": {
+            "description": "STALE_VERSION: 現在のIf-Match不一致"
+          },
+          "201": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invitation"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteRequest"
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/invitations/{id}": {
+      "patch": {
+        "summary": "本人が参加/辞退/退出を決定",
+        "description": "decision=acceptedは依頼者の追加承認なしで即時活動参加。declined/leftを別状態として保存。別本人の招待tokenを使えない。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/InvitationId"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mutation"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "STALE_VERSION: 現在のIf-Match不一致"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/rooms/{id}/messages": {
+      "get": {
+        "summary": "匿名会話履歴を現在参加者へ取得",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          },
+          {
+            "name": "afterSequence",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "continuationToken",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Messages"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      },
+      "post": {
+        "summary": "匿名会話を永続保存",
+        "description": "clientMessageIdはD形式のUUID。自分のhuman投稿にだけclientMessageIdを返し、他人/AI投稿はnull。AI authorAliasId=ai、解決不能はunknown。本文/引用の自由文匿名化は保証しない。通知成功とDB保存を混同しない。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "412": {
+            "description": "STALE_VERSION: 現在のIf-Match不一致"
+          },
+          "201": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendRequest"
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/rooms/{id}/knowledge": {
+      "get": {
+        "summary": "現参加者が事例下書き/双方公開同意を取得",
+        "description": "scope/evidence/department/participantは局所opaque tokenとラベル。sourceVersionにpublication/analysis同意を結び付ける。表示名開示とは独立。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/rooms/{id}/knowledge/{operation}": {
+      "post": {
+        "summary": "版付きの事例編集/解決評価/公開同意",
+        "description": "editは旧公開・分析同意を失効。公開は同じ版/scopeへ全対象参加者のpublication同意を確認しpublisherがapprove。analysis同意は別。withdraw/公開同意撤回は公開根拠を失効。scope/evidence/department tokenはroom内の許可集合だけへ翻訳。事例公開同意が表示名開示へ流用されることはない。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          },
+          {
+            "name": "operation",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "draft",
+                "outcome",
+                "feedback",
+                "edit",
+                "request-review",
+                "consent",
+                "approve",
+                "withdraw"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "現在DTO/同意viewの強いETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "STALE_VERSION: 現在のIf-Match不一致"
+          },
+          "422": {
+            "description": "KNOWLEDGE_DRAFT_FAILED / KNOWLEDGE_CLASSIFICATION_FAILED: AI生成/公開分類失敗。"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeMutationRequest"
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1",
+        "x-operation-input-schemas": {
+          "draft": "EmptyRequest",
+          "outcome": "OutcomeRequest",
+          "feedback": "FeedbackRequest",
+          "edit": "EditRequest",
+          "request-review": "VersionRequest",
+          "consent": "KnowledgeConsentRequest",
+          "approve": "VersionRequest",
+          "withdraw": "EmptyRequest"
+        },
+        "x-etag-source": {
+          "outcome": "sessionEtag",
+          "feedback": "sessionEtag",
+          "other": "etag"
+        }
+      }
+    },
+    "/api/v1/workspace/rooms/{id}/knowledge-recovery": {
+      "post": {
+        "summary": "権限付き有限公開Job回復",
+        "description": "room所有者またはpublisherのみ。既存失敗Jobの有限回復。Idempotency-Key/If-Match入力はこの経路では読まない。自動無限再試行なし。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoomId"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recovery"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1",
+        "x-explicit-bounded-recovery": true
+      }
+    },
+    "/api/v1/workspace/knowledge": {
+      "get": {
+        "summary": "現在公開同意のある匿名事例一覧",
+        "description": "公開原本/根拠を取得直前に再照合。queryは任意の安全な文字列、最大100事例。従来fixturecatalogを公開知識と扱わない。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CasePage"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    },
+    "/api/v1/workspace/knowledge/{id}": {
+      "get": {
+        "summary": "公開匿名事例の現在版を取得",
+        "description": "公開同意/根拠/版変更や撤回時に旧opaqueケースを利用不可。AIやprivate source IDは返さない。自由文匿名化は保証しない。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member"
+        ],
+        "x-current-source-authorization": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CaseId"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: 不正DTO/未知field/header/範囲"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "FORBIDDEN: 操作role/owner権限なし"
+          },
+          "404": {
+            "description": "NOT_FOUND: opaque ID不正/別主体/現権限で対象なし"
+          },
+          "409": {
+            "description": "現原本/参加資格/同意版/状態/冪等競合"
+          },
+          "413": {
+            "description": "入力本文上限"
+          },
+          "429": {
+            "description": "records要求上限"
+          },
+          "503": {
+            "description": "依存障害/AccessFence閉鎖。fail-closed"
+          },
+          "200": {
+            "description": "現在の認可を再確認してserialize",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Case"
+                }
+              }
+            }
+          }
+        },
+        "x-contract-family": "anonymous-workspace-v1"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "16〜128文字。同じ主体/操作/room/キー・入力の再送を照合。再送も現行権限・同意を読み直し、過去の応答/名前を再公開しない。異なる入力は409。",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "GETで取得した強いETag。欠落400、不一致412。*は不可。",
+        "schema": {
+          "type": "string",
+          "pattern": "^\"[^\"\\r\\n]+\"$"
+        }
+      }
+    },
+    "schemas": {
+      "RoomId": {
+        "type": "string",
+        "pattern": "^awr-[a-fA-F0-9]{32}$"
+      },
+      "ChallengeId": {
+        "type": "string",
+        "pattern": "^awc-[a-fA-F0-9]{32}$"
+      },
+      "InvitationId": {
+        "type": "string",
+        "pattern": "^awi-[a-fA-F0-9]{32}$"
+      },
+      "AliasId": {
+        "type": "string",
+        "pattern": "^awa-[a-fA-F0-9]{32}$"
+      },
+      "MessageId": {
+        "type": "string",
+        "pattern": "^awm-[a-fA-F0-9]{32}$"
+      },
+      "CandidateToken": {
+        "type": "string",
+        "pattern": "^awt-[a-fA-F0-9]{32}$"
+      },
+      "Capabilities": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractVersion",
+          "available",
+          "structuredIdentifiersRemoved",
+          "roomLocalAliases",
+          "opaqueOperationIds",
+          "freeTextAnonymized",
+          "legacyApiIsolation",
+          "processingMode"
+        ],
+        "properties": {
+          "contractVersion": {
+            "const": "anonymous-workspace-v1"
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "structuredIdentifiersRemoved": {
+            "const": true
+          },
+          "roomLocalAliases": {
+            "const": true
+          },
+          "opaqueOperationIds": {
+            "const": true
+          },
+          "freeTextAnonymized": {
+            "const": false
+          },
+          "legacyApiIsolation": {
+            "enum": [
+              "operator-or-development",
+              "not-enforced"
+            ]
+          },
+          "processingMode": {
+            "enum": [
+              "fixture",
+              "server"
+            ]
+          }
+        }
+      },
+      "Alias": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aliasId",
+          "aliasLabel",
+          "isSelf"
+        ],
+        "properties": {
+          "aliasId": {
+            "$ref": "#/components/schemas/AliasId"
+          },
+          "aliasLabel": {
+            "type": "string"
+          },
+          "isSelf": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Challenge": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "roomId",
+          "title",
+          "summary",
+          "status",
+          "isOwner",
+          "etag"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/ChallengeId"
+          },
+          "roomId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoomId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "isOwner": {
+            "type": "boolean"
+          },
+          "etag": {
+            "type": "string"
+          }
+        }
+      },
+      "Invitation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "challengeId",
+          "roomId",
+          "title",
+          "summary",
+          "status",
+          "isOwner",
+          "aliasId",
+          "aliasLabel",
+          "etag"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/InvitationId"
+          },
+          "challengeId": {
+            "$ref": "#/components/schemas/ChallengeId"
+          },
+          "roomId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoomId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "isOwner": {
+            "type": "boolean"
+          },
+          "aliasId": {
+            "$ref": "#/components/schemas/AliasId"
+          },
+          "aliasLabel": {
+            "type": "string"
+          },
+          "etag": {
+            "type": "string"
+          }
+        }
+      },
+      "Room": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "challenge",
+          "status",
+          "aiAssistance",
+          "isOwner",
+          "participantCount",
+          "participants",
+          "etag",
+          "participation"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/RoomId"
+          },
+          "challenge": {
+            "$ref": "#/components/schemas/Challenge"
+          },
+          "status": {
+            "type": "string"
+          },
+          "aiAssistance": {
+            "type": "string"
+          },
+          "isOwner": {
+            "type": "boolean"
+          },
+          "participantCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Alias"
+            }
+          },
+          "etag": {
+            "type": "string"
+          },
+          "participation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Invitation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "roomId",
+          "body",
+          "authorType",
+          "authorAliasId",
+          "authorAliasLabel",
+          "isSelf",
+          "sequence",
+          "deliveryState",
+          "citationState",
+          "clientMessageId"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/MessageId"
+          },
+          "roomId": {
+            "$ref": "#/components/schemas/RoomId"
+          },
+          "body": {
+            "type": "string"
+          },
+          "authorType": {
+            "enum": [
+              "ai",
+              "human"
+            ]
+          },
+          "authorAliasId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AliasId"
+              },
+              {
+                "enum": [
+                  "ai",
+                  "unknown"
+                ]
+              }
+            ]
+          },
+          "authorAliasLabel": {
+            "type": "string"
+          },
+          "isSelf": {
+            "type": "boolean"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "deliveryState": {
+            "const": "saved"
+          },
+          "citationState": {
+            "type": "string"
+          },
+          "clientMessageId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "Messages": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "lastSequence",
+          "continuationToken"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            }
+          },
+          "lastSequence": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "continuationToken": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "Candidate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "token",
+          "aliasLabel",
+          "matchingRoutes"
+        ],
+        "properties": {
+          "token": {
+            "$ref": "#/components/schemas/CandidateToken"
+          },
+          "aliasLabel": {
+            "type": "string"
+          },
+          "matchingRoutes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Mutation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "roomId"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/InvitationId"
+          },
+          "status": {
+            "type": "string"
+          },
+          "roomId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoomId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "ChallengePage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "continuationToken"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Challenge"
+            }
+          },
+          "continuationToken": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "InvitationPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "continuationToken"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Invitation"
+            }
+          },
+          "continuationToken": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "RoomPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "continuationToken"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Room"
+            }
+          },
+          "continuationToken": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "CandidatePage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "continuationToken"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Candidate"
+            }
+          },
+          "continuationToken": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "CreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "summary"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8000
+          }
+        }
+      },
+      "InviteRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "candidateToken"
+        ],
+        "properties": {
+          "candidateToken": {
+            "$ref": "#/components/schemas/CandidateToken"
+          }
+        }
+      },
+      "DecisionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "decision"
+        ],
+        "properties": {
+          "decision": {
+            "enum": [
+              "accepted",
+              "declined",
+              "left"
+            ]
+          }
+        }
+      },
+      "UpdateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aiAssistance",
+          "status"
+        ],
+        "properties": {
+          "aiAssistance": {
+            "enum": [
+              "enabled",
+              "stopped"
+            ]
+          },
+          "status": {
+            "enum": [
+              "open",
+              "closed"
+            ]
+          }
+        }
+      },
+      "SendRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientMessageId",
+          "body"
+        ],
+        "properties": {
+          "clientMessageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8000
+          }
+        }
+      },
+      "IdentityConsentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "granted",
+          "reviewedVersion",
+          "fieldSet"
+        ],
+        "properties": {
+          "granted": {
+            "type": "boolean"
+          },
+          "reviewedVersion": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "fieldSet": {
+            "const": "profile-display-name-v1"
+          }
+        }
+      },
+      "IdentityParticipant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aliasId",
+          "aliasLabel",
+          "sharedName"
+        ],
+        "properties": {
+          "aliasId": {
+            "$ref": "#/components/schemas/AliasId"
+          },
+          "aliasLabel": {
+            "type": "string"
+          },
+          "sharedName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "IdentityView": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roomId",
+          "reviewedVersion",
+          "fieldSet",
+          "etag",
+          "selfConsent",
+          "state",
+          "participants"
+        ],
+        "properties": {
+          "roomId": {
+            "$ref": "#/components/schemas/RoomId"
+          },
+          "reviewedVersion": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "fieldSet": {
+            "const": "profile-display-name-v1"
+          },
+          "etag": {
+            "type": "string"
+          },
+          "selfConsent": {
+            "type": "boolean"
+          },
+          "state": {
+            "enum": [
+              "shared",
+              "pending",
+              "unavailable"
+            ]
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdentityParticipant"
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "enum": [
+                    "pending",
+                    "unavailable"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "participants": {
+                  "items": {
+                    "properties": {
+                      "sharedName": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "MeasurementOperation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "attempt",
+          "runId",
+          "requestId",
+          "correlationId",
+          "kind",
+          "phase",
+          "startedAt",
+          "finishedAt",
+          "status",
+          "httpStatus",
+          "failureCode",
+          "durationMs",
+          "requestUnits",
+          "ai",
+          "estimatedCostJpy",
+          "sourceReference"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "attempt": {
+            "const": 1
+          },
+          "runId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "requestId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "correlationId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "kind": {
+            "enum": [
+              "projection_page",
+              "source_read",
+              "evidence_read",
+              "fence_read",
+              "fence_write",
+              "audit_write",
+              "ledger_read",
+              "ledger_reserve",
+              "ledger_settle",
+              "http_request",
+              "other"
+            ]
+          },
+          "phase": {
+            "enum": [
+              "service",
+              "warm",
+              "cold",
+              "setup",
+              "restore"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "httpStatus": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 100,
+            "maximum": 599
+          },
+          "failureCode": {
+            "anyOf": [
+              {
+                "enum": [
+                  "http_failure",
+                  "cancelled",
+                  "cosmos_failure",
+                  "store_conflict",
+                  "dependency_retry",
+                  "domain_failure",
+                  "invalid_operation",
+                  "unclassified_failure"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "durationMs": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "unit",
+              "status",
+              "sourceReference"
+            ],
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "unit": {
+                "const": "ms"
+              },
+              "status": {
+                "enum": [
+                  "not_collected",
+                  "observed",
+                  "fixture"
+                ]
+              },
+              "sourceReference": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "cosmos_sdk_response",
+                      "monotonic_stopwatch"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "requestUnits": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "unit",
+              "status",
+              "sourceReference"
+            ],
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "unit": {
+                "const": "RU"
+              },
+              "status": {
+                "enum": [
+                  "not_collected",
+                  "observed",
+                  "fixture"
+                ]
+              },
+              "sourceReference": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "cosmos_sdk_response",
+                      "monotonic_stopwatch"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "ai": {
+            "type": "null"
+          },
+          "estimatedCostJpy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "unit",
+              "status",
+              "sourceReference"
+            ],
+            "properties": {
+              "value": {
+                "type": "null"
+              },
+              "unit": {
+                "const": "JPY"
+              },
+              "status": {
+                "const": "not_collected"
+              },
+              "sourceReference": {
+                "type": "null"
+              }
+            }
+          },
+          "sourceReference": {
+            "enum": [
+              "cosmos_sdk_response",
+              "local_operation"
+            ]
+          }
+        }
+      },
+      "MeasurementExport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "runId",
+          "evidenceKind",
+          "state",
+          "observedAt",
+          "operations",
+          "observedSdkRequestUnits",
+          "completeRequestUnits",
+          "completeMeasurement",
+          "acceptanceGatePassed",
+          "droppedOperations",
+          "missingExpectedKinds",
+          "unknownComponents",
+          "limitations"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "issue34-operation-export-v1"
+          },
+          "runId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "evidenceKind": {
+            "enum": [
+              "fixture",
+              "real_service"
+            ]
+          },
+          "state": {
+            "const": "incomplete"
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeasurementOperation"
+            }
+          },
+          "observedSdkRequestUnits": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "completeRequestUnits": {
+            "type": "null"
+          },
+          "completeMeasurement": {
+            "const": false
+          },
+          "acceptanceGatePassed": {
+            "const": false
+          },
+          "droppedOperations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "missingExpectedKinds": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "projection_page",
+                "source_read",
+                "evidence_read",
+                "fence_read",
+                "fence_write",
+                "audit_write",
+                "ledger_read",
+                "ledger_reserve",
+                "ledger_settle",
+                "http_request",
+                "other"
+              ]
+            }
+          },
+          "unknownComponents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "evidenceKind": {
+                  "const": "fixture"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "observedSdkRequestUnits": {
+                  "type": "null"
+                },
+                "operations": {
+                  "items": {
+                    "properties": {
+                      "requestUnits": {
+                        "properties": {
+                          "value": {
+                            "type": "null"
+                          },
+                          "status": {
+                            "const": "not_collected"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ScopeToken": {
+        "type": "string",
+        "pattern": "^aws-[a-fA-F0-9]{32}$"
+      },
+      "EvidenceToken": {
+        "type": "string",
+        "pattern": "^awe-[a-fA-F0-9]{32}$"
+      },
+      "DepartmentToken": {
+        "type": "string",
+        "pattern": "^awd-[a-fA-F0-9]{32}$"
+      },
+      "CaseId": {
+        "type": "string",
+        "pattern": "^awk-[a-fA-F0-9]{32}$"
+      },
+      "Section": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "text",
+          "basis",
+          "evidenceIds"
+        ],
+        "properties": {
+          "field": {
+            "enum": [
+              "challenge",
+              "assumptions",
+              "attempts",
+              "result",
+              "reuseConditions",
+              "unresolvedPoints"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1500
+          },
+          "basis": {
+            "enum": [
+              "participant_report",
+              "inference",
+              "unknown"
+            ]
+          },
+          "evidenceIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EvidenceToken"
+            }
+          }
+        }
+      },
+      "Consent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "publication",
+          "analysis",
+          "isSelf"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "publication": {
+            "type": "boolean"
+          },
+          "analysis": {
+            "type": "boolean"
+          },
+          "isSelf": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Outcome": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resolution",
+          "result"
+        ],
+        "properties": {
+          "resolution": {
+            "enum": [
+              "resolved",
+              "partial",
+              "unresolved"
+            ]
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      },
+      "Feedback": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evaluatorId",
+          "value"
+        ],
+        "properties": {
+          "evaluatorId": {
+            "$ref": "#/components/schemas/AliasId"
+          },
+          "value": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      },
+      "Publication": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "lastErrorCode"
+        ],
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "lastErrorCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "AnalysisMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "departmentId",
+          "resolution",
+          "reportedHours",
+          "recurrences",
+          "feedback"
+        ],
+        "properties": {
+          "departmentId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DepartmentToken"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resolution": {
+            "enum": [
+              "resolved",
+              "partial",
+              "unresolved",
+              null
+            ]
+          },
+          "reportedHours": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100000,
+            "multipleOf": 0.01
+          },
+          "recurrences": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "feedback": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      },
+      "Knowledge": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "etag",
+          "sessionEtag",
+          "status",
+          "sourceVersion",
+          "sections",
+          "scopeIds",
+          "evidenceIds",
+          "scopeLabels",
+          "evidenceLabels",
+          "participantLabels",
+          "consents",
+          "canApprove",
+          "processingMode",
+          "outcome",
+          "feedback",
+          "publicationJob",
+          "analysisMetadata"
+        ],
+        "properties": {
+          "etag": {
+            "type": "string"
+          },
+          "sessionEtag": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "sourceVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            }
+          },
+          "scopeIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScopeToken"
+            }
+          },
+          "evidenceIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EvidenceToken"
+            }
+          },
+          "scopeLabels": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "pattern": "^aws-[a-fA-F0-9]{32}$"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "evidenceLabels": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "pattern": "^awe-[a-fA-F0-9]{32}$"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "participantLabels": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "pattern": "^awa-[a-fA-F0-9]{32}$"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "consents": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "pattern": "^awa-[a-fA-F0-9]{32}$"
+            },
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Consent"
+            }
+          },
+          "canApprove": {
+            "type": "boolean"
+          },
+          "processingMode": {
+            "type": "string"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Outcome"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "feedback": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feedback"
+            }
+          },
+          "publicationJob": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Publication"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "analysisMetadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "PublishedSection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "text",
+          "basis"
+        ],
+        "properties": {
+          "field": {
+            "enum": [
+              "challenge",
+              "assumptions",
+              "attempts",
+              "result",
+              "reuseConditions",
+              "unresolvedPoints"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "basis": {
+            "enum": [
+              "participant_report",
+              "inference",
+              "unknown"
+            ]
+          }
+        }
+      },
+      "Case": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "summary",
+          "sections",
+          "version",
+          "processingMode"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/CaseId"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublishedSection"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "processingMode": {
+            "type": "string"
+          }
+        }
+      },
+      "CasePage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "continuationToken"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Case"
+            }
+          },
+          "continuationToken": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "Recovery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recovered"
+        ],
+        "properties": {
+          "recovered": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "EmptyRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": {}
+      },
+      "OutcomeRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resolution",
+          "result"
+        ],
+        "properties": {
+          "resolution": {
+            "enum": [
+              "resolved",
+              "partial",
+              "unresolved"
+            ]
+          },
+          "result": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          }
+        }
+      },
+      "FeedbackRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "EditRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sections",
+          "scopeIds"
+        ],
+        "properties": {
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "scopeIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScopeToken"
+            },
+            "minItems": 1,
+            "maxItems": 20,
+            "uniqueItems": true
+          },
+          "analysisMetadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "VersionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "KnowledgeConsentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "publication",
+          "analysis"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "publication": {
+            "type": "boolean"
+          },
+          "analysis": {
+            "type": "boolean"
+          }
+        }
+      },
+      "KnowledgeMutationRequest": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/EmptyRequest"
+          },
+          {
+            "$ref": "#/components/schemas/OutcomeRequest"
+          },
+          {
+            "$ref": "#/components/schemas/FeedbackRequest"
+          },
+          {
+            "$ref": "#/components/schemas/EditRequest"
+          },
+          {
+            "$ref": "#/components/schemas/VersionRequest"
+          },
+          {
+            "$ref": "#/components/schemas/KnowledgeConsentRequest"
+          }
+        ]
+      }
+    }
+  },
+  "x-privacy-boundary": {
+    "structuredIdentifiersRemoved": true,
+    "freeTextAnonymized": false,
+    "identityDisclosureRequiresAllCurrentConsents": true,
+    "casePublicationConsentIndependent": true,
+    "withdrawalInvalidatesAllIdentityGrants": true,
+    "legacyRawApisProduction": "operator-only; use allowlisted self APIs for own profile/documents",
+    "noNewPaidCallsInThisValidation": true,
+    "structuredReferenceTokens": {
+      "scope": "aws-",
+      "evidence": "awe-",
+      "department": "awd-",
+      "case": "awk-"
+    },
+    "identityConfigurationRollbackRestriction": "停止下の管理変更/バックアップ復元時には同意一括失効または単調な認可設定版を別途用意。同一旧binding/grantを復元してfingerprintが戻る場合の恒久失効はこの実装だけでは保証しない。"
+  }
+}

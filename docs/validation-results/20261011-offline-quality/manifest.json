@@ -1,0 +1,94 @@
+{
+  "newInferenceCalls": 0,
+  "files": [
+    {
+      "path": "dotnet-replay/comparisons.csv",
+      "sha256": "8716a71d6b60aa3f7eda4cf91c038888f139b608cd1655cdfa7fd6d1b136624f"
+    },
+    {
+      "path": "dotnet-replay/failures.json",
+      "sha256": "5aa810dcaa1ed7fe2fd688fd41e47d89bda5b50394c737eba38325c975602c26"
+    },
+    {
+      "path": "dotnet-replay/primary.json",
+      "sha256": "15cfff785f31ddbcd0b0068269b14b1854f52be4f0420a845408abafe3997a21"
+    },
+    {
+      "path": "dotnet-replay/questions.csv",
+      "sha256": "040cb343095e647addbc325eb131122f705991bdfe8d2cec1d7ee810ed108431"
+    },
+    {
+      "path": "dotnet-replay/report.json",
+      "sha256": "62bb7b84306b73841573c704365acae9623e2bc376a51f398b80165769606fad"
+    },
+    {
+      "path": "dotnet-replay/summary.csv",
+      "sha256": "3478fd6e19546832c4c563476c58ea0efc79bfdc6c6be5daafa1f1cc9174a2c4"
+    },
+    {
+      "path": "fixed-faults/report.json",
+      "sha256": "d9b6701207800587942326f6fe7d82945921e96f9508292c76fd9b4e1cbd8051"
+    },
+    {
+      "path": "fixed-faults/rows.csv",
+      "sha256": "b5162c933dfa8c51489fc012587d31de537fcbb19622985f13471086380c9a93"
+    },
+    {
+      "path": "rerank/report.json",
+      "sha256": "6e94c6923e25c86a44e741d0057addb7b225b7a864463eebb120c256cd9d9f25"
+    },
+    {
+      "path": "rerank/rows.csv",
+      "sha256": "c9a3908dc45edf988fd0beab5bda1cb805e52e95e44ac77e444aa068172c0b19"
+    },
+    {
+      "path": "rerank-current/report.json",
+      "sha256": "a5aaf56b1b52178fed968d59545b74768e98bd76dae508ca24f119faceceb5ab"
+    },
+    {
+      "path": "rerank-current/rows.csv",
+      "sha256": "c9a3908dc45edf988fd0beab5bda1cb805e52e95e44ac77e444aa068172c0b19"
+    },
+    {
+      "path": "semantic-inputs/predictions-unavailable.json",
+      "sha256": "d18f51fdd26cc8c83f33b86150113c5cf71dbd9107c0761e315c93f84cbd7bc5"
+    },
+    {
+      "path": "semantic-readiness/report.json",
+      "sha256": "b687f624ea4ae3fbf38367c1604ad565f66879838f778aeb132196dcf9ff5d3e"
+    },
+    {
+      "path": "semantic-readiness/rows.csv",
+      "sha256": "ce7029e71c847679f1a6743e9dd5a13ae8c2714ebbbc349c64b0af6e9fd0e8ed"
+    },
+    {
+      "path": "semantic-review-draft/report.json",
+      "sha256": "e62a24d0e94c063f298132f6e30c6dce5cd126648dc2f79327b24ed9107ce53a"
+    }
+  ],
+  "tools": [
+    {
+      "path": "scripts/offline_quality.py",
+      "sha256": "2429ead540b2313157c2b00dff90196df9c95451db613a9089d935563834885a"
+    },
+    {
+      "path": "scripts/llm_rerank_evaluation.py",
+      "sha256": "b6e44f5b3b957aff7b5f4f10fed103a942e9b5d27c63be208c499f1997590168"
+    },
+    {
+      "path": "tests/scripts/test_offline_quality.py",
+      "sha256": "a7a3e413e0990239d962f512e95efba2e70461cbb564ade38fffa7190c4ba7e5"
+    },
+    {
+      "path": "docs/offline-quality.md",
+      "sha256": "3d50ea60731c6859b5fab997185de0d83c1098efb0062101e14c5bb65fa4edde"
+    }
+  ],
+  "localVerification": {
+    "targetedPythonTests": 14,
+    "fixedFakeFaultCases": 10,
+    "dotnetPrimaryReplayRows": 168,
+    "dotnetComparisonRows": 192,
+    "newInferenceCalls": 0
+  }
+}

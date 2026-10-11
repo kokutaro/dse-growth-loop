@@ -87,7 +87,11 @@ public class ApiTests
         using var client = factory.CreateClient();
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
-        (await client.PostAsJsonAsync("/api/search", Request)).EnsureSuccessStatusCode();
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
+        using var operatorFactory = Factory(false).WithWebHostBuilder(b => b.UseSetting("Auth:Bindings:0:Roles:1", "operator"));
+        using var operatorClient = operatorFactory.CreateClient();
+        operatorClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        (await operatorClient.PostAsJsonAsync("/api/search", Request)).EnsureSuccessStatusCode();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token(audience: "wrong"));
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
     }
@@ -162,9 +166,49 @@ public class ApiTests
         client.DefaultRequestHeaders.Add("X-Demo-Person", "demo-person-02");
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), path))).StatusCode);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
-        var context = await client.GetStringAsync("/api/v1/conversation-context");
-        Assert.Contains("principal-test", context); Assert.DoesNotContain("demo-person-02", context);
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/v1/conversation-context")).StatusCode);
     }
+    [Theory]
+    [InlineData("/api/v1/challenges", "GET")]
+    [InlineData("/API/V1/Challenges/", "GET")]
+    [InlineData("/API/SEARCH/", "POST")]
+    [InlineData("/api/v1/SessionS/opaque/messages/", "GET")]
+    [InlineData("/api/v1/conversation-context/", "GET")]
+    [InlineData("/api/v1/conversation-context", "GET")]
+    [InlineData("/api/v1/sessions/opaque/messages", "GET")]
+    [InlineData("/api/v1/sessions/opaque/knowledge", "GET")]
+    [InlineData("/api/v2/search", "POST")]
+    [InlineData("/api/v2/retrieval-runs/opaque", "GET")]
+    [InlineData("/api/hubs/conversations/negotiate?negotiateVersion=1", "POST")]
+    public async Task Production_employee_cannot_reidentify_collaborators_through_legacy_routes(string path, string method)
+    {
+        using var factory = Factory(false); using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), path));
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.DoesNotContain("principal-test", body);
+        Assert.DoesNotContain("demo-person-01", body);
+    }
+
+    [Fact]
+    public async Task Production_self_profile_endpoint_does_not_become_an_employee_directory()
+    {
+        var store = new MemoryRecordStore();
+        foreach (var pair in new[] { ("demo-person-01", "principal-test"), ("other-person", "other-principal") })
+        {
+            var person = RecordJson.New("person", pair.Item1, Tenant, pair.Item2, ["demo"], DateTimeOffset.UtcNow);
+            person["displayName"] = pair.Item1 == "other-person" ? "private-other-name" : "self-name";
+            await store.CommitAsync(RecordPartition.Catalog(Tenant), [RecordWrite.Create(person)], default);
+        }
+        using var factory = Factory(false).WithWebHostBuilder(b => b.ConfigureServices(s => s.AddSingleton<IRecordStore>(store)));
+        using var client = factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/v1/people/demo-person-01")).StatusCode);
+        var other = await client.GetAsync("/api/v1/people/other-person");
+        Assert.Equal(HttpStatusCode.Forbidden, other.StatusCode);
+        Assert.DoesNotContain("private-other-name", await other.Content.ReadAsStringAsync());
+    }
+
     [Fact]
     public async Task Hub_rejects_expired_tokens_and_disabled_bindings()
     {

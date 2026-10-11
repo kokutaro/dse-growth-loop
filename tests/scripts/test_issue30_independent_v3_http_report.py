@@ -67,3 +67,35 @@ class IndependentV3HttpTests(unittest.TestCase):
         with self.assertRaises(ValueError): score(self.fixture, bad, self.ui)
         self.http[0]['body']['assessments'][0]['reason'] = 'invented evidence'
         self.assertFalse(score(self.fixture, self.http, self.ui)['qualityPassed'])
+
+    def test_outside_http_200_empty_success_is_a_contract_failure(self):
+        index = next(i for i, r in enumerate(self.http) if r['httpStatus'] == 422)
+        qid = self.http[index]['questionId']
+        self.http[index].update(httpStatus=200, body={
+            'runId': qid, 'rerankingStatus': 'no_candidates', 'assessments': [],
+            'primary': {'candidates': []}})
+        self.ui[index].update(runId=qid, ui={
+            'groups': [{'name': '相談候補', 'titles': []}, {'name': '参考事例', 'titles': []}],
+            'status': '完了', 'alerts': []})
+        result = score(self.fixture, self.http, self.ui)
+        self.assertFalse(result['qualityPassed'])
+        self.assertIn(qid, result['failedQuestions'])
+        self.assertEqual(result['networkTiming']['count'], 22)
+        self.assertEqual(result['allResponseTiming']['count'], 24)
+
+    def test_both_linear_p95_populations_must_pass(self):
+        inside = [r for r in self.http if r['httpStatus'] == 200]
+        inside[-2]['networkMs'], inside[-1]['networkMs'] = 15001, 16000
+        result = score(self.fixture, self.http, self.ui)
+        self.assertAlmostEqual(result['networkTiming']['p95Ms'], 14300.95)
+        self.assertTrue(result['warmSloPassed'])
+        for r in self.http:
+            if r['httpStatus'] == 422: r['networkMs'] = 20000
+        result = score(self.fixture, self.http, self.ui)
+        self.assertGreater(result['allResponseTiming']['p95Ms'], 15000)
+        self.assertFalse(result['warmSloPassed'])
+
+    def test_ui_alert_cannot_count_as_completed_search(self):
+        self.ui[0]['ui']['alerts'] = ['検索に失敗しました']
+        result = score(self.fixture, self.http, self.ui)
+        self.assertFalse(result['qualityPassed'])

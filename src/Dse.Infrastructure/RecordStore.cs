@@ -115,60 +115,80 @@ public sealed class CosmosRecordStore(CosmosClient client, IConfiguration config
 
     public async Task<StoredRecord?> ReadAsync(RecordPartition partition, string id, CancellationToken ct)
     {
-        var start = Stopwatch.GetTimestamp();
-        using var response = await Container(partition).ReadItemStreamAsync(id, new PartitionKey(partition.Key), cancellationToken: ct);
-        Measure("read", response.Headers.RequestCharge, start);
-        if (id != "system-access-fence") SearchBudget.Charge(response.Headers.RequestCharge);
-        if (response.StatusCode == HttpStatusCode.NotFound) return null;
-        response.EnsureSuccessStatusCode();
-        var value = (await JsonNode.ParseAsync(response.Content, cancellationToken: ct))!.AsObject();
-        if (value.Text("tenantId") != partition.TenantId) return null;
-        return new(RecordJson.FromStorage(value, response.Headers.ETag), response.Headers.ETag);
+        using var measurement = OperationMeasurements.Start(OperationMeasurementKinds.Read(id), cosmosSdk: true);
+        try
+        {
+            var start = Stopwatch.GetTimestamp();
+            using var response = await Container(partition).ReadItemStreamAsync(id, new PartitionKey(partition.Key), cancellationToken: ct);
+            measurement.ObserveResponse(response.Headers.RequestCharge, (int)response.StatusCode);
+            Measure("read", response.Headers.RequestCharge, start);
+            if (id != "system-access-fence") SearchBudget.Charge(response.Headers.RequestCharge);
+            if (response.StatusCode == HttpStatusCode.NotFound) return null;
+            response.EnsureSuccessStatusCode();
+            var value = (await JsonNode.ParseAsync(response.Content, cancellationToken: ct))!.AsObject();
+            if (value.Text("tenantId") != partition.TenantId) return null;
+            measurement.Classify(OperationMeasurementKinds.Record(value.Text("kind")));
+            return new(RecordJson.FromStorage(value, response.Headers.ETag), response.Headers.ETag);
+        }
+        catch (Exception ex) { measurement.Fail(ex); throw; }
     }
     public async Task CommitAsync(RecordPartition partition, IReadOnlyList<RecordWrite> writes, CancellationToken ct)
     {
-        BatchRules.Validate(partition, writes);
-        var batch = Container(partition).CreateTransactionalBatch(new PartitionKey(partition.Key));
-        List<Stream> streams = [];
+        using var measurement = OperationMeasurements.Start(OperationMeasurementKinds.Write(writes), cosmosSdk: true);
         try
         {
-            foreach (var write in writes)
+            BatchRules.Validate(partition, writes);
+            var batch = Container(partition).CreateTransactionalBatch(new PartitionKey(partition.Key));
+            List<Stream> streams = [];
+            try
             {
-                var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(RecordJson.ToStorage(write.Value).ToJsonString()));
-                streams.Add(stream);
-                if (write.IfMatch is null) batch.CreateItemStream(stream);
-                else batch.ReplaceItemStream(write.Value.Text("id"), stream, new TransactionalBatchItemRequestOptions { IfMatchEtag = write.IfMatch });
-            }
-            var start = Stopwatch.GetTimestamp();
-            using var response = await batch.ExecuteAsync(ct);
-            Measure("batch", response.RequestCharge, start);
-            if (response.IsSuccessStatusCode) return;
-            var statuses = Enumerable.Range(0, response.Count).Select(i => response[i].StatusCode).ToArray();
-            if (statuses.Contains(HttpStatusCode.PreconditionFailed)) throw new StoreConflictException(true);
-            if (statuses.Contains(HttpStatusCode.Conflict)) throw new StoreConflictException(false);
-            if (response.StatusCode == HttpStatusCode.TooManyRequests) throw new DependencyRetryException(response.RetryAfter ?? TimeSpan.FromSeconds(10));
-            throw new DomainException(503, "DEPENDENCY_UNAVAILABLE");
+                foreach (var write in writes)
+                {
+                    var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(RecordJson.ToStorage(write.Value).ToJsonString()));
+                    streams.Add(stream);
+                    if (write.IfMatch is null) batch.CreateItemStream(stream);
+                    else batch.ReplaceItemStream(write.Value.Text("id"), stream, new TransactionalBatchItemRequestOptions { IfMatchEtag = write.IfMatch });
+                }
+                var start = Stopwatch.GetTimestamp();
+                using var response = await batch.ExecuteAsync(ct);
+                // TransactionalBatchResponse.RequestCharge is the total. Never add response[i].RequestCharge.
+                measurement.ObserveResponse(response.RequestCharge, (int)response.StatusCode);
+                Measure("batch", response.RequestCharge, start);
+                if (response.IsSuccessStatusCode) return;
+                var statuses = Enumerable.Range(0, response.Count).Select(i => response[i].StatusCode).ToArray();
+                if (statuses.Contains(HttpStatusCode.PreconditionFailed)) throw new StoreConflictException(true);
+                if (statuses.Contains(HttpStatusCode.Conflict)) throw new StoreConflictException(false);
+                if (response.StatusCode == HttpStatusCode.TooManyRequests) throw new DependencyRetryException(response.RetryAfter ?? TimeSpan.FromSeconds(10));
+                throw new DomainException(503, "DEPENDENCY_UNAVAILABLE");
         }
         finally { foreach (var stream in streams) stream.Dispose(); }
+        }
+        catch (Exception ex) { measurement.Fail(ex); throw; }
     }
     public async Task<RecordPage> QueryAsync(RecordPartition partition, string kind, string? parentField, string? parentId, int size, string? token, CancellationToken ct)
     {
-        QueryRules.Validate(kind, parentField, size);
-        var query = new QueryDefinition("SELECT * FROM c WHERE c.tenantId = @tenant AND c.kind = @kind" +
-                (parentField is null ? "" : $" AND c.{parentField} = @parent") + " ORDER BY c.id")
-            .WithParameter("@tenant", partition.TenantId).WithParameter("@kind", kind).WithParameter("@parent", parentId);
-        using var iterator = Container(partition).GetItemQueryStreamIterator(query, token,
-            new QueryRequestOptions { PartitionKey = new PartitionKey(partition.Key), MaxItemCount = size });
-        var start = Stopwatch.GetTimestamp();
-        using var response = await iterator.ReadNextAsync(ct);
-        Measure("page", response.Headers.RequestCharge, start);
-        response.EnsureSuccessStatusCode();
-        var body = (await JsonNode.ParseAsync(response.Content, cancellationToken: ct))!.AsObject();
-        return new(body["Documents"]!.AsArray().Select(x =>
+        using var measurement = OperationMeasurements.Start(OperationMeasurementKinds.Query(kind), cosmosSdk: true);
+        try
         {
-            var value = x!.AsObject();
-            var etag = value.Text("_etag");
-            return new StoredRecord(RecordJson.FromStorage(value, etag), etag);
-        }).ToArray(), response.Headers.ContinuationToken);
+            QueryRules.Validate(kind, parentField, size);
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.tenantId = @tenant AND c.kind = @kind" +
+                    (parentField is null ? "" : $" AND c.{parentField} = @parent") + " ORDER BY c.id")
+                .WithParameter("@tenant", partition.TenantId).WithParameter("@kind", kind).WithParameter("@parent", parentId);
+            using var iterator = Container(partition).GetItemQueryStreamIterator(query, token,
+                new QueryRequestOptions { PartitionKey = new PartitionKey(partition.Key), MaxItemCount = size });
+            var start = Stopwatch.GetTimestamp();
+            using var response = await iterator.ReadNextAsync(ct);
+            measurement.ObserveResponse(response.Headers.RequestCharge, (int)response.StatusCode);
+            Measure("page", response.Headers.RequestCharge, start);
+            response.EnsureSuccessStatusCode();
+            var body = (await JsonNode.ParseAsync(response.Content, cancellationToken: ct))!.AsObject();
+            return new(body["Documents"]!.AsArray().Select(x =>
+            {
+                var value = x!.AsObject();
+                var etag = value.Text("_etag");
+                return new StoredRecord(RecordJson.FromStorage(value, etag), etag);
+            }).ToArray(), response.Headers.ContinuationToken);
+        }
+        catch (Exception ex) { measurement.Fail(ex); throw; }
     }
 }

@@ -110,6 +110,7 @@ def parameters(env):
         'budgetStartDate': f'{start}T00:00:00Z' if budget else '',
         # Queue消費Workerは明示opt-in。既定は未配置。
         'deployIngestionWorker': boolean(env, 'DEPLOY_INGESTION_WORKER', 'false'),
+        'deployBusinessAnalysisJob': boolean(env, 'DEPLOY_BUSINESS_ANALYSIS_JOB', 'false'),
         'logsDailyQuotaGb': decimal_value(env, 'LOGS_DAILY_QUOTA_GB', '0.05', Decimal('0.023')),
         'logsRetentionDays': integer(env, 'LOGS_RETENTION_DAYS', 30, 30, 730),
         'telemetrySamplingPercentage': integer(env, 'TELEMETRY_SAMPLING_PERCENTAGE', 10, 1, 100),

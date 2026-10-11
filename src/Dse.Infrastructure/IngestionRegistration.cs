@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Dse.Domain;
 
 namespace Dse.Infrastructure;
 
@@ -20,6 +21,12 @@ public static class IngestionRegistration
         }
         services.AddSingleton<ProfilePipeline>();
         services.AddSingleton<KnowledgeService>();
+        services.AddSingleton<IBusinessHypothesisDrafter, BusinessAnalysisDrafter>();
+        services.AddSingleton<BusinessAnalysisLiveDrafter>();
+        services.AddSingleton<BusinessAnalysisService>();
+        services.AddSingleton<BusinessAnalysisRecovery>();
+        services.AddSingleton<AnonymousWorkspaceService>();
+        services.AddSingleton<IdentityDisclosureService>();
         services.AddSingleton<ConversationLocks>();
         services.AddSingleton<ConversationService>();
         services.AddSingleton<ChatAssistanceService>();

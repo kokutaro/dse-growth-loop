@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 public static class DocumentEndpoints
 {
     public sealed record RetryInput([property: JsonRequired] string Reason);
-    public static void MapDocuments(this RouteGroupBuilder api)
+    public static void MapDocuments(this RouteGroupBuilder api, bool demo = false)
     {
         api.MapPost("/documents", async (HttpContext context, DocumentUploads uploads, IngestionOptions limits, CancellationToken ct) =>
         {
@@ -33,6 +33,8 @@ public static class DocumentEndpoints
                 var doc = await repository.ReadAsync(partition, id, token);
                 if (doc?.Value.Text("kind") != "document") throw new DomainException(404, "NOT_FOUND");
                 AccessPolicy.RequireRead(actor, doc.Value);
+                if (!demo && !actor.HasRole("operator") && doc.Value.Text("ownerId") != actor.PrincipalId)
+                    throw new DomainException(404, "NOT_FOUND");
                 var version = await repository.ReadAsync(partition, doc.Value.Text("currentVersionId"), token);
                 if (version?.Value.Text("kind") != "documentVersion" || version.Value.Text("documentId") != id || version.Value.Number("sourceVersion") != doc.Value.Number("sourceVersion")) throw new DomainException(409, "SOURCE_REVOKED");
                 AccessPolicy.RequireRead(actor, version.Value);

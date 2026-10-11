@@ -59,6 +59,10 @@ public sealed class ValidatedCatalog(IProjectionRepository projections, SourceGu
 
 public static class CosmosCatalog
 {
+    public static QueryDefinition BuildKnowledgeBrowseQuery(SearchAccess access) => new QueryDefinition(
+        "SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.entityType = 'knowledge' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s))")
+        .WithParameter("@tenant", access.TenantId).WithParameter("@taxonomy", Retriever.TaxonomyVersion).WithParameter("@scopes", access.ScopeIds);
+
     public static QueryDefinition BuildQuery(SearchRequest request, SearchAccess access)
     {
         request.Validate();
@@ -97,7 +101,12 @@ public static class InfrastructureRegistration
             {
                 IRecordStore store = string.IsNullOrWhiteSpace(configuration["Data:LocalPath"]) ? new MemoryRecordStore() : new LocalRecordStore(new LocalIngestionFiles(configuration["Data:LocalPath"]!));
                 DemoRecords.SeedAsync(store, "demo", default).GetAwaiter().GetResult();
-                return store;
+                if (configuration["BusinessAnalysis:DemoFixtures"] == "true")
+                {
+                    if (configuration["Ai:Mode"] != "Mock") throw new InvalidOperationException("Analysis fixtures require Mock AI");
+                    BusinessAnalysisDemoFixtures.SeedAsync(store, default).GetAwaiter().GetResult();
+                }
+                return new OperationMeasuredRecordStore(store);
             });
             services.AddSingleton<IProjectionRepository, MemoryProjectionRepository>();
         }

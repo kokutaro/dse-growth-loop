@@ -9,11 +9,13 @@ public class SharedCommitTests
 {
     private const string Tenant = "11111111-1111-4111-8111-111111111111";
     [Theory]
-    [InlineData(false, false, false)]
-    [InlineData(true, false, false)]
-    [InlineData(false, true, false)]
-    [InlineData(false, false, true)]
-    public async Task Shared_commit_is_atomic_deduplicated_and_checks_all_participants(bool missingScope, bool revoke, bool changeSession)
+    [InlineData(false, false, false, null)]
+    [InlineData(true, false, false, null)]
+    [InlineData(false, true, false, null)]
+    [InlineData(false, false, true, null)]
+    [InlineData(false, false, false, "evidence-version")]
+    [InlineData(false, false, false, "evidence-scope")]
+    public async Task Shared_commit_is_atomic_deduplicated_and_checks_all_participants(bool missingScope, bool revoke, bool changeSession, string? evidenceChange)
     {
         var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, Tenant, default);
         var repo = new PrimaryRepository(store); var fence = new AccessFence(repo); var guard = new SourceGuard(repo);
@@ -50,8 +52,15 @@ public class SharedCommitTests
             session["aiAssistance"] = "stopped";
             await repo.CommitAsync(partition, [RecordWrite.Replace(session, saved.ETag)], default);
         }
+        if (evidenceChange is not null)
+        {
+            var original = (await repo.ReadAsync(RecordPartition.Catalog(Tenant), source.Unit.EntityId + "-document", default))!;
+            if (evidenceChange == "evidence-version") original.Value["activeVersion"] = 2;
+            else original.Value["scopeIds"] = RecordJson.Array(["private"]);
+            await repo.CommitAsync(RecordPartition.Catalog(Tenant), [RecordWrite.Replace(original.Value, original.ETag)], default);
+        }
         var message = PersistenceTests.Example("Message"); message["tenantId"] = Tenant;
-        if (missingScope || revoke || changeSession)
+        if (missingScope || revoke || changeSession || evidenceChange is not null)
         {
             await Assert.ThrowsAsync<DomainException>(() => service.CommitSharedAsync(actor, session.Text("id"), saved.ETag, source.Snapshots, message, default));
             Assert.Null(await repo.ReadAsync(partition, message.Text("id"), default));

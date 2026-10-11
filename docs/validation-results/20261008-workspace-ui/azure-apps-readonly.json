@@ -1,0 +1,12 @@
+[
+  {
+    "latestRevision": "dse-api--issue30-bootstrap3-restored-20261005",
+    "name": "dse-api",
+    "revisionMode": "Single"
+  },
+  {
+    "latestRevision": "dse-worker--issue13-stopped",
+    "name": "dse-worker",
+    "revisionMode": "Single"
+  }
+]

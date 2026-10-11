@@ -1,0 +1,1104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Issue 34 same-run measurement contract (design only)",
+  "description": "Unknown values stay null. The schema does not implement collection, price validation, approval, or release decisions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "state",
+    "evidenceKind",
+    "observedAt",
+    "provenance",
+    "bounds",
+    "operations",
+    "storage",
+    "latency",
+    "cost",
+    "limitations",
+    "evidenceReferences"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "issue34-measurement-v1"
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "enum": [
+        "planned",
+        "collecting",
+        "incomplete",
+        "collected"
+      ]
+    },
+    "evidenceKind": {
+      "enum": [
+        "plan",
+        "offline_replay",
+        "fixture",
+        "real_service"
+      ]
+    },
+    "observedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceCommit",
+        "sourceSha256",
+        "inputSha256",
+        "configSha256",
+        "serviceStateSha256",
+        "candidateSha256",
+        "goldApprovalReference",
+        "executionApprovalReference",
+        "dummyOnly"
+      ],
+      "properties": {
+        "sourceCommit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "sourceSha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inputSha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "configSha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "serviceStateSha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "candidateSha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "goldApprovalReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "executionApprovalReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "dummyOnly": {
+          "const": true
+        }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximumModelAttempts",
+        "maximumInputTokens",
+        "maximumOutputTokens",
+        "maximumAllCostsJpy",
+        "maximumApiReplicaSeconds",
+        "maximumJobSeconds",
+        "maximumWallClockSecondsIncludingRestore",
+        "restoreReserveSeconds",
+        "ledgerSnapshotReference",
+        "stopPlanReference"
+      ],
+      "properties": {
+        "maximumModelAttempts": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maximumInputTokens": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maximumOutputTokens": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maximumAllCostsJpy": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maximumApiReplicaSeconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maximumJobSeconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maximumWallClockSecondsIncludingRestore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "restoreReserveSeconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ledgerSnapshotReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "stopPlanReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "attempt",
+          "runId",
+          "requestId",
+          "correlationId",
+          "kind",
+          "phase",
+          "startedAt",
+          "finishedAt",
+          "status",
+          "httpStatus",
+          "failureCode",
+          "durationMs",
+          "requestUnits",
+          "ai",
+          "estimatedCostJpy",
+          "sourceReference"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "runId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "correlationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "projection_page",
+              "source_read",
+              "evidence_read",
+              "fence_read",
+              "fence_write",
+              "audit_write",
+              "ledger_read",
+              "ledger_reserve",
+              "ledger_settle",
+              "ai_classify",
+              "ai_rerank",
+              "ai_other",
+              "http_request",
+              "ui_completion",
+              "runtime",
+              "storage",
+              "network",
+              "logging",
+              "other"
+            ]
+          },
+          "phase": {
+            "enum": [
+              "service",
+              "warm",
+              "cold",
+              "setup",
+              "restore"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "enum": [
+              "succeeded",
+              "failed",
+              "pending",
+              "expected_out_of_scope",
+              "cancelled"
+            ]
+          },
+          "httpStatus": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 100,
+            "maximum": 599
+          },
+          "failureCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "durationMs": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "unit",
+              "status",
+              "sourceReference"
+            ],
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "unit": {
+                "const": "ms"
+              },
+              "status": {
+                "enum": [
+                  "not_collected",
+                  "observed",
+                  "estimated",
+                  "fixture"
+                ]
+              },
+              "sourceReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              }
+            }
+          },
+          "requestUnits": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "unit",
+              "status",
+              "sourceReference"
+            ],
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "unit": {
+                "const": "RU"
+              },
+              "status": {
+                "enum": [
+                  "not_collected",
+                  "observed",
+                  "estimated",
+                  "fixture"
+                ]
+              },
+              "sourceReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              }
+            }
+          },
+          "ai": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "model",
+                  "modelVersion",
+                  "promptSha256",
+                  "cached",
+                  "logicalRequestId",
+                  "inputTokens",
+                  "outputTokens",
+                  "cachedInputTokens",
+                  "reasoningTokens",
+                  "usageSemantics",
+                  "reservedTokensUpperBound"
+                ],
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "modelVersion": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "promptSha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "cached": {
+                    "type": "boolean"
+                  },
+                  "logicalRequestId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "inputTokens": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "outputTokens": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "cachedInputTokens": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "reasoningTokens": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "usageSemantics": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reservedTokensUpperBound": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  }
+                }
+              }
+            ]
+          },
+          "estimatedCostJpy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "unit",
+              "status",
+              "sourceReference"
+            ],
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "unit": {
+                "const": "JPY"
+              },
+              "status": {
+                "enum": [
+                  "not_collected",
+                  "observed",
+                  "estimated",
+                  "fixture"
+                ]
+              },
+              "sourceReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              }
+            }
+          },
+          "sourceReference": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "storage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "service",
+          "resourceScope",
+          "observedAt",
+          "dataBytes",
+          "indexBytes",
+          "combinedBytes",
+          "backupBytes",
+          "unseparatedComponents",
+          "sourceReference"
+        ],
+        "properties": {
+          "service": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceScope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataBytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "indexBytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "combinedBytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "backupBytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "unseparatedComponents": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "sourceReference": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "latency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "warmAll24",
+        "warmSearch22",
+        "cold3",
+        "warmP95LimitMs",
+        "warmGate"
+      ],
+      "properties": {
+        "method": {
+          "const": "linear_interpolation_ranks_(n-1)*p"
+        },
+        "warmAll24": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expectedCount",
+            "observedCount",
+            "p50Ms",
+            "p95Ms"
+          ],
+          "properties": {
+            "expectedCount": {
+              "const": 24
+            },
+            "observedCount": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "p50Ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "p95Ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        },
+        "warmSearch22": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expectedCount",
+            "observedCount",
+            "p50Ms",
+            "p95Ms"
+          ],
+          "properties": {
+            "expectedCount": {
+              "const": 22
+            },
+            "observedCount": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "p50Ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "p95Ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        },
+        "cold3": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expectedCount",
+            "observedCount",
+            "p50Ms",
+            "p95Ms",
+            "gate"
+          ],
+          "properties": {
+            "expectedCount": {
+              "const": 3
+            },
+            "observedCount": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "p50Ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "p95Ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "gate": {
+              "const": "report_only"
+            }
+          }
+        },
+        "warmP95LimitMs": {
+          "const": 15000
+        },
+        "warmGate": {
+          "enum": [
+            "pending",
+            "passed",
+            "failed"
+          ]
+        }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prices",
+        "monthlySearchAssumption",
+        "approvedMonthlyBudgetJpy",
+        "components",
+        "estimatedMonthlyTotalJpy",
+        "invoiceActualTotalJpy",
+        "unknownComponents",
+        "monthlyGate"
+      ],
+      "properties": {
+        "prices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "component",
+              "meterId",
+              "sku",
+              "region",
+              "currency",
+              "unit",
+              "unitPrice",
+              "observedAt",
+              "effectiveAt",
+              "fxJpyPerUnit",
+              "fxDate",
+              "taxAndContract",
+              "sourceReference"
+            ],
+            "properties": {
+              "component": {
+                "type": "string",
+                "minLength": 1
+              },
+              "meterId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "sku": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "region": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "currency": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "unit": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "unitPrice": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "observedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "effectiveAt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "fxJpyPerUnit": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "fxDate": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "taxAndContract": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "sourceReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "monthlySearchAssumption": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approvedMonthlyBudgetJpy": {
+          "const": 8000
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "component",
+              "monthlyUsage",
+              "unit",
+              "estimatedMonthlyCostJpy",
+              "unreconciledReserveJpy",
+              "invoiceReconciled",
+              "sourceReference"
+            ],
+            "properties": {
+              "component": {
+                "type": "string",
+                "minLength": 1
+              },
+              "monthlyUsage": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "unit": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "estimatedMonthlyCostJpy": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "unreconciledReserveJpy": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "invoiceReconciled": {
+                "type": "boolean"
+              },
+              "sourceReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "estimatedMonthlyTotalJpy": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "invoiceActualTotalJpy": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unknownComponents": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "monthlyGate": {
+          "enum": [
+            "pending",
+            "passed",
+            "failed"
+          ]
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidenceReferences": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "latency": {
+            "properties": {
+              "warmGate": {
+                "const": "passed"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "latency": {
+            "properties": {
+              "warmAll24": {
+                "properties": {
+                  "observedCount": {
+                    "const": 24
+                  },
+                  "p50Ms": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "p95Ms": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 15000
+                  }
+                }
+              },
+              "warmSearch22": {
+                "properties": {
+                  "observedCount": {
+                    "const": 22
+                  },
+                  "p50Ms": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "p95Ms": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 15000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cost": {
+            "properties": {
+              "monthlyGate": {
+                "const": "passed"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "cost": {
+            "properties": {
+              "unknownComponents": {
+                "maxItems": 0
+              },
+              "estimatedMonthlyTotalJpy": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 8000
+              },
+              "components": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "evidenceKind": {
+            "const": "real_service"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provenance": {
+            "properties": {
+              "sourceSha256": {
+                "type": "string",
+                "minLength": 1
+              },
+              "inputSha256": {
+                "type": "string",
+                "minLength": 1
+              },
+              "configSha256": {
+                "type": "string",
+                "minLength": 1
+              },
+              "serviceStateSha256": {
+                "type": "string",
+                "minLength": 1
+              },
+              "executionApprovalReference": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

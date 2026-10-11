@@ -1,0 +1,23 @@
+test_actual_ai_run_trace_matches_contract (test_contracts.ContractsTests.test_actual_ai_run_trace_matches_contract) ... ok
+test_business_analysis_runtime_openapi (test_contracts.ContractsTests.test_business_analysis_runtime_openapi) ... ok
+test_choice_keeps_complete_distribution_and_separate_confidence (test_contracts.ContractsTests.test_choice_keeps_complete_distribution_and_separate_confidence) ... ok
+test_cross_field_invalid_examples (test_contracts.ContractsTests.test_cross_field_invalid_examples) ... ok
+test_distinct_failure_and_unsaved_examples (test_contracts.ContractsTests.test_distinct_failure_and_unsaved_examples) ... ok
+test_fixture_compatibility_uses_actual_domain_serialization (test_contracts.ContractsTests.test_fixture_compatibility_uses_actual_domain_serialization) ... ok
+test_generated_chat_assistance_contracts (test_contracts.ContractsTests.test_generated_chat_assistance_contracts) ... ok
+test_generated_knowledge_contracts (test_contracts.ContractsTests.test_generated_knowledge_contracts) ... ok
+test_generated_profile_pipeline_contracts (test_contracts.ContractsTests.test_generated_profile_pipeline_contracts) ... ok
+test_invalid_inputs_rejected_at_expected_field (test_contracts.ContractsTests.test_invalid_inputs_rejected_at_expected_field) ... ok
+test_knowledge_runtime_openapi (test_contracts.ContractsTests.test_knowledge_runtime_openapi) ... ok
+test_natural_search_v2_contract_and_generated_audit (test_contracts.ContractsTests.test_natural_search_v2_contract_and_generated_audit) ... ok
+test_normalization_dictionary_examples (test_contracts.ContractsTests.test_normalization_dictionary_examples) ... ok
+test_openapi_and_local_references (test_contracts.ContractsTests.test_openapi_and_local_references) ... ok
+test_real_conversation_records_match_contract (test_contracts.ContractsTests.test_real_conversation_records_match_contract) ... ok
+test_real_ingestion_records_match_contract (test_contracts.ContractsTests.test_real_ingestion_records_match_contract) ... ok
+test_schema_and_every_named_example (test_contracts.ContractsTests.test_schema_and_every_named_example) ... ok
+test_transition_contract_rejects_forbidden_actors_and_edges (test_contracts.ContractsTests.test_transition_contract_rejects_forbidden_actors_and_edges) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.428s
+
+OK

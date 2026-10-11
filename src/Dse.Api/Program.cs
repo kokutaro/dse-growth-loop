@@ -8,6 +8,8 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
+// This is a declaration of the mandatory policy installed below, not a deployment opt-in.
+builder.Configuration["Workspace:LegacyApisRestricted"] = "true";
 var demo = builder.Environment.IsDevelopment() && builder.Configuration["Data:Mode"] == "Demo";
 var tenantId = builder.Configuration["Auth:TenantId"] ?? "";
 var clientId = builder.Configuration["Auth:ClientId"] ?? "";
@@ -17,6 +19,7 @@ if (!demo && (!Guid.TryParse(tenantId, out _) || !Guid.TryParse(clientId, out _)
 
 builder.Services.AddCatalog(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddIngestion(builder.Configuration);
+builder.Services.AddSingleton<Dse.Api.OperationMeasurementBuffer>();
 // Do not export URLs from the hub transport; tokens are header-only and query tokens are rejected.
 builder.Services.Configure<OpenTelemetry.Instrumentation.AspNetCore.AspNetCoreTraceInstrumentationOptions>(o =>
     o.Filter = context => !context.Request.Path.StartsWithSegments("/api/hubs"));
@@ -68,6 +71,7 @@ builder.Services.AddRateLimiter(o => o.AddPolicy("chatConnections", context => R
     _ => new FixedWindowRateLimiterOptions { PermitLimit = 120, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })));
 builder.Services.AddHealthChecks().AddCheck<CatalogHealthCheck>("catalog", tags: ["ready"]);
 var app = builder.Build();
+app.UseMiddleware<Dse.Api.OperationMeasurementsMiddleware>();
 app.UseExceptionHandler(handler => handler.Run(async context =>
 {
     var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
@@ -116,29 +120,45 @@ app.MapGet("/api/config", () => new { mode = demo ? "Demo" : "Azure", tenantId, 
 app.Use(async (context, next) =>
 {
     if (context.Request.Path.StartsWithSegments("/api") && context.Request.Path != "/api/config")
-        context.Items[typeof(ActorAccess)] = demo ? DemoActor.Resolve(context) : context.RequestServices.GetRequiredService<IdentityResolver>().Resolve(context.User);
+    {
+        var actor = demo ? DemoActor.Resolve(context) : new IdentityResolver(builder.Configuration).Resolve(context.User);
+        context.Items[typeof(ActorAccess)] = actor;
+        WorkspaceIsolation.Require(actor, context.Request.Path.Value ?? "", demo,
+            context.GetEndpoint()?.Metadata.GetMetadata<LegacyWorkspaceEndpoint>() is not null);
+    }
     await next();
 });
 var search = app.MapPost("/api/search", (SearchRequest request, HttpContext context, ICatalog catalog) =>
-    new CatalogResult(catalog, request, RecordEndpoints.Actor(context))).RequireRateLimiting("search");
+    new CatalogResult(catalog, request, RecordEndpoints.Actor(context))).RequireRateLimiting("search").WithMetadata(new LegacyWorkspaceEndpoint());
 var records = app.MapGroup("/api/v1").RequireRateLimiting("records");
-records.MapRecords();
-records.MapDocuments();
-records.MapConversations(demo);
-records.MapKnowledge();
-var naturalSearch = app.MapGroup("/api/v2").RequireRateLimiting("search");
+records.MapRecords(demo);
+records.MapDocuments(demo);
+var legacyRecords = app.MapGroup("/api/v1").RequireRateLimiting("records").WithMetadata(new LegacyWorkspaceEndpoint());
+legacyRecords.MapConversations(demo);
+legacyRecords.MapKnowledge();
+records.MapBusinessAnalysis();
+records.MapAnonymousWorkspace();
+records.MapIdentityDisclosure();
+records.MapGet("/operation-measurements", (HttpContext context, Dse.Api.OperationMeasurementBuffer measurements) =>
+{
+    if (!RecordEndpoints.Actor(context).HasRole("operator")) throw new DomainException(403, "FORBIDDEN");
+    context.Response.Headers.CacheControl = "no-store";
+    return Results.Ok(measurements.Snapshot());
+});
+var naturalSearch = app.MapGroup("/api/v2").RequireRateLimiting("search").WithMetadata(new LegacyWorkspaceEndpoint());
 naturalSearch.MapNaturalSearch();
 var chatHub = app.MapHub<ConversationHub>("/api/hubs/conversations", options =>
 {
     options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
     options.CloseOnAuthenticationExpiration = true;
     options.LongPolling.PollTimeout = TimeSpan.FromSeconds(20);
-}).RequireRateLimiting("chatConnections");
+}).RequireRateLimiting("chatConnections").WithMetadata(new LegacyWorkspaceEndpoint());
 if (!demo)
 {
     chatHub.RequireAuthorization("DemoUsers");
     search.RequireAuthorization("DemoUsers");
     records.RequireAuthorization("DemoUsers");
+    legacyRecords.RequireAuthorization("DemoUsers");
     naturalSearch.RequireAuthorization("DemoUsers");
 }
 app.MapFallback("/api/{**path}", () => Results.NotFound());

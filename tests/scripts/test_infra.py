@@ -57,8 +57,14 @@ class InfrastructureTests(unittest.TestCase):
 
     def test_only_manual_jobs_and_no_cleanup_resources(self):
         jobs = [r for r in self.apps.values() if r['type'] == 'Microsoft.App/jobs']
-        self.assertEqual(len(jobs), 1)
-        self.assertEqual(jobs[0]['properties']['configuration']['triggerType'], 'Manual')
+        self.assertEqual(len(jobs), 2)
+        self.assertTrue(all(j['properties']['configuration']['triggerType'] == 'Manual' for j in jobs))
+        analysis = self.apps['dse-business-analysis']
+        self.assertFalse(self.template['parameters']['deployBusinessAnalysisJob']['defaultValue'])
+        self.assertEqual(analysis['condition'], "[parameters('deployBusinessAnalysisJob')]")
+        configuration = analysis['properties']['configuration']
+        self.assertEqual(configuration['replicaRetryLimit'], 0)
+        self.assertEqual(configuration['manualTriggerConfig'], {'parallelism': 1, 'replicaCompletionCount': 1})
         foundation = self.modules['dse-foundation']['properties']['template']['resources']
         self.assertFalse(any(r['type'].endswith(('/managementPolicies', '/tasks')) for r in foundation))
         runtime = {v['name']: v['value'] for v in self.template['parameters']['runtimeSettings']['defaultValue']}

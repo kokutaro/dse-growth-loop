@@ -1,0 +1,20 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs conversations.spec.ts --grep 二人で承諾
+
+
+[isolated 1/1] 二人で承諾・会話・退会し、AI停止中も保存できる
+[WebServer] (node:55519) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:55522) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/conversations.spec.ts:38:1 › 二人で承諾・会話・退会し、AI停止中も保存できる
+  1 passed (14.5s)
+
+Isolated E2E: 1 passed, 0 failed (1 tests).

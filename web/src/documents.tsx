@@ -7,7 +7,7 @@ type Evidence = { id: string; location: { label: string }; text: string };
 type UploadContext = { personId: string; departmentId: string; scopeIds: string[]; maxBytes: number };
 const statuses: Record<string, string> = { queued: "処理待ち", processing: "処理中", ready: "機械抽出済み", failed: "失敗", needs_review: "確認待ち", cancelled: "取り消し", budget_stopped: "保留" };
 const warningLabels: Record<string, string> = { IMAGES_NOT_OCR: "画像の文字は抽出していません。", EMPTY_DOCUMENT: "抽出できる本文がありません。", EXTERNAL_LINKS_IGNORED: "外部リンク先は取得していません。", FORMULA_CACHED_VALUES_ONLY: "数式は保存済みの値です。再計算していません。", FORMULA_CACHE_MISSING: "保存値のない数式セルがあります。", AUXILIARY_PARTS_NOT_EXTRACTED: "ヘッダー・フッター・注釈は抽出対象外です。", EXCEL_1900_LEAP_DAY: "Excel固有の日付1900-02-29を含みます。", INVALID_DATE_SERIAL: "変換できない日付は元の値を表示します。" };
-export function Documents({ config }: { config: AppConfig }) {
+export function Documents({ config, person }: { config: AppConfig; person?: string }) {
   const [context, setContext] = useState<UploadContext>();
   const [accepted, setAccepted] = useState<Accepted>();
   const [job, setJob] = useState<Job>();
@@ -21,8 +21,10 @@ export function Documents({ config }: { config: AppConfig }) {
   const [file, setFile] = useState<File>();
   const key = useRef(crypto.randomUUID());
   const etag = useRef("");
+  const uploadStorageKey = person ? `dse-upload-job:${config.tenantId}:${person}` : "dse-upload-job";
   async function request(path: string, init?: RequestInit) {
     const headers = new Headers(init?.headers);
+    if (config.mode === "Demo" && person) headers.set("X-Demo-Person", person);
     if (config.mode === "Azure") headers.set("Authorization", `Bearer ${await getToken(config)}`);
     for (let attempt = 0; ; attempt++) {
       const response = await fetch(path, { ...init, headers });
@@ -39,7 +41,7 @@ export function Documents({ config }: { config: AppConfig }) {
   async function loadContext() {
     try {
       setContext(await (await request("/api/v1/upload-context")).json()); setError("");
-      const saved = sessionStorage.getItem("dse-upload-job");
+      const saved = sessionStorage.getItem(uploadStorageKey);
       if (saved) {
         const value: Accepted = JSON.parse(saved);
         if (/^[A-Za-z0-9._:-]+$/.test(value.documentId) && /^[A-Za-z0-9._:-]+$/.test(value.jobId)) { setAccepted(value); await refresh(value); }
@@ -84,7 +86,7 @@ export function Documents({ config }: { config: AppConfig }) {
       if (file.size > context.maxBytes) throw new Error("ファイルが上限を超えています。");
       const body = new FormData(); body.set("file", file); body.set("title", title); body.set("documentType", type);
       const value: Accepted = await (await request("/api/v1/documents", { method: "POST", headers: { "Idempotency-Key": key.current }, body })).json();
-      sessionStorage.setItem("dse-upload-job", JSON.stringify(value));
+      sessionStorage.setItem(uploadStorageKey, JSON.stringify(value));
       setAccepted(value); setPipeline(undefined); setEvidence([]); setJob({ status: "queued", lastErrorCode: null, resultId: null }); await refresh(value);
     } catch (e) { setError(String(e)); } finally { setBusy(false); }
   }
@@ -93,7 +95,7 @@ export function Documents({ config }: { config: AppConfig }) {
     setBusy(true);
     try {
       const result = await (await request(`/api/v1/jobs/${accepted.jobId}/retry`, { method: "POST", headers: { "Content-Type": "application/json", "If-Match": etag.current, "Idempotency-Key": crypto.randomUUID() }, body: JSON.stringify({ reason: "画面から手動再実行" }) })).json();
-      const next = { ...accepted, jobId: result.jobId }; sessionStorage.setItem("dse-upload-job", JSON.stringify(next)); setAccepted(next); await refresh(next);
+      const next = { ...accepted, jobId: result.jobId }; sessionStorage.setItem(uploadStorageKey, JSON.stringify(next)); setAccepted(next); await refresh(next);
     } catch (e) { setError(String(e)); } finally { setBusy(false); }
   }
   async function original() {

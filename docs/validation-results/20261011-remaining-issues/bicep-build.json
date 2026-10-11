@@ -1,0 +1,10 @@
+{
+  "compiler": "existing local ~/.azure/bin/bicep",
+  "command": "bicep build infra/main.bicep",
+  "exitCode": 0,
+  "azureConnections": 0,
+  "deployments": 0,
+  "compiledBytes": 63403,
+  "compiledSha256": "d10e7b04e0507f25a1c0fb5d2b9a619af5ec1a98739aa6cc949f13b65c1efd84",
+  "jobDeployDefault": false
+}

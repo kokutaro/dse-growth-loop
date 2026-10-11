@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
 async function create(page: Page, title: string) {
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("課題名", { exact: true }).fill(title);
   await page.getByLabel("困っていること").fill("架空の相談です");
   await page.getByRole("button", { name: "課題を作成", exact: true }).click();

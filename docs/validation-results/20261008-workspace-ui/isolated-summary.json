@@ -1,0 +1,342 @@
+{
+  "passed": 42,
+  "failed": 0,
+  "results": [
+    {
+      "file": "chat-assistance.spec.ts",
+      "line": 15,
+      "title": "自動事例は一度だけ保存され、出典・フィードバック・再接続・停止を操作できる",
+      "exitCode": 0,
+      "durationMs": 15908,
+      "output": "test-results/isolated/1"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 14,
+      "title": "履歴取得中に相談を依頼しても参加者一覧を更新する",
+      "exitCode": 0,
+      "durationMs": 7700,
+      "output": "test-results/isolated/2"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 38,
+      "title": "二人で承諾・会話・退会し、AI停止中も保存できる",
+      "exitCode": 0,
+      "durationMs": 25035,
+      "output": "test-results/isolated/3"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 63,
+      "title": "DB失敗と応答消失は未保存表示になり、同じキーで再送して一件だけ保存する",
+      "exitCode": 0,
+      "durationMs": 4453,
+      "output": "test-results/isolated/4"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 85,
+      "title": "通知なしでも履歴をページング回復し、画面の開き直しで重複しない",
+      "exitCode": 0,
+      "durationMs": 3295,
+      "output": "test-results/isolated/5"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 97,
+      "title": "表示済みAI引用は新着なしでも履歴を再照合して撤回表示へ更新する（応答fixture）",
+      "exitCode": 0,
+      "durationMs": 3204,
+      "output": "test-results/isolated/6"
+    },
+    {
+      "file": "documents.spec.ts",
+      "line": 5,
+      "title": "docxをアップロードして機械抽出結果と出典を確認できる",
+      "exitCode": 0,
+      "durationMs": 6564,
+      "output": "test-results/isolated/7"
+    },
+    {
+      "file": "documents.spec.ts",
+      "line": 5,
+      "title": "xlsxをアップロードして機械抽出結果と出典を確認できる",
+      "exitCode": 0,
+      "durationMs": 8820,
+      "output": "test-results/isolated/8"
+    },
+    {
+      "file": "documents.spec.ts",
+      "line": 20,
+      "title": "偽装Officeファイルは拒否して入力を保持する",
+      "exitCode": 0,
+      "durationMs": 4125,
+      "output": "test-results/isolated/9"
+    },
+    {
+      "file": "documents.spec.ts",
+      "line": 28,
+      "title": "処理待ちと失敗を区別して手動再実行できる（状態API fixture）",
+      "exitCode": 0,
+      "durationMs": 4185,
+      "output": "test-results/isolated/10"
+    },
+    {
+      "file": "knowledge.spec.ts",
+      "line": 3,
+      "title": "resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy case",
+      "exitCode": 0,
+      "durationMs": 5012,
+      "output": "test-results/isolated/11"
+    },
+    {
+      "file": "logout.spec.ts",
+      "line": 3,
+      "title": "Azure logout removes protected panels even when the provider is unavailable",
+      "exitCode": 0,
+      "durationMs": 3031,
+      "output": "test-results/isolated/12"
+    },
+    {
+      "file": "profiles.spec.ts",
+      "line": 4,
+      "title": "副業務を原文付きの検索断片として追加し経験月数を重複加算しない",
+      "exitCode": 0,
+      "durationMs": 5223,
+      "output": "test-results/isolated/13"
+    },
+    {
+      "file": "profiles.spec.ts",
+      "line": 31,
+      "title": "docxから本人訂正と手動一次検索までfake AIで通る",
+      "exitCode": 0,
+      "durationMs": 9744,
+      "output": "test-results/isolated/14"
+    },
+    {
+      "file": "profiles.spec.ts",
+      "line": 31,
+      "title": "xlsxから本人訂正と手動一次検索までfake AIで通る",
+      "exitCode": 0,
+      "durationMs": 9781,
+      "output": "test-results/isolated/15"
+    },
+    {
+      "file": "profiles.spec.ts",
+      "line": 57,
+      "title": "公開撤回を検索に反映し、明示再公開で復旧する",
+      "exitCode": 0,
+      "durationMs": 9609,
+      "output": "test-results/isolated/16"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 3,
+      "title": "ダミーの相談候補と根拠を検索できる",
+      "exitCode": 0,
+      "durationMs": 4116,
+      "output": "test-results/isolated/17"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 20,
+      "title": "副分類のソフトウェア経験を拾う",
+      "exitCode": 0,
+      "durationMs": 3065,
+      "output": "test-results/isolated/18"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 32,
+      "title": "空結果と障害を区別する",
+      "exitCode": 0,
+      "durationMs": 4178,
+      "output": "test-results/isolated/19"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 44,
+      "title": "fake AIで自然文・条件編集・結果・出典を確認できる",
+      "exitCode": 0,
+      "durationMs": 4263,
+      "output": "test-results/isolated/20"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 61,
+      "title": "分類停止時に手動条件へ戻せる",
+      "exitCode": 0,
+      "durationMs": 4139,
+      "output": "test-results/isolated/21"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 72,
+      "title": "自然文だけでも一度の検索で条件生成から結果へ進む",
+      "exitCode": 0,
+      "durationMs": 4165,
+      "output": "test-results/isolated/22"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 82,
+      "title": "リランク失敗を正解なしと区別し、未評価候補を推薦しない",
+      "exitCode": 0,
+      "durationMs": 4145,
+      "output": "test-results/isolated/23"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 95,
+      "title": "事例の指定を検索APIへ送り、人物を混ぜずに取得する",
+      "exitCode": 0,
+      "durationMs": 3099,
+      "output": "test-results/isolated/24"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 108,
+      "title": "検索結果を種別別に表示する: knowledge,person,knowledge,person",
+      "exitCode": 0,
+      "durationMs": 4150,
+      "output": "test-results/isolated/25"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 108,
+      "title": "検索結果を種別別に表示する: person",
+      "exitCode": 0,
+      "durationMs": 3120,
+      "output": "test-results/isolated/26"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 108,
+      "title": "検索結果を種別別に表示する: knowledge",
+      "exitCode": 0,
+      "durationMs": 4124,
+      "output": "test-results/isolated/27"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 108,
+      "title": "検索結果を種別別に表示する: 空",
+      "exitCode": 0,
+      "durationMs": 3034,
+      "output": "test-results/isolated/28"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 126,
+      "title": "分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_OUT_OF_SCOPE",
+      "exitCode": 0,
+      "durationMs": 3221,
+      "output": "test-results/isolated/29"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 126,
+      "title": "分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_MANUAL_REQUIRED",
+      "exitCode": 0,
+      "durationMs": 4225,
+      "output": "test-results/isolated/30"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 26,
+      "title": "下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない",
+      "exitCode": 0,
+      "durationMs": 3409,
+      "output": "test-results/isolated/31"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 51,
+      "title": "投稿応答が遅れても戻る操作で入力を変更・二重送信できない",
+      "exitCode": 0,
+      "durationMs": 4198,
+      "output": "test-results/isolated/32"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 77,
+      "title": "参加するだけで追加承認なく会話でき、画面は匿名名を維持する",
+      "exitCode": 0,
+      "durationMs": 4576,
+      "output": "test-results/isolated/33"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 95,
+      "title": "辞退した依頼では会話を開けない",
+      "exitCode": 0,
+      "durationMs": 4422,
+      "output": "test-results/isolated/34"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 110,
+      "title": "会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する",
+      "exitCode": 0,
+      "durationMs": 3402,
+      "output": "test-results/isolated/35"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 142,
+      "title": "ETag競合では入力を保持し、再送で最新版を確認する",
+      "exitCode": 0,
+      "durationMs": 3247,
+      "output": "test-results/isolated/36"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 161,
+      "title": "参加権限を失ったルームは本文を消して送信と公開操作を閉じる",
+      "exitCode": 0,
+      "durationMs": 3275,
+      "output": "test-results/isolated/37"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 173,
+      "title": "事例詳細は表示前に公開状態を再照合し、撤回済みを表示しない",
+      "exitCode": 0,
+      "durationMs": 3142,
+      "output": "test-results/isolated/38"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 186,
+      "title": "320pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ",
+      "exitCode": 0,
+      "durationMs": 3119,
+      "output": "test-results/isolated/39"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 186,
+      "title": "390pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ",
+      "exitCode": 0,
+      "durationMs": 3096,
+      "output": "test-results/isolated/40"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 201,
+      "title": "Azureでは匿名契約のないAPIを呼ばず、ログアウトで画面を閉じる",
+      "exitCode": 0,
+      "durationMs": 3183,
+      "output": "test-results/isolated/41"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 222,
+      "title": "新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する",
+      "exitCode": 0,
+      "durationMs": 5590,
+      "output": "test-results/isolated/42"
+    }
+  ]
+}

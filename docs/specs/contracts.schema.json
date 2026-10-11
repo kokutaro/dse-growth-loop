@@ -321,8 +321,12 @@
           "minimum": 0
         },
         "requestUnits": {
-          "type": "number",
-          "minimum": 0
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "null when complete Cosmos RU was not measured; 0 is not an unknown value."
         },
         "retryCount": {
           "type": "integer",
@@ -419,6 +423,13 @@
           "enum": [
             "search-total-bytes-v1"
           ]
+        },
+        "requestUnitsStatus": {
+          "enum": [
+            "not_collected",
+            "observed"
+          ],
+          "description": "Optional measurement provenance. Live business analysis leaves RU null."
         }
       },
       "required": [
@@ -2578,6 +2589,59 @@
         "lastAiPostAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "identityDisclosure": {
+          "type": "object",
+          "description": "Private independent display-name grants. Never returned by anonymous workspace DTOs.",
+          "properties": {
+            "generation": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "boundVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 128
+            },
+            "consents": {
+              "type": "object",
+              "propertyNames": {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "granted": {
+                    "const": true
+                  },
+                  "reviewedVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "granted",
+                  "reviewedVersion",
+                  "at"
+                ],
+                "additionalProperties": false
+              },
+              "maxProperties": 20
+            }
+          },
+          "required": [
+            "generation",
+            "consents"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -4722,6 +4786,56 @@
         },
         "contractVersion": {
           "const": "knowledge-v1"
+        },
+        "analysisMetadata": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "公開用部署IDと自己申告の分析項目。要約と同じ版・公開範囲で双方の公開・分析同意を必要とし、欠損は不明。市場性の合格判定ではない。",
+          "properties": {
+            "departmentId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "resolution": {
+              "enum": [
+                null,
+                "resolved",
+                "partial",
+                "unresolved"
+              ]
+            },
+            "reportedHours": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100000,
+              "multipleOf": 0.01
+            },
+            "recurrences": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "feedback": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          "additionalProperties": false
         }
       },
       "required": [
@@ -4932,6 +5046,56 @@
         },
         "contractVersion": {
           "const": "knowledge-v1"
+        },
+        "analysisMetadata": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "公開用部署IDと自己申告の分析項目。要約と同じ版・公開範囲で双方の公開・分析同意を必要とし、欠損は不明。市場性の合格判定ではない。",
+          "properties": {
+            "departmentId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "resolution": {
+              "enum": [
+                null,
+                "resolved",
+                "partial",
+                "unresolved"
+              ]
+            },
+            "reportedHours": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100000,
+              "multipleOf": 0.01
+            },
+            "recurrences": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "feedback": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          "additionalProperties": false
         }
       },
       "required": [

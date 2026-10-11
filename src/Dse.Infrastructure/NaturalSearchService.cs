@@ -88,9 +88,14 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
         {
             var current = await Filter(primary.Candidates.SelectMany(c => c.Units), token);
             var validIds = current.Select(u => u.Id).ToHashSet();
+            // Grounding is checked against the freshly authorized evidence, not the
+            // pre-AI copy. A changed span must not leave an old quotation visible.
+            var inputChanged = inputs.Any(u => !validIds.Contains(u.Id) ||
+                !u.SourceRefs.SequenceEqual(current.Single(v => v.Id == u.Id).SourceRefs));
             var visible = primary.Candidates.Select(c => c with { Units = c.Units.Where(u => validIds.Contains(u.Id)).Select(u => current.Single(v => v.Id == u.Id)).ToArray() }).Where(c => c.Units.Length > 0).ToArray();
             List<CandidateAssessment> assessments = []; List<EvidenceCut> cuts = [];
-            var allowed = inputs.ToDictionary(u => u.Id, u => EvidenceBudget.Trim(u.SourceRefs, rules.EvidenceBytesPerCandidate, u.Id, cuts));
+            var allowed = current.Where(u => inputs.Any(input => input.Id == u.Id))
+                .ToDictionary(u => u.Id, u => EvidenceBudget.Trim(u.SourceRefs, rules.EvidenceBytesPerCandidate, u.Id, cuts));
             var items = ranked?.Status == AiStatus.Succeeded ? ranked.Value?.Items ?? [] : [];
             var malformed = items.Select(i => i.CandidateId).Distinct().Count() != items.Length || items.Any(i =>
                 !allowed.TryGetValue(i.CandidateId, out var evidence) || string.IsNullOrWhiteSpace(i.Reason) ||
@@ -102,7 +107,7 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
                 var candidate = visible.Single(c => c.Units.Any(u => u.Id == item.CandidateId));
                 assessments.Add(new(candidate.EntityId, candidate.EntityType, item.Reason, item.EvidenceIds, ["役割・期間・現在の対応可否は相談時に確認してください。"]));
             }
-            if (visible.Length != primary.Candidates.Length || inputs.Any(u => !validIds.Contains(u.Id))) status = "source_revoked";
+            if (visible.Length != primary.Candidates.Length || inputChanged) status = "source_revoked";
             if (status == "succeeded")
             {
                 // Successful omission means unsuitable. Keep the complete primary set only in the audit.

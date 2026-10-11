@@ -5,12 +5,13 @@ type Period = { start: string | null; end: string | null; precision: string; mon
 type Decisions = { choices: Record<string, { probabilities: Record<string, number>; confidence: number }>; nouls: Record<string, { state: number; yesProbability: number | null }> };
 type Experience = { id: string; documentId: string; description: string; period: Period; confirmationState: string; correctionState: string; pendingExtraction?: { description: string }; evidenceRefs: { id: string }[]; decisions?: Decisions };
 type Person = { id: string; displayName: string; available: boolean; publicationState?: string; confirmationState: string; sourceVersion: number; activeVersion: number | null; projectionJobId?: string; totalExperienceMonths?: number | null };
-export function Profiles({ config }: { config: AppConfig }) {
+export function Profiles({ config, person: demoPerson }: { config: AppConfig; person?: string }) {
   const [person, setPerson] = useState<Person>(); const [etag, setEtag] = useState("");
   const [experiences, setExperiences] = useState<Experience[]>([]); const [changed, setChanged] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState(""); const [error, setError] = useState(""); const [busy, setBusy] = useState(false);
   async function request(path: string, init?: RequestInit) {
     const headers = new Headers(init?.headers);
+    if (config.mode === "Demo" && demoPerson) headers.set("X-Demo-Person", demoPerson);
     if (config.mode === "Azure") headers.set("Authorization", `Bearer ${await getToken(config)}`);
     for (let attempt = 0; ; attempt++) {
       const response = await fetch(path, { ...init, headers });

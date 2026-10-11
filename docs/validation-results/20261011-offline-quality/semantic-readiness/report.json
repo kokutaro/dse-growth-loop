@@ -1,0 +1,167 @@
+{
+  "version": "offline-quality-v1",
+  "scope": "field semantics; independent of JSON validity and retrieval recall",
+  "callsThisRun": 0,
+  "qualityClaim": false,
+  "humanGoldApproved": false,
+  "reviewedRecordsSha256": "c2d40b0356b4ff9f99c3cdc84515af18201d069cb5df3b0b72a87cf56bcb8e9b",
+  "recordedStructuredOrigin": false,
+  "complete": false,
+  "gatePassed": false,
+  "agreementFinal": {
+    "value": null,
+    "denominator": 0
+  },
+  "summaries": [
+    {
+      "split": "tuning",
+      "field": "description",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "tuning",
+      "field": "start",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "tuning",
+      "field": "end",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "tuning",
+      "field": "precision",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "tuning",
+      "field": "months",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "tuning",
+      "field": "skills",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "tuning",
+      "field": "domain",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "tuning",
+      "field": "evidenceIds",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "final",
+      "field": "description",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "final",
+      "field": "start",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "final",
+      "field": "end",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "final",
+      "field": "precision",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "final",
+      "field": "months",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "final",
+      "field": "skills",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "final",
+      "field": "domain",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    },
+    {
+      "split": "final",
+      "field": "evidenceIds",
+      "agreement": {
+        "value": null,
+        "denominator": 0
+      },
+      "unreviewed": 60
+    }
+  ],
+  "unexpectedPredictionIds": [],
+  "failures": [],
+  "inputs": {
+    "docs/validation-results/20261011-offline-quality/semantic-review-draft/report.json": "e62a24d0e94c063f298132f6e30c6dce5cd126648dc2f79327b24ed9107ce53a",
+    "docs/validation-results/20261011-offline-quality/semantic-inputs/predictions-unavailable.json": "d18f51fdd26cc8c83f33b86150113c5cf71dbd9107c0761e315c93f84cbd7bc5"
+  }
+}

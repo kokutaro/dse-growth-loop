@@ -1,8 +1,9 @@
 var builder = DistributedApplication.CreateBuilder(args);
 var api = builder.AddProject<Projects.Dse_Api>("api")
     .WithEnvironment("Data__Mode", "Demo")
-    .WithEnvironment("Data__LocalPath", Path.GetFullPath("../../.artifacts/local-ingestion", builder.Environment.ContentRootPath))
+    .WithEnvironment("Data__LocalPath", builder.Configuration["Data:LocalPath"] ?? Path.GetFullPath("../../.artifacts/local-ingestion", builder.Environment.ContentRootPath))
     .WithEnvironment("Ai__Mode", "Mock")
+    .WithEnvironment("BusinessAnalysis__DemoFixtures", "true")
     .WithEnvironment("Profile__SecondaryWorkFragments", "true")
     .WithEnvironment("AiUsage__Stopped", "false")
     .WithEnvironment("AiUsage__MaxOutputTokens", "3000")
