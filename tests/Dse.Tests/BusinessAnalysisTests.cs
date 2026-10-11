@@ -205,8 +205,10 @@ public sealed class BusinessAnalysisTests
         Assert.Equal("ANALYSIS_BUSY", (await Assert.ThrowsAsync<DomainException>(() => secondService.StartAsync(Analyst, second, second.RunId, default))).Code);
         release.SetResult(); await first;
         s = await Create(new() { ["BusinessAnalysis:TimeoutSeconds"] = "1" });
-        s.Ai.During = async () => await Task.Delay(1200);
+        var stalled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        s.Ai.During = () => stalled.Task;
         var request = Request(); var result = await Start(s, request);
+        stalled.SetResult();
         Assert.Equal("partial_failure", result.Text("status")); Assert.Equal(1, s.Ai.Calls);
         Assert.Equal("TIMEOUT_OR_CANCELLED", result["exclusions"]![0]!["reason"]!.GetValue<string>());
         await Start(s, request); Assert.Equal(1, s.Ai.Calls);
@@ -573,8 +575,9 @@ public sealed class BusinessAnalysisTests
     [Fact]
     public async Task Offline_recovery_never_releases_another_run_and_requires_explicit_stop()
     {
-        var s = await Create(new() { ["BusinessAnalysis:TimeoutSeconds"] = "1" }); s.Ai.During = () => Task.Delay(1100);
-        var request = Request(); await Start(s, request); await Task.Delay(150);
+        var s = await Create(new() { ["BusinessAnalysis:TimeoutSeconds"] = "1" });
+        var stalled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); s.Ai.During = () => stalled.Task;
+        var request = Request(); await Start(s, request); stalled.SetResult();
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Data:Mode"] = "Demo", ["AiUsage:Stopped"] = "true", ["AiUsage:LiveOptIn"] = "false" }).Build();
         var recovery = new BusinessAnalysisRecovery(s.Store, config, TimeProvider.System); var inspection = await recovery.InspectAsync(Operator, Analyst.PrincipalId, request.RunId, default);
         var slot = (await s.Store.ReadAsync(RecordPartition.Catalog("demo"), "business-analysis-slot", default))!; slot.Value["analysisRunId"] = "another-run";
