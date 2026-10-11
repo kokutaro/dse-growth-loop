@@ -1,15 +1,17 @@
-import { getToken, type AppConfig } from './auth';
+import { authSessionSignal, getToken, type AppConfig } from './auth';
 
 export type Api = <T>(path: string, method?: string, body?: unknown, key?: string, etag?: string) => Promise<T>;
 export class WorkspaceError extends Error {
   constructor(public status: number, public code: string) { super(code); }
 }
-export function workspaceApi(config: AppConfig, person: string, signal?: AbortSignal): Api {
+export function workspaceApi(config: AppConfig, person: string, signal: AbortSignal): Api {
+  const lifecycle = AbortSignal.any([authSessionSignal(), signal]);
   // A tenant access fence serializes the server's read-and-serialize boundary.
   // Share one local queue across the workspace panels; writes are never retried here.
   let workspaceTail: Promise<unknown> = Promise.resolve();
   return <T>(path: string, method = 'GET', body?: unknown, key?: string, etag?: string): Promise<T> => {
     const execute = async (): Promise<T> => {
+    lifecycle.throwIfAborted();
     const headers = new Headers();
     if (config.mode === 'Demo') headers.set('X-Demo-Person', person);
     else headers.set('Authorization', `Bearer ${await getToken(config)}`);
@@ -17,10 +19,17 @@ export function workspaceApi(config: AppConfig, person: string, signal?: AbortSi
     if (key) headers.set('Idempotency-Key', key);
     if (etag) headers.set('If-Match', etag);
     for (let attempt = 0; ; attempt++) {
-      const response = await fetch(`/api/v1${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal });
+      lifecycle.throwIfAborted();
+      const response = await fetch(`/api/v1${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal: lifecycle });
       const value = await response.json().catch(() => ({}));
+      lifecycle.throwIfAborted();
       if (method === 'GET' && response.status === 503 && value.code === 'ACCESS_BUSY' && attempt < 3) {
-        await new Promise(resolve => setTimeout(resolve, 200 * 2 ** attempt));
+        await new Promise<void>((resolve, reject) => {
+          lifecycle.throwIfAborted();
+          const cancel = () => { clearTimeout(timer); reject(lifecycle.reason); };
+          const timer = setTimeout(() => { lifecycle.removeEventListener('abort', cancel); resolve(); }, 200 * 2 ** attempt);
+          lifecycle.addEventListener('abort', cancel, { once: true });
+        });
         continue;
       }
       if (!response.ok) throw new WorkspaceError(response.status, value.code ?? 'CONNECTION_FAILED');

@@ -13,6 +13,55 @@ async function read(request: APIRequestContext, url: string, options: Parameters
 
 
 const owner = { 'X-Demo-Person': 'demo-person-01' };
+for (const boundary of ['actor', 'logout'] as const) {
+  test(`旧主体の遅延ルームGET後に${boundary}を越えてメッセージPOSTを送らない`, async ({ page, request }) => {
+    if (boundary === 'logout') {
+      await page.route('**/*msal-browser*', route => route.fulfill({ contentType: 'application/javascript', body: `
+        export class InteractionRequiredAuthError extends Error {}
+        export class PublicClientApplication {
+          async initialize() {} getAllAccounts() { return [{ homeAccountId: 'fixture' }]; }
+          async acquireTokenSilent() { return { accessToken: 'fixture-token' }; }
+          async logoutPopup() { throw new Error('fixture popup blocked'); } async clearCache() {}
+        }` }));
+      await page.route('https://login.microsoftonline.com/**', route => route.abort());
+      await page.route('**/api/config', route => route.fulfill({ json: { mode: 'Azure', tenantId: 'fixture-tenant', clientId: 'fixture', scope: 'fixture' } }));
+    }
+    await compose(page, '終了境界の架空相談'); await post(page);
+    const challenges = await (await read(request, '/api/v1/workspace/challenges', { headers: owner })).json();
+    const roomId = challenges.items[0].roomId;
+    let enter!: () => void, release!: () => void, finish!: () => void;
+    const entered = new Promise<void>(resolve => { enter = resolve; });
+    const delayed = new Promise<void>(resolve => { release = resolve; });
+    const finished = new Promise<void>(resolve => { finish = resolve; });
+    let writes = 0;
+    page.on('request', req => { if (req.method() === 'POST' && req.url().endsWith(`/rooms/${roomId}/messages`)) writes++; });
+    await page.route(`**/api/v1/workspace/rooms/${roomId}`, async route => {
+      const response = await route.fetch();
+      enter();
+      await delayed;
+      try { await route.fulfill({ response }); } catch { /* Aborted fetch cannot consume the delayed response. */ }
+      finally { finish(); }
+    });
+    try {
+      await page.getByLabel('メッセージ', { exact: true }).fill('旧主体の未保存本文');
+      await page.getByRole('button', { name: /^送信する(?:（ローカル）)?$/ }).click();
+      await entered;
+      if (boundary === 'actor') {
+        await page.getByLabel('ローカル検証の役割').selectOption('demo-person-02');
+        await expect(page.getByRole('heading', { name: 'ホーム', exact: true })).toBeVisible();
+      } else {
+        await page.getByRole('button', { name: 'ログアウト', exact: true }).click();
+        await expect(page.getByRole('heading', { name: '接続を終了しました' })).toBeVisible();
+      }
+      release(); await finished;
+      await page.evaluate(() => Promise.resolve());
+      expect(writes).toBe(0);
+      const messages = await (await read(request, `/api/v1/workspace/rooms/${roomId}/messages`, { headers: owner })).json();
+      expect(messages.items).toHaveLength(0);
+      await expect(page.getByText('旧主体の未保存本文', { exact: true })).not.toBeVisible();
+    } finally { release(); await finished; }
+  });
+}
 test('キーボードの本文スキップは現在のルートを保持して本文へフォーカスする', async ({ page }) => {
   await page.route('**/api/config', route => route.fulfill({ json: { mode: 'Demo' } }));
   await page.route('**/api/v1/workspace/**', route => route.fulfill({ json: route.request().url().endsWith('/capabilities') ? {

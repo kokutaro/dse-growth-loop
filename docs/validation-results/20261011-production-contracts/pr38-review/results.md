@@ -100,3 +100,11 @@ Profilesはコンポーネント/主体のlifetimeとauth sessionのsignalを統
 実auth moduleを使用しMSALだけをfixtureにしたAzure logout、Demo画面移動・主体切替の3ブラウザー回帰を追加。時計を停止して初回503を受け取り、終了操作後に全backoff区間を進め、PATCHが1回だけであることを確認する。旧fixtureのauth moduleにもsession signal契約を反映した。実Entra/Azure/有料AIは呼ばない。
 
 [現行auth unit](auth-profile-abort-final.log)7成功/0失敗、[TypeScript/Vite](build-profile-abort-final.log)成功。[プロフィール/文書/logout/匿名workspace E2E](e2e-profile-abort-final.log)28成功/0失敗。3新回帰は再送全backoff区間を越えてPATCH1回を確認。途中の時計停止下RAF待機と主体切替後Home遷移のfixture期待値不備は補足ログに保持する。Backendソースは83bf4e3から変更なく.NET586/Python128の証跡を保持し、最終SHAのCIは別途確認する。
+
+## 匿名workspace APIの現在主体とセッション終了境界
+
+正式レビュー5482856984の本文/inline4241153609に対応。workspaceApiのlifetime Signalを必須にし、Workspaceはconfig/personごとに新しいcontroller/API queueを作る。主体切替イベントの最初に旧controllerを同期abortし、旧APIのcleanup/unmountでもabortする。factoryは現在auth sessionのSignalと統合。実行queueの開始前、token取得後・各送信前、JSON応答後でabortを確認し、GET ACCESS_BUSY backoffもtimerを中断する。待機中のGETとqueueが後続のPOSTへ進むことを防ぐ。既にserver受理済みの書込みを取り消す機能ではない。
+
+遅延ルームGETを保持した後にDemo主体切替または実auth module＋MSAL fixtureのAzure logoutを実行し、遅延を解放する2ブラウザー回帰を追加。双方ともPOST0回/原本messages0件/旧本文の非表示を確認。実Entra/Azure/有料AIへ接続していない。
+
+[auth unit](auth-workspace-abort-final.log)7成功/0失敗、[TypeScript/Vite](build-workspace-abort-final.log)成功。[匿名workspace・分析・表示名同意・事例公開E2E](e2e-workspace-abort-final.log)25成功/0失敗。新2件は原本messagesも0件で確認。backendは83bf4e3から変更なく、実環境の受入は未完了のまま保持する。
