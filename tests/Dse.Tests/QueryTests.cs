@@ -32,4 +32,27 @@ public class QueryTests
         Assert.Equal(tenant, query.GetQueryParameters().Single(x => x.Name == "@tenant").Value);
         Assert.Equal([scope], Assert.IsType<string[]>(query.GetQueryParameters().Single(x => x.Name == "@scopes").Value));
     }
+    [Fact]
+    public async Task Reservation_query_selects_only_the_exact_run_in_the_requested_tenant()
+    {
+        var store = new MemoryRecordStore();
+        foreach (var (tenant, id, run) in new[] { ("demo", "reservation-target", "run-target"), ("demo", "reservation-other", "run-other"), ("other", "reservation-foreign", "run-target") })
+        {
+            var row = RecordJson.New("aiReservation", id, tenant, "operator", ["demo"], DateTimeOffset.UnixEpoch);
+            row["runId"] = run;
+            await store.CommitAsync(RecordPartition.Catalog(tenant), [RecordWrite.Create(row)], default);
+        }
+        var page = await store.QueryAsync(RecordPartition.Catalog("demo"), "aiReservation", "runId", "run-target", 100, null, default);
+        Assert.Equal("reservation-target", Assert.Single(page.Items).Value.Text("id"));
+        var injectedValue = await store.QueryAsync(RecordPartition.Catalog("demo"), "aiReservation", "runId", "run-target' OR 1=1", 100, null, default);
+        Assert.Empty(injectedValue.Items);
+    }
+    [Theory]
+    [InlineData("person", "runId")]
+    [InlineData("aiReservation", "runId OR 1=1")]
+    public async Task Reservation_query_does_not_expand_field_access_for_other_kinds_or_raw_fields(string kind, string field)
+    {
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await new MemoryRecordStore().QueryAsync(RecordPartition.Catalog("demo"), kind, field, "run-target", 100, null, default));
+    }
 }

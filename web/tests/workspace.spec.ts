@@ -13,6 +13,36 @@ async function read(request: APIRequestContext, url: string, options: Parameters
 
 
 const owner = { 'X-Demo-Person': 'demo-person-01' };
+test('キーボードの本文スキップは現在のルートを保持して本文へフォーカスする', async ({ page }) => {
+  await page.route('**/api/config', route => route.fulfill({ json: { mode: 'Demo' } }));
+  await page.route('**/api/v1/workspace/**', route => route.fulfill({ json: route.request().url().endsWith('/capabilities') ? {
+    contractVersion: 'anonymous-workspace-v1', available: true, structuredIdentifiersRemoved: true,
+    roomLocalAliases: true, opaqueOperationIds: true, freeTextAnonymized: false, legacyApiIsolation: 'operator-or-development',
+  } : { items: [], continuationToken: null } }));
+  await page.goto('/#tasks');
+  const main = page.getByRole('main');
+  const skip = page.getByRole('link', { name: '本文へ移動', exact: true });
+  await expect(main.getByRole('heading', { name: '自分の課題・相談', exact: true })).toBeVisible();
+  await expect(main).toBeFocused();
+  // Route navigation focuses the main landmark. Walk backwards to the document's first link,
+  // then Tab from the preceding focus boundary to exercise normal keyboard activation.
+  for (let step = 0; step < 20 && !await skip.evaluate(element => element === document.activeElement); step++) {
+    await page.keyboard.press('Shift+Tab');
+  }
+  await expect(skip).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await expect(skip).toBeFocused();
+  const currentUrl = page.url();
+  await page.keyboard.press('Enter');
+  await expect(main).toBeFocused();
+  await expect(page).toHaveURL(currentUrl);
+  await expect(main.getByRole('heading', { name: '自分の課題・相談', exact: true })).toBeVisible();
+  await expect(page.getByText('対象を開けません', { exact: true })).not.toBeVisible();
+  await page.keyboard.press('Tab');
+  await expect(main.getByRole('link', { name: '課題・相談を投稿する', exact: true }).first()).toBeFocused();
+});
+
 async function compose(page: Page, title = '調査記録の引き継ぎを整理する') {
   await page.goto('/');
   await page.getByRole('link', { name: '課題・相談を投稿する', exact: true }).click();

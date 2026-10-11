@@ -526,4 +526,122 @@ public sealed class BusinessAnalysisTests
         Assert.Equal("IDENTIFYING_CONTENT", (await Assert.ThrowsAsync<DomainException>(() => Start(s, Request()))).Code); Assert.Equal(1, s.Ai.Calls);
     }
 
+    private const string RecoveryTargetAi = "recovery-target-ai", RecoveryOtherAi = "recovery-other-ai";
+    private const string RecoveryTargetReservation = "zz-target-pending", RecoveryOtherReservation = "zz-other-pending";
+    private static JsonObject RecoveryAi(string id, string jobId)
+    {
+        var row = RecordJson.New("aiRun", id, "demo", Analyst.PrincipalId, Analyst.ScopeIds, DateTimeOffset.UtcNow);
+        row["jobId"] = jobId; row["container"] = "catalog"; row["sessionId"] = null; row["operation"] = BusinessAnalysisLiveDrafter.PromptVersion;
+        row["status"] = "failed"; row["errorCode"] = "AI_TIMEOUT"; row["inputSnapshots"] = new JsonArray();
+        row["trace"] = new JsonObject { ["modelId"] = "dummy", ["promptVersion"] = BusinessAnalysisLiveDrafter.PromptVersion, ["taxonomyVersion"] = "dummy-v1", ["dataVersion"] = 1,
+            ["inputHash"] = "dummy-hash", ["evidenceIds"] = new JsonArray(), ["inputTokens"] = 0, ["outputTokens"] = 0, ["requestUnits"] = null,
+            ["requestUnitsStatus"] = "not_collected", ["attemptCount"] = 1, ["retryCount"] = 0, ["estimatedCostJpy"] = 0m, ["pricingVersion"] = "dummy-price" };
+        return row;
+    }
+    private static JsonObject RecoveryReservation(string id, string aiRun, string state)
+    {
+        var row = RecordJson.New("aiReservation", id, "demo", "system", ["system"], DateTimeOffset.UtcNow);
+        row["runId"] = aiRun; row["state"] = state; row["dayId"] = "ai-day-recovery-fixture";
+        row["input"] = 100L; row["output"] = 20L; row["jpy"] = 1m; return row;
+    }
+    private sealed class RecoveryStore(IRecordStore inner) : IRecordStore
+    {
+        public string? MissingId; public bool ChangeGateBeforeRecovery;
+        public List<(string Kind, string? Field, string? Parent)> Queries = [];
+        public Task<StoredRecord?> ReadAsync(RecordPartition p, string id, CancellationToken ct) => id == MissingId ? Task.FromResult<StoredRecord?>(null) : inner.ReadAsync(p, id, ct);
+        public async Task CommitAsync(RecordPartition p, IReadOnlyList<RecordWrite> writes, CancellationToken ct)
+        {
+            if (ChangeGateBeforeRecovery && writes.Any(w => w.Value.Text("operation") == "businessAnalysisOfflineRecovery"))
+            {
+                ChangeGateBeforeRecovery = false;
+                var gate = (await inner.ReadAsync(p, "system-ai-gate", ct))!; gate.Value["blocked"] = false;
+                await inner.CommitAsync(p, [RecordWrite.Replace(gate.Value, gate.ETag)], ct);
+            }
+            await inner.CommitAsync(p, writes, ct);
+        }
+        public Task<RecordPage> QueryAsync(RecordPartition p, string kind, string? field, string? parent, int size, string? token, CancellationToken ct)
+        {
+            Queries.Add((kind, field, parent));
+            if (kind == "aiReservation" && field != "runId") throw new InvalidOperationException("Tenant-wide reservation scan is forbidden in this regression");
+            return inner.QueryAsync(p, kind, field, parent, size, token, ct);
+        }
+    }
+    private static async Task<(Setup Setup, BusinessAnalysisRequest Run, RecoveryStore Guard, BusinessAnalysisRecovery Recovery)> RecoveryFixture(int history = 0)
+    {
+        var s = await Create(); var request = Request(); await Start(s, request); var p = RecordPartition.Catalog("demo");
+        var id = BusinessAnalysisService.StorageId(Analyst.PrincipalId, request.RunId);
+        var run = (await s.Store.ReadAsync(p, id, default))!; run.Value["analysisStatus"] = "partial_failure"; run.Value["recoveryRequired"] = true;
+        var slot = (await s.Store.ReadAsync(p, "business-analysis-slot", default))!; slot.Value["status"] = "blocked"; slot.Value["analysisRunId"] = id;
+        var gate = RecordJson.New("aiUsageGate", "system-ai-gate", "demo", "system", ["system"], DateTimeOffset.UtcNow);
+        gate["active"] = RecordJson.Array([RecoveryTargetReservation, RecoveryOtherReservation]); gate["blocked"] = true;
+        var day = RecordJson.New("aiUsageDay", "ai-day-recovery-fixture", "demo", "system", ["system"], DateTimeOffset.UtcNow);
+        day["calls"] = history + 2; day["tokens"] = 120L * (history + 2); day["jpy"] = (decimal)history + 2;
+        await s.Store.CommitAsync(p, [RecordWrite.Replace(run.Value, run.ETag), RecordWrite.Replace(slot.Value, slot.ETag),
+            RecordWrite.Create(RecoveryAi(RecoveryTargetAi, id)), RecordWrite.Create(RecoveryAi(RecoveryOtherAi, "other-analysis")),
+            RecordWrite.Create(RecoveryReservation(RecoveryTargetReservation, RecoveryTargetAi, "pending")), RecordWrite.Create(RecoveryReservation(RecoveryOtherReservation, RecoveryOtherAi, "pending")),
+            RecordWrite.Create(gate), RecordWrite.Create(day)], default);
+        foreach (var batch in Enumerable.Range(0, history).Chunk(100))
+            await s.Store.CommitAsync(p, batch.Select(n => RecordWrite.Create(RecoveryReservation("ai-res-history-" + n.ToString("D5"), RecoveryOtherAi, "settled"))).ToArray(), default);
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Data:Mode"] = "Demo", ["AiUsage:Stopped"] = "true", ["AiUsage:LiveOptIn"] = "false" }).Build();
+        var guard = new RecoveryStore(s.Store); return (s, request, guard, new(guard, config, TimeProvider.System));
+    }
+    [Fact]
+    public async Task Recovery_ignores_more_than_a_week_of_unrelated_history_and_keeps_other_pending_reservations()
+    {
+        var (s, run, guard, recovery) = await RecoveryFixture(1680); var p = RecordPartition.Catalog("demo");
+        var otherBefore = (await s.Store.ReadAsync(p, RecoveryOtherReservation, default))!;
+        var dayBefore = (await s.Store.ReadAsync(p, "ai-day-recovery-fixture", default))!;
+        var inspection = await recovery.InspectAsync(Operator, Analyst.PrincipalId, run.RunId, default);
+        Assert.Equal([RecoveryTargetReservation], inspection.Strings("pendingReservationIds"));
+        var result = await recovery.RecoverAsync(Operator, RecoveryRequest(inspection, run.RunId), default);
+        Assert.Equal(1, result.Number("pendingReservationsMarkedUncertain")); Assert.Equal(0m, result["refundedJpy"]!.GetValue<decimal>());
+        Assert.Equal("uncertain", (await s.Store.ReadAsync(p, RecoveryTargetReservation, default))!.Value.Text("state"));
+        var otherAfter = (await s.Store.ReadAsync(p, RecoveryOtherReservation, default))!;
+        Assert.Equal(otherBefore.ETag, otherAfter.ETag); Assert.Equal(otherBefore.Value.ToJsonString(), otherAfter.Value.ToJsonString());
+        Assert.Equal(dayBefore.ETag, (await s.Store.ReadAsync(p, "ai-day-recovery-fixture", default))!.ETag);
+        var gate = (await s.Store.ReadAsync(p, "system-ai-gate", default))!.Value;
+        Assert.Equal([RecoveryOtherReservation], gate.Strings("active")); Assert.True(gate["blocked"]!.GetValue<bool>());
+        Assert.Equal("ready", (await s.Store.ReadAsync(p, "business-analysis-slot", default))!.Value.Text("status"));
+        Assert.All(guard.Queries.Where(q => q.Kind == "aiReservation"), q => { Assert.Equal("runId", q.Field); Assert.Equal(RecoveryTargetAi, q.Parent); });
+        Assert.Equal(2, guard.Queries.Count(q => q.Kind == "aiReservation"));
+    }
+    [Theory]
+    [InlineData("gate_missing")][InlineData("active_row_missing")][InlineData("active_ai_missing")]
+    [InlineData("target_not_active")][InlineData("active_duplicate")][InlineData("active_settled")]
+    public async Task Recovery_unknown_or_incomplete_gate_fails_closed_before_any_derived_result_or_slot_write(string damage)
+    {
+        var (s, run, guard, recovery) = await RecoveryFixture(); var p = RecordPartition.Catalog("demo");
+        var inspection = await recovery.InspectAsync(Operator, Analyst.PrincipalId, run.RunId, default); var input = RecoveryRequest(inspection, run.RunId);
+        if (damage == "gate_missing") guard.MissingId = "system-ai-gate";
+        else if (damage == "active_row_missing") guard.MissingId = RecoveryOtherReservation;
+        else if (damage == "active_ai_missing") guard.MissingId = RecoveryOtherAi;
+        else if (damage == "active_settled")
+        {
+            var row = (await s.Store.ReadAsync(p, RecoveryTargetReservation, default))!; row.Value["state"] = "settled";
+            await s.Store.CommitAsync(p, [RecordWrite.Replace(row.Value, row.ETag)], default);
+        }
+        else
+        {
+            var gate = (await s.Store.ReadAsync(p, "system-ai-gate", default))!;
+            gate.Value["active"] = RecordJson.Array(damage == "target_not_active" ? [RecoveryOtherReservation] : [RecoveryTargetReservation, RecoveryTargetReservation, RecoveryOtherReservation]);
+            await s.Store.CommitAsync(p, [RecordWrite.Replace(gate.Value, gate.ETag)], default);
+        }
+        var id = BusinessAnalysisService.StorageId(Analyst.PrincipalId, run.RunId); var before = (await s.Store.ReadAsync(p, id, default))!;
+        Assert.Equal("RECOVERY_LEDGER_INCONSISTENT", (await Assert.ThrowsAsync<DomainException>(() => recovery.InspectAsync(Operator, Analyst.PrincipalId, run.RunId, default))).Code);
+        Assert.Equal("RECOVERY_LEDGER_INCONSISTENT", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(Operator, input, default))).Code);
+        Assert.Equal(before.ETag, (await s.Store.ReadAsync(p, id, default))!.ETag);
+        Assert.Equal("blocked", (await s.Store.ReadAsync(p, "business-analysis-slot", default))!.Value.Text("status"));
+    }
+    [Fact]
+    public async Task Recovery_gate_changed_after_validation_is_rejected_by_the_atomic_batch_ETag()
+    {
+        var (s, run, guard, recovery) = await RecoveryFixture(); var p = RecordPartition.Catalog("demo");
+        var inspection = await recovery.InspectAsync(Operator, Analyst.PrincipalId, run.RunId, default);
+        guard.ChangeGateBeforeRecovery = true;
+        await Assert.ThrowsAsync<StoreConflictException>(() => recovery.RecoverAsync(Operator, RecoveryRequest(inspection, run.RunId), default));
+        Assert.Equal("pending", (await s.Store.ReadAsync(p, RecoveryTargetReservation, default))!.Value.Text("state"));
+        Assert.Equal("blocked", (await s.Store.ReadAsync(p, "business-analysis-slot", default))!.Value.Text("status"));
+        Assert.Equal("partial_failure", (await s.Store.ReadAsync(p, BusinessAnalysisService.StorageId(Analyst.PrincipalId, run.RunId), default))!.Value.Text("analysisStatus"));
+    }
+
 }
