@@ -58,7 +58,7 @@ export async function endAuth() {
   if (typeof sessionStorage !== 'undefined') {
     for (let index = sessionStorage.length - 1; index >= 0; index--) {
       const key = sessionStorage.key(index);
-      if (key === 'dse-upload-job' || key?.startsWith('dse-upload-job:') || key?.startsWith('dse-workspace-outbox:') || key?.startsWith('dse-business-analysis-request:')) sessionStorage.removeItem(key);
+      if (key === 'dse-upload-job' || key?.startsWith('dse-upload-job:') || key?.startsWith('dse-outbox:') || key?.startsWith('dse-workspace-outbox:') || key?.startsWith('dse-business-analysis-request:')) sessionStorage.removeItem(key);
     }
   }
   if (!instance) return;

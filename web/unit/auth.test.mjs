@@ -38,8 +38,8 @@ test('failed logout popup still clears local credentials and blocks token refres
   await assert.rejects(getToken(config));
 });
 
-test('logout clears private upload resume IDs and workspace outboxes even when the popup fails', async () => {
-  const values = new Map([['dse-upload-job', 'old'], ['dse-upload-job:v2:Azure:tenant:person-a', 'private-id'], ['dse-workspace-outbox:v2:Azure:tenant:room:alias', 'private-text'], ['dse-business-analysis-request:v1:owner', 'private-run'], ['unrelated', 'preserved']]);
+test('logout clears private upload resume IDs and both chat outboxes even when the popup fails', async () => {
+  const values = new Map([['dse-upload-job', 'old'], ['dse-upload-job:v2:Azure:tenant:person-a', 'private-id'], ['dse-outbox:tenant:person:session', 'legacy-private-text'], ['dse-workspace-outbox:v2:Azure:tenant:room:alias', 'private-text'], ['dse-business-analysis-request:v1:owner', 'private-run'], ['unrelated', 'preserved']]);
   globalThis.sessionStorage = { get length() { return values.size; }, key: index => [...values.keys()][index] ?? null, removeItem: key => values.delete(key) };
   await initializeAuth(config); failLogout = true;
   const logout = endAuth();
