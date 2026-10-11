@@ -52,13 +52,15 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
         if (authority is null || !KnowledgeService.AllConsented(authority, true) || !AccessPolicy.InScope(actor, authority) ||
             !JsonNode.DeepEquals(authority["scopeIds"], catalog["scopeIds"]) || catalog.Number("sourceVersion") != version ||
             catalog.Number("accessVersion") != authority.Number("accessVersion")) return null;
+        var consenting = await KnowledgeService.CurrentConsentParticipantsAsync(repository,config,actor.TenantId,authority,true,ct);
+        if (consenting is null) return null;
         if (cutoff is not null && (!Timestamp(authority["updatedAt"], out var authorityUpdated) || authorityUpdated > cutoff)) return null;
         var session = (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, sid), sid, ct))!.Value;
         // Only the approved summary is consumed. Session is read solely for its challenge link and membership version.
         var sections = authority["sections"]!.Deserialize<SummarySection[]>(Json)!;
         var approved = new KnowledgeSummary(sections).Text;
         if (catalog.Text("summary") != approved) return null;
-        var known = BusinessAnalysisLivePrivacy.Known(actor, catalog, authority).Append(session.Text("challengeId")).ToArray();
+        var known = BusinessAnalysisLivePrivacy.Known(actor, catalog, authority).Concat(consenting.SelectMany(p => new[] { p.Identity.PrincipalId, p.DisplayName })).Append(session.Text("challengeId")).ToArray();
         AnonymousWorkspaceKnownIdentifiers.RequireSafe([approved, catalog.Text("title")], known);
         var metadata = new BusinessAnalysisMetadata(null, null, null, null, null);
         if (authority["analysisMetadata"] is JsonObject publishedMetadata && JsonNode.DeepEquals(publishedMetadata, catalog["analysisMetadata"]))

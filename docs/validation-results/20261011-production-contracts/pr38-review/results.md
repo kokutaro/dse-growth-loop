@@ -54,3 +54,13 @@ Azure outboxは毎reloadのUUIDを廃止し、サーバーが認可した部屋�
 ### Azure fixtureの準備用承諾PATCHの競合
 
 55b9c02のpush CIは12/12成功、PR CIは11/12成功。workspaceのAzure fixture準備PATCHだけが503 ACCESS_BUSYで失敗した。保持したtraceのresponseはretryable=true、AccessFenceはaction実行前のholder/CAS競合でこの応答を返す。準備要求を同じbody/If-Match/Idempotency-Keyで最大4回、503 ACCESS_BUSY retryable=trueだけ再送するように変更。412や別の失敗は再送しない。検証対象のSAVE_FAILED/201応答消失は従来どおり手動再送として扱い、timeout延長や本番認証変更は行わない。[Azure outbox回帰](e2e-outbox-fixture-accept-final.log)は1成功。旧CI失敗とtraceはローカル補足成果物へ保持する。最終SHAのCIは別途確認する。
+
+## 同意時Principalと現在の本人Bindingの再照合
+
+Copilotレビュー5482327233の2指摘（4240672814/4240672836）を修正。公開同意/分析同意の保存済みprincipalIdは必須、pinのない旧同意を推測で補完せず再同意が必要。現在のIdentityResolverの有効Bindingとmember資格、Grantの範囲、原プロフィールのkind/id/tenant/ownerId/範囲が保存済みpinと一致することを共通関数で確認する。匿名事例、分析入力、保存結果の再読取、Live drafter送信前、従来の分析API、公開承認/分類/投影確定に適用。取得した表示名とPrincipalは内部の識別情報検査にだけ使い、モデル入力や社員DTOへ加えない。
+
+- 公開事例の再割当て/pin欠落/Profile owner変更/Binding無効化/Scope喪失の5回帰。詳細は失効、一覧は未認可本文を返さない（pin欠落は既存SourceGuardで除外）。
+- Fake Live分析の同じ5回帰。保存結果・本文を失効させ、旧同意では新しい入力を採用せず、transport呼び出し回数を増やさない。
+- Fake Live fixtureは有効なGUID tenant/Binding/Grant/本人プロフィールと保存済みpinを持つように修正。実Entra/実APIの設定を変更していない。
+
+[.NET全体](dotnet-consent-binding-pass.log)566成功、失敗0、skip0。[分析E2E](e2e-consent-analysis-final.log)4成功、[公開同意・編集失効E2E](e2e-consent-publication-final.log)1成功。新回帰の前提不足（outcome）と一覧除外の期待値を直した途中ログもローカルに保持する。現在状態の照合であり、未観測の設定変更後に全状態が復元される問題を検出する認可epoch設計は引き続きPR外・未実装。

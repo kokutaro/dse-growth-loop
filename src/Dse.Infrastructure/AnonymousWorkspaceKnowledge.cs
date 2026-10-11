@@ -136,8 +136,9 @@ public sealed partial class AnonymousWorkspaceService
         if (source.Text("contractVersion") != "knowledge-v1") throw new DomainException(404,"NOT_FOUND");
         var approved = await KnowledgeService.PublishedAsync(repository,actor.TenantId,source.Text("sessionId"),unit.SourceVersion!.Value,ct) ?? throw new DomainException(409,"SOURCE_REVOKED");
         var sections = approved["sections"]!.Deserialize<SummarySection[]>(Json)!.Select(s => new AnonymousWorkspacePublishedSection(s.Field,s.Text,s.Basis)).ToArray();
-        var participants = approved.Strings("participantIds").Select(pid => Person(actor,pid) ?? throw new DomainException(409,"SOURCE_REVOKED"))
-            .Select(p => new AnonymousWorkspaceResolvedParticipant(p.PersonId,p.PrincipalId,"","",false)).ToArray();
+        var consenting = await KnowledgeService.CurrentConsentParticipantsAsync(repository,config,actor.TenantId,approved,false,ct)
+            ?? throw new DomainException(409,"SOURCE_REVOKED");
+        var participants = consenting.Select(p => new AnonymousWorkspaceResolvedParticipant(p.Identity.PersonId,p.Identity.PrincipalId,"","",false)).ToArray();
         await FreeInputAsync(actor,sections.Select(s => s.Text).Append(source.Text("title")),participants,ct);
         return new(id,source.Text("title"),string.Join("\n",sections.Select(s => s.Text)),sections,unit.SourceVersion.Value,source.Text("processingMode"));
     }

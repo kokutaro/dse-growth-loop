@@ -167,6 +167,34 @@ public sealed class AnonymousWorkspaceTests
         foreach(var candidate in fresh.Items)
         { var row = (await s.Repo.ReadAsync(RecordPartition.Catalog(s.Owner.TenantId),candidate.Token,default))!; Assert.NotEqual(unit.EntityId,row.Value["unit"]!["entityId"]!.GetValue<string>()); }
     }
+    [Theory] [InlineData("rebound")] [InlineData("missing_pin")] [InlineData("profile_owner")] [InlineData("disabled")] [InlineData("scope")]
+    public async Task Publication_consent_is_pinned_to_current_binding_and_profile_owner(string change)
+    {
+        var s = await Create(true); await Join(s); var room = await s.Workspace.ResolveRoomAsync(s.Owner,s.Room,default);
+        await s.Workspace.SendAsync(s.Owner,s.Room,Key(),room.SessionEtag,new(Guid.NewGuid().ToString(),"ソフト 引き継ぎを試した"),default);
+        await Change(s,"outcome",new { resolution="partial",result="一部だけ解決" });
+        var state = await Change(s,"draft",new {}); await Change(s,"request-review",new { version=state.SourceVersion });
+        await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=true });
+        await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=true },s.Guest);
+        await Change(s,"approve",new { version=state.SourceVersion });
+        var published = Assert.Single((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default)).Items);
+        if (change == "missing_pin")
+        {
+            var partition = RecordPartition.Conversation(s.Owner.TenantId,s.Sid); var source = (await s.Repo.ReadAsync(partition,KnowledgeService.Id(s.Sid),default))!;
+            source.Value["consents"]![s.Guest.PersonId]!.AsObject().Remove("principalId"); await s.Repo.CommitAsync(partition,[RecordWrite.Replace(source.Value,source.ETag)],default);
+        }
+        else if (change == "disabled") s.Config["Auth:Bindings:1:Enabled"] = "false";
+        else if (change == "scope") s.Config["Auth:Grants:1:ScopeIds:0"] = "outside";
+        else
+        {
+            var partition = RecordPartition.Catalog(s.Owner.TenantId); var profile = (await s.Repo.ReadAsync(partition,s.Guest.PersonId,default))!;
+            profile.Value["ownerId"] = "principal-replacement"; await s.Repo.CommitAsync(partition,[RecordWrite.Replace(profile.Value,profile.ETag)],default);
+            if (change == "rebound") { s.Config["Auth:Bindings:1:PrincipalId"] = "principal-replacement"; s.Config["Auth:Grants:1:PrincipalId"] = "principal-replacement"; }
+        }
+        Assert.Equal("SOURCE_REVOKED",(await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CaseUnderFenceAsync(s.Owner,published.Id,ct),default))).Code);
+        if (change == "missing_pin") Assert.Empty((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default)).Items);
+        else await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default));
+    }
     [Fact] public async Task Published_case_never_drops_an_unresolved_participants_identifier_check()
     {
         var s = await Create(true); await Join(s); var room = await s.Workspace.ResolveRoomAsync(s.Owner,s.Room,default);

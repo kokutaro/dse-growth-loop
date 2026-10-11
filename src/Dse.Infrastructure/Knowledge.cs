@@ -151,7 +151,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                 case "approve":
                     if (!a.HasRole("publisher")) throw new DomainException(403, "FORBIDDEN"); Version(state, input);
                     if (state.Text("status") == "published") break;
-                    if (state.Text("status") != "review_requested" || state.Number("membershipVersion") != session.Value.Number("membershipVersion") || !AllConsented(state, false)) throw new DomainException(409, "CONSENT_REQUIRED");
+                    if (state.Text("status") != "review_requested" || state.Number("membershipVersion") != session.Value.Number("membershipVersion") || await CurrentConsentParticipantsAsync(repository,config,a.TenantId,state,false,token) is null) throw new DomainException(409, "CONSENT_REQUIRED");
                     state["status"] = "published"; state["approvedBy"] = new JsonObject { ["id"] = a.PrincipalId, ["version"] = state.Number("sourceVersion"), ["at"] = clock.GetUtcNow() };
                     state["activeVersion"] = state.Number("sourceVersion");
                     var job = Jobs.Create(state, "knowledgePublication", clock.GetUtcNow(), JobId(sid, state.Number("sourceVersion")));
@@ -199,7 +199,28 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
     }
     internal static bool AllConsented(JsonObject state, bool analysis) => state.Strings("participantIds") is { Length: > 0 } people && people.All(p =>
         state["consents"]?[p] is JsonObject consent && consent.Number("version") == state.Number("sourceVersion") &&
-        JsonNode.DeepEquals(consent["scopeIds"], state["scopeIds"]) && consent[analysis ? "analysis" : "publication"]?.GetValue<bool>() == true);
+        consent.Text("principalId").Length > 0 && JsonNode.DeepEquals(consent["scopeIds"], state["scopeIds"]) && consent[analysis ? "analysis" : "publication"]?.GetValue<bool>() == true);
+    internal sealed record ConsentParticipant(ActorAccess Identity, string DisplayName);
+    // Internal authorization only. Missing legacy identity pins require fresh consent.
+    internal static async Task<ConsentParticipant[]?> CurrentConsentParticipantsAsync(IPrimaryRepository repo,
+        IConfiguration config, string tenant, JsonObject state, bool analysis, CancellationToken ct)
+    {
+        if (!AllConsented(state, false) || analysis && !AllConsented(state, true)) return null;
+        var resolver = config["Data:Mode"] == "Demo" ? null : new IdentityResolver(config);
+        List<ConsentParticipant> participants = [];
+        foreach (var pid in state.Strings("participantIds"))
+        {
+            var identity = resolver is null ? IdentityResolver.DemoPerson(pid) : resolver.ResolvePerson(tenant, pid);
+            var pin = state["consents"]![pid]!.AsObject().Text("principalId");
+            if (identity is null || identity.TenantId != tenant || !identity.HasRole("member") ||
+                identity.PrincipalId != pin || !AccessPolicy.InScope(identity, state)) return null;
+            var profile = (await repo.ReadAsync(RecordPartition.Catalog(tenant), pid, ct))?.Value;
+            if (profile is null || profile.Text("kind") != "person" || profile.Text("id") != pid ||
+                profile.Text("tenantId") != tenant || profile.Text("ownerId") != pin || !AccessPolicy.InScope(identity, profile)) return null;
+            participants.Add(new(identity, profile.Text("displayName")));
+        }
+        return participants.ToArray();
+    }
     public static async Task<JsonObject?> PublishedAsync(IPrimaryRepository repo, string tenant, string sid, int version, CancellationToken ct)
     {
         var p = RecordPartition.Conversation(tenant, sid); var state = (await repo.ReadAsync(p, Id(sid), ct))?.Value;
@@ -213,13 +234,15 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
     {
         var cp = RecordPartition.Conversation(tenant, sid); var job = await repository.ReadAsync(cp, JobId(sid, version), ct);
         if (job is null || job.Value.Text("status") == "ready") return;
-        var state = await PublishedAsync(repository, tenant, sid, version, ct); if (state is null) return;
+        var state = await PublishedAsync(repository, tenant, sid, version, ct);
+        if (state is null || await CurrentConsentParticipantsAsync(repository,config,tenant,state,false,ct) is null) return;
         var existingProjection = await store.ReadAsync(RecordPartition.Catalog(tenant), $"{Id(sid)}:projection:{version}", ct);
         if (existingProjection is not null)
         {
             await fence.RunAsync(tenant, async token =>
             {
-                if (await PublishedAsync(repository, tenant, sid, version, token) is null) throw new DomainException(409, "SOURCE_REVOKED");
+                var current = await PublishedAsync(repository, tenant, sid, version, token);
+                if (current is null || await CurrentConsentParticipantsAsync(repository,config,tenant,current,false,token) is null) throw new DomainException(409, "SOURCE_REVOKED");
                 var pending = (await repository.ReadAsync(cp, JobId(sid, version), token))!;
                 pending.Value["status"] = "ready"; pending.Value["resultId"] = Id(sid); pending.Value["notificationState"] = "sent"; pending.Value["lastErrorCode"] = null;
                 await repository.CommitAsync(cp, [RecordWrite.Replace(pending.Value, pending.ETag)], token); return true;
@@ -239,7 +262,8 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
         await fence.RunAsync(tenant, async token =>
         {
             var current = await PublishedAsync(repository, tenant, sid, version, token);
-            if (current is null || RecordJson.Canonical(current) != RecordJson.Canonical(state)) throw new DomainException(409, "SOURCE_REVOKED");
+            if (current is null || RecordJson.Canonical(current) != RecordJson.Canonical(state) ||
+                await CurrentConsentParticipantsAsync(repository,config,tenant,current,false,token) is null) throw new DomainException(409, "SOURCE_REVOKED");
             var partition = RecordPartition.Catalog(tenant); var id = Id(sid); var catalog = await repository.ReadAsync(partition, id, token);
             var projectionId = $"{id}:projection:{version}";
             if (await store.ReadAsync(partition, projectionId, token) is null)
@@ -312,7 +336,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
             {
                 if (!AccessPolicy.CanUse(a, row.Value) || row.Value.Text("sessionId") == "") continue;
                 var authority = await PublishedAsync(repository, a.TenantId, row.Value.Text("sessionId"), row.Value.Number("activeVersion"), ct);
-                if (authority is null || !AllConsented(authority, true)) continue;
+                if (authority is null || await CurrentConsentParticipantsAsync(repository, config, a.TenantId, authority, true, ct) is null) continue;
                 inputs.Add(new JsonObject { ["knowledgeId"] = row.Value.Text("id"), ["version"] = row.Value.Number("activeVersion"), ["summary"] = row.Value.Text("summary") });
             }
             cursor = page.ContinuationToken;

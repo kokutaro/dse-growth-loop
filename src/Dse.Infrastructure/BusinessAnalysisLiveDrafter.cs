@@ -143,7 +143,10 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
                 catalog.Number("sourceVersion") != source.Version || catalog.Number("accessVersion") != approved.Number("accessVersion") ||
                 new KnowledgeSummary(approved["sections"]!.Deserialize<SummarySection[]>(AiCodecs.Json)!).Text != source.Summary || catalog.Text("summary") != source.Summary)
                 throw new DomainException(409, "SOURCE_REVOKED");
-            var identifiers = BusinessAnalysisLivePrivacy.Known(actor, catalog, approved).Append(source.ChallengeId).ToArray();
+            var consenting = await KnowledgeService.CurrentConsentParticipantsAsync(repository,config,actor.TenantId,approved,true,ct)
+                ?? throw new DomainException(409,"SOURCE_REVOKED");
+            var identifiers = BusinessAnalysisLivePrivacy.Known(actor, catalog, approved)
+                .Concat(consenting.SelectMany(p => new[] { p.Identity.PrincipalId, p.DisplayName })).Append(source.ChallengeId).ToArray();
             AnonymousWorkspaceKnownIdentifiers.RequireSafe([source.Summary, catalog.Text("title")], identifiers); known.AddRange(identifiers);
             snapshots.Add(new(source.KnowledgeId, source.Version, source.Version, approved.Number("accessVersion")));
         }

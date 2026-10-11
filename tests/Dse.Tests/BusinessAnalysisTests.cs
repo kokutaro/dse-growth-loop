@@ -372,6 +372,9 @@ public sealed class BusinessAnalysisTests
             Finished.TrySetResult(); return new(response, usage, "fake-provider-request");
         }
     }
+    private const string LiveTenant = "11111111-1111-4111-8111-111111111111";
+    private static readonly ActorAccess LiveAnalyst = Analyst with { TenantId = LiveTenant };
+    private static readonly ActorAccess LiveOperator = LiveAnalyst with { Roles = ["member","analyst","operator"] };
     private sealed record LiveSetup(string Path, IRecordStore Store, IPrimaryRepository Repo, IConfigurationRoot Config, BusinessAnalysisService Service, WireFake Wire) : IDisposable
     {
         public void Dispose() { if (Directory.Exists(Path)) Directory.Delete(Path, true); }
@@ -380,10 +383,10 @@ public sealed class BusinessAnalysisTests
     {
         var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dse-analysis-fake-" + Guid.NewGuid().ToString("N"));
         IRecordStore store = new OperationMeasuredRecordStore(new LocalRecordStore(new LocalIngestionFiles(path))); var repo = new PrimaryRepository(store);
-        await BusinessAnalysisDemoFixtures.SeedAsync(store, default);
+        await BusinessAnalysisDemoFixtures.SeedAsync(store, default, LiveTenant);
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Data:Mode"] = "Azure", ["Ai:Mode"] = "Live", ["Auth:TenantId"] = "demo", ["BusinessAnalysis:Enabled"] = "true",
+            ["Data:Mode"] = "Azure", ["Ai:Mode"] = "Live", ["Auth:TenantId"] = LiveTenant, ["BusinessAnalysis:Enabled"] = "true",
             ["AiUsage:Stopped"] = "false", ["AiUsage:LiveOptIn"] = "true", ["AiUsage:DailyTokenLimit"] = "300000",
             ["AiUsage:DailyCallLimit"] = "10", ["AiUsage:DailyEstimatedJpyLimit"] = "100", ["AiUsage:UsdToJpy"] = "150",
             ["AiUsage:PriceVersion"] = "fake-test-price", ["AiUsage:FxVersion"] = "fake-test-fx", ["AiUsage:MaxInputTokens"] = "16000",
@@ -392,16 +395,48 @@ public sealed class BusinessAnalysisTests
             ["Foundry:Region"] = "test", ["Foundry:Sku"] = "GlobalStandard", ["Foundry:InputUsdPerMillion"] = "1",
             ["Foundry:OutputUsdPerMillion"] = "2", ["Foundry:OutputLimit"] = "1000"
         }).Build();
+        for (var i=0;i<2;i++)
+        {
+            var suffix = $"{i+1:D2}"; config[$"Auth:Bindings:{i}:TenantId"] = LiveTenant;
+            config[$"Auth:Bindings:{i}:Oid"] = $"33333333-3333-4333-8333-{i+1:D12}";
+            config[$"Auth:Bindings:{i}:PrincipalId"] = "principal-demo-"+suffix; config[$"Auth:Bindings:{i}:PersonId"] = "demo-person-"+suffix;
+            config[$"Auth:Bindings:{i}:Roles:0"] = "member"; config[$"Auth:Bindings:{i}:Enabled"] = "true";
+            config[$"Auth:Grants:{i}:PrincipalId"] = "principal-demo-"+suffix; config[$"Auth:Grants:{i}:ScopeIds:0"] = "demo";
+        }
         var wire = new WireFake { Variation = variation }; var live = new BusinessAnalysisLiveDrafter(config, repo, new(store, TimeProvider.System), wire, TimeProvider.System);
         return new(path, store, repo, config, new(repo, store, new(repo), new BusinessAnalysisDrafter(config, live), config, TimeProvider.System), wire);
     }
     private static BusinessAnalysisRequest LiveRequest() => Request() with { ConfigVersion = BusinessAnalysisLiveRuntime.LiveConfigVersion };
-    private static Task<JsonObject> StartLive(LiveSetup s, BusinessAnalysisRequest r) => s.Service.StartAsync(Analyst, r, r.RunId, default);
-    private static Task<RecordPage> Rows(LiveSetup s, string kind) => s.Store.QueryAsync(RecordPartition.Catalog("demo"), kind, null, null, 100, null, default);
+    private static Task<JsonObject> StartLive(LiveSetup s, BusinessAnalysisRequest r) => s.Service.StartAsync(LiveAnalyst, r, r.RunId, default);
+    private static Task<RecordPage> Rows(LiveSetup s, string kind) => s.Store.QueryAsync(RecordPartition.Catalog(LiveTenant), kind, null, null, 100, null, default);
     private static async Task<StoredRecord> Day(LiveSetup s)
     {
         var reservation = Assert.Single((await Rows(s, "aiReservation")).Items);
-        return (await s.Store.ReadAsync(RecordPartition.Catalog("demo"), reservation.Value.Text("dayId"), default))!;
+        return (await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), reservation.Value.Text("dayId"), default))!;
+    }
+    [Theory] [InlineData("rebound")] [InlineData("missing_pin")] [InlineData("profile_owner")] [InlineData("disabled")] [InlineData("scope")]
+    public async Task Current_consent_principal_is_required_before_live_send_and_saved_result_read(string change)
+    {
+        using var s = await CreateLive(); var request = LiveRequest(); await StartLive(s,request); Assert.Equal(1,s.Wire.Calls);
+        if (change == "missing_pin")
+        {
+            for (var i=1;i<=3;i++)
+            {
+                var sid="demo-business-session-"+i; var p=RecordPartition.Conversation(LiveTenant,sid); var source=(await s.Repo.ReadAsync(p,KnowledgeService.Id(sid),default))!;
+                source.Value["consents"]!["demo-person-02"]!.AsObject().Remove("principalId"); await s.Repo.CommitAsync(p,[RecordWrite.Replace(source.Value,source.ETag)],default);
+            }
+        }
+        else if (change == "disabled") s.Config["Auth:Bindings:1:Enabled"] = "false";
+        else if (change == "scope") s.Config["Auth:Grants:1:ScopeIds:0"] = "outside";
+        else
+        {
+            var p=RecordPartition.Catalog(LiveTenant); var profile=(await s.Repo.ReadAsync(p,"demo-person-02",default))!;
+            profile.Value["ownerId"] = "principal-replacement"; await s.Repo.CommitAsync(p,[RecordWrite.Replace(profile.Value,profile.ETag)],default);
+            if (change == "rebound") { s.Config["Auth:Bindings:1:PrincipalId"] = "principal-replacement"; s.Config["Auth:Grants:1:PrincipalId"] = "principal-replacement"; }
+        }
+        var saved=await s.Service.GetAsync(LiveAnalyst,request.RunId,default); Assert.Equal("invalidated",saved.Text("status")); Assert.Empty(saved["groups"]!.AsArray()); Assert.Null(saved["sourceCount"]);
+        Assert.Equal("SOURCE_REVOKED",(await Assert.ThrowsAsync<DomainException>(() => s.Service.SourceAsync(LiveAnalyst,request.RunId,KnowledgeService.Id("demo-business-session-1"),default))).Code);
+        var next=await StartLive(s,LiveRequest()); Assert.Equal(0,next.Number("sourceCount")); Assert.Empty(next["groups"]!.AsArray()); Assert.Equal(1,s.Wire.Calls);
     }
     [Fact]
     public async Task Azure_mode_fake_transport_uses_shared_ledger_and_restarts_without_resending_or_private_inputs()
@@ -419,15 +454,15 @@ public sealed class BusinessAnalysisTests
         Assert.DoesNotContain("共通課題の仮説", audit.ToJsonString());
         var restartedStore = new LocalRecordStore(new LocalIngestionFiles(s.Path)); var restartedRepo = new PrimaryRepository(restartedStore);
         var service = new BusinessAnalysisService(restartedRepo, restartedStore, new(restartedRepo), new BusinessAnalysisDrafter(s.Config, new(s.Config, restartedRepo, new(restartedStore, TimeProvider.System), s.Wire, TimeProvider.System)), s.Config, TimeProvider.System);
-        var replay = await service.StartAsync(Analyst, request, request.RunId, default); Assert.Equal(result.Text("inputHash"), replay.Text("inputHash")); Assert.Equal(1, s.Wire.Calls);
+        var replay = await service.StartAsync(LiveAnalyst, request, request.RunId, default); Assert.Equal(result.Text("inputHash"), replay.Text("inputHash")); Assert.Equal(1, s.Wire.Calls);
         s.Config["Foundry:InputUsdPerMillion"] = "3";
         Assert.Equal("IDEMPOTENCY_CONFLICT", (await Assert.ThrowsAsync<DomainException>(() => StartLive(s, request))).Code); Assert.Equal(1, s.Wire.Calls);
         s.Config["AiUsage:Stopped"] = "true";
         Assert.Equal("AI_BUDGET_STOPPED", (await Assert.ThrowsAsync<DomainException>(() => StartLive(s, LiveRequest()))).Code); Assert.Equal(1, s.Wire.Calls);
-        var authority = await s.Repo.ReadAsync(RecordPartition.Conversation("demo", "demo-business-session-1"), KnowledgeService.Id("demo-business-session-1"), default);
+        var authority = await s.Repo.ReadAsync(RecordPartition.Conversation(LiveTenant, "demo-business-session-1"), KnowledgeService.Id("demo-business-session-1"), default);
         authority!.Value["consents"]!["demo-person-02"]!["analysis"] = false;
-        await s.Repo.CommitAsync(RecordPartition.Conversation("demo", "demo-business-session-1"), [RecordWrite.Replace(authority.Value, authority.ETag)], default);
-        Assert.Equal("invalidated", (await s.Service.GetAsync(Analyst, request.RunId, default)).Text("status")); Assert.Equal(1, s.Wire.Calls);
+        await s.Repo.CommitAsync(RecordPartition.Conversation(LiveTenant, "demo-business-session-1"), [RecordWrite.Replace(authority.Value, authority.ETag)], default);
+        Assert.Equal("invalidated", (await s.Service.GetAsync(LiveAnalyst, request.RunId, default)).Text("status")); Assert.Equal(1, s.Wire.Calls);
     }
     [Theory]
     [InlineData("BusinessAnalysis:Enabled", "false", "ANALYSIS_LIVE_NOT_ENABLED")]
@@ -443,7 +478,7 @@ public sealed class BusinessAnalysisTests
         using var s = await CreateLive(); s.Config[key] = value;
         Assert.Equal(code, (await Assert.ThrowsAsync<DomainException>(() => StartLive(s, LiveRequest()))).Code);
         Assert.Equal(0, s.Wire.Calls); Assert.Empty((await Rows(s, "aiRun")).Items); Assert.Empty((await Rows(s, "aiReservation")).Items);
-        Assert.Null(await s.Store.ReadAsync(RecordPartition.Catalog("demo"), "system-access-fence", default));
+        Assert.Null(await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "system-access-fence", default));
     }
     [Theory]
     [InlineData("invented")][InlineData("extra")][InlineData("wrongtype")][InlineData("financial")]
@@ -458,7 +493,7 @@ public sealed class BusinessAnalysisTests
         var reservation = Assert.Single((await Rows(s, "aiReservation")).Items).Value;
         Assert.Equal(variation is "missingusage" or "estimatedusage" or "negativeusage" ? "uncertain" : "settled", reservation.Text("state"));
         if (variation is "missingusage" or "estimatedusage" or "negativeusage") Assert.Equal(2.7m, reservation["chargedEstimateJpy"]!.GetValue<decimal>());
-        if (variation == "excessusage") Assert.True((await s.Store.ReadAsync(RecordPartition.Catalog("demo"), "system-ai-gate", default))!.Value["blocked"]!.GetValue<bool>());
+        if (variation == "excessusage") Assert.True((await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "system-ai-gate", default))!.Value["blocked"]!.GetValue<bool>());
     }
     [Fact]
     public async Task Common_problem_denial_is_an_exclusion_and_input_body_bound_prevents_provider_send()
@@ -490,24 +525,24 @@ public sealed class BusinessAnalysisTests
         Assert.Equal("partial_failure", result.Text("status")); Assert.True(result["recoveryRequired"]!.GetValue<bool>());
         Assert.Equal("ANALYSIS_RECOVERY_REQUIRED", (await Assert.ThrowsAsync<DomainException>(() => StartLive(s, LiveRequest()))).Code);
         Assert.Equal(1, s.Wire.Calls); var pending = Assert.Single((await Rows(s, "aiReservation")).Items); Assert.Equal("pending", pending.Value.Text("state"));
-        var gate = (await s.Store.ReadAsync(RecordPartition.Catalog("demo"), "system-ai-gate", default))!; Assert.Contains(pending.Value.Text("id"), gate.Value.Strings("active"));
+        var gate = (await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "system-ai-gate", default))!; Assert.Contains(pending.Value.Text("id"), gate.Value.Strings("active"));
         release.SetResult(); await s.Wire.Finished.Task; // Tests terminate their fake; real offline termination requires independently reviewed evidence.
         s.Config["AiUsage:Stopped"] = "true"; s.Config["AiUsage:LiveOptIn"] = "false";
         var recovery = new BusinessAnalysisRecovery(s.Store, s.Config, TimeProvider.System);
-        Assert.Equal("FORBIDDEN", (await Assert.ThrowsAsync<DomainException>(() => recovery.InspectAsync(Analyst, Analyst.PrincipalId, request.RunId, default))).Code);
-        var inspection = await recovery.InspectAsync(Operator, Analyst.PrincipalId, request.RunId, default); var input = RecoveryRequest(inspection, request.RunId);
-        await Assert.ThrowsAsync<ArgumentException>(() => recovery.RecoverAsync(Operator, input with { ProvidersStopped = false }, default));
-        await Assert.ThrowsAsync<ArgumentException>(() => recovery.RecoverAsync(Operator, input with { StopEvidenceSha256 = "invalid" }, default));
-        Assert.Equal("STALE_VERSION", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(Operator, input with { SlotETag = "\"stale-version\"" }, default))).Code);
-        Assert.Equal("RECOVERY_RESERVATION_MISMATCH", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(Operator, input with { PendingReservationIds = [] }, default))).Code);
+        Assert.Equal("FORBIDDEN", (await Assert.ThrowsAsync<DomainException>(() => recovery.InspectAsync(LiveAnalyst, Analyst.PrincipalId, request.RunId, default))).Code);
+        var inspection = await recovery.InspectAsync(LiveOperator, Analyst.PrincipalId, request.RunId, default); var input = RecoveryRequest(inspection, request.RunId);
+        await Assert.ThrowsAsync<ArgumentException>(() => recovery.RecoverAsync(LiveOperator, input with { ProvidersStopped = false }, default));
+        await Assert.ThrowsAsync<ArgumentException>(() => recovery.RecoverAsync(LiveOperator, input with { StopEvidenceSha256 = "invalid" }, default));
+        Assert.Equal("STALE_VERSION", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(LiveOperator, input with { SlotETag = "\"stale-version\"" }, default))).Code);
+        Assert.Equal("RECOVERY_RESERVATION_MISMATCH", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(LiveOperator, input with { PendingReservationIds = [] }, default))).Code);
         var dayBefore = (await Day(s)).Value.ToJsonString();
-        var recovered = await recovery.RecoverAsync(Operator, input, default); Assert.Equal("aborted", recovered.Text("status")); Assert.Equal(0m, recovered["refundedJpy"]!.GetValue<decimal>());
+        var recovered = await recovery.RecoverAsync(LiveOperator, input, default); Assert.Equal("aborted", recovered.Text("status")); Assert.Equal(0m, recovered["refundedJpy"]!.GetValue<decimal>());
         Assert.Equal(dayBefore, (await Day(s)).Value.ToJsonString()); Assert.Equal("uncertain", Assert.Single((await Rows(s, "aiReservation")).Items).Value.Text("state"));
-        Assert.Empty((await s.Store.ReadAsync(RecordPartition.Catalog("demo"), "system-ai-gate", default))!.Value.Strings("active"));
-        Assert.Equal("ready", (await s.Store.ReadAsync(RecordPartition.Catalog("demo"), "business-analysis-slot", default))!.Value.Text("status"));
-        var saved = (await s.Service.GetAsync(Analyst, request.RunId, default)); Assert.Equal("aborted", saved.Text("status")); Assert.Empty(saved["groups"]!.AsArray()); Assert.Null(saved["sourceCount"]);
-        Assert.Equal(recovered.ToJsonString(), (await recovery.RecoverAsync(Operator, input, default)).ToJsonString()); Assert.Equal(1, s.Wire.Calls);
-        Assert.Equal("RECOVERY_REQUEST_CONFLICT", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(Operator, input with { StopEvidenceReference = "different-proof" }, default))).Code);
+        Assert.Empty((await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "system-ai-gate", default))!.Value.Strings("active"));
+        Assert.Equal("ready", (await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "business-analysis-slot", default))!.Value.Text("status"));
+        var saved = (await s.Service.GetAsync(LiveAnalyst, request.RunId, default)); Assert.Equal("aborted", saved.Text("status")); Assert.Empty(saved["groups"]!.AsArray()); Assert.Null(saved["sourceCount"]);
+        Assert.Equal(recovered.ToJsonString(), (await recovery.RecoverAsync(LiveOperator, input, default)).ToJsonString()); Assert.Equal(1, s.Wire.Calls);
+        Assert.Equal("RECOVERY_REQUEST_CONFLICT", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(LiveOperator, input with { StopEvidenceReference = "different-proof" }, default))).Code);
     }
     [Fact]
     public async Task Offline_recovery_never_releases_another_run_and_requires_explicit_stop()
@@ -527,7 +562,7 @@ public sealed class BusinessAnalysisTests
 
     [Theory]
     [InlineData("demo-person-02")][InlineData("principal-demo-01")][InlineData("demo-department-a")][InlineData("alice@example.invalid")][InlineData("principal-unseen-999")]
-    public async Task Public_source_identifiers_are_rejected_without_private_lookup_or_model_send_and_saved_results_fail_closed(string identifying)
+    public async Task Public_source_identifiers_are_rejected_without_model_send_and_saved_results_fail_closed(string identifying)
     {
         var s = await Create(); var request = Request(); await Start(s, request);
         await ChangeSource(s, 1, (a, k) =>
