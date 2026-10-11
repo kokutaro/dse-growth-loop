@@ -132,6 +132,13 @@ public sealed class AnonymousWorkspaceTests
         await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false }); await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false },s.Guest);
         state = await Change(s,"approve",new { version=state.SourceVersion }); Assert.Equal("published",state.Status);
         var cases = await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default); var published = Assert.Single(cases.Items); PrivateIdentifiersAbsent(s,published);
+        foreach (var query in new[] { "software 改善", "ＳＯＦＴＷＡＲＥ 改善", "ソフトウェア 無関係" })
+        {
+            var matched = await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,query,ct),default);
+            Assert.Equal(published.Id,Assert.Single(matched.Items).Id);
+        }
+        Assert.Empty((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,"無関係",ct),default)).Items);
+        await Assert.ThrowsAsync<ArgumentException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,string.Join(' ',Enumerable.Range(0,21).Select(i => "term"+i)),ct),default));
         await Change(s,"edit",new { sections=state.Sections,scopeIds=state.ScopeIds }); var edited = await State(s); Assert.Empty(edited.Consents); Assert.Equal(state.SourceVersion+1,edited.SourceVersion);
         await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CaseUnderFenceAsync(s.Owner,published.Id,ct),default));
         Assert.Empty((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default)).Items);

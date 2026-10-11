@@ -75,7 +75,7 @@ function Workspace({ config }: { config: AppConfig }) {
       const challenges = await readPages<Challenge>(api, '/workspace/challenges');
       const rooms = await readPages<RoomRow>(api, '/workspace/rooms');
       const invitations = await readPages<InvitationRow>(api, '/workspace/invitations');
-      const publicCases = await api<{ items: Case[] }>('/workspace/knowledge?query=引き継ぎ');
+      const publicCases = await api<{ items: Case[] }>('/workspace/knowledge');
       const next: Activity[] = challenges.map(challenge => ({ challenge, owner: challenge.isOwner, session: rooms.find(r => r.challenge.id === challenge.id), participation: invitations.find(i => i.challengeId === challenge.id) }));
       for (const invitation of invitations) if (!next.some(a => a.challenge.id === invitation.challengeId)) next.push({ challenge: { id: invitation.challengeId, roomId: invitation.roomId, title: invitation.title, summary: invitation.summary, status: invitation.status, isOwner: false, etag: invitation.etag }, owner: false, participation: invitation });
       for (const room of rooms) if (!next.some(a => a.challenge.id === room.challenge.id)) next.push({ challenge: room.challenge, owner: room.isOwner, session: room, participation: room.participation });

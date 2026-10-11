@@ -21,7 +21,9 @@ async function roomWithGuest(page: Page) {
   await expect(page.getByLabel('メッセージ', { exact: true })).toBeVisible();
   await page.getByText('匿名で協力を依頼する', { exact: true }).click();
   await page.getByRole('button', { name: '匿名の候補を確認' }).click();
+  const committed = page.waitForResponse(r => r.url().endsWith('/invitations') && r.request().method() === 'POST');
   await page.getByRole('button', { name: /に参加依頼$/ }).first().click();
+  expect((await committed).status()).toBe(201);
   await page.getByLabel('ローカル検証の役割').selectOption('demo-person-02');
   await page.getByRole('link', { name: /^参加依頼/ }).click();
   await page.getByRole('link', { name: '内容を確認' }).click();
@@ -35,7 +37,10 @@ async function asParticipant(page: Page, person: string) {
 }
 async function grant(page: Page) {
   await page.getByLabel('この活動の参加者に本人プロフィールの表示名を開示することに同意').check();
+  const committed = page.waitForResponse(r => r.url().endsWith('/identity-consent') && r.request().method() === 'POST');
   await page.getByRole('button', { name: '実名開示への同意を保存', exact: true }).click();
+  expect((await committed).status()).toBe(200);
+  await expect(page.getByRole('button', { name: '実名開示への同意を撤回', exact: true })).toBeEnabled();
 }
 
 test('独立した相互同意だけで表示名を開示し、撤回後は全員の再確認が必要', async ({ page, request }) => {

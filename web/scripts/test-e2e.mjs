@@ -11,6 +11,10 @@ if (listed.status !== 0) { process.stderr.write(listed.stderr); process.stdout.w
 const report = JSON.parse(listed.stdout);
 function specs(suites) { return suites.flatMap(s => [...(s.specs ?? []), ...specs(s.suites ?? [])]); }
 const all = specs(report.suites);
+if (all.length === 0) {
+  process.stderr.write('No E2E tests selected. Check file and --grep filters.\n');
+  process.exit(1);
+}
 let failed = 0;
 const results = [];
 for (const [i, spec] of all.entries()) {

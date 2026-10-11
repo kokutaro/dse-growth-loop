@@ -33,7 +33,11 @@ test("履歴取得中に相談を依頼しても参加者一覧を更新する",
     await page.evaluate(() => new Promise(requestAnimationFrame));
     release();
     await expect(page.getByText("demo-person-02：依頼中", { exact: true })).toBeVisible();
-  } finally { release(); }
+  } finally {
+    release();
+    // Finish delayed handlers before Playwright disposes their fetched responses.
+    await page.unrouteAll({ behavior: 'wait' });
+  }
 });
 test("二人で承諾・会話・退会し、AI停止中も保存できる", async ({ page, browser }) => {
   // Two independent 10s database replays, creation/acceptance and leaving share this test.

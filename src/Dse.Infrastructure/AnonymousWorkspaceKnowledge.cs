@@ -105,11 +105,13 @@ public sealed partial class AnonymousWorkspaceService
     {
         var request = new SearchRequest([],[],string.IsNullOrWhiteSpace(query) ? [] : ProfileExtraction.Terms(query));
         if (query is not null) SearchInput.RequireSafe(query);
+        if (request.Terms.Length > 0) request.Validate();
         using var budget = new SearchBudget(); var raw = request.Terms.Length == 0
             ? await projections.BrowseKnowledgeAsync(actor.Search,ct) : await projections.FindAsync(request,actor.Search,ct);
         var units = await guard.FilterUnderFenceAsync(actor,raw.Where(u => u.EntityType == "knowledge"),ct);
+        var terms = request.Terms.Select(Retriever.Normalize).ToHashSet(StringComparer.Ordinal);
         List<AnonymousWorkspaceCase> result = [];
-        foreach (var unit in units.DistinctBy(u => u.EntityId).Where(u => string.IsNullOrWhiteSpace(query) || u.Title.Contains(query,StringComparison.OrdinalIgnoreCase) || u.Summary.Contains(query,StringComparison.OrdinalIgnoreCase)).Take(100))
+        foreach (var unit in units.Where(u => terms.Count == 0 || u.NormalizedTerms.Any(terms.Contains)).DistinctBy(u => u.EntityId).Take(100))
         {
             var row = await repository.ReadAsync(Catalog(actor),unit.EntityId,ct);
             // Fixture catalogue without a reviewed conversations authority is not a publishable case.

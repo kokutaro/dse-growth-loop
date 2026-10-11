@@ -166,6 +166,19 @@ class IngestionSettingsTests(unittest.TestCase):
 
 
 class AiSettingsTests(unittest.TestCase):
+    def test_business_analysis_requires_independent_explicit_runtime_opt_in(self):
+        from cost_config import parameters
+        for env, enabled in [({}, 'false'), ({'DEPLOY_BUSINESS_ANALYSIS_JOB': 'true'}, 'false'),
+                             ({'BusinessAnalysis__Enabled': 'true'}, 'true')]:
+            with self.subTest(env=env):
+                values = parameters(env)
+                runtime = {item['name']: item['value'] for item in values['runtimeSettings']}
+                self.assertEqual(runtime['BusinessAnalysis__Enabled'], enabled)
+                self.assertEqual(runtime['Ai__Mode'], 'Mock')
+                self.assertEqual(runtime['AiUsage__LiveOptIn'], 'false')
+        with self.assertRaises(ValueError):
+            parameters({'BusinessAnalysis__Enabled': 'yes'})
+
     def test_pins_and_limits_are_passed_but_secrets_and_approval_are_not(self):
         from cost_config import parameters
         values = parameters({'Jev__Model': 'jev-1.13.0', 'Jev__SecretVersion': 'dummy-version',

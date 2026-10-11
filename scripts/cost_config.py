@@ -96,6 +96,7 @@ def parameters(env):
         raise ValueError('Ai__Mode は Mock / Live を指定してください。')
     runtime['Ai__Mode'] = mode
     runtime['AiUsage__LiveOptIn'] = str(boolean(env, 'AiUsage__LiveOptIn', 'false')).lower()
+    runtime['BusinessAnalysis__Enabled'] = str(boolean(env, 'BusinessAnalysis__Enabled', 'false')).lower()
     for name, default, ceiling in [('MaxInputTokens', 8000, 16000), ('MaxOutputTokens', 1000, 8000), ('MaxConcurrency', 1, 8), ('MaxAttempts', 2, 3), ('TimeoutSeconds', 30, 120)]:
         runtime['AiUsage__' + name] = str(integer(env, 'AiUsage__' + name, default, 1, ceiling))
     # 明示allowlist。キー本文やsmoke承認を通常配置へコピーしない。

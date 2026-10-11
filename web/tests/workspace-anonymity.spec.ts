@@ -27,7 +27,9 @@ test('社員ワークスペースのリクエストと応答は匿名専用契�
   await expect(page.getByLabel('メッセージ', { exact: true })).toBeVisible();
   await page.getByText('匿名で協力を依頼する', { exact: true }).click();
   await page.getByRole('button', { name: '匿名の候補を確認' }).click();
+  const committed = page.waitForResponse(r => r.url().endsWith('/invitations') && r.request().method() === 'POST');
   await page.getByRole('button', { name: /に参加依頼$/ }).first().click();
+  expect((await committed).status()).toBe(201);
   await page.getByLabel('ローカル検証の役割').selectOption('demo-person-02');
   await page.getByRole('link', { name: /^参加依頼/ }).click();
   await page.getByRole('link', { name: '内容を確認' }).click();
