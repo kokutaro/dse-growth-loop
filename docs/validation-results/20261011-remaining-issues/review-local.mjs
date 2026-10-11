@@ -2,7 +2,7 @@
 import { chromium } from '../../../web/node_modules/@playwright/test/index.mjs';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-const output = resolve('docs/validation-results/20261011-remaining-issues/screenshots');
+const output = resolve(process.env.DSE_BROWSER_REVIEW_OUTPUT ?? 'docs/validation-results/20261011-remaining-issues/screenshots');
 mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ channel: 'chrome', headless: false });
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
@@ -24,19 +24,23 @@ try {
       checks.push({ mode, route, ...layout });
     }
     await page.getByText('許可済み課題の分析（ローカル検証）', { exact: true }).click();
-    await page.getByRole('button', { name: '今すぐ分析（ローカル）' }).click();
+    await page.getByRole('button', { name: /^(今すぐ分析（ローカル）|同じ分析の結果を確認する)$/ }).click();
     await page.getByRole('heading', { name: '共通課題の候補', exact: true }).waitFor();
-    await page.getByLabel('事業仮説の判断').selectOption('investigating');
+    await page.getByText(/^許可済み要約 3 件/).waitFor();
+    await page.getByText(/申告工数：12 時間/).waitFor();
+    const [decision] = await Promise.all([
+      page.waitForResponse(r => r.url().endsWith('/decision') && r.request().method() === 'PATCH'),
+      page.getByLabel('事業仮説の判断').selectOption('investigating'),
+    ]);
+    if (!decision.ok()) throw new Error(`Decision save failed: ${decision.status()}`);
     await page.waitForFunction(() => document.querySelector('[aria-label="事業仮説の判断"]')?.value === 'investigating');
     const analysis = page.getByRole('region', { name: '事業仮説の手動分析' });
     await page.evaluate(() => window.scrollTo(0, 0));
-    const bounds = await analysis.boundingBox();
-    await page.screenshot({ fullPage: true, clip: bounds, path: `${output}/${mode}-analysis.png` });
+    await analysis.screenshot({ path: `${output}/${mode}-analysis.png` });
     await page.getByRole('button', { name: '候補1の公開要約1を確認', exact: true }).click();
     await page.getByRole('region', { name: '候補1の公開要約1を確認の本文', exact: true }).waitFor();
     await page.evaluate(() => window.scrollTo(0, 0));
-    const evidenceBounds = await analysis.boundingBox();
-    await page.screenshot({ fullPage: true, clip: evidenceBounds, path: `${output}/${mode}-analysis-evidence.png` });
+    await analysis.screenshot({ path: `${output}/${mode}-analysis-evidence.png` });
     checks.push({ mode, route: 'analysis', sourceCount: 3, reportedHours: 12, decision: 'investigating' });
   }
   writeFileSync(resolve(output, '../browser-review.json'), JSON.stringify({ capturedAt: new Date().toISOString(), browser: 'Google Chrome', version: browser.version(), headed: true, userAgent: await page.evaluate(() => navigator.userAgent), checks, externalModelCalls: 0 }, null, 2) + '\n');
