@@ -21,8 +21,13 @@ for (const [i, spec] of all.entries()) {
   process.stdout.write(`\n[isolated ${i + 1}/${all.length}] ${spec.title}\n`);
   const exactTitle = spec.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$';
   const output = `test-results/isolated/${i + 1}`;
+  mkdirSync('test-results/selection', { recursive: true });
+  const selection = `test-results/selection/${i + 1}.txt`;
+  writeFileSync(selection, spec.file + '\n');
   const started = Date.now();
-  const result = spawnSync(process.execPath, [cli, 'test', spec.file, '--grep', exactTitle, '--reporter=line', '--output', output], { stdio: 'inherit', env: { ...process.env, DSE_ANALYSIS_FIXTURES: spec.file.endsWith('business-analysis.spec.ts') ? 'true' : 'false' } });
+  // Keep requested execution options (trace, workers, timeout, project), while
+  // restricting each fresh API instance to the selected file and exact title.
+  const result = spawnSync(process.execPath, [cli, 'test', ...filters, '--test-list', selection, '--grep', exactTitle, '--reporter=line', '--output', output], { stdio: 'inherit', env: { ...process.env, DSE_ANALYSIS_FIXTURES: spec.file.endsWith('business-analysis.spec.ts') ? 'true' : 'false' } });
   results.push({ file: spec.file, line: spec.line, title: spec.title, exitCode: result.status, durationMs: Date.now() - started, output });
   if (result.status !== 0) failed++;
 }

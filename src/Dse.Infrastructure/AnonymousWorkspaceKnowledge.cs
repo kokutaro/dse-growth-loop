@@ -111,7 +111,7 @@ public sealed partial class AnonymousWorkspaceService
         var units = await guard.FilterUnderFenceAsync(actor,raw.Where(u => u.EntityType == "knowledge"),ct);
         var terms = request.Terms.Select(Retriever.Normalize).ToHashSet(StringComparer.Ordinal);
         List<AnonymousWorkspaceCase> result = [];
-        foreach (var unit in units.Where(u => terms.Count == 0 || u.NormalizedTerms.Any(terms.Contains)).DistinctBy(u => u.EntityId).Take(100))
+        foreach (var unit in units.Where(u => terms.Count == 0 || u.NormalizedTerms.Any(terms.Contains)).DistinctBy(u => u.EntityId))
         {
             var row = await repository.ReadAsync(Catalog(actor),unit.EntityId,ct);
             // Fixture catalogue without a reviewed conversations authority is not a publishable case.
@@ -125,6 +125,7 @@ public sealed partial class AnonymousWorkspaceService
             }
             else id = existing.Value.Text("publicCaseId");
             result.Add(await CaseUnderFenceAsync(actor,id,ct));
+            if (result.Count == 100) break;
         }
         return new(result.ToArray());
     }

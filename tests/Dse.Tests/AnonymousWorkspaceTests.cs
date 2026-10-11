@@ -131,6 +131,18 @@ public sealed class AnonymousWorkspaceTests
         state = await Change(s,"request-review",new { version=state.SourceVersion });
         await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false }); await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false },s.Guest);
         state = await Change(s,"approve",new { version=state.SourceVersion }); Assert.Equal("published",state.Status);
+        var partition = RecordPartition.Catalog(s.Owner.TenantId);
+        var source = (await s.Repo.ReadAsync(partition,KnowledgeService.Id(s.Sid),default))!;
+        var projection = (await s.Store.QueryAsync(partition,"searchUnit","entityId",source.Value.Text("id"),100,null,default)).Items.Single();
+        for (var i = 0; i < 100; i++)
+        {
+            var legacy = source.Value.Copy(); legacy["id"] = "000-legacy-case-"+i.ToString("D3"); legacy["contractVersion"] = "legacy";
+            var unit = projection.Value.Copy(); unit["id"] = "000-legacy-projection-"+i.ToString("D3"); unit["entityId"] = legacy["id"]!.DeepClone();
+            await s.Store.CommitAsync(partition,[RecordWrite.Create(legacy),RecordWrite.Create(unit)],default);
+        }
+        IProjectionRepository browse = new MemoryProjectionRepository(s.Store);
+        var guarded = await new SourceGuard(s.Repo).FilterAsync(s.Owner,await browse.BrowseKnowledgeAsync(s.Owner.Search,default),default);
+        Assert.Equal(100,guarded.Count(u => u.EntityId.StartsWith("000-legacy-case-",StringComparison.Ordinal)));
         var cases = await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default); var published = Assert.Single(cases.Items); PrivateIdentifiersAbsent(s,published);
         foreach (var query in new[] { "software 改善", "ＳＯＦＴＷＡＲＥ 改善", "ソフトウェア 無関係" })
         {
