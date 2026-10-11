@@ -1,0 +1,20 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs workspace.spec.ts -g Azure: 会話保存
+
+
+[isolated 1/1] Azure: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+[WebServer] (node:62466) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:62467) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:165:48 › Azure: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+  1 passed (8.4s)
+
+Isolated E2E: 1 passed, 0 failed (1 tests).

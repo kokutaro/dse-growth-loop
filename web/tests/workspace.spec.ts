@@ -178,7 +178,16 @@ for (const mode of ['Demo', 'Azure'] as const) test(`${mode}: 会話保存の失
     const guest = { 'X-Demo-Person': 'demo-person-02' };
     const invitations = await (await read(request, '/api/v1/workspace/invitations', { headers: guest })).json();
     const invitation = invitations.items[0];
-    expect((await request.patch(`/api/v1/workspace/invitations/${invitation.id}`, { headers: { ...guest, 'If-Match': invitation.etag, 'Idempotency-Key': crypto.randomUUID() }, data: { decision: 'accepted' } })).status()).toBe(200);
+    const acceptOptions = { headers: { ...guest, 'If-Match': invitation.etag, 'Idempotency-Key': crypto.randomUUID() }, data: { decision: 'accepted' } };
+    for (let attempt = 0; ; attempt++) {
+      const response = await request.patch(`/api/v1/workspace/invitations/${invitation.id}`, acceptOptions);
+      const value = await response.json().catch(() => ({}));
+      // ACCESS_BUSY is returned before fence acquisition; reuse the exact setup request.
+      if (response.status() === 503 && value.code === 'ACCESS_BUSY' && value.retryable === true && attempt < 3) {
+        await new Promise(resolve => setTimeout(resolve, 200 * 2 ** attempt)); continue;
+      }
+      expect(response.status(), `fixture accept: ${value.code ?? response.status()}`).toBe(200); break;
+    }
     await page.getByRole('button', { name: '会話を更新', exact: true }).click();
     const challenges = await (await read(request, '/api/v1/workspace/challenges', { headers: owner })).json();
     const room = await (await read(request, `/api/v1/workspace/rooms/${challenges.items[0].roomId}`, { headers: owner })).json();

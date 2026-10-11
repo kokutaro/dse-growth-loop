@@ -50,3 +50,7 @@ Azure outboxは毎reloadのUUIDを廃止し、サーバーが認可した部屋�
 - 分析要求は本人のサーバー発行cache区画にrunId/cutoff/configVersionだけをsessionStorage保存し、画面移動・reload後はGETで保存済みrunを先に確認。404だけが同じ要求の明示POSTへ進む。処理中や復旧必要なrun、新しいcache区画を確認できない場合は新規開始しない。logoutはprivate要求履歴も直ちに消去。このkeyは認可credentialではなく、APIは常に現在のActorを認可する。
 
 [.NET全体](dotnet-review-four-final.log): 556成功、失敗0、skip0。[分析E2E](business-analysis-resume-final.log): 4成功。保存済み/未保存それぞれの応答消失→画面移動→reload→明示確認で、前者はPOST1回、後者は同じbody/Idempotency-KeyのPOST2回を確認。全てMockで実AI送信なし。[認証5件](auth-analysis-resume-final.log)、[型チェック/build](build-analysis-resume-final.log)成功。古い件数のログは当時の証跡として保持。
+
+### Azure fixtureの準備用承諾PATCHの競合
+
+55b9c02のpush CIは12/12成功、PR CIは11/12成功。workspaceのAzure fixture準備PATCHだけが503 ACCESS_BUSYで失敗した。保持したtraceのresponseはretryable=true、AccessFenceはaction実行前のholder/CAS競合でこの応答を返す。準備要求を同じbody/If-Match/Idempotency-Keyで最大4回、503 ACCESS_BUSY retryable=trueだけ再送するように変更。412や別の失敗は再送しない。検証対象のSAVE_FAILED/201応答消失は従来どおり手動再送として扱い、timeout延長や本番認証変更は行わない。[Azure outbox回帰](e2e-outbox-fixture-accept-final.log)は1成功。旧CI失敗とtraceはローカル補足成果物へ保持する。最終SHAのCIは別途確認する。
