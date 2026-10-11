@@ -82,6 +82,22 @@ class InfrastructureTests(unittest.TestCase):
             self.assertEqual(notification['thresholdType'], 'Actual')
             self.assertNotIn('contactGroups', notification)
 
+    def test_analysis_job_receives_server_runtime_identity_settings(self):
+        # Together with test_generated_apps_parameters_include_reviewed_analysis_identity,
+        # verify the compiled ARM path, rather than guessing from Bicep source text.
+        module = self.modules['dse-apps']['properties']
+        self.assertEqual(module['parameters']['runtimeSettings']['value'], "[parameters('runtimeSettings')]")
+        template = module['template']
+        self.assertEqual(template['variables']['appEnv'], "[concat(variables('commonEnv'), parameters('runtimeSettings'))]")
+        self.assertEqual(template['variables']['workerEnv'],
+                         "[concat(variables('appEnv'), createArray(createObject('name', 'AZURE_CLIENT_ID', 'value', parameters('workerClientId'))))]")
+        analysis = self.apps['dse-business-analysis']['properties']['template']['containers'][0]
+        self.assertEqual(analysis['env'], "[variables('workerEnv')]")
+        self.assertEqual(analysis['args'], ['--analyze-business'])
+        auth_tenant = next(v for v in template['variables']['commonEnv'] if v['name'] == 'Auth__TenantId')
+        self.assertEqual(auth_tenant['value'], "[parameters('entraTenantId')]")
+        self.assertFalse(any('Auth__' in name for name in template.get('outputs', {})))
+
     def test_cosmos_roles_cover_only_two_business_containers_and_storage_roles_are_scoped(self):
         foundation = self.modules['dse-foundation']['properties']['template']
         grants = foundation['variables']['cosmosAccess']

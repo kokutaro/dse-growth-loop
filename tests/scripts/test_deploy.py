@@ -61,3 +61,32 @@ class DeploymentTests(unittest.TestCase):
         settings = {x["name"]: x["value"] for x in deploy.identity_settings(env)}
         self.assertEqual(len(settings), 3)
         self.assertNotIn("never-send", str(settings))
+
+    def test_generated_apps_parameters_include_reviewed_analysis_identity(self):
+        tenant = "11111111-1111-4111-8111-111111111111"
+        oid = "22222222-2222-4222-8222-222222222222"
+        identity = {"Auth__Bindings__0__TenantId": tenant, "Auth__Bindings__0__Oid": oid,
+                    "Auth__Bindings__0__PrincipalId": "dummy-principal", "Auth__Bindings__0__PersonId": "dummy-person",
+                    "Auth__Bindings__0__Enabled": "true", "Auth__Bindings__0__Roles__0": "member", "Auth__Bindings__0__Roles__1": "analyst",
+                    "Auth__Grants__0__PrincipalId": "dummy-principal", "Auth__Grants__0__ScopeIds__0": "dummy-scope"}
+        env = {**identity, "AZURE_SUBSCRIPTION_ID": "dummy-subscription", "Auth__TenantId": tenant,
+               "Auth__ClientId": "dummy-client", "Auth__AllowedObjectIds__0": oid,
+               "DEPLOY_BUSINESS_ANALYSIS_JOB": "true", "BusinessAnalysis__Enabled": "true",
+               "Auth__Bindings__0__Secret": "excluded-secret", "Jev__ApiKey": "excluded-key"}
+        captured = {}
+        def invoke(command, **kwargs):
+            self.assertIn("what-if", command)
+            self.assertNotIn("create", command)
+            file = Path(command[command.index("--parameters") + 1][1:])
+            self.assertEqual(file.stat().st_mode & 0o777, 0o600)
+            captured.update(json.loads(file.read_text())["parameters"])
+            return CompletedProcess(command, 0)
+        with patch.object(sys, "argv", ["deploy.py", "what-if", "--include-apps"]), \
+                patch.object(deploy, "load_env", return_value=env), patch.object(deploy.subprocess, "run", side_effect=invoke):
+            deploy.main()
+        runtime = {item['name']: item['value'] for item in captured['runtimeSettings']['value']}
+        self.assertEqual({name: runtime[name] for name in identity}, identity)
+        self.assertEqual(runtime['BusinessAnalysis__Enabled'], 'true')
+        self.assertTrue(captured['deployBusinessAnalysisJob']['value'])
+        self.assertNotIn('excluded-secret', json.dumps(captured))
+        self.assertNotIn('excluded-key', json.dumps(captured))

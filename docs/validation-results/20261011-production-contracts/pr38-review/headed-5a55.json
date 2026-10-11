@@ -1,0 +1,129 @@
+{
+  "head": "5a55f5d527d04467c6a5f61392d1cf59f3af3f00",
+  "browser": "154.0.8037.99",
+  "channel": "chrome",
+  "headless": false,
+  "checks": [
+    {
+      "mode": "pc",
+      "route": "home",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 150.09375,
+      "railBottom": 1066.828125
+    },
+    {
+      "mode": "pc",
+      "route": "tasks",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 151.234375,
+      "railBottom": 1000
+    },
+    {
+      "mode": "pc",
+      "route": "invitations",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 150.09375,
+      "railBottom": 1000
+    },
+    {
+      "mode": "pc",
+      "route": "rooms",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 150.09375,
+      "railBottom": 1000
+    },
+    {
+      "mode": "pc",
+      "route": "knowledge",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 150.09375,
+      "railBottom": 1000
+    },
+    {
+      "mode": "pc",
+      "route": "profile",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 150.09375,
+      "railBottom": 1347
+    },
+    {
+      "mode": "mobile",
+      "route": "home",
+      "width": 390,
+      "scrollWidth": 390,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 368.171875,
+      "railBottom": 289.390625
+    },
+    {
+      "mode": "mobile",
+      "route": "tasks",
+      "width": 390,
+      "scrollWidth": 390,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 368.171875,
+      "railBottom": 289.390625
+    },
+    {
+      "mode": "mobile",
+      "route": "invitations",
+      "width": 390,
+      "scrollWidth": 390,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 368.171875,
+      "railBottom": 289.390625
+    },
+    {
+      "mode": "mobile",
+      "route": "rooms",
+      "width": 390,
+      "scrollWidth": 390,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 368.171875,
+      "railBottom": 289.390625
+    },
+    {
+      "mode": "mobile",
+      "route": "knowledge",
+      "width": 390,
+      "scrollWidth": 390,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 368.171875,
+      "railBottom": 289.390625
+    },
+    {
+      "mode": "mobile",
+      "route": "profile",
+      "width": 390,
+      "scrollWidth": 390,
+      "skipKeepsRoute": true,
+      "mainFocused": true,
+      "headingY": 368.171875,
+      "railBottom": 289.390625
+    }
+  ],
+  "pageErrors": []
+}
