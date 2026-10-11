@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "importedFor": "Issue30 local safety regression; no Azure execution",
+  "handoffSource": "/Users/nyanpass/Documents/Codex/2026-10-11/task-2/migration-handoff.md",
+  "handoffSha256": "2f47e14537cfea193f7d6f5d1146680b3334bcab4e7bc8445a7d17802002a6fe",
+  "files": [
+    {
+      "file": "post-pilot-stop-watchdog.py",
+      "source": "/Users/nyanpass/Documents/Codex/2026-10-11/task-2/next-phase/post-pilot-stop-watchdog.py",
+      "sha256": "c3401c14daca7538e39603329b5e5e5bc7e9ef1cc21d235e7657e4c3cb5167f4",
+      "modified": false
+    },
+    {
+      "file": "queued-worker-stop-watchdog.py",
+      "source": "/Users/nyanpass/Documents/Codex/2026-10-11/task-2/next-phase/queued-worker-stop-watchdog.py",
+      "sha256": "9681887e45f1e922a1aa7054660155ec22add870e1ad7c7a61c8d5eb6ccf040e",
+      "modified": false
+    }
+  ]
+}

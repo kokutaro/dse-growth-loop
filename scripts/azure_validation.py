@@ -20,6 +20,17 @@ PROVIDERS = ("Microsoft.App", "Microsoft.OperationalInsights", "Microsoft.Insigh
              "Microsoft.Consumption")
 SCENARIOS = ("environment-review", "deployment", "entra", "managed-identity", "live-ai",
              "zero-scale", "recovery", "redeploy-rollback-stop", "cost-reconciliation")
+APP_ENVIRONMENTS = {"dse-api": "dse-environment", "dse-worker": "dse-environment",
+                    "dse-api-vnet": "dse-environment-vnet-jpe", "dse-worker-vnet": "dse-environment-vnet-jpe"}
+
+
+def environment_id(subscription, environment):
+    return f"/subscriptions/{subscription}/resourceGroups/{RG}/providers/Microsoft.App/managedEnvironments/{environment}"
+
+
+def matches_environment(value, app, expected):
+    observed = value.get("environment") or value.get("managedEnvironment")
+    return value.get("name") == app and isinstance(observed, str) and observed.lower() == expected.lower()
 
 
 def utc_now():
@@ -114,7 +125,7 @@ def az(command, subscription):
     return ["az", *command, "--subscription", subscription, "--only-show-errors", "--output", "json"]
 
 
-def preflight(subscription, location, foundry_location):
+def preflight(subscription, location, foundry_location, environment="dse-environment"):
     checks = []
 
     def read(check_id, command, project, acceptable=lambda data: True):
@@ -132,7 +143,7 @@ def preflight(subscription, location, foundry_location):
         resources = read("resource-inventory", ["resource", "list", "--resource-group", RG,
                                               "--query", "[].{name:name,type:type,location:location,sku:sku}"], inventory)
         existing_environment = resources["status"] == "passed" and any(
-            r.get("type", "").lower() == "microsoft.app/managedenvironments" and r.get("name") == "dse-environment"
+            r.get("type", "").lower() == "microsoft.app/managedenvironments" and r.get("name") == environment
             for r in resources.get("data", []))
     for provider in PROVIDERS:
         read("provider-" + provider, ["provider", "show", "--namespace", provider,
@@ -150,20 +161,66 @@ def preflight(subscription, location, foundry_location):
     return checks
 
 
-def replicas(subscription, app):
-    base = ["containerapp", "revision", "list", "--name", app, "--resource-group", RG,
-            "--query", "[?properties.active].{name:name}"]
-    # Filter again in Python as well, so inactive revisions cannot affect counts.
-    def active(value):
-        return [fields(r, ("name",)) for r in rows(value) if r.get("properties", {}).get("active", True)]
-    revisions = check_command("active-revisions", az(base, subscription), active, lambda v: bool(v))
-    checks = [revisions]
+def revision_inventory(value):
+    result = []
+    for row in rows(value):
+        name, active, count, state = (row.get(k) for k in ("name", "active", "replicas", "status"))
+        if (not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9-]+", name)
+                or type(active) is not bool or type(count) is not int or count < 0
+                or not isinstance(state, str) or not state):
+            raise ValueError("Unknown revision state")
+        result.append({"name": name, "active": active, "replicas": count, "status": state})
+    if len({r["name"] for r in result}) != len(result):
+        raise ValueError("Duplicate revision")
+    return result
+
+
+def confirmed_stopped(checks):
+    """A control-plane snapshot, never a billing or future-stop guarantee."""
+    if not isinstance(checks, list) or any(not isinstance(c, dict) for c in checks):
+        return False
+    if len(checks) < 3 or any(c.get("status") != "passed" for c in checks):
+        return False
+    if checks[0].get("id") != "app-environment" or checks[1].get("id") != "all-revisions":
+        return False
+    revisions = checks[1].get("data")
+    if not isinstance(revisions, list) or not revisions or len(checks) != len(revisions) + 2:
+        return False
+    try:
+        revision_inventory(revisions)
+    except (ValueError, TypeError):
+        return False
+    for revision_row, check in zip(revisions, checks[2:]):
+        if not isinstance(check.get("data"), dict):
+            return False
+        if (revision_row.get("active") is not False or type(revision_row.get("replicas")) is not int
+                or revision_row["replicas"] != 0 or revision_row.get("status") != "Stopped"
+                or check.get("id") != "replicas-" + revision_row.get("name", "")
+                or type(check.get("data", {}).get("count")) is not int or check["data"]["count"] != 0):
+            return False
+    return True
+
+
+def replicas(subscription, app, environment=None):
+    environment = environment or APP_ENVIRONMENTS.get(app)
+    if not environment or APP_ENVIRONMENTS.get(app) != environment:
+        raise ValueError("App/environment mismatch")
+    expected = environment_id(subscription, environment).lower()
+    identity = check_command("app-environment", az(["containerapp", "show", "--name", app,
+        "--resource-group", RG, "--query",
+        "{name:name,environment:properties.environmentId,managedEnvironment:properties.managedEnvironmentId}"], subscription),
+        lambda v: fields(v, ("name", "environment", "managedEnvironment")),
+        lambda v: matches_environment(v, app, expected))
+    checks = [identity]
+    if identity["status"] != "passed":
+        return checks
+    base = ["containerapp", "revision", "list", "--all", "--name", app, "--resource-group", RG,
+            "--query", "[].{name:name,active:properties.active,replicas:properties.replicas,status:properties.runningState}"]
+    revisions = check_command("all-revisions", az(base, subscription), revision_inventory, lambda v: bool(v))
+    checks.append(revisions)
     if revisions["status"] == "passed":
         for revision_row in revisions["data"]:
             name = revision_row.get("name", "")
-            if not re.fullmatch(r"[A-Za-z0-9-]+", name):
-                revisions.update(status="failed", error="INVALID_RESPONSE")
-                break
             command = ["containerapp", "replica", "list", "--name", app, "--resource-group", RG,
                        "--revision", name, "--query", "[].{name:name}"]
             checks.append(check_command("replicas-" + name, az(command, subscription), lambda v: {"count": len(rows(v))}))
@@ -190,7 +247,8 @@ def main():
     parser.add_argument("--subscription")
     parser.add_argument("--location", default="japaneast")
     parser.add_argument("--foundry-location", default="japaneast")
-    parser.add_argument("--app", choices=("dse-api", "dse-worker"), default="dse-api")
+    parser.add_argument("--app", choices=tuple(APP_ENVIRONMENTS), default="dse-api")
+    parser.add_argument("--environment", choices=tuple(sorted(set(APP_ENVIRONMENTS.values()))))
     args = parser.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,79}", args.run_id):
         parser.error("run-id は英数字・ハイフン・下線の1〜80文字で指定してください。")
@@ -198,6 +256,9 @@ def main():
         parser.error("読み取り先の --subscription を明示してください。CLIの既定先には依存しません。")
     if any(not re.fullmatch(r"[a-z0-9]+", v) for v in (args.location, args.foundry_location)):
         parser.error("リージョン識別子が不正です。")
+    environment = args.environment or APP_ENVIRONMENTS[args.app]
+    if args.action == "replicas" and APP_ENVIRONMENTS[args.app] != environment:
+        parser.error("app と environment の組み合わせが不正です。")
     folder = args.out / args.run_id
     try:
         folder.mkdir(parents=True, exist_ok=False)
@@ -207,8 +268,11 @@ def main():
         commit, dirty = revision()
         report = new_report(args.run_id, args.action, commit, dirty)
         report["target"] = {"subscription": args.subscription, "resourceGroup": RG,
-                            "location": args.location, "foundryLocation": args.foundry_location}
-        report["checks"] = local() if args.action == "local" else preflight(args.subscription, args.location, args.foundry_location) if args.action == "preflight" else replicas(args.subscription, args.app)
+                            "location": args.location, "foundryLocation": args.foundry_location,
+                            "app": args.app, "environment": environment}
+        report["checks"] = local() if args.action == "local" else preflight(args.subscription, args.location, args.foundry_location, environment) if args.action == "preflight" else replicas(args.subscription, args.app, environment)
+        if args.action == "replicas":
+            report["stopSnapshotConfirmed"] = confirmed_stopped(report["checks"])
         report["finishedAt"] = utc_now()
         path = folder / "report.json"
         path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

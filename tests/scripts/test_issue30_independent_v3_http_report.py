@@ -36,6 +36,14 @@ class IndependentV3HttpTests(unittest.TestCase):
                             'uiCompletionUpperBoundMs': 1500,
                             'ui': {'groups': groups, 'status': '自動検索対象外' if outside else '完了', 'alerts': []}})
 
+    def test_http_and_ui_durations_reject_bool_negative_and_unknown(self):
+        for field in ('networkMs', 'uiCompletionUpperBoundMs'):
+            for value in (True, -1, None, float('nan'), float('inf')):
+                http, ui = copy.deepcopy(self.http), copy.deepcopy(self.ui)
+                (http if field == 'networkMs' else ui)[0][field] = value
+                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                    score(self.fixture, http, ui)
+
     def test_expected_outside_is_not_failure_or_empty_search(self):
         result = score(self.fixture, self.http, self.ui)
         self.assertTrue(result['qualityPassed'])

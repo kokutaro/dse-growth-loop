@@ -85,6 +85,8 @@ CSVはschemaの各operationを1行へ平坦化し、runId/operationId/attemptを
 
 別タスクのTailscale/Foundry Private Endpoint接続成功は、この台帳・費用・停止・認証・採用条件の証拠を追加しない。匿名UI向けDTOは継続コードで実装したが、実JWT/実Cosmos/通知/ログ/運用経路を含む匿名性の受入は別課題。既存の固定検索検証経路でのSLOと匿名性の合格を混同しない。
 
+2026-10-11のVNet移行後に、[Issue30のローカル検証準備](issue30-migration-local-preparation.md)を追加した。全revision/実replicaの停止snapshotと移行watchdogのMock回帰、共通期限の独立supervisor/実OS故障回帰、snapshot保護、warm24/cold3の保存記録・根拠採点を整備。独立レビューで再現したAPI確認によるWorker停止要求の遅延、成功CLIの子process残留、cold応答runIdの相互/warm流用を修正し回帰を追加。上表の「checkoutにwatchdog実装/回帰なし」はこの追加前の状態であり、独立した実停止/復元・最新台帳・本人認証・費用承認は引き続き未確認。今回Azureを起動せず、合格へ変更しない。
+
 ## 追加実装の状態と具体的な未完了
 
 | 追加領域 | ローカルに実装した境界 | 残る受入条件 |

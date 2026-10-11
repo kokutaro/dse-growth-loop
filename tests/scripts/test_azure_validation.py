@@ -59,26 +59,90 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(next(c for c in checks if c["id"] == "provider-Microsoft.App")["status"], "failed")
         self.assertNotIn("never-store", json.dumps(checks))
 
-    def test_replica_snapshot_uses_all_active_revisions_without_http_request(self):
-        calls = []
+    def replica_run(self, command, **kwargs):
+        if command[2] == "show":
+            value = {"name": "dse-api-vnet", "environment": validation.environment_id("sub", "dse-environment-vnet-jpe")}
+        elif "revision" in command:
+            value = [{"name": "old", "active": True, "replicas": 1, "status": "Running"},
+                     {"name": "inactive", "active": False, "replicas": 1, "status": "Running"}]
+        else:
+            value = [{"name": "replica"}]
+        return subprocess.CompletedProcess(command, 0, json.dumps(value), "")
 
-        def run(command, **kwargs):
-            calls.append(command)
-            value = [{"name": "old", "properties": {"active": True}},
-                     {"name": "new", "properties": {"active": True}},
-                     {"name": "inactive", "properties": {"active": False}}] if "revision" in command else [{"name": "replica"}]
-            return subprocess.CompletedProcess(command, 0, json.dumps(value), "")
+    def test_replica_snapshot_includes_inactive_revisions_and_actual_replicas(self):
+        with patch.object(validation.subprocess, "run", side_effect=self.replica_run) as run:
+            checks = validation.replicas("sub", "dse-api-vnet", "dse-environment-vnet-jpe")
+        self.assertEqual(run.call_count, 4)
+        self.assertEqual([c["data"]["count"] for c in checks[2:]], [1, 1])
+        revision_command = run.call_args_list[1].args[0]
+        self.assertIn("--all", revision_command)
+        self.assertNotIn("[?properties.active]", " ".join(revision_command))
+        self.assertFalse(validation.confirmed_stopped(checks))
+        self.assertTrue(all(c.args[0][:2] == ["az", "containerapp"] for c in run.call_args_list))
 
-        with patch.object(validation.subprocess, "run", side_effect=run):
-            checks = validation.replicas("sub", "dse-api")
-        self.assertEqual(len(calls), 3)
-        self.assertEqual([c["data"]["count"] for c in checks[1:]], [1, 1])
-        self.assertTrue(all(c[:2] == ["az", "containerapp"] for c in calls))
-
-    def test_missing_active_revision_is_failed_not_zero(self):
-        with patch.object(validation.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "[]", "")):
-            checks = validation.replicas("sub", "dse-api")
+    def test_wrong_environment_refuses_further_reads(self):
+        result = subprocess.CompletedProcess([], 0, json.dumps({"name": "dse-api-vnet", "environment": "old-env"}), "")
+        with patch.object(validation.subprocess, "run", return_value=result) as run:
+            checks = validation.replicas("sub", "dse-api-vnet", "dse-environment-vnet-jpe")
+        self.assertEqual(run.call_count, 1)
         self.assertEqual(checks[0]["status"], "failed")
+        self.assertFalse(validation.confirmed_stopped(checks))
+
+    def test_unknown_inventory_never_confirms_zero(self):
+        for value in ([], [{"name": "rev", "active": False, "status": "Stopped"}],
+                      [{"name": "rev", "active": False, "replicas": False, "status": "Stopped"}],
+                      [{"name": "rev", "active": False, "replicas": 0, "status": "Stopped"}] * 2):
+            with self.subTest(value=value):
+                def run(command, **kwargs):
+                    return self.replica_run(command, **kwargs) if command[2] == "show" else subprocess.CompletedProcess([], 0, json.dumps(value), "")
+                with patch.object(validation.subprocess, "run", side_effect=run):
+                    checks = validation.replicas("sub", "dse-api-vnet", "dse-environment-vnet-jpe")
+                self.assertFalse(validation.confirmed_stopped(checks))
+                self.assertEqual(checks[1]["status"], "failed")
+
+    def test_stop_requires_both_all_revision_state_and_actual_empty_lists(self):
+        for active, state, inventory, expected in ((False, "Stopped", [], True),
+                                                   (True, "Stopped", [], False),
+                                                   (False, "Running", [], False),
+                                                   (False, "Stopped", [{"name": "zombie"}], False),
+                                                   (False, "Stopped", None, False)):
+            with self.subTest(active=active, state=state, inventory=inventory):
+                def run(command, **kwargs):
+                    if command[2] == "show": return self.replica_run(command, **kwargs)
+                    value = [{"name": "rev", "active": active, "replicas": 0, "status": state}] if "revision" in command else inventory
+                    return subprocess.CompletedProcess([], 0, json.dumps(value), "")
+                with patch.object(validation.subprocess, "run", side_effect=run):
+                    checks = validation.replicas("sub", "dse-api-vnet", "dse-environment-vnet-jpe")
+                self.assertEqual(validation.confirmed_stopped(checks), expected)
+        self.assertFalse(validation.confirmed_stopped([]))
+        self.assertFalse(validation.confirmed_stopped([{"status": "passed", "id": "account"}]))
+
+    def test_invalid_app_environment_pair_never_calls_cli(self):
+        for app, env in (("dse-api-vnet", "dse-environment"), ("unknown", "dse-environment-vnet-jpe")):
+            with patch.object(validation.subprocess, "run") as run, self.assertRaises(ValueError):
+                validation.replicas("sub", app, env)
+            run.assert_not_called()
+
+    def test_new_environment_quota_reuse_does_not_inherit_old_environment(self):
+        for present, expected in (("dse-environment", "failed"), ("dse-environment-vnet-jpe", "passed")):
+            def run(command, **kwargs):
+                if command[1:3] == ["account", "show"]: value = {"id": "sub", "state": "Enabled"}
+                elif command[1:3] == ["group", "exists"]: value = True
+                elif command[1:3] == ["resource", "list"]: value = [{"name": present, "type": "Microsoft.App/managedEnvironments"}]
+                elif command[1] == "rest": value = {"value": [{"name": {"value": "ManagedEnvironmentCount"}, "currentValue": 2, "limit": 2}]} if "/usages?" in command[command.index("--url") + 1] else {"value": []}
+                elif command[1:3] == ["provider", "show"]: value = {"registrationState": "Registered"}
+                else: value = []
+                return subprocess.CompletedProcess(command, 0, json.dumps(value), "")
+            with self.subTest(present=present), patch.object(validation.subprocess, "run", side_effect=run):
+                checks = validation.preflight("sub", "japaneast", "japaneast", "dse-environment-vnet-jpe")
+            self.assertEqual(next(c for c in checks if c['id'] == 'app-quota')['status'], expected)
+
+    def test_malformed_environment_type_is_failed_without_raw_payload(self):
+        value = {"name": "dse-api-vnet", "environment": 42, "secret": "never-store"}
+        with patch.object(validation.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps(value), "")):
+            checks = validation.replicas("sub", "dse-api-vnet")
+        self.assertEqual(checks[0]['status'], 'failed')
+        self.assertNotIn('never-store', json.dumps(checks))
 
     def test_cli_invalid_targets_and_run_ids_do_not_invoke_commands(self):
         for extra in (["--run-id", "../outside"], ["--subscription", ""], ["--location", "--debug"]):
@@ -144,3 +208,19 @@ class ValidationTests(unittest.TestCase):
             check = validation.check_command("read", ["az"], lambda x: x)
         self.assertEqual(check["error"], "INVALID_RESPONSE")
         self.assertNotIn("secret", json.dumps(check))
+
+    def test_malformed_stop_checks_are_unknown_not_zero(self):
+        for checks in (None, [None], [{'id':'app-environment','status':'passed'}, {'id':'all-revisions','status':'passed','data':[None]}, {'status':'passed'}]):
+            with self.subTest(checks=checks): self.assertFalse(validation.confirmed_stopped(checks))
+
+    def test_cli_new_target_snapshot_records_target_without_live_acceptance(self):
+        with tempfile.TemporaryDirectory() as folder:
+            args = ['azure_validation.py','replicas','--run-id','run-new','--out',folder,'--subscription','sub','--app','dse-api-vnet','--environment','dse-environment-vnet-jpe']
+            with patch.object(sys,'argv',args), patch.object(validation,'revision',return_value=('a'*40,True)), \
+                    patch.object(validation.subprocess,'run',side_effect=self.replica_run), patch('sys.stdout'):
+                self.assertEqual(validation.main(),0)
+            report = json.loads((Path(folder)/'run-new/report.json').read_text())
+            self.assertEqual(report['target']['app'],'dse-api-vnet')
+            self.assertEqual(report['target']['environment'],'dse-environment-vnet-jpe')
+            self.assertFalse(report['stopSnapshotConfirmed'])
+            self.assertEqual(report['liveAcceptance'],'not_run')

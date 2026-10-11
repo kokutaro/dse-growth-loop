@@ -5,11 +5,32 @@ from pathlib import Path
 from issue30_http_report import quantile
 ROOT=Path(__file__).resolve().parents[1]
 SCOPE='issue30-independent-20261004-v3'
+def response_evidence(fixture, body, observation):
+    """Shared HTTP200/UI/grounding contract for warm and cold captures."""
+    if not isinstance(body,dict) or not isinstance(observation,dict):raise ValueError('Response and UI record required')
+    run_id=body.get('runId')
+    if not isinstance(run_id,str) or not run_id or run_id!=observation.get('runId'):raise ValueError('UI run mismatch')
+    candidates=body['primary']['candidates'];assessments=body['assessments'];ui=observation['ui']
+    if not isinstance(candidates,list) or not isinstance(assessments,list) or not isinstance(ui,dict):raise ValueError('Response shape mismatch')
+    if not isinstance(ui.get('status'),str) or not isinstance(ui.get('alerts'),list) or any(not isinstance(a,str) for a in ui['alerts']):raise ValueError('UI status/alerts shape mismatch')
+    if body.get('code') is not None or any(c.get('entityType') not in ('person','knowledge') for c in candidates):raise ValueError('Error response or unknown candidate type')
+    expected=[{'name':name,'titles':[c['title'] for c in candidates if c['entityType']==kind]} for kind,name in [('person','相談候補'),('knowledge','参考事例')]]
+    if ui['groups']!=expected:raise ValueError('UI grouping/order mismatch')
+    assessed=[(a['entityType'],a['entityId']) for a in assessments];expected_ids=[(c['entityType'],c['entityId']) for c in candidates]
+    if sorted(assessed)!=sorted(expected_ids) or len(set(assessed))!=len(assessed) or len(set(expected_ids))!=len(expected_ids):raise ValueError('Every recommendation needs exactly one assessment')
+    refs={s['id']:s['text'] for u in fixture['units'] for s in u['search']['sourceRefs']};prefix=SCOPE+'-';grounded=[]
+    for a in assessments:
+        ids=a['evidenceIds'];reason=a['reason'];candidate=next(c for c in candidates if c['entityId']==a['entityId'] and c['entityType']==a['entityType'])
+        sent={s['id']:s['text'] for u in candidate['units'] for s in u['sourceRefs']}
+        originals={s['id']:s['text'] for u in fixture['units'] if u['search']['entityId']==candidate['entityId'].removeprefix(prefix) and u['search']['entityType']==candidate['entityType'] for s in u['search']['sourceRefs']}
+        grounded.append(isinstance(reason,str) and bool(reason) and isinstance(ids,list) and bool(ids) and all(isinstance(i,str) and i.startswith(prefix) and i in sent and i[len(prefix):] in refs and i[len(prefix):] in originals and sent[i]==originals[i[len(prefix):]] for i in ids) and any(reason in sent.get(i,'') for i in ids))
+    return candidates,grounded
+
 def score(fixture,http,ui):
     questions={q['id']:q for q in fixture['questions']}
     if len(ui)!=24 or len(http)!=24 or {r['questionId'] for r in ui}!=set(questions) or {r['questionId'] for r in http}!=set(questions):raise ValueError('Exact24 UI and HTTP records required')
     responses={r['questionId']:r for r in http};observations={r['questionId']:r for r in ui}
-    refs={s['id']:s['text'] for u in fixture['units'] for s in u['search']['sourceRefs']};prefix=SCOPE+'-'
+    prefix=SCOPE+'-'
     rows=[];grounded=[]
     for qid,q in questions.items():
         r=responses[qid];o=observations[qid];body=r['body']
@@ -17,17 +38,12 @@ def score(fixture,http,ui):
         outside=q['draftDomain']=='unknown' and not q['positiveIds']
         expected_outside=r['httpStatus']==422 and body.get('code')=='CLASSIFICATION_OUT_OF_SCOPE' and outside
         candidates=body.get('primary',{}).get('candidates',[])
-        if not isinstance(r['networkMs'],(int,float)) or not math.isfinite(r['networkMs']) or r['networkMs']<0:raise ValueError('Observed finite HTTP duration required')
+        if type(r['networkMs']) not in (int,float) or not math.isfinite(r['networkMs']) or r['networkMs']<0:raise ValueError('Observed finite HTTP duration required')
+        ui_ms=o['uiCompletionUpperBoundMs']
+        if type(ui_ms) not in (int,float) or not math.isfinite(ui_ms) or ui_ms<0:raise ValueError('Observed finite UI completion duration required')
         if r['httpStatus']==200:
-            expected=[{'name':name,'titles':[c['title'] for c in candidates if c['entityType']==kind]} for kind,name in [('person','相談候補'),('knowledge','参考事例')]]
-            if o['ui']['groups']!=expected or body['runId']!=o['runId']:raise ValueError('UI grouping/order/run mismatch')
-            assessed=[(a['entityType'],a['entityId']) for a in body['assessments']]
-            expected_ids=[(c['entityType'],c['entityId']) for c in candidates]
-            if sorted(assessed)!=sorted(expected_ids) or len(set(assessed))!=len(assessed):raise ValueError('Every recommendation needs exactly one assessment')
-            for assessment in body['assessments']:
-                ids=assessment['evidenceIds'];reason=assessment['reason'];candidate=next((c for c in candidates if c['entityId']==assessment['entityId'] and c['entityType']==assessment['entityType']),None)
-                sent={s['id']:s['text'] for u in candidate['units'] for s in u['sourceRefs']} if candidate else {}
-                grounded.append(bool(reason) and bool(ids) and all(i.startswith(prefix) and i in sent and i[len(prefix):] in refs and sent[i]==refs[i[len(prefix):]] for i in ids) and any(reason in sent.get(i,'') for i in ids))
+            candidates,checked=response_evidence(fixture,body,o)
+            grounded.extend(checked)
         elif expected_outside:
             if o['ui']['groups'] or '自動検索対象外' not in o['ui']['status'] or o['ui']['alerts']:raise ValueError('Out-of-scope falsely displayed as search/failure')
         elif candidates:raise ValueError('Error response has candidates')
