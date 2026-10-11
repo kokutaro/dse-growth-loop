@@ -90,3 +90,13 @@ Copilot5482429888はopen findings 0/inline未解決0だが、本文に残る実�
 本文にある現行logout証跡の指摘には、現在のauth testを新しく実行し[auth-current-logout.log](auth-current-logout.log)へ保存した（5成功/0失敗）。現在のstorage回帰はuploadの旧key/v2本人key、旧 `dse-outbox:`、workspace outbox、business-analysis要求keyをpopup終了前に消し、無関係なstorageを保持する。popup失敗・遅延token応答も確認する。古い5件ログは当時の記録として維持し、新しい回帰名の証拠に転用しない。
 
 [現在のlogout・文書取込E2E](e2e-job-logout-current.log)は6成功/0失敗。logoutではMicrosoftログイン先をabortするfixtureで保護panelの消去、旧チャット下書き消去、無関係storage保持を確認する。文書では本人別取込再開とjob poll/retryの正常系を確認する。実Entra/Azure/有料AIは呼んでいない。
+
+## プロフィール再送のセッション終了・主体切替境界
+
+正式レビュー5482799921の本文/inline4241100553を確認し、ACCESS_BUSY再送が保持済みAuthorizationを使い続け得る点を修正。authはlogout開始時とinitializeAuthによる主体再初期化時に旧セッションのAbortSignalを同期abortする。旧token応答は新セッションが開始していても拒否し、旧token取得のfinallyが新しいpending tokenを消さない。
+
+Profilesはコンポーネント/主体のlifetimeとauth sessionのsignalを統合し、fetch・backoff待機・各再送直前・レスポンスからのstate更新前に検査する。unmount/主体変更は旧controllerをabortし、timerを解放。503 ACCESS_BUSYかつretryable=trueだけ同じbody/If-Match/keyで最大4回再送し、412は再送しない。既に受理済みの書込みを取り消す機能ではない。
+
+実auth moduleを使用しMSALだけをfixtureにしたAzure logout、Demo画面移動・主体切替の3ブラウザー回帰を追加。時計を停止して初回503を受け取り、終了操作後に全backoff区間を進め、PATCHが1回だけであることを確認する。旧fixtureのauth moduleにもsession signal契約を反映した。実Entra/Azure/有料AIは呼ばない。
+
+[現行auth unit](auth-profile-abort-final.log)7成功/0失敗、[TypeScript/Vite](build-profile-abort-final.log)成功。[プロフィール/文書/logout/匿名workspace E2E](e2e-profile-abort-final.log)28成功/0失敗。3新回帰は再送全backoff区間を越えてPATCH1回を確認。途中の時計停止下RAF待機と主体切替後Home遷移のfixture期待値不備は補足ログに保持する。Backendソースは83bf4e3から変更なく.NET586/Python128の証跡を保持し、最終SHAのCIは別途確認する。

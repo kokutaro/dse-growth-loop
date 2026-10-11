@@ -166,7 +166,7 @@ for (const mode of ['Demo', 'Azure'] as const) test(`${mode}: 会話保存の失
   let azureActor = 'demo-person-01';
   if (mode === 'Azure') {
     // Authenticate only against a local Demo API fixture; no Entra calls.
-    await page.route('**/src/auth.ts*', route => route.fulfill({ contentType: 'application/javascript', body: 'export async function initializeAuth() {} export async function getToken() { return "fixture-token"; } export async function endAuth() {}' }));
+    await page.route('**/src/auth.ts*', route => route.fulfill({ contentType: 'application/javascript', body: 'let controller = new AbortController(); export function authSessionSignal() { return controller.signal; } export async function initializeAuth() { controller.abort(); controller = new AbortController(); } export async function getToken() { return "fixture-token"; } export async function endAuth() { controller.abort(); }' }));
     await page.route('**/api/config', route => route.fulfill({ json: { mode: 'Azure', tenantId: 'fixture-tenant', clientId: 'fixture', scope: 'fixture' } }));
     await page.route('**/api/v1/**', route => route.continue({ headers: { ...route.request().headers(), 'X-Demo-Person': azureActor } }));
   }

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { getToken, type AppConfig } from "./auth";
+import { useEffect, useRef, useState } from "react";
+import { authSessionSignal, getToken, type AppConfig } from "./auth";
 
 type Period = { start: string | null; end: string | null; precision: string; months: number | null };
 type Decisions = { choices: Record<string, { probabilities: Record<string, number>; confidence: number }>; nouls: Record<string, { state: number; yesProbability: number | null }> };
@@ -9,33 +9,53 @@ export function Profiles({ config, person: demoPerson }: { config: AppConfig; pe
   const [person, setPerson] = useState<Person>(); const [etag, setEtag] = useState("");
   const [experiences, setExperiences] = useState<Experience[]>([]); const [changed, setChanged] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState(""); const [error, setError] = useState(""); const [busy, setBusy] = useState(false);
-  async function request(path: string, init?: RequestInit) {
+  const lifetime = useRef(new AbortController());
+  useEffect(() => {
+    const controller = new AbortController();
+    lifetime.current = controller;
+    setPerson(undefined); setEtag(""); setExperiences([]); setChanged(new Set()); setBusy(false); setError(""); setMessage("");
+    return () => controller.abort();
+  }, [config.mode, config.tenantId, config.clientId, config.scope, demoPerson]);
+  const currentSignal = () => AbortSignal.any([lifetime.current.signal, authSessionSignal()]);
+  async function request(path: string, signal: AbortSignal, init?: RequestInit) {
+    signal.throwIfAborted();
     const headers = new Headers(init?.headers);
     if (config.mode === "Demo" && demoPerson) headers.set("X-Demo-Person", demoPerson);
     if (config.mode === "Azure") headers.set("Authorization", `Bearer ${await getToken(config)}`);
     for (let attempt = 0; ; attempt++) {
-      const response = await fetch(path, { ...init, headers });
+      signal.throwIfAborted();
+      const response = await fetch(path, { ...init, headers, signal });
+      signal.throwIfAborted();
       if (response.ok) return response;
       const body = await response.json().catch(() => ({}));
       // ACCESS_BUSY rejects before the access fence is acquired. Reuse the same
       // request and idempotency key for writes; never retry a stale If-Match (412).
-      if (response.status === 503 && body.code === "ACCESS_BUSY" && attempt < 4) { await new Promise(r => setTimeout(r, 250 * 2 ** attempt)); continue; }
+      if (response.status === 503 && body.code === "ACCESS_BUSY" && body.retryable === true && attempt < 4) {
+        await new Promise<void>((resolve, reject) => {
+          signal.throwIfAborted();
+          const cancel = () => { clearTimeout(timer); reject(signal.reason); };
+          const timer = setTimeout(() => { signal.removeEventListener("abort", cancel); resolve(); }, 250 * 2 ** attempt);
+          signal.addEventListener("abort", cancel, { once: true });
+        });
+        continue;
+      }
       throw new Error(response.status === 412 ? "別の更新があります。プロフィールを更新してから訂正し直してください。" : `${body.code ?? "接続エラー"}（${response.status}）`);
     }
   }
-  async function load() {
+  async function load(signal = currentSignal()) {
     setBusy(true); setError("");
     try {
-      const context = await (await request("/api/v1/upload-context")).json();
-      const response = await request(`/api/v1/people/${context.personId}`);
+      const context = await (await request("/api/v1/upload-context", signal)).json();
+      const response = await request(`/api/v1/people/${context.personId}`, signal);
       const value: Person = await response.json();
       const all: Experience[] = []; let cursor: string | null = null;
       do {
-        const page = await (await request(`/api/v1/people/${value.id}/experiences?pageSize=100${cursor ? `&continuationToken=${encodeURIComponent(cursor)}` : ""}`)).json();
+        const page = await (await request(`/api/v1/people/${value.id}/experiences?pageSize=100${cursor ? `&continuationToken=${encodeURIComponent(cursor)}` : ""}`, signal)).json();
         all.push(...page.items); cursor = page.continuationToken;
       } while (cursor);
+      signal.throwIfAborted();
       setPerson(value); setEtag(response.headers.get("ETag") ?? ""); setExperiences(all); setChanged(new Set());
-    } catch (e) { setError(String(e)); } finally { setBusy(false); }
+    } catch (e) { if (!signal.aborted) setError(String(e)); } finally { if (!signal.aborted) setBusy(false); }
   }
   function edit(id: string, update: Partial<Experience>) {
     setExperiences(rows => rows.map(row => row.id === id ? { ...row, ...update } : row)); setChanged(old => new Set([...old, id]));
@@ -51,21 +71,23 @@ export function Profiles({ config, person: demoPerson }: { config: AppConfig; pe
   }
   async function save(action: "correct" | "confirm", publicationState = person?.publicationState ?? "published") {
     if (!person) return;
+    const signal = currentSignal();
     setBusy(true); setError(""); setMessage("");
     try {
-      const response = await request(`/api/v1/people/${person.id}`, { method: "PATCH", headers: { "Content-Type": "application/json", "If-Match": etag, "Idempotency-Key": crypto.randomUUID() }, body: JSON.stringify({
+      const response = await request(`/api/v1/people/${person.id}`, signal, { method: "PATCH", headers: { "Content-Type": "application/json", "If-Match": etag, "Idempotency-Key": crypto.randomUUID() }, body: JSON.stringify({
         displayName: person.displayName, available: person.available, action, publicationState,
         experienceEdits: experiences.filter(e => changed.has(e.id) || action === "confirm").map(e => ({ experienceId: e.id, description: e.description, period: e.period })),
       }) });
-      setPerson(await response.json()); setEtag(response.headers.get("ETag") ?? ""); setChanged(new Set());
+      const value: Person = await response.json(); signal.throwIfAborted();
+      setPerson(value); setEtag(response.headers.get("ETag") ?? ""); setChanged(new Set());
       setMessage(publicationState === "withdrawn" ? "公開を撤回しました。検索から除外しました。" : "保存しました。検索投影の更新後に検索へ反映されます。");
-      await load();
-    } catch (e) { setError(String(e)); } finally { setBusy(false); }
+      await load(signal);
+    } catch (e) { if (!signal.aborted) setError(String(e)); } finally { if (!signal.aborted) setBusy(false); }
   }
   return <section className="panel profiles" aria-labelledby="profiles-title">
     <h2 id="profiles-title">自分のプロフィール・経験</h2>
     <p>根拠のあるAI抽出値は本人未確認でも検索対象です。訂正は再取込より優先されます。</p>
-    <button disabled={busy} onClick={load}>プロフィールを更新</button>
+    <button disabled={busy} onClick={() => void load()}>プロフィールを更新</button>
     {error && <p role="alert">{error}</p>}{message && <p>{message}</p>}
     {person && <>
       <p>データ版：{person.sourceVersion} ／ {person.activeVersion ? `有効版：${person.activeVersion}` : "検索投影待ち・非公開"} ／ {person.confirmationState}</p>

@@ -48,7 +48,7 @@ test("Azureの取込再開・アップロード・再実行はサーバーの本
   const storageKey = (owner: string) => `dse-upload-job:v2:Azure:fixture-tenant:${owner}`;
   // No Entra or paid service is contacted. Exercise the actual workspace, whose
   // client-side person remains demo-person-01 even when the Azure account changes.
-  await page.route("**/src/auth.ts*", route => route.fulfill({ contentType: "application/javascript", body: 'export async function initializeAuth() {} export async function getToken() { return "fixture-token"; } export async function endAuth() {}' }));
+  await page.route("**/src/auth.ts*", route => route.fulfill({ contentType: "application/javascript", body: 'let controller = new AbortController(); export function authSessionSignal() { return controller.signal; } export async function initializeAuth() { controller.abort(); controller = new AbortController(); } export async function getToken() { return "fixture-token"; } export async function endAuth() { controller.abort(); }' }));
   await page.route("**/api/config", route => route.fulfill({ json: { mode: "Azure", tenantId: "fixture-tenant", clientId: "fixture", scope: "fixture" } }));
   await page.route("**/api/v1/workspace/**", route => route.fulfill({ json: { available: false, items: [] } }));
   await page.route("**/api/v1/upload-context", route => route.fulfill({ json: { personId: person, departmentId: "fixture", scopeIds: [], maxBytes: 1000000 } }));

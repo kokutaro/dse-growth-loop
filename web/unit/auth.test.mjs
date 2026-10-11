@@ -17,7 +17,7 @@ class FakeClient {
 }
 mock.module('@azure/msal-browser', { namedExports: { PublicClientApplication: FakeClient, InteractionRequiredAuthError: class extends Error {} } });
 globalThis.location = { origin: 'https://dummy.example' };
-const { initializeAuth, getToken, endAuth } = await import('../src/auth.ts');
+const { initializeAuth, getToken, endAuth, authSessionSignal } = await import('../src/auth.ts');
 const config = { mode: 'Azure', tenantId: 'dummy', clientId: 'dummy', scope: 'dummy' };
 
 test('logout blocks background token refresh immediately and clears cache', async () => {
@@ -76,4 +76,36 @@ test('token response completing after logout is never returned', async () => {
   completeLogout(); await logout;
   releaseToken({ accessToken: 'dummy' });
   await rejected;
+});
+
+test('logout aborts authenticated operations before the popup completes', async () => {
+  await initializeAuth(config);
+  const signal = authSessionSignal();
+  const logout = endAuth();
+  assert.equal(signal.aborted, true);
+  completeLogout(); await logout;
+});
+
+test('reinitializing an account aborts the old session and rejects its delayed token', async () => {
+  let releaseOld;
+  FakeClient.prototype.acquireTokenSilent = () => new Promise(resolve => { releaseOld = resolve; });
+  await initializeAuth(config);
+  const signal = authSessionSignal();
+  const oldToken = getToken(config);
+  const rejected = assert.rejects(oldToken, /接続を終了しました/);
+  await initializeAuth(config);
+  assert.equal(signal.aborted, true);
+  assert.equal(authSessionSignal().aborted, false);
+  let releaseNew, newRequests = 0;
+  FakeClient.prototype.acquireTokenSilent = () => {
+    newRequests++;
+    return new Promise(resolve => { releaseNew = resolve; });
+  };
+  const newToken = getToken(config);
+  releaseOld({ accessToken: 'old-session-token' });
+  await rejected;
+  const sharedNewToken = getToken(config);
+  assert.equal(newRequests, 1);
+  releaseNew({ accessToken: 'new-session-token' });
+  assert.deepEqual(await Promise.all([newToken, sharedNewToken]), ['new-session-token', 'new-session-token']);
 });
