@@ -1,5 +1,8 @@
 import json
+import copy
+import os
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from subprocess import CompletedProcess
@@ -10,6 +13,65 @@ import deploy
 
 
 class CostControlsTests(unittest.TestCase):
+    @staticmethod
+    def analysis_snapshot():
+        return {'name': 'dse-business-analysis', 'properties': {
+            'configuration': {'triggerType': 'Manual', 'replicaRetryLimit': 0, 'replicaTimeout': 180,
+                              'manualTriggerConfig': {'parallelism': 1, 'replicaCompletionCount': 1}},
+            'template': {'containers': [{'name': 'analysis', 'image': 'dummyregistry.azurecr.io/dse-worker:reviewed',
+                'args': ['--analyze-business'], 'resources': {'cpu': 0.25, 'memory': '0.5Gi'},
+                'env': [{'name': 'AiUsage__Stopped', 'value': 'true'}, {'name': 'BusinessAnalysis__Enabled', 'value': 'false'},
+                        {'name': 'Foundry__ApiKey', 'secretRef': 'dummy-reference'},
+                        {'name': 'BusinessAnalysis__RunId', 'value': 'stale-run'}]}]}}}
+
+    def test_analysis_plan_preserves_runtime_and_secret_references_and_replaces_per_run_values(self):
+        snapshot = self.analysis_snapshot(); before = copy.deepcopy(snapshot)
+        template = deploy.analysis_execution_template(snapshot, 'person-review', 'run-review', '2026-10-11T10:00:00+09:00')
+        self.assertEqual(snapshot, before)
+        original = snapshot['properties']['template']['containers'][0]; container = template['containers'][0]
+        for key in ['image', 'resources', 'args', 'name']:
+            self.assertEqual(container[key], original[key])
+        env = {item['name']: item for item in container['env']}
+        self.assertEqual(env['BusinessAnalysis__RunId']['value'], 'run-review')
+        self.assertEqual(env['BusinessAnalysis__PersonId']['value'], 'person-review')
+        self.assertEqual(env['BusinessAnalysis__Cutoff']['value'], '2026-10-11T01:00:00Z')
+        self.assertEqual(env['AiUsage__Stopped']['value'], 'true')
+        self.assertEqual(env['BusinessAnalysis__Enabled']['value'], 'false')
+        self.assertEqual(env['Foundry__ApiKey'], {'name': 'Foundry__ApiKey', 'secretRef': 'dummy-reference'})
+
+    def test_analysis_plan_cli_is_offline_private_and_never_overwrites_a_previous_plan(self):
+        with tempfile.TemporaryDirectory() as folder:
+            snapshot = Path(folder) / 'snapshot.json'; snapshot.write_text(json.dumps(self.analysis_snapshot()))
+            output = Path(folder) / 'execution.json'
+            args = ['deploy.py', 'analysis-plan', '--analysis-job-snapshot', str(snapshot), '--analysis-output', str(output),
+                    '--analysis-person-id', 'person-review', '--analysis-run-id', 'run-review', '--analysis-cutoff', '2026-10-11T01:00:00Z']
+            with patch.object(sys, 'argv', args), patch.object(deploy, 'load_env') as load, patch.object(deploy.subprocess, 'run') as run, patch('sys.stdout'):
+                deploy.main(); load.assert_not_called(); run.assert_not_called()
+            before = output.read_bytes(); self.assertEqual(os.stat(output).st_mode & 0o777, 0o600)
+            with patch.object(sys, 'argv', args), patch.object(deploy, 'load_env') as load, patch.object(deploy.subprocess, 'run') as run, patch('sys.stderr'), self.assertRaises(SystemExit):
+                deploy.main()
+            self.assertEqual(output.read_bytes(), before); load.assert_not_called(); run.assert_not_called()
+
+    def test_analysis_plan_rejects_missing_or_invalid_inputs_and_unreviewed_job_configuration(self):
+        for person, run, cutoff in [('', 'run-review', '2026-10-11T01:00:00Z'), ('person-review', 'bad/run', '2026-10-11T01:00:00Z'),
+                                    ('person-review', 'run-review', '2026-10-11T01:00:00'), ('person-review', 'run-review', 'invalid')]:
+            with self.subTest(person=person, run=run, cutoff=cutoff), self.assertRaises(ValueError):
+                deploy.analysis_execution_template(self.analysis_snapshot(), person, run, cutoff)
+        for change in ['job', 'schedule', 'retry', 'replicas', 'args', 'env-duplicate', 'env-both', 'container', 'init', 'volume']:
+            snapshot = self.analysis_snapshot(); config = snapshot['properties']['configuration']; template = snapshot['properties']['template']; container = template['containers'][0]
+            if change == 'job': snapshot['name'] = 'other-job'
+            if change == 'schedule': config['triggerType'] = 'Schedule'
+            if change == 'retry': config['replicaRetryLimit'] = 1
+            if change == 'replicas': config['manualTriggerConfig']['parallelism'] = 2
+            if change == 'args': container['args'] = ['--consume']
+            if change == 'env-duplicate': container['env'].append(copy.deepcopy(container['env'][0]))
+            if change == 'env-both': container['env'][0]['secretRef'] = 'dummy-reference'
+            if change == 'container': template['containers'].append(copy.deepcopy(container))
+            if change == 'init': template['initContainers'] = [copy.deepcopy(container)]
+            if change == 'volume': template['volumes'] = [{'name': 'unreviewed'}]
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                deploy.analysis_execution_template(snapshot, 'person-review', 'run-review', '2026-10-11T01:00:00Z')
+
     def invoke(self, arguments, env=None, callback=None):
         with patch.object(sys, 'argv', ['deploy.py', *arguments]), \
                 patch.object(deploy, 'load_env', return_value=env or {}), \

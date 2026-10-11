@@ -49,6 +49,21 @@ Cutoff は実行時点以前のUTC値を指定する。再実行は同じcutoff�
 
 Bicep は `deployBusinessAnalysisJob=false` が既定。`DEPLOY_BUSINESS_ANALYSIS_JOB=false` と同期し、明示配置のみ。Manual、並列1、完了1、180秒、再試行0。定期トリガーを作らない。Azureでの `--analyze-business` は本番 identity binding の analyst とmember、Liveの明示配置・予算・固定モデル契約が必要で、repoやcredentialを解決する前に検証する。Jobの配置/起動とLive輸送の有効化は今回行っていない。
 
+再利用する Job テンプレートに実行者・run ID・cutoff を固定保存しない。既定テンプレートをそのまま起動すると、この3値が不足して Worker が拒否する。Azureでは各回の execution override に必須値を渡す。`deploy.py analysis-plan` は、取得・レビュー済みの private ARM Job snapshot から起動用 JSON をローカルに準備する。Azure CLI・認証・`.env` の読み取りや Job 起動は行わない。
+
+```sh
+python3 scripts/deploy.py analysis-plan \
+  --analysis-job-snapshot /private/path/reviewed-job.json \
+  --analysis-person-id REVIEWED_BOUND_ANALYST_PERSON_ID \
+  --analysis-run-id APPROVED_FIXED_RUN_ID \
+  --analysis-cutoff APPROVED_ISO8601_TIMESTAMP_WITH_OFFSET \
+  --analysis-output /private/path/new-execution-template.json
+```
+
+対象は `dse-business-analysis`、Manual/180秒/再試行0/並列1、analysis container の既存 command/image/resources と照合する。出力は上書きせず mode 0600 で作り、既存の環境値と secretRef、AI停止・予算・単価/FX・モデル・本人紐付けを保持して3値だけを置き換える。停止解除や実行有効化は自動で行わない。snapshot と出力に private 設定が含まれ得るため Git/通常ログへ保存しない。
+
+別途承認した単一検証枠で、現在の Job/template の一致、本人の analyst/member binding、モデル/予算、累計稼働、独立停止と復元の準備を確認した操作者だけが、承認済み既存 Job の `/start?api-version=2025-07-01` へ出力 JSON を送信する。JSON は `containers`（必要なら `initContainers`）を持つ execution template であり、Job 全体の ARM 定義ではない。[Microsoft の起動 API 契約](https://learn.microsoft.com/en-us/rest/api/resource-manager/containerapps/jobs/start?view=rest-resource-manager-containerapps-2025-07-01)に従う。既定値だけの `az containerapp job start` は使わない。今回確認したのは offline の生成・入力拒否・設定保持だけで、実Azure起動・停止/復元の成功ではない。
+
 前段の検証は [既存結果](validation-results/20261011-remaining-issues/results.md)、Liveアダプター・復旧CLIの追加ローカル検証は [追加結果](validation-results/20261011-production-contracts/results.md)。全体受入と実環境再開条件は [残Issueの棚卸し](remaining-issues-acceptance-20261011.md)。
 
 
