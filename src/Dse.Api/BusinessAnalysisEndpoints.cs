@@ -5,7 +5,7 @@ public static class BusinessAnalysisEndpoints
 {
     public static void MapBusinessAnalysis(this RouteGroupBuilder api)
     {
-        api.MapGet("/business-analysis/capabilities", (HttpContext context, IConfiguration config) =>
+        api.MapGet("/business-analysis/capabilities", (HttpContext context, IConfiguration config, TimeProvider clock) =>
         {
             var actor = RecordEndpoints.Actor(context);
             var allowed = actor.HasRole("member") && actor.HasRole("analyst");
@@ -19,6 +19,7 @@ public static class BusinessAnalysisEndpoints
             return Results.Ok(new { allowed, enabled, configVersion = BusinessAnalysisLiveRuntime.ConfigVersion(config),
                 mode = BusinessAnalysisLiveRuntime.IsFixture(config) ? "fixture" : "live", reason, automaticRetry = false,
                 // Self-only browser cache partition, never an authorization credential.
+                currentTime = allowed ? (DateTimeOffset?)clock.GetUtcNow() : null,
                 requestOwnerKey = allowed ? "abr-" + ConversationService.Hash(System.Text.Json.JsonSerializer.Serialize(new[] { actor.TenantId, actor.PrincipalId, actor.PersonId })) : null });
         });
         api.MapPost("/business-analysis", async (BusinessAnalysisRequest input, HttpContext context, BusinessAnalysisService service, CancellationToken ct) =>

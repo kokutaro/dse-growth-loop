@@ -70,3 +70,27 @@ for (const committed of [true, false]) {
     expect(await page.evaluate(() => Object.keys(sessionStorage).filter(key => key.startsWith('dse-business-analysis-request:')).length)).toBe(0);
   });
 }
+
+for (const invalid of ['stale-config', 'future-clock']) test(`${invalid}: 未受理の分析要求は同じIDをサーバーの日時・現在の設定で手動再確認する`, async ({ page }) => {
+  if (invalid === 'future-clock') await page.clock.setSystemTime(new Date(Date.now() + 86400000));
+  let first = true; const bodies: { runId: string; cutoff: string; configVersion: string }[] = [], keys: string[] = [], statuses: number[] = [];
+  await page.route('**/api/v1/business-analysis/capabilities', async route => {
+    const response = await route.fetch(), value = await response.json();
+    if (first && invalid === 'stale-config') { first = false; value.configVersion = 'obsolete-fixture-config'; }
+    await route.fulfill({ json: value });
+  });
+  await page.route('**/api/v1/business-analysis', async route => {
+    if (route.request().method() !== 'POST') return route.continue();
+    bodies.push(route.request().postDataJSON()); keys.push(route.request().headers()['idempotency-key']);
+    const response = await route.fetch(); statuses.push(response.status()); await route.fulfill({ response });
+  });
+  await page.goto('/#profile'); await page.getByText('許可済み課題の分析（ローカル検証）', { exact: true }).click();
+  await page.getByRole('button', { name: '今すぐ分析（ローカル）' }).click();
+  await expect(page.getByRole('alert')).toContainText('同じ分析IDを現在の日時・設定で再確認できます');
+  expect(statuses).toEqual([400]);
+  await page.getByRole('button', { name: '同じ分析の結果を確認する', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '共通課題の候補' })).toBeVisible();
+  expect(statuses).toEqual([400,200]); expect(new Set(keys).size).toBe(1); expect(new Set(bodies.map(body => body.runId)).size).toBe(1);
+  expect(bodies[0].configVersion).toBe(invalid === 'stale-config' ? 'obsolete-fixture-config' : 'business-analysis-demo-v1');
+  expect(bodies[1].configVersion).toBe('business-analysis-demo-v1'); expect(Date.parse(bodies[1].cutoff)).toBeLessThanOrEqual(Date.now() + 5000);
+});

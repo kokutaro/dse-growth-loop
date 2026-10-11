@@ -167,6 +167,18 @@ public sealed class AnonymousWorkspaceTests
         foreach(var candidate in fresh.Items)
         { var row = (await s.Repo.ReadAsync(RecordPartition.Catalog(s.Owner.TenantId),candidate.Token,default))!; Assert.NotEqual(unit.EntityId,row.Value["unit"]!["entityId"]!.GetValue<string>()); }
     }
+    [Fact] public async Task Knowledge_reads_only_replace_room_map_when_new_opaque_mappings_are_added()
+    {
+        var s = await Create(true); var p=RecordPartition.Catalog(s.Owner.TenantId);
+        var before=(await s.Repo.ReadAsync(p,s.Room,default))!; var first=await State(s);
+        var installed=(await s.Repo.ReadAsync(p,s.Room,default))!; Assert.NotEqual(before.ETag,installed.ETag); Assert.Single(first.ScopeIds);
+        Assert.Null(installed.Value["departmentTokens"]);
+        var next=await State(s); Assert.Equal(first.ScopeIds,next.ScopeIds);
+        Assert.Equal(installed.ETag,(await s.Repo.ReadAsync(p,s.Room,default))!.ETag);
+        await Join(s); await s.Workspace.ResolveRoomAsync(s.Guest,s.Room,default);
+        var joined=(await s.Repo.ReadAsync(p,s.Room,default))!; var peer=await State(s,s.Guest);
+        Assert.Equal(first.ScopeIds,peer.ScopeIds); Assert.Equal(joined.ETag,(await s.Repo.ReadAsync(p,s.Room,default))!.ETag);
+    }
     [Theory] [InlineData("rebound")] [InlineData("missing_pin")] [InlineData("profile_owner")] [InlineData("disabled")] [InlineData("scope")]
     public async Task Publication_consent_is_pinned_to_current_binding_and_profile_owner(string change)
     {

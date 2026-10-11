@@ -92,8 +92,12 @@ class ContractsTests(unittest.TestCase):
         decision.validate({"status": "investigating", "groupId": None})
         self.assertFalse(decision.is_valid({"status": "market_validated"}))
         capabilities = Draft202012Validator(schemas["Capabilities"])
-        forbidden = {"allowed": False, "enabled": False, "configVersion": "business-analysis-live-v1", "mode": "live", "reason": "FORBIDDEN", "automaticRetry": False}
+        forbidden = {"allowed": False, "enabled": False, "configVersion": "business-analysis-live-v1", "mode": "live", "reason": "FORBIDDEN", "automaticRetry": False, "requestOwnerKey": None, "currentTime": None}
         capabilities.validate(forbidden)
+        allowed = {**forbidden, "allowed": True, "enabled": True, "reason": None, "requestOwnerKey": "abr-" + "a" * 64, "currentTime": "2026-10-11T00:00:00Z"}
+        capabilities.validate(allowed)
+        self.assertFalse(capabilities.is_valid({**allowed, "requestOwnerKey": "principal-person-01"}))
+        self.assertFalse(capabilities.is_valid({**forbidden, "requestOwnerKey": allowed["requestOwnerKey"]}))
         self.assertFalse(capabilities.is_valid({**forbidden, "enabled": True}))
 
     def test_workspace_contract_opaque_dtos_and_independent_name_consent(self):

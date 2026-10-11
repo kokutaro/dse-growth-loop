@@ -6,25 +6,26 @@ namespace Dse.Infrastructure;
 
 public sealed partial class AnonymousWorkspaceService
 {
-    private static string Token(JsonObject map, string collection, string value, string prefix)
+    private static string Token(JsonObject map, string collection, string value, string prefix, ref bool changed)
     {
-        var tokens = map[collection]!.AsObject();
+        var tokens = map[collection]?.AsObject();
+        if (tokens is null) { tokens = new JsonObject(); map[collection] = tokens; }
         foreach (var pair in tokens) if (pair.Value!.GetValue<string>() == value) return pair.Key;
-        var token = Opaque(prefix); tokens[token] = value; return token;
+        var token = Opaque(prefix); tokens[token] = value; changed = true; return token;
     }
     public async Task<AnonymousWorkspaceKnowledge> KnowledgeUnderFenceAsync(ActorAccess actor, AnonymousWorkspaceRoomResolution room, CancellationToken ct)
     {
         var state = await knowledge.StateAsync(actor, room.SessionId, ct); var map = await ReadMapping(actor, room.PublicRoomId, "room", ct);
-        map.Value["departmentTokens"] ??= new JsonObject();
+        var changed = false;
         var metadata = BusinessAnalysisMetadataContract.Parse(state["analysisMetadata"]);
-        if (metadata?.DepartmentId is string department) metadata = metadata with { DepartmentId = Token(map.Value,"departmentTokens",department,"awd-") };
+        if (metadata?.DepartmentId is string department) metadata = metadata with { DepartmentId = Token(map.Value,"departmentTokens",department,"awd-",ref changed) };
         var labels = new Dictionary<string,string>(); var evidenceLabels = new Dictionary<string,string>();
-        var scopes = state.Strings("scopeIds").Where(actor.ScopeIds.Contains).Select((s,i) => { var token = Token(map.Value,"scopeTokens",s,"aws-"); labels[token] = "公開範囲" + (i+1); return token; }).ToArray();
-        var evidence = state.Strings("evidenceIds").Select((s,i) => { var token = Token(map.Value,"evidenceTokens",s,"awe-"); evidenceLabels[token] = "根拠" + (i+1); return token; }).ToArray();
+        var scopes = state.Strings("scopeIds").Where(actor.ScopeIds.Contains).Select((s,i) => { var token = Token(map.Value,"scopeTokens",s,"aws-",ref changed); labels[token] = "公開範囲" + (i+1); return token; }).ToArray();
+        var evidence = state.Strings("evidenceIds").Select((s,i) => { var token = Token(map.Value,"evidenceTokens",s,"awe-",ref changed); evidenceLabels[token] = "根拠" + (i+1); return token; }).ToArray();
         var sections = new List<AnonymousWorkspaceSection>();
         foreach (var section in state["sections"]?.Deserialize<SummarySection[]>(Json) ?? [])
             sections.Add(new(section.Field,await DisplayTextAsync(actor,section.Text,room.Participants,ct),section.Basis,
-                section.EvidenceIds.Select(id => Token(map.Value,"evidenceTokens",id,"awe-")).ToArray()));
+                section.EvidenceIds.Select(id => Token(map.Value,"evidenceTokens",id,"awe-",ref changed)).ToArray()));
         var participantLabels = new Dictionary<string,string>(); var consents = new Dictionary<string,AnonymousWorkspaceConsent>();
         foreach (var alias in map.Value["aliases"]!.AsArray().Select(x => x!.AsObject()))
         {
@@ -38,7 +39,7 @@ public sealed partial class AnonymousWorkspaceService
             var alias = map.Value["aliases"]!.AsArray().Select(x => x!.AsObject()).SingleOrDefault(x => x.Text("internalPrincipalId") == f.Text("evaluatorId"));
             return alias is null ? null : new AnonymousWorkspaceFeedback(alias.Text("aliasId"),f["value"]?.GetValue<int>());
         }).OfType<AnonymousWorkspaceFeedback>().ToArray();
-        await repository.CommitAsync(Catalog(actor),[RecordWrite.Replace(map.Value,map.ETag)],ct);
+        if (changed) await repository.CommitAsync(Catalog(actor),[RecordWrite.Replace(map.Value,map.ETag)],ct);
         var outcome = state["outcome"] as JsonObject; var job = state["publicationJob"] as JsonObject;
         return new(state.Text("etag"),state.Text("sessionEtag"),state.Text("status"),state.Number("sourceVersion"),sections.ToArray(),scopes,evidence,
             labels,evidenceLabels,participantLabels,consents,state["canApprove"]?.GetValue<bool>() == true,state.Text("processingMode"),

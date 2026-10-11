@@ -1,0 +1,9 @@
+  Dse.Domain -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/patch-check-production-contracts-20261011-delivery/src/Dse.Domain/bin/Debug/net10.0/Dse.Domain.dll
+  Dse.Evaluation -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/patch-check-production-contracts-20261011-delivery/src/Dse.Evaluation/bin/Debug/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/patch-check-production-contracts-20261011-delivery/src/Dse.Infrastructure/bin/Debug/net10.0/Dse.Infrastructure.dll
+  Dse.Api -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/patch-check-production-contracts-20261011-delivery/src/Dse.Api/bin/Debug/net10.0/Dse.Api.dll
+  Dse.Tests -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/patch-check-production-contracts-20261011-delivery/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll
+/Users/nyanpass/Documents/Codex/2026-10-08/task-3/patch-check-production-contracts-20261011-delivery/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll (.NETCoreApp,Version=v10.0) のテスト実行
+合計 1 個のテスト ファイルが指定されたパターンと一致しました。
+
+成功!   -失敗:     0、合格:   573、スキップ:     0、合計:   573、期間: 20 s - Dse.Tests.dll (net10.0)

@@ -351,7 +351,7 @@
     "/api/v1/business-analysis/capabilities": {
       "get": {
         "summary": "認証主体の手動分析可否と現在runtime版",
-        "description": "analyst権限のない主体も200でallowed=false/enabled=false/reason=FORBIDDEN。allowedはmember+analyst、enabledはruntime明示有効化/停止/optin/上限/価格FX検査結果。能力情報は実サービス成功や追加課金承認を意味しない。",
+        "description": "analyst権限のない主体も200でallowed=false/enabled=false/reason=FORBIDDEN。allowedはmember+analyst、enabledはruntime明示有効化/停止/optin/上限/価格FX検査結果。能力情報は実サービス成功や追加課金承認を意味しない。 requestOwnerKeyは自己専用cache区画で認可credentialではない。currentTimeは400未受理要求の明示訂正に使うserver時計。停止中も本人runのGET確認は可能、POSTは停止境界で拒否する。",
         "security": [
           {
             "bearerAuth": []
@@ -688,7 +688,9 @@
           "configVersion",
           "mode",
           "reason",
-          "automaticRetry"
+          "automaticRetry",
+          "requestOwnerKey",
+          "currentTime"
         ],
         "properties": {
           "allowed": {
@@ -717,6 +719,22 @@
           },
           "automaticRetry": {
             "const": false
+          },
+          "requestOwnerKey": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^abr-[a-f0-9]{64}$",
+            "description": "serverが認可した本人cache区画。不透明なhashで、認可credentialではない。allowed=falseはnull。"
+          },
+          "currentTime": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "server時計。400で未受理の要求を同じrunIdのまま明示訂正するために使う。allowed=falseはnull。"
           }
         },
         "allOf": [
@@ -735,6 +753,31 @@
                 },
                 "reason": {
                   "const": "FORBIDDEN"
+                },
+                "requestOwnerKey": {
+                  "const": null
+                },
+                "currentTime": {
+                  "const": null
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "allowed": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "requestOwnerKey": {
+                  "type": "string"
+                },
+                "currentTime": {
+                  "type": "string"
                 }
               }
             }

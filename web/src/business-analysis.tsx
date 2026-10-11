@@ -18,7 +18,7 @@ function AnalysisEvidence({ api, runId, knowledgeId, label }: { api: Api; runId:
   return <div><button disabled={busy} onClick={() => void open()}>{label}</button>{error && <p role="alert">{error}</p>}{source && <section aria-label={`${label}の本文`}><h4>{source.title} · 公開版 {source.version}</h4>{source.sections.map(s => <div key={s.field}><strong>{sectionNames[s.field] ?? '要約'}</strong><p>{s.text}</p><small>{s.basis === 'inference' ? '推測・要確認' : s.basis === 'participant_report' ? '参加者の報告' : '不明'}</small></div>)}</section>}</div>;
 }
 
-type Capabilities = { allowed: boolean; enabled: boolean; configVersion: string; mode: 'fixture' | 'live'; reason?: string; automaticRetry: false; requestOwnerKey?: string | null };
+type Capabilities = { allowed: boolean; enabled: boolean; configVersion: string; mode: 'fixture' | 'live'; reason?: string; automaticRetry: false; requestOwnerKey?: string | null; currentTime?: string | null };
 export function BusinessAnalysisPanel({ api }: { api: Api }) {
   const [capabilities, setCapabilities] = useState<Capabilities>();
   useEffect(() => {
@@ -27,9 +27,9 @@ export function BusinessAnalysisPanel({ api }: { api: Api }) {
     return () => { active = false; };
   }, [api]);
   if (!capabilities?.allowed) return null;
-  return <details className="panel"><summary>{capabilities.mode === 'fixture' ? '許可済み課題の分析（ローカル検証）' : '許可済み課題の分析'}</summary><BusinessAnalysis key={capabilities.requestOwnerKey ?? 'unconfigured'} api={api} capabilities={capabilities} /></details>;
+  return <details className="panel"><summary>{capabilities.mode === 'fixture' ? '許可済み課題の分析（ローカル検証）' : '許可済み課題の分析'}</summary><BusinessAnalysis key={capabilities.requestOwnerKey ?? 'unconfigured'} api={api} capabilities={capabilities} updateCapabilities={setCapabilities} /></details>;
 }
-function BusinessAnalysis({ api, capabilities }: { api: Api; capabilities: Capabilities }) {
+function BusinessAnalysis({ api, capabilities, updateCapabilities }: { api: Api; capabilities: Capabilities; updateCapabilities: (value: Capabilities) => void }) {
   const [run, setRun] = useState<Run>(), [busy, setBusy] = useState(false), [error, setError] = useState('');
   const pending = useRef<{ runId: string; cutoff: string; configVersion: string } | undefined>(undefined);
   const requestVersion = useRef(0);
@@ -96,7 +96,20 @@ function BusinessAnalysis({ api, capabilities }: { api: Api; capabilities: Capab
         }
       } else result = await api<Run>('/business-analysis', 'POST', request, request.runId);
       if (version === requestVersion.current) accept(result);
-    } catch (e) { if (version === requestVersion.current) setError(friendlyError(e)); }
+    } catch (e) {
+      if (version !== requestVersion.current) return;
+      if (e instanceof WorkspaceError && e.status === 400) {
+        try {
+          const current = await api<Capabilities>('/business-analysis/capabilities');
+          if (version === requestVersion.current && current.allowed && current.requestOwnerKey === capabilities.requestOwnerKey && typeof current.configVersion === 'string' && typeof current.currentTime === 'string' && Number.isFinite(Date.parse(current.currentTime))) {
+            // Keep the run/key even if a response was misclassified: GET or server replay checks prevent duplicate drafting.
+            remember({ ...request, cutoff: current.currentTime, configVersion: current.configVersion });
+            updateCapabilities(current); setError('要求の内容を受理できませんでした。同じ分析IDを現在の日時・設定で再確認できます。'); return;
+          }
+        } catch { /* Preserve the uncertain request when current configuration cannot be confirmed. */ }
+      }
+      if (version === requestVersion.current) setError(friendlyError(e));
+    }
     finally { if (version === requestVersion.current) setBusy(false); }
   }
   async function refresh() {

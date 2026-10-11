@@ -70,3 +70,13 @@ Copilotレビュー5482327233の2指摘（4240672814/4240672836）を修正。�
 Copilot5482385732の4240725016に対応。Demo/MockでもAiUsage:Stopped未指定/true/不正値はAPI境界のValidateForStartでAI_BUDGET_STOPPEDとして拒否。capabilitiesはenabled=false、POSTはrun/slot/fence保存とdrafter呼び出し前に409。6回帰（Service3+HTTP3）を追加。通常のFake fixtureで実行するテストだけStopped=falseを明示し、実環境の設定は変更しない。
 
 UIは停止中に未確定の保存済みrunをGET確認できるが、404の未保存runへPOSTを送らない。停止解除後は元のbody/keyを使う。応答消失→画面移動/reload→停止中確認→必要なら停止解除後再送の保存済み/未保存回帰を拡張。[.NET全体](dotnet-fixture-stop-fixed-final.log)572成功、失敗0、skip0。[分析E2E](e2e-fixture-stop-final.log)4成功、[型チェック/build](build-fixture-stop-final.log)成功。
+
+## レビュー本文の指摘: room mapの不要更新と未受理要求
+
+Copilot5482429888はopen findings 0/inline未解決0だが、本文に残る実質的指摘を確認して修正。
+
+- Knowledge GETはTokenが新しいmappingを追加した時だけroom mapをcommit。空のdepartmentTokensも先に作らず必要時だけ追加し、既存tokenを返す時はroom mapのETagを変えない。初回追加→同じ本人の再読→参加者の再読でtoken安定とroom map ETag不変を確認する回帰を追加。tenant fenceの保護・その書込は従来どおり保持し、GET全体が書込0とは扱わない。
+- 400の分析要求は現在のcapabilitiesからserver時計/current configを取り直し、同じrunId/冪等keyのまま本文を訂正。次の手動確認はGETを先に行い、保存済みなら再送しない。別IDを自動発行せず、既存runとのbody差異はserverの冪等照合で拒否する。現設定/本人cache区画を確認できなければ元の未確定要求を保持。
+- 古いconfigと端末の未来時計による実API400→同じIDの手動再確認→200の2ブラウザー回帰を追加。capabilitiesのrequestOwnerKey/currentTimeをOpenAPIに記載し、非analystにはnull、本人cache keyは認可credentialではないことを検証。
+
+[.NET全体](dotnet-map-request-final-pass.log)573成功、失敗0、skip0。[分析E2E](e2e-map-request-complete.log)6成功。[OpenAPI/JSON契約](contracts-map-request-pass.log)20成功。[型チェック/build](build-map-request-fixed-final.log)成功。Tokenのref引数が変換側へ混ざった途中コンパイル失敗と、contract依存のないPythonでの失敗ログもローカルへ保持。既存contract venvをbytecode無効で読み取り利用し、旧checkoutの依存を変更していない。

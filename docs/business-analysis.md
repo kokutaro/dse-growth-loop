@@ -20,12 +20,15 @@ Issue #15 の Demo/Mock と Live 向け輸送・費用台帳・管理用復旧�
 
 ## APIと上限
 
+- `GET /api/v1/business-analysis/capabilities`: allowed/enabled/reason/configVersion/mode、自己専用cache区画requestOwnerKey、サーバー時計currentTime。cache keyは認可credentialではなく、非analystにはkey/timeを返さない。
 - `POST /api/v1/business-analysis`: `{runId,cutoff,configVersion:"business-analysis-demo-v1"}`、Idempotency-Key=runId。
 - `GET /api/v1/business-analysis/{runId}`: 実施者本人・権限・現在の正本を再確認する。
 - `GET /api/v1/business-analysis/{runId}/sources/{knowledgeId}`: 実施者本人、run内の根拠、全入力の現在の同意・版を確認して公開要約を返す。原会話のID・参加者・principal・部署IDは返さず、公開DTOのdepartmentIdはnull。内部の別部署集計は維持する。UIは本文確認後に候補の判断を保存できる。
 - `PATCH /api/v1/business-analysis/{runId}/decision`: `{status,groupId?}`、Idempotency-KeyとIf-Match必須。groupId省略は全候補一括、UIは候補別。
 
-手動分析APIの実行契約は上記とコード・統合テストで確認した。[OpenAPI 3.1](specs/openapi-business-analysis-v1.json)に4経路・入力/応答DTO・権限と同意・冪等と競合・停止境界を記載し、契約検証を追加した。
+手動分析APIの実行契約は上記とコード・統合テストで確認した。[OpenAPI 3.1](specs/openapi-business-analysis-v1.json)に5経路・入力/応答DTO・権限と同意・冪等と競合・停止境界を記載し、契約検証を追加した。
+
+UIはrunId/cutoff/configVersionを本人cache区画へ保存し、画面移動/reload後は同じrunをGET確認する。停止中も保存済みGETだけ可能で、404時にPOSTしない。400未受理ならserverのcurrentTimeと現在configVersionへ同じrunIdのまま訂正し、次の手動確認でGETを先に行う。既存runがあれば再送せず、bodyが違う既存runはserverの冪等照合で拒否し、別runIdへ自動置換しない。公開・分析同意は同意時Principalと現在Binding/member/Grant範囲/原Profile ownerを再照合する。
 
 runId/cutoff/config/上限/正本manifestとinputHashを固定する。同じ要求は再読し、失敗したAIを自動再送しない。既定は50入力、要約合計8000 UTF-8 bytes、30秒、tenant当たり永続スロット1件、試行1回。最小課題数と部署数は `BusinessAnalysis:MinimumIndependentChallenges` / `MinimumDepartments`。入力・設定・部署情報不足、予算停止、途中失敗、処理中を区別する。Live は配置で `Data:Mode=Azure`、`Ai:Mode=Live`、`BusinessAnalysis:Enabled=true` を明示した時だけ使う（Enabledの既定false）。その上で `AiUsage:Stopped=false`、`LiveOptIn=true`、正の共有予算・FXと承認済み価格/FX版、固定のFoundry model/version/region/SKU/deployment/HTTPS endpointが必要。無効は入口501、停止/未opt-inは409、設定不備は422で、DB読み書き・輸送前に拒否する。今回実配置の値は変更せず、実輸送呼出し0。MockもAiUsage:Stopped未指定・true・不正値で停止する。
 
