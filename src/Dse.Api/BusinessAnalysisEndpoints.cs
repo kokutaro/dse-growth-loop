@@ -17,7 +17,9 @@ public static class BusinessAnalysisEndpoints
             }
             context.Response.Headers.CacheControl = "no-store";
             return Results.Ok(new { allowed, enabled, configVersion = BusinessAnalysisLiveRuntime.ConfigVersion(config),
-                mode = BusinessAnalysisLiveRuntime.IsFixture(config) ? "fixture" : "live", reason, automaticRetry = false });
+                mode = BusinessAnalysisLiveRuntime.IsFixture(config) ? "fixture" : "live", reason, automaticRetry = false,
+                // Self-only browser cache partition, never an authorization credential.
+                requestOwnerKey = allowed ? "abr-" + ConversationService.Hash(System.Text.Json.JsonSerializer.Serialize(new[] { actor.TenantId, actor.PrincipalId, actor.PersonId })) : null });
         });
         api.MapPost("/business-analysis", async (BusinessAnalysisRequest input, HttpContext context, BusinessAnalysisService service, CancellationToken ct) =>
         {

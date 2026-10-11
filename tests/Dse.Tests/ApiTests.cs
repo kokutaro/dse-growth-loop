@@ -205,7 +205,11 @@ public class ApiTests
         using var client = factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/v1/people/demo-person-01")).StatusCode);
         var other = await client.GetAsync("/api/v1/people/other-person");
-        Assert.Equal(HttpStatusCode.Forbidden, other.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, other.StatusCode);
+        var missing = await client.GetAsync("/api/v1/people/unknown-person");
+        Assert.Equal(other.StatusCode,missing.StatusCode);
+        Assert.Equal((await other.Content.ReadFromJsonAsync<System.Text.Json.Nodes.JsonObject>())!["code"]!.GetValue<string>(),
+            (await missing.Content.ReadFromJsonAsync<System.Text.Json.Nodes.JsonObject>())!["code"]!.GetValue<string>());
         Assert.DoesNotContain("private-other-name", await other.Content.ReadAsStringAsync());
     }
 

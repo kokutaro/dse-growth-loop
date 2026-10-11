@@ -98,7 +98,7 @@ public static class RecordEndpoints
         AccessPolicy.RequireRead(actor, value.Value);
         if (selfOnly && !actor.HasRole("operator"))
         {
-            if (kind == "person") AccessPolicy.RequireSelf(actor, value.Value);
+            if (kind == "person" && (value.Value.Text("ownerId") != actor.PrincipalId || value.Value.Text("id") != actor.PersonId)) throw new DomainException(404, "NOT_FOUND");
             else if (value.Value.Text("ownerId") != actor.PrincipalId) throw new DomainException(404, "NOT_FOUND");
         }
         return value;

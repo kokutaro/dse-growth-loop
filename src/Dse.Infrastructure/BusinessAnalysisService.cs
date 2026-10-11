@@ -176,7 +176,7 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
         BusinessAnalysisLiveRuntime.ValidateForStart(config);
         if (!BusinessAnalysisLiveRuntime.IsFixture(config) && actor.TenantId != config["Auth:TenantId"]) throw new DomainException(403, "FORBIDDEN");
         IdempotencyExecutor.ValidateHeaders(key, null, false);
-        if (!RecordJson.IsId(request.RunId) || key != request.RunId || request.ConfigVersion != BusinessAnalysisLiveRuntime.ConfigVersion(config) || request.Cutoff > clock.GetUtcNow().AddSeconds(5))
+        if (!RecordJson.IsId(request.RunId) || key != request.RunId || request.ConfigVersion != BusinessAnalysisLiveRuntime.ConfigVersion(config) || request.Cutoff == default || request.Cutoff > clock.GetUtcNow().AddSeconds(5))
             throw new ArgumentException("Invalid analysis request");
         var limits = Limits(); var gate = gates.GetOrAdd(actor.TenantId, _ => new SemaphoreSlim(1, 1));
         if (!await gate.WaitAsync(0, ct)) throw new DomainException(409, "ANALYSIS_BUSY");

@@ -9,7 +9,7 @@ public sealed record BusinessHypothesis(string Audience, string Problem, string 
     string CounterEvidence, string NextCustomerCheck, string[] EvidenceIds);
 public sealed record BusinessAnalysisMetrics(int IndependentChallenges, int DistinctDepartments, int? RecurringChallenges,
     double? UnresolvedRatio, decimal? ReportedHours, int? LowRatedChallenges, string[] MissingMetadata);
-public sealed record BusinessAnalysisRequest(string RunId, DateTimeOffset Cutoff, string ConfigVersion);
+public sealed record BusinessAnalysisRequest(string RunId, [property: System.Text.Json.Serialization.JsonRequired] DateTimeOffset Cutoff, string ConfigVersion);
 public sealed record BusinessAnalysisDecision(string Status, string? GroupId = null);
 public interface IBusinessHypothesisDrafter
 {

@@ -121,6 +121,14 @@ public sealed class BusinessAnalysisTests
         s = await Create(); s.Ai.Budget = true; request = Request(); first = await Start(s, request); replay = await Start(s, request);
         Assert.Equal("partial_failure", replay.Text("status")); Assert.Equal(1, s.Ai.Calls); Assert.Empty(replay["groups"]!.AsArray());
     }
+    [Fact] public async Task Missing_or_default_cutoff_is_rejected_before_saving_a_run_or_drafting()
+    {
+        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<BusinessAnalysisRequest>("{\"runId\":\"missing-cutoff\",\"configVersion\":\"business-analysis-demo-v1\"}",Json));
+        var s = await Create(); var request = Request() with { Cutoff = default };
+        await Assert.ThrowsAsync<ArgumentException>(() => Start(s,request)); Assert.Equal(0,s.Ai.Calls);
+        Assert.Null(await s.Repo.ReadAsync(RecordPartition.Catalog(Analyst.TenantId),BusinessAnalysisService.StorageId(Analyst.PrincipalId,request.RunId),default));
+        Assert.Null(await s.Repo.ReadAsync(RecordPartition.Catalog(Analyst.TenantId),"business-analysis-slot",default));
+    }
     [Fact]
     public async Task Forged_evidence_is_rejected_without_automatic_retry()
     {
@@ -256,6 +264,12 @@ public sealed class BusinessAnalysisTests
             message.Headers.Add("Idempotency-Key", key); if (etag is not null) message.Headers.TryAddWithoutValidation("If-Match", etag);
             return await client.SendAsync(message);
         }
+        var capabilities = (await owner.GetFromJsonAsync<JsonObject>("/api/v1/business-analysis/capabilities"))!;
+        var ownerKey = capabilities.Text("requestOwnerKey"); Assert.StartsWith("abr-",ownerKey);
+        Assert.Equal(ownerKey,(await owner.GetFromJsonAsync<JsonObject>("/api/v1/business-analysis/capabilities"))!.Text("requestOwnerKey"));
+        Assert.DoesNotContain(Analyst.PrincipalId,ownerKey); Assert.DoesNotContain(Analyst.PersonId,ownerKey);
+        Assert.Null((await guest.GetFromJsonAsync<JsonObject>("/api/v1/business-analysis/capabilities"))!["requestOwnerKey"]);
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest,(await Send(owner,HttpMethod.Post,"/api/v1/business-analysis",new { runId="omitted-cutoff",configVersion=BusinessAnalysisService.ConfigVersion },"omitted-cutoff")).StatusCode);
         Assert.Equal(System.Net.HttpStatusCode.Forbidden, (await Send(guest, HttpMethod.Post, "/api/v1/business-analysis", request, request.RunId)).StatusCode);
         var response = await Send(owner, HttpMethod.Post, "/api/v1/business-analysis", request, request.RunId); response.EnsureSuccessStatusCode();
         var result = (await response.Content.ReadFromJsonAsync<JsonObject>())!; Assert.Equal("completed", result.Text("status"));

@@ -39,3 +39,14 @@ Azure outboxは毎reloadのUUIDを廃止し、サーバーが認可した部屋�
 
 依頼内容を含むChallenge DTOの非owner読取も、同じ現在recipient/保存済みPrincipalの照合へ接続。参加依頼だけを拒否して別の課題URLから本文を読める経路を残さない。上記8回帰でInvitation/Challengeそれぞれの一覧と詳細を確認し、正常な旧mappingも保持。
 [最新.NET全体](dotnet-invitation-all-dto-full.log)は554成功。[正常系ブラウザー回帰](e2e-invitation-reading-final.log)は3成功（社員向け匿名リクエスト/応答、追加承認なしの参加・会話、辞退後の閲覧拒否）。以前のログは当時の結果として保持。
+
+## 公開事例・分析要求・自己プロフィールの追加回帰
+
+レビュー5482258476の4点を現在コードで確認し修正。
+
+- 公開事例は承認した参加者全員の現在Bindingを解決できることを要求し、解決不能なら409 SOURCE_REVOKED。無効参加者を既知表示名チェックから落として本文を返さない。公開後のプロフィール表示名変更でIDENTIFYING_CONTENT、そのBinding無効化後は一覧/詳細ともSOURCE_REVOKEDとなる回帰を追加。
+- CutoffはJSON必須。欠落はHTTP400、defaultは保存・drafter・slot獲得前に拒否する回帰を追加。
+- Production自己専用プロフィールの他人/存在しないIDは同じ404 NOT_FOUND。既存operator例外は保持。
+- 分析要求は本人のサーバー発行cache区画にrunId/cutoff/configVersionだけをsessionStorage保存し、画面移動・reload後はGETで保存済みrunを先に確認。404だけが同じ要求の明示POSTへ進む。処理中や復旧必要なrun、新しいcache区画を確認できない場合は新規開始しない。logoutはprivate要求履歴も直ちに消去。このkeyは認可credentialではなく、APIは常に現在のActorを認可する。
+
+[.NET全体](dotnet-review-four-final.log): 556成功、失敗0、skip0。[分析E2E](business-analysis-resume-final.log): 4成功。保存済み/未保存それぞれの応答消失→画面移動→reload→明示確認で、前者はPOST1回、後者は同じbody/Idempotency-KeyのPOST2回を確認。全てMockで実AI送信なし。[認証5件](auth-analysis-resume-final.log)、[型チェック/build](build-analysis-resume-final.log)成功。古い件数のログは当時の証跡として保持。

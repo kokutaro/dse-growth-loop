@@ -167,6 +167,27 @@ public sealed class AnonymousWorkspaceTests
         foreach(var candidate in fresh.Items)
         { var row = (await s.Repo.ReadAsync(RecordPartition.Catalog(s.Owner.TenantId),candidate.Token,default))!; Assert.NotEqual(unit.EntityId,row.Value["unit"]!["entityId"]!.GetValue<string>()); }
     }
+    [Fact] public async Task Published_case_never_drops_an_unresolved_participants_identifier_check()
+    {
+        var s = await Create(true); await Join(s); var room = await s.Workspace.ResolveRoomAsync(s.Owner,s.Room,default);
+        await s.Workspace.SendAsync(s.Owner,s.Room,Key(),room.SessionEtag,new(Guid.NewGuid().ToString(),"ソフト 引き継ぎを試した"),default);
+        await Change(s,"outcome",new { resolution="partial",result="一部だけ解決" }); var state = await Change(s,"draft",new {});
+        state = await Change(s,"request-review",new { version=state.SourceVersion });
+        await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false });
+        await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false },s.Guest);
+        await Change(s,"approve",new { version=state.SourceVersion });
+        var published = Assert.Single((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default)).Items);
+        var partition = RecordPartition.Catalog(s.Owner.TenantId); var profile = (await s.Repo.ReadAsync(partition,s.Guest.PersonId,default))!;
+        // A later self-reported display-name change can make old text identifying.
+        profile.Value["displayName"] = published.Sections[0].Text;
+        await s.Repo.CommitAsync(partition,[RecordWrite.Replace(profile.Value,profile.ETag)],default);
+        var identified = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CaseUnderFenceAsync(s.Owner,published.Id,ct),default));
+        Assert.Equal("IDENTIFYING_CONTENT",identified.Code);
+        s.Config["Auth:Bindings:1:Enabled"] = "false";
+        var unresolved = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CaseUnderFenceAsync(s.Owner,published.Id,ct),default));
+        Assert.Equal("SOURCE_REVOKED",unresolved.Code);
+        await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default));
+    }
     [Fact] public async Task Azure_candidate_checks_current_binding_after_token_issuance()
     {
         var s = await Create(true); var candidates = await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CandidatesUnderFenceAsync(s.Owner,s.Challenge,ct),default); var token = candidates.Items.First().Token;

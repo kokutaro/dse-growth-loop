@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { friendlyError, type Api } from './workspace-api';
+import { friendlyError, WorkspaceError, type Api } from './workspace-api';
 
 type Group = { id: string; decision?: string; metrics: { independentChallenges: number; distinctDepartments: number; recurringChallenges: number | null; unresolvedRatio: number | null; reportedHours: number | null; missingMetadata: string[] }; hypothesis?: Record<string, unknown>; evidenceIds: string[] };
 type Run = { runId: string; status: string; etag: string; processingMode: string; sourceCount: number; groups: Group[]; limits?: { maxInputs: number; timeoutSeconds: number; maxConcurrencyPerTenant: number }; recoveryRequired?: boolean; decision?: string; exclusions?: { reason: string }[] };
@@ -18,7 +18,7 @@ function AnalysisEvidence({ api, runId, knowledgeId, label }: { api: Api; runId:
   return <div><button disabled={busy} onClick={() => void open()}>{label}</button>{error && <p role="alert">{error}</p>}{source && <section aria-label={`${label}の本文`}><h4>{source.title} · 公開版 {source.version}</h4>{source.sections.map(s => <div key={s.field}><strong>{sectionNames[s.field] ?? '要約'}</strong><p>{s.text}</p><small>{s.basis === 'inference' ? '推測・要確認' : s.basis === 'participant_report' ? '参加者の報告' : '不明'}</small></div>)}</section>}</div>;
 }
 
-type Capabilities = { allowed: boolean; enabled: boolean; configVersion: string; mode: 'fixture' | 'live'; reason?: string; automaticRetry: false };
+type Capabilities = { allowed: boolean; enabled: boolean; configVersion: string; mode: 'fixture' | 'live'; reason?: string; automaticRetry: false; requestOwnerKey?: string | null };
 export function BusinessAnalysisPanel({ api }: { api: Api }) {
   const [capabilities, setCapabilities] = useState<Capabilities>();
   useEffect(() => {
@@ -27,35 +27,74 @@ export function BusinessAnalysisPanel({ api }: { api: Api }) {
     return () => { active = false; };
   }, [api]);
   if (!capabilities?.allowed) return null;
-  return <details className="panel"><summary>{capabilities.mode === 'fixture' ? '許可済み課題の分析（ローカル検証）' : '許可済み課題の分析'}</summary><BusinessAnalysis api={api} capabilities={capabilities} /></details>;
+  return <details className="panel"><summary>{capabilities.mode === 'fixture' ? '許可済み課題の分析（ローカル検証）' : '許可済み課題の分析'}</summary><BusinessAnalysis key={capabilities.requestOwnerKey ?? 'unconfigured'} api={api} capabilities={capabilities} /></details>;
 }
 function BusinessAnalysis({ api, capabilities }: { api: Api; capabilities: Capabilities }) {
   const [run, setRun] = useState<Run>(), [busy, setBusy] = useState(false), [error, setError] = useState('');
   const pending = useRef<{ runId: string; cutoff: string; configVersion: string } | undefined>(undefined);
   const requestVersion = useRef(0);
+  const lastRequest = useRef<typeof pending.current>(undefined);
+  const [resumeBlocked, setResumeBlocked] = useState(false), [hasPending, setHasPending] = useState(false);
+  const storageKey = capabilities.requestOwnerKey && /^abr-[a-f0-9]{64}$/.test(capabilities.requestOwnerKey)
+    ? `dse-business-analysis-request:v1:${capabilities.requestOwnerKey}` : undefined;
+  function remember(request: NonNullable<typeof pending.current>) {
+    if (!storageKey) throw new Error('本人の分析保存先を確認できません。');
+    sessionStorage.setItem(storageKey, JSON.stringify(request)); pending.current = request; lastRequest.current = request; setHasPending(true);
+  }
+  function accept(result: Run) {
+    setRun(result);
+    if (result.status !== 'processing' && !result.recoveryRequired) {
+      pending.current = undefined; setHasPending(false); if (storageKey) sessionStorage.removeItem(storageKey);
+    }
+  }
+  function keepUnconfirmed() {
+    try { if (lastRequest.current) remember(lastRequest.current); }
+    catch { setResumeBlocked(true); }
+  }
   useEffect(() => {
-    setRun(undefined); setBusy(false); pending.current = undefined; requestVersion.current++;
+    setRun(undefined); setBusy(false); setHasPending(false); setError(''); pending.current = undefined; lastRequest.current = undefined; requestVersion.current++;
+    setResumeBlocked(!storageKey);
+    if (storageKey) {
+      try {
+        const saved = sessionStorage.getItem(storageKey);
+        if (saved) {
+          const request = JSON.parse(saved);
+          if (typeof request.runId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(request.runId) ||
+              typeof request.cutoff !== 'string' || !Number.isFinite(Date.parse(request.cutoff)) || typeof request.configVersion !== 'string') throw new Error();
+          pending.current = request; lastRequest.current = request; setHasPending(true);
+        }
+      } catch { setResumeBlocked(true); setError('未確定の分析記録を確認できません。管理者に保存状態の確認を依頼してください。'); }
+    }
     return () => { requestVersion.current++; };
-  }, [api]);
+  }, [api, storageKey]);
   useEffect(() => {
     if (!run || busy || run.status === 'invalidated') return;
     let active = true;
     const timer = setInterval(() => {
       const version = requestVersion.current;
       void api<Run>(`/business-analysis/${encodeURIComponent(run.runId)}`).then(value => {
-        if (active && version === requestVersion.current) setRun(value);
-      }).catch(() => { if (active && version === requestVersion.current) { setRun(undefined); setError('許可状態を確認できないため、結果を閉じました。再分析してください。'); } });
+        if (active && version === requestVersion.current) accept(value);
+      }).catch(() => { if (active && version === requestVersion.current) { keepUnconfirmed(); setRun(undefined); setError('許可状態を確認できないため、結果を閉じました。同じ分析の結果を確認してください。'); } });
     }, 5000);
     return () => { active = false; clearInterval(timer); };
   }, [api, run?.runId, run?.status, busy]);
   async function start() {
-    if (busy || !capabilities.enabled) return;
+    if (busy || !capabilities.enabled || resumeBlocked || !storageKey || run?.status === 'processing' || run?.recoveryRequired) return;
     const version = ++requestVersion.current;
+    const resuming = !!pending.current;
     const request = pending.current ?? { runId: `analysis-${crypto.randomUUID()}`, cutoff: new Date().toISOString(), configVersion: capabilities.configVersion };
-    pending.current = request; setBusy(true); setError(''); setRun(undefined);
+    setBusy(true); setError(''); setRun(undefined);
     try {
-      const result = await api<Run>('/business-analysis', 'POST', request, request.runId);
-      if (version === requestVersion.current) { setRun(result); pending.current = undefined; }
+      remember(request);
+      let result: Run;
+      if (resuming) {
+        try { result = await api<Run>(`/business-analysis/${encodeURIComponent(request.runId)}`); }
+        catch (e) {
+          if (!(e instanceof WorkspaceError) || e.status !== 404) throw e;
+          result = await api<Run>('/business-analysis', 'POST', request, request.runId);
+        }
+      } else result = await api<Run>('/business-analysis', 'POST', request, request.runId);
+      if (version === requestVersion.current) accept(result);
     } catch (e) { if (version === requestVersion.current) setError(friendlyError(e)); }
     finally { if (version === requestVersion.current) setBusy(false); }
   }
@@ -63,21 +102,22 @@ function BusinessAnalysis({ api, capabilities }: { api: Api; capabilities: Capab
     if (!run || busy) return;
     const version = ++requestVersion.current; setBusy(true); setError('');
     const id = run.runId; setRun(undefined);
-    try { const result = await api<Run>(`/business-analysis/${encodeURIComponent(id)}`); if (version === requestVersion.current) setRun(result); }
-    catch (e) { if (version === requestVersion.current) setError(friendlyError(e)); }
+    try { const result = await api<Run>(`/business-analysis/${encodeURIComponent(id)}`); if (version === requestVersion.current) accept(result); }
+    catch (e) { if (version === requestVersion.current) { keepUnconfirmed(); setError(friendlyError(e)); } }
     finally { if (version === requestVersion.current) setBusy(false); }
   }
   async function decide(status: string, groupId: string) {
     if (!run || busy) return;
     const version = ++requestVersion.current; setBusy(true); setError('');
     try { const result = await api<Run>(`/business-analysis/${encodeURIComponent(run.runId)}/decision`, 'PATCH', { status, groupId }, crypto.randomUUID(), run.etag); if (version === requestVersion.current) setRun(result); }
-    catch (e) { if (version === requestVersion.current) { setRun(undefined); setError(friendlyError(e)); } }
+    catch (e) { if (version === requestVersion.current) { keepUnconfirmed(); setRun(undefined); setError(friendlyError(e)); } }
     finally { if (version === requestVersion.current) setBusy(false); }
   }
   return <section aria-label="事業仮説の手動分析">
     <h2>共通する課題から、次に調べる仮説へ</h2>
     <p>双方が事業分析を許可した公開要約だけを使います。個別の会話は入力に含めません。候補は人が調査して判断し、市場規模・売上・ROIを確定しません。</p>
-    <button className="primary" disabled={busy || !capabilities.enabled || run?.recoveryRequired} onClick={() => void start()}>{busy ? '分析を確認中…' : pending.current ? '同じ分析の結果を確認する' : capabilities.mode === 'fixture' ? '今すぐ分析（ローカル）' : '今すぐ分析'}</button>
+    <button className="primary" disabled={busy || !capabilities.enabled || resumeBlocked || !storageKey || run?.status === 'processing' || run?.recoveryRequired} onClick={() => void start()}>{busy ? '分析を確認中…' : hasPending ? '同じ分析の結果を確認する' : capabilities.mode === 'fixture' ? '今すぐ分析（ローカル）' : '今すぐ分析'}</button>
+    {!storageKey && <p role="status">本人の分析保存先を確認できないため、新しい分析は開始していません。</p>}
     {!capabilities.enabled && <p role="status">現在、分析の実行は有効になっていません。管理者による接続・停止状態の確認が必要です。</p>}
     {error && <p role="alert">{error}</p>}
     {run && <div className="panel">
