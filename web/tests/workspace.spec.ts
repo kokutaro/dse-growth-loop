@@ -41,6 +41,16 @@ test('キーボードの本文スキップは現在のルートを保持して�
   await expect(page.getByText('対象を開けません', { exact: true })).not.toBeVisible();
   await page.keyboard.press('Tab');
   await expect(main.getByRole('link', { name: '課題・相談を投稿する', exact: true }).first()).toBeFocused();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await skip.focus();
+  await page.keyboard.press('Enter');
+  await expect(main).toBeFocused();
+  await expect(page).toHaveURL(currentUrl);
+  const heading = await main.getByRole('heading', { name: '自分の課題・相談', exact: true }).boundingBox();
+  const rail = await page.getByRole('complementary').boundingBox();
+  expect(heading).not.toBeNull(); expect(rail).not.toBeNull();
+  expect(heading!.y).toBeGreaterThanOrEqual(rail!.y + rail!.height);
+  expect(heading!.y + heading!.height).toBeLessThanOrEqual(844);
 });
 
 async function compose(page: Page, title = '調査記録の引き継ぎを整理する') {
