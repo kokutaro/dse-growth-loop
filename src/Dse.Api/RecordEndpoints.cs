@@ -80,13 +80,17 @@ public static class RecordEndpoints
             new FencedResult(fence, Actor(context).TenantId, async token =>
             {
                 var actor = Actor(context);
+                // Production employees use opaque workspace routes for shared activity.
+                // Raw conversation jobs remain an operator-only diagnostic route.
+                if (!demo && !actor.HasRole("operator") && sessionId is not null)
+                    throw new DomainException(404, "NOT_FOUND");
                 var partition = sessionId is null ? RecordPartition.Catalog(actor.TenantId) : RecordPartition.Conversation(actor.TenantId, sessionId);
                 if (sessionId is not null) await context.RequestServices.GetRequiredService<ConversationService>().SessionAsync(actor, sessionId, token);
                 var job = await repository.ReadAsync(partition, id, token);
                 if (job is null || job.Value.Text("kind") != "job") throw new DomainException(404, "NOT_FOUND");
                 AccessPolicy.RequireRead(actor, job.Value);
                 context.Response.Headers.ETag = job.ETag;
-                // Job records contain operational metadata only, never payload text or credentials.
+                // Operational metadata can identify its owner; production access is self/operator only.
                 return Results.Ok(job.Value);
             }, ct));
     }

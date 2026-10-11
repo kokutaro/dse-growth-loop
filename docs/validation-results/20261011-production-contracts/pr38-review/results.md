@@ -80,3 +80,13 @@ Copilot5482429888はopen findings 0/inline未解決0だが、本文に残る実�
 - 古いconfigと端末の未来時計による実API400→同じIDの手動再確認→200の2ブラウザー回帰を追加。capabilitiesのrequestOwnerKey/currentTimeをOpenAPIに記載し、非analystにはnull、本人cache keyは認可credentialではないことを検証。
 
 [.NET全体](dotnet-map-request-final-pass.log)573成功、失敗0、skip0。[分析E2E](e2e-map-request-complete.log)6成功。[OpenAPI/JSON契約](contracts-map-request-pass.log)20成功。[型チェック/build](build-map-request-fixed-final.log)成功。Tokenのref引数が変換側へ混ざった途中コンパイル失敗と、contract依存のないPythonでの失敗ログもローカルへ保持。既存contract venvをbytecode無効で読み取り利用し、旧checkoutの依存を変更していない。
+
+## 2026-10-11 09:31 UTC レビューの raw job と logout 証跡
+
+正式レビュー5482763042（対象066d7d2）の本文とinline4241064050を確認した。他社員のjobを同一scopeだけで読めるという指摘は、現在の `AccessPolicy.CanRead` のjob分岐がownerまたはoperatorを要求するため再現しない。自己jobは200/ETagあり、同じscopeの他社員jobは未知jobと同じ404 NOT_FOUND/ETagなし、operatorは既存scope内で200になるHTTP回帰を追加した。traceIdは要求ごとに異なるため、問題応答のcode/status/title/detail/typeを照合する。
+
+追加の防御としてProduction社員の `sessionId` 指定raw job経路を404で遮断する。会話jobは本人所有でも共有活動の内部IDを含み得るため、参加者向けには既存の匿名workspace経路を使う。owner/guest参加者の2回帰でraw session/participant情報とETagを返さないことを確認する。Demoとoperatorの診断経路は既存の認可を維持する。[.NET全体](dotnet-job-privacy-final.log)は586成功/0失敗/0skip。途中のfixture partition不足とtraceId完全一致の失敗はローカル補足証跡へ保持する。
+
+本文にある現行logout証跡の指摘には、現在のauth testを新しく実行し[auth-current-logout.log](auth-current-logout.log)へ保存した（5成功/0失敗）。現在のstorage回帰はuploadの旧key/v2本人key、旧 `dse-outbox:`、workspace outbox、business-analysis要求keyをpopup終了前に消し、無関係なstorageを保持する。popup失敗・遅延token応答も確認する。古い5件ログは当時の記録として維持し、新しい回帰名の証拠に転用しない。
+
+[現在のlogout・文書取込E2E](e2e-job-logout-current.log)は6成功/0失敗。logoutではMicrosoftログイン先をabortするfixtureで保護panelの消去、旧チャット下書き消去、無関係storage保持を確認する。文書では本人別取込再開とjob poll/retryの正常系を確認する。実Entra/Azure/有料AIは呼んでいない。
