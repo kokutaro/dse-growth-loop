@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Dse.Domain;
@@ -11,12 +12,24 @@ namespace Dse.Infrastructure;
 public interface IProjectionRepository
 {
     Task<SearchUnit[]> FindAsync(SearchRequest request, SearchAccess access, CancellationToken ct);
-    // Browsing public knowledge has no employee search condition. Adapters must preserve source rechecks.
-    Task<SearchUnit[]> BrowseKnowledgeAsync(SearchAccess access, CancellationToken ct) => FindAsync(new([], [], []), access, ct);
+    // Read public knowledge lazily; the consumer caps results after current source/consent rechecks.
+    IAsyncEnumerable<SearchUnit[]> BrowseKnowledgePagesAsync(SearchRequest request, SearchAccess access, CancellationToken ct);
     Task SaveAsync(JsonObject projection, CancellationToken ct);
 }
 public sealed class MemoryProjectionRepository(IRecordStore store) : IProjectionRepository
 {
+    public async IAsyncEnumerable<SearchUnit[]> BrowseKnowledgePagesAsync(SearchRequest request, SearchAccess access, [EnumeratorCancellation] CancellationToken ct)
+    {
+        var terms = request.Terms.Select(Retriever.Normalize).ToHashSet(StringComparer.Ordinal);
+        string? token = null;
+        do
+        {
+            var page = await store.QueryAsync(RecordPartition.Catalog(access.TenantId), "searchUnit", "entityType", "knowledge", 100, token, ct);
+            yield return page.Items.Select(x => x.Value.Deserialize<SearchUnit>(ProjectionRules.Json)!)
+                .Where(u => terms.Count == 0 || u.NormalizedTerms.Any(terms.Contains)).ToArray();
+            token = page.ContinuationToken;
+        } while (token is not null);
+    }
     public async Task<SearchUnit[]> FindAsync(SearchRequest request, SearchAccess access, CancellationToken ct)
     {
         List<SearchUnit> units = [];
@@ -35,32 +48,45 @@ public sealed class MemoryProjectionRepository(IRecordStore store) : IProjection
 public sealed class CosmosProjectionRepository(CosmosClient client, IConfiguration config, IRecordStore store, ILogger<CosmosProjectionRepository> logger) : IProjectionRepository
 {
     public Task<SearchUnit[]> FindAsync(SearchRequest request, SearchAccess access, CancellationToken ct) => ReadAsync(CosmosCatalog.BuildQuery(request, access), access, ct);
-    public Task<SearchUnit[]> BrowseKnowledgeAsync(SearchAccess access, CancellationToken ct) => ReadAsync(CosmosCatalog.BuildKnowledgeBrowseQuery(access), access, ct);
+    public IAsyncEnumerable<SearchUnit[]> BrowseKnowledgePagesAsync(SearchRequest request, SearchAccess access, CancellationToken ct) =>
+        ReadPagesAsync(CosmosCatalog.BuildKnowledgeBrowseQuery(access, request.Terms), access, ct);
     private async Task<SearchUnit[]> ReadAsync(QueryDefinition query, SearchAccess access, CancellationToken ct)
+    {
+        List<SearchUnit> units = [];
+        await foreach (var page in ReadPagesAsync(query, access, ct))
+        {
+            units.AddRange(page);
+            ProjectionRules.CheckBudget(units.Count, 0);
+        }
+        return units.ToArray();
+    }
+    private async IAsyncEnumerable<SearchUnit[]> ReadPagesAsync(QueryDefinition query, SearchAccess access, [EnumeratorCancellation] CancellationToken ct)
     {
         var container = client.GetContainer(config["Cosmos:Database"] ?? "dse-growth-loop", "catalog");
         using var iterator = container.GetItemQueryIterator<SearchUnit>(query,
             requestOptions: new QueryRequestOptions { PartitionKey = new PartitionKey(access.TenantId), MaxItemCount = 100 });
-        List<SearchUnit> units = [];
         double ru = 0;
         while (iterator.HasMoreResults)
         {
-            using var operation = OperationMeasurements.Start(MeasurementKind.ProjectionPage, cosmosSdk: true);
-            try
+            SearchUnit[] values;
+            using (var operation = OperationMeasurements.Start(MeasurementKind.ProjectionPage, cosmosSdk: true))
             {
-            var start = Stopwatch.GetTimestamp();
-            var page = await iterator.ReadNextAsync(ct);
-            operation.ObserveResponse(page.RequestCharge, 200);
-            ru += page.RequestCharge;
-            SearchBudget.Charge(page.RequestCharge, "projection_page");
-            units.AddRange(page);
-            logger.LogInformation("Cosmos search RequestCharge={RequestCharge} CorrelationId={CorrelationId} DurationMs={DurationMs}",
-                page.RequestCharge, Activity.Current?.TraceId.ToString() ?? "background", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
-            ProjectionRules.CheckBudget(units.Count, ru);
+                try
+                {
+                    var start = Stopwatch.GetTimestamp();
+                    var page = await iterator.ReadNextAsync(ct);
+                    operation.ObserveResponse(page.RequestCharge, 200);
+                    ru += page.RequestCharge;
+                    SearchBudget.Charge(page.RequestCharge, "projection_page");
+                    logger.LogInformation("Cosmos search RequestCharge={RequestCharge} CorrelationId={CorrelationId} DurationMs={DurationMs}",
+                        page.RequestCharge, Activity.Current?.TraceId.ToString() ?? "background", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+                    ProjectionRules.CheckBudget(0, ru);
+                    values = page.ToArray();
+                }
+                catch (Exception ex) { operation.Fail(ex); throw; }
             }
-            catch (Exception ex) { operation.Fail(ex); throw; }
+            yield return values;
         }
-        return units.ToArray();
     }
     public Task SaveAsync(JsonObject projection, CancellationToken ct) => ProjectionRules.SaveAsync(store, projection, ct);
 }

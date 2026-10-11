@@ -59,9 +59,11 @@ public sealed class ValidatedCatalog(IProjectionRepository projections, SourceGu
 
 public static class CosmosCatalog
 {
-    public static QueryDefinition BuildKnowledgeBrowseQuery(SearchAccess access) => new QueryDefinition(
-        "SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.entityType = 'knowledge' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s))")
-        .WithParameter("@tenant", access.TenantId).WithParameter("@taxonomy", Retriever.TaxonomyVersion).WithParameter("@scopes", access.ScopeIds);
+    public static QueryDefinition BuildKnowledgeBrowseQuery(SearchAccess access, string[]? terms = null) => new QueryDefinition(
+        "SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.entityType = 'knowledge' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s))" +
+        (terms is { Length: > 0 } ? " AND EXISTS(SELECT VALUE t FROM t IN u.normalizedTerms WHERE ARRAY_CONTAINS(@terms, t))" : ""))
+        .WithParameter("@tenant", access.TenantId).WithParameter("@taxonomy", Retriever.TaxonomyVersion).WithParameter("@scopes", access.ScopeIds)
+        .WithParameter("@terms", (terms ?? []).Select(Retriever.Normalize).ToArray());
 
     public static QueryDefinition BuildQuery(SearchRequest request, SearchAccess access)
     {

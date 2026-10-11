@@ -31,6 +31,11 @@ public class QueryTests
         Assert.Contains("ARRAY_CONTAINS(@scopes, s)", query.QueryText);
         Assert.Equal(tenant, query.GetQueryParameters().Single(x => x.Name == "@tenant").Value);
         Assert.Equal([scope], Assert.IsType<string[]>(query.GetQueryParameters().Single(x => x.Name == "@scopes").Value));
+        var searched = CosmosCatalog.BuildKnowledgeBrowseQuery(new SearchAccess(tenant,[scope]),[" ＡＢＣ ","x' OR 1=1"]);
+        Assert.Contains("u.entityType = 'knowledge'",searched.QueryText);
+        Assert.Contains("ARRAY_CONTAINS(@terms, t)",searched.QueryText);
+        Assert.DoesNotContain("x' OR 1=1",searched.QueryText);
+        Assert.Equal(["abc","x' or 1=1"],Assert.IsType<string[]>(searched.GetQueryParameters().Single(x => x.Name == "@terms").Value));
     }
     [Fact]
     public async Task Reservation_query_selects_only_the_exact_run_in_the_requested_tenant()

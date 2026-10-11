@@ -107,26 +107,30 @@ public sealed partial class AnonymousWorkspaceService
         var request = new SearchRequest([],[],string.IsNullOrWhiteSpace(query) ? [] : ProfileExtraction.Terms(query));
         if (query is not null) SearchInput.RequireSafe(query);
         if (request.Terms.Length > 0) request.Validate();
-        using var budget = new SearchBudget(); var raw = request.Terms.Length == 0
-            ? await projections.BrowseKnowledgeAsync(actor.Search,ct) : await projections.FindAsync(request,actor.Search,ct);
-        var units = await guard.FilterUnderFenceAsync(actor,raw.Where(u => u.EntityType == "knowledge"),ct);
+        using var budget = new SearchBudget();
         var terms = request.Terms.Select(Retriever.Normalize).ToHashSet(StringComparer.Ordinal);
         List<AnonymousWorkspaceCase> result = [];
-        foreach (var unit in units.Where(u => terms.Count == 0 || u.NormalizedTerms.Any(terms.Contains)).DistinctBy(u => u.EntityId))
+        HashSet<string> seen = new(StringComparer.Ordinal);
+        await foreach (var page in projections.BrowseKnowledgePagesAsync(request,actor.Search,ct))
         {
-            var row = await repository.ReadAsync(Catalog(actor),unit.EntityId,ct);
-            // Fixture catalogue without a reviewed conversations authority is not a publishable case.
-            if (row is null || row.Value.Text("contractVersion") != "knowledge-v1") continue;
-            var idx = Index("case",unit.EntityId,unit.SourceVersion!.Value.ToString()); var existing = await repository.ReadAsync(Catalog(actor),idx,ct); string id;
-            if (existing is null)
+            var units = await guard.FilterUnderFenceAsync(actor,page.Where(u => u.EntityType == "knowledge"),ct);
+            foreach (var unit in units.Where(u => terms.Count == 0 || u.NormalizedTerms.Any(terms.Contains)))
             {
-                id = Opaque("awk-"); var pointer = Mapping(actor,idx,"case-index",""); pointer["publicCaseId"] = id;
-                var map = Mapping(actor,id,"case",""); map["unit"] = JsonSerializer.SerializeToNode(unit,Json);
-                await repository.CommitAsync(Catalog(actor),[RecordWrite.Create(pointer),RecordWrite.Create(map)],ct);
+                if (!seen.Add(unit.EntityId)) continue;
+                var row = await repository.ReadAsync(Catalog(actor),unit.EntityId,ct);
+                // Fixture catalogue without a reviewed conversations authority is not a publishable case.
+                if (row is null || row.Value.Text("contractVersion") != "knowledge-v1") continue;
+                var idx = Index("case",unit.EntityId,unit.SourceVersion!.Value.ToString()); var existing = await repository.ReadAsync(Catalog(actor),idx,ct); string id;
+                if (existing is null)
+                {
+                    id = Opaque("awk-"); var pointer = Mapping(actor,idx,"case-index",""); pointer["publicCaseId"] = id;
+                    var map = Mapping(actor,id,"case",""); map["unit"] = JsonSerializer.SerializeToNode(unit,Json);
+                    await repository.CommitAsync(Catalog(actor),[RecordWrite.Create(pointer),RecordWrite.Create(map)],ct);
+                }
+                else id = existing.Value.Text("publicCaseId");
+                result.Add(await CaseUnderFenceAsync(actor,id,ct));
+                if (result.Count == 100) return new(result.ToArray());
             }
-            else id = existing.Value.Text("publicCaseId");
-            result.Add(await CaseUnderFenceAsync(actor,id,ct));
-            if (result.Count == 100) break;
         }
         return new(result.ToArray());
     }

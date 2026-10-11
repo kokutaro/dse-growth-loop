@@ -141,7 +141,9 @@ public sealed class AnonymousWorkspaceTests
             await s.Store.CommitAsync(partition,[RecordWrite.Create(legacy),RecordWrite.Create(unit)],default);
         }
         IProjectionRepository browse = new MemoryProjectionRepository(s.Store);
-        var guarded = await new SourceGuard(s.Repo).FilterAsync(s.Owner,await browse.BrowseKnowledgeAsync(s.Owner.Search,default),default);
+        List<SearchUnit> browseUnits = [];
+        await foreach (var page in browse.BrowseKnowledgePagesAsync(new([],[],[]),s.Owner.Search,default)) browseUnits.AddRange(page);
+        var guarded = await new SourceGuard(s.Repo).FilterAsync(s.Owner,browseUnits,default);
         Assert.Equal(100,guarded.Count(u => u.EntityId.StartsWith("000-legacy-case-",StringComparison.Ordinal)));
         var cases = await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default); var published = Assert.Single(cases.Items); PrivateIdentifiersAbsent(s,published);
         foreach (var query in new[] { "software 改善", "ＳＯＦＴＷＡＲＥ 改善", "ソフトウェア 無関係" })
@@ -154,6 +156,48 @@ public sealed class AnonymousWorkspaceTests
         await Change(s,"edit",new { sections=state.Sections,scopeIds=state.ScopeIds }); var edited = await State(s); Assert.Empty(edited.Consents); Assert.Equal(state.SourceVersion+1,edited.SourceVersion);
         await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CaseUnderFenceAsync(s.Owner,published.Id,ct),default));
         Assert.Empty((await s.Workspace.ConsumeAsync(s.Owner,ct => s.Workspace.CasesUnderFenceAsync(s.Owner,null,ct),default)).Items);
+    }
+    private sealed class CountedBrowse(IProjectionRepository inner) : IProjectionRepository
+    {
+        public int Pages { get; private set; }
+        public Task<SearchUnit[]> FindAsync(SearchRequest r,SearchAccess a,CancellationToken ct) => inner.FindAsync(r,a,ct);
+        public Task SaveAsync(JsonObject p,CancellationToken ct) => inner.SaveAsync(p,ct);
+        public async IAsyncEnumerable<SearchUnit[]> BrowseKnowledgePagesAsync(SearchRequest r,SearchAccess a,[System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
+        {
+            await foreach(var page in inner.BrowseKnowledgePagesAsync(r,a,ct)) { Pages++; yield return page; }
+        }
+    }
+    [Theory] [InlineData(null)] [InlineData("ソフトウェア 無関係")]
+    public async Task Case_listing_stops_after_100_current_cases_without_materializing_over_5000_projections(string? query)
+    {
+        var s = await Create(); await Join(s); var room = await s.Workspace.ResolveRoomAsync(s.Owner,s.Room,default);
+        await s.Workspace.SendAsync(s.Owner,s.Room,Key(),room.SessionEtag,new(Guid.NewGuid().ToString(),"ソフト 引き継ぎを試した"),default);
+        await Change(s,"outcome",new { resolution="partial",result="一部だけ解決" }); var state = await Change(s,"draft",new {});
+        state = await Change(s,"request-review",new { version=state.SourceVersion });
+        await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false }); await Change(s,"consent",new { version=state.SourceVersion,publication=true,analysis=false },s.Guest);
+        await Change(s,"approve",new { version=state.SourceVersion });
+        var partition = RecordPartition.Catalog(s.Owner.TenantId);
+        var source = (await s.Repo.ReadAsync(partition,KnowledgeService.Id(s.Sid),default))!.Value;
+        var projection = (await s.Store.QueryAsync(partition,"searchUnit","entityId",source.Text("id"),100,null,default)).Items.Single().Value;
+        // Source/authority fixtures share the same approved content; each has a distinct catalogue identity.
+        for(var i=0;i<200;i++)
+        {
+            var prefix = i<100 ? "000-legacy-" : "100-current-";
+            var copy = source.Copy(); copy["id"] = prefix+i.ToString("D3"); if(i<100) copy["contractVersion"] = "legacy";
+            var unit = projection.Copy(); unit["id"] = prefix+"projection-"+i.ToString("D3"); unit["entityId"] = copy["id"]!.DeepClone();
+            await s.Store.CommitAsync(partition,[RecordWrite.Create(copy),RecordWrite.Create(unit)],default);
+        }
+        for(var i=0;i<6000;i++)
+        { var tail = projection.Copy(); tail["id"] = "zzz-tail-"+i.ToString("D4"); await s.Store.CommitAsync(partition,[RecordWrite.Create(tail)],default); }
+        var memory = new MemoryProjectionRepository(s.Store);
+        var previous = await Assert.ThrowsAsync<DomainException>(() => memory.FindAsync(new([],[],[]),s.Owner.Search,default));
+        Assert.Equal("SEARCH_LIMIT_EXCEEDED",previous.Code);
+        var counted = new CountedBrowse(memory); var ai = new FakeAi(); var identities = new IdentityResolver(s.Config);
+        var knowledge = new KnowledgeService(s.Repo,s.Store,s.Chat,s.Fence,ai,ai,identities,s.Config,TimeProvider.System);
+        var workspace = new AnonymousWorkspaceService(s.Repo,counted,new SourceGuard(s.Repo),s.Fence,s.Chat,knowledge,identities,s.Config,TimeProvider.System);
+        var cases = await workspace.ConsumeAsync(s.Owner,ct => workspace.CasesUnderFenceAsync(s.Owner,query,ct),default);
+        Assert.Equal(100,cases.Items.Length); Assert.Equal(100,cases.Items.Select(c => c.Id).Distinct().Count()); Assert.Equal(2,counted.Pages);
+        PrivateIdentifiersAbsent(s,cases);
     }
     [Fact] public async Task Candidate_owner_rebinding_is_rejected_even_when_projection_version_is_unchanged()
     {
