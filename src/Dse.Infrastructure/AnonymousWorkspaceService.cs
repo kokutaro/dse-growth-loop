@@ -186,6 +186,13 @@ public sealed partial class AnonymousWorkspaceService
     }
     private async Task<AnonymousWorkspaceChallenge> ChallengeDtoAsync(ActorAccess actor, StoredRecord challenge, StoredRecord session, JsonObject map,CancellationToken ct)
     {
+        if (session.Value.Text("ownerId") != actor.PrincipalId)
+        {
+            var participation = await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId,session.Value.Text("id")),ConversationService.ParticipationId(actor.PersonId),ct)
+                ?? throw new DomainException(404,"NOT_FOUND");
+            var reference = await EnsureInvitationMapAsync(actor,map,participation.Value,ct);
+            await DecisionAuthorityAsync(actor,reference.Value.Text("id"),ct);
+        }
         var people = map["aliases"]!.AsArray().Select(x => x!.AsObject()).Select(x => new AnonymousWorkspaceResolvedParticipant(x.Text("internalPersonId"),x.Text("internalPrincipalId"),x.Text("aliasId"),x.Text("aliasLabel"),false));
         return new(map.Text("publicChallengeId"), AccessPolicy.CanRead(actor, session.Value) ? map.Text("id") : null,
             await DisplayTextAsync(actor,challenge.Value.Text("title"),people,ct), await DisplayTextAsync(actor,challenge.Value.Text("summary"),people,ct), session.Value.Text("status"),

@@ -34,3 +34,8 @@ Azure outboxは毎reloadのUUIDを廃止し、サーバーが認可した部屋�
 - [outbox E2E](e2e-outbox-final.log): 4成功。Demo/Azure fixtureで503と201応答消失後の同じkey/client ID、reload後の再試行、DB保存1件を確認。Azure fixtureでは同じタブの主体切替後に各自己aliasの未保存本文だけを復元。ETag競合と失権時の画面消去も確認。実Entra/実Azureは呼ばない。
 - [認証単体](auth-outbox-final.log): 5成功。popup失敗時もupload resume IDとprivate outboxを直ちに破棄、他用途storageは保持。
 - [型チェック/build](build-outbox-final.log): 成功。Python配置契約コードは前節から変更なし、127成功の証跡を保持。
+
+### 課題一覧・詳細の経路も再照合
+
+依頼内容を含むChallenge DTOの非owner読取も、同じ現在recipient/保存済みPrincipalの照合へ接続。参加依頼だけを拒否して別の課題URLから本文を読める経路を残さない。上記8回帰でInvitation/Challengeそれぞれの一覧と詳細を確認し、正常な旧mappingも保持。
+[最新.NET全体](dotnet-invitation-all-dto-full.log)は554成功。[正常系ブラウザー回帰](e2e-invitation-reading-final.log)は3成功（社員向け匿名リクエスト/応答、追加承認なしの参加・会話、辞退後の閲覧拒否）。以前のログは当時の結果として保持。

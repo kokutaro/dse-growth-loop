@@ -215,6 +215,7 @@ public sealed class AnonymousWorkspaceTests
         }
         var valid = await s.Workspace.ConsumeAsync(s.Guest,ct => s.Workspace.InvitationUnderFenceAsync(s.Guest,invitation.Id,ct),default);
         Assert.Equal(invitation.Title,valid.Title); PrivateIdentifiersAbsent(s,valid);
+        Assert.Equal(invitation.Title,(await s.Workspace.ConsumeAsync(s.Guest,ct => s.Workspace.ChallengeUnderFenceAsync(s.Guest,s.Challenge,ct),default)).Title);
         var actor = s.Guest;
         if (change is "profile" or "rebind")
         {
@@ -231,12 +232,20 @@ public sealed class AnonymousWorkspaceTests
         if (change == "scope") actor = actor with { ScopeIds = ["outside"] };
         var opened = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationUnderFenceAsync(actor,invitation.Id,ct),default));
         Assert.Equal(404,opened.Status);
+        var challenge = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(actor,ct => s.Workspace.ChallengeUnderFenceAsync(actor,s.Challenge,ct),default));
+        Assert.Equal(404,challenge.Status);
         // The list may omit an out-of-scope challenge before reaching its DTO.
-        if (change == "scope") Assert.Empty((await s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationsUnderFenceAsync(actor,100,null,ct),default)).Items);
+        if (change == "scope")
+        {
+            Assert.Empty((await s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationsUnderFenceAsync(actor,100,null,ct),default)).Items);
+            Assert.Empty((await s.Workspace.ConsumeAsync(actor,ct => s.Workspace.ChallengesUnderFenceAsync(actor,100,null,ct),default)).Items);
+        }
         else
         {
             var listed = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationsUnderFenceAsync(actor,100,null,ct),default));
             Assert.Equal(404,listed.Status);
+            var challenges = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(actor,ct => s.Workspace.ChallengesUnderFenceAsync(actor,100,null,ct),default));
+            Assert.Equal(404,challenges.Status);
         }
     }
     [Fact] public async Task Status_only_replay_rechecks_current_binding_and_scope_after_departure()
