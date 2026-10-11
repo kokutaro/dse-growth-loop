@@ -23,3 +23,14 @@ Copilot `4240540850` の「Auth Bindings/Grantsが渡らない」という指摘
 ## 限界
 
 実Entra/実AI/複数replica/最新台帳/累計費用/独立停止・復元は未検証。表示名は自己申告、自由文の完全匿名化は未達。Azure起動・設定/権限変更・有料AIは実施していない。追加設計3文書はPR外、Issueは閉じない。
+
+## 参加依頼の閲覧認可とAzure outboxの追加修正
+
+Copilotレビュー5482213637の指摘に対応。非ownerのInvitation DTOは判断APIと同じDecisionAuthorityAsyncを使用し、現在Binding/Profile/Scopeと保存済みrecipientPrincipalId（旧mappingは既存aliasのPrincipal）を再確認してから本文を構築する。person IDだけの再割当てで過去の依頼詳細を取得できない。通常・旧mappingそれぞれでPrincipal再紐付け、Binding無効化、Profile owner変更、Scope喪失の8回帰を追加。
+
+Azure outboxは毎reloadのUUIDを廃止し、サーバーが認可した部屋内の自己aliasとroom/tenant/modeで分離。raw person/principal IDを追加していない。自己aliasを取得できない場合は保存・送信しない。ログアウト時はpopupを待つ前にprivate outboxも破棄する。
+
+- [.NET全体最新ログ](dotnet-invitation-full.log): 554成功、失敗0、skip0。以前の546件ログはその時点の記録として保持する。
+- [outbox E2E](e2e-outbox-final.log): 4成功。Demo/Azure fixtureで503と201応答消失後の同じkey/client ID、reload後の再試行、DB保存1件を確認。Azure fixtureでは同じタブの主体切替後に各自己aliasの未保存本文だけを復元。ETag競合と失権時の画面消去も確認。実Entra/実Azureは呼ばない。
+- [認証単体](auth-outbox-final.log): 5成功。popup失敗時もupload resume IDとprivate outboxを直ちに破棄、他用途storageは保持。
+- [型チェック/build](build-outbox-final.log): 成功。Python配置契約コードは前節から変更なし、127成功の証跡を保持。

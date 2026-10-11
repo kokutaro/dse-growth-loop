@@ -60,7 +60,7 @@ async function compose(page: Page, title = '調査記録の引き継ぎを整理
   await page.getByLabel('困っていること・相談したいこと').fill('架空の相談です。再現条件と試したことを整理したいです。');
 }
 async function post(page: Page) {
-  await page.getByRole('button', { name: '匿名名で投稿する（ローカル）', exact: true }).click();
+  await page.getByRole('button', { name: /^匿名名で投稿する(?:（ローカル）)?$/ }).click();
   await expect(page.getByLabel('メッセージ', { exact: true })).toBeVisible();
 }
 async function invite(page: Page) {
@@ -162,22 +162,43 @@ test('辞退した依頼では会話を開けない', async ({ page }) => {
   await expect(page.getByLabel('メッセージ', { exact: true })).not.toBeVisible();
 });
 
-test('会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する', async ({ page, request }) => {
+for (const mode of ['Demo', 'Azure'] as const) test(`${mode}: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する`, async ({ page, request }) => {
+  let azureActor = 'demo-person-01';
+  if (mode === 'Azure') {
+    // Authenticate only against a local Demo API fixture; no Entra calls.
+    await page.route('**/src/auth.ts*', route => route.fulfill({ contentType: 'application/javascript', body: 'export async function initializeAuth() {} export async function getToken() { return "fixture-token"; } export async function endAuth() {}' }));
+    await page.route('**/api/config', route => route.fulfill({ json: { mode: 'Azure', tenantId: 'fixture-tenant', clientId: 'fixture', scope: 'fixture' } }));
+    await page.route('**/api/v1/**', route => route.continue({ headers: { ...route.request().headers(), 'X-Demo-Person': azureActor } }));
+  }
   await compose(page); await post(page);
   const roomUrl = page.url();
+  let ownOutbox = '', otherOutbox = '';
+  if (mode === 'Azure') {
+    await invite(page);
+    const guest = { 'X-Demo-Person': 'demo-person-02' };
+    const invitations = await (await read(request, '/api/v1/workspace/invitations', { headers: guest })).json();
+    const invitation = invitations.items[0];
+    expect((await request.patch(`/api/v1/workspace/invitations/${invitation.id}`, { headers: { ...guest, 'If-Match': invitation.etag, 'Idempotency-Key': crypto.randomUUID() }, data: { decision: 'accepted' } })).status()).toBe(200);
+    await page.getByRole('button', { name: '会話を更新', exact: true }).click();
+    const challenges = await (await read(request, '/api/v1/workspace/challenges', { headers: owner })).json();
+    const room = await (await read(request, `/api/v1/workspace/rooms/${challenges.items[0].roomId}`, { headers: owner })).json();
+    ownOutbox = `dse-workspace-outbox:v2:Azure:fixture-tenant:${room.id}:${room.participants.find((p: { isSelf: boolean }) => p.isSelf).aliasId}`;
+    otherOutbox = `dse-workspace-outbox:v2:Azure:fixture-tenant:${room.id}:${room.participants.find((p: { isSelf: boolean }) => !p.isSelf).aliasId}`;
+    await page.evaluate(key => sessionStorage.setItem(key, JSON.stringify({ body: '別アカウントの未保存本文', key: 'other-key', clientMessageId: 'other-client' })), otherOutbox);
+  }
   const keys: string[] = [], clients: string[] = [];
   let attempts = 0;
   let committed!: (status: number) => void;
   const saved = new Promise<number>(resolve => { committed = resolve; });
   await page.route('**/api/v1/workspace/rooms/*/messages', async route => {
-    if (route.request().method() !== 'POST') return route.continue();
+    if (route.request().method() !== 'POST') return route.fallback();
     attempts++; keys.push(route.request().headers()['idempotency-key']); clients.push(route.request().postDataJSON().clientMessageId);
     if (attempts === 1) return route.fulfill({ status: 503, json: { code: 'SAVE_FAILED' } });
-    if (attempts === 2) { const response = await route.fetch(); committed(response.status()); return route.abort(); }
-    await route.continue();
+    if (attempts === 2) { const response = await route.fetch({ headers: { ...route.request().headers(), ...(mode === 'Azure' ? { 'X-Demo-Person': azureActor } : {}) } }); committed(response.status()); return route.abort(); }
+    await route.fallback();
   });
   await page.getByLabel('メッセージ', { exact: true }).fill('再送しても重複しない記録');
-  await page.getByRole('button', { name: '送信する（ローカル）' }).click();
+  await page.getByRole('button', { name: /^送信する(?:（ローカル）)?$/ }).click();
   await expect(page.getByText('未保存（結果未確認）。同じキーで再試行し、重複を防ぎます。')).toBeVisible();
   await expect(page.getByRole('alert')).toContainText('保存を確認できませんでした');
   await page.reload();
@@ -192,6 +213,14 @@ test('会話保存の失敗と応答消失で同じキーを保持し、再読�
   const challenges = await (await read(request, '/api/v1/workspace/challenges', { headers: owner })).json();
   const rows = await (await read(request, `/api/v1/workspace/rooms/${challenges.items[0].roomId}/messages`, { headers: owner })).json();
   expect(rows.items).toHaveLength(1); expect(page.url()).toBe(roomUrl);
+  if (mode === 'Azure') {
+    expect(await page.evaluate(key => sessionStorage.getItem(key), ownOutbox)).toBeNull();
+    await page.evaluate(key => sessionStorage.setItem(key, JSON.stringify({ body: '相談者だけの未保存本文', key: 'owner-key', clientMessageId: 'owner-client' })), ownOutbox);
+    azureActor = 'demo-person-02'; await page.reload();
+    await expect(page.getByRole('button', { name: '同じ内容で保存を再確認' })).toBeVisible();
+    await expect(page.getByLabel('メッセージ', { exact: true })).toHaveValue('別アカウントの未保存本文');
+    await expect(page.getByLabel('メッセージ', { exact: true })).not.toHaveValue('相談者だけの未保存本文');
+  }
 });
 
 test('ETag競合では入力を保持し、再送で最新版を確認する', async ({ page }) => {

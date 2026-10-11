@@ -1,0 +1,62 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs tests/workspace.spec.ts --grep 会話保存の失敗|ETag競合|参加権限を失った --trace on
+
+
+[isolated 1/4] Demo: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+[WebServer] (node:16883) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:16884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:165:48 › Demo: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+  1 passed (4.8s)
+
+[isolated 2/4] Azure: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+[WebServer] (node:16948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:16959) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:165:48 › Azure: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+  1 passed (5.2s)
+
+[isolated 3/4] ETag競合では入力を保持し、再送で最新版を確認する
+[WebServer] (node:17034) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:17238) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:226:1 › ETag競合では入力を保持し、再送で最新版を確認する
+  1 passed (4.3s)
+
+[isolated 4/4] 参加権限を失ったルームは本文を消して送信と公開操作を閉じる
+[WebServer] (node:17296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:17297) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:245:1 › 参加権限を失ったルームは本文を消して送信と公開操作を閉じる
+  1 passed (4.3s)
+
+Isolated E2E: 4 passed, 0 failed (4 tests).

@@ -199,6 +199,46 @@ public sealed class AnonymousWorkspaceTests
         var newKey = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.DecideAsync(s.Guest,invitation.Id,Key(),invitation.Etag,new(decision),default)); Assert.Equal(409,newKey.Status);
         await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeRoomAsync(s.Guest,s.Room,(r,ct) => s.Workspace.MessagesUnderFenceAsync(s.Guest,r,0,10,ct),default));
     }
+    [Theory]
+    [InlineData(false,"rebind")] [InlineData(true,"rebind")]
+    [InlineData(false,"disabled")] [InlineData(true,"disabled")]
+    [InlineData(false,"profile")] [InlineData(true,"profile")]
+    [InlineData(false,"scope")] [InlineData(true,"scope")]
+    public async Task Invitation_reads_recheck_current_recipient_and_original_principal(bool legacy,string change)
+    {
+        var s = await Create(true); var invitation = await Invite(s); var partition = RecordPartition.Catalog(s.Owner.TenantId);
+        if (legacy)
+        {
+            var reference = (await s.Repo.ReadAsync(partition,invitation.Id,default))!;
+            reference.Value.Remove("recipientPrincipalId");
+            await s.Repo.CommitAsync(partition,[RecordWrite.Replace(reference.Value,reference.ETag)],default);
+        }
+        var valid = await s.Workspace.ConsumeAsync(s.Guest,ct => s.Workspace.InvitationUnderFenceAsync(s.Guest,invitation.Id,ct),default);
+        Assert.Equal(invitation.Title,valid.Title); PrivateIdentifiersAbsent(s,valid);
+        var actor = s.Guest;
+        if (change is "profile" or "rebind")
+        {
+            var profile = (await s.Repo.ReadAsync(partition,s.Guest.PersonId,default))!; profile.Value["ownerId"] = "replacement-principal";
+            await s.Repo.CommitAsync(partition,[RecordWrite.Replace(profile.Value,profile.ETag)],default);
+        }
+        if (change == "rebind")
+        {
+            s.Config["Auth:Bindings:1:PrincipalId"] = "replacement-principal";
+            s.Config["Auth:Grants:1:PrincipalId"] = "replacement-principal";
+            actor = new IdentityResolver(s.Config).ResolvePerson(s.Owner.TenantId,s.Guest.PersonId)!;
+        }
+        if (change == "disabled") s.Config["Auth:Bindings:1:Enabled"] = "false";
+        if (change == "scope") actor = actor with { ScopeIds = ["outside"] };
+        var opened = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationUnderFenceAsync(actor,invitation.Id,ct),default));
+        Assert.Equal(404,opened.Status);
+        // The list may omit an out-of-scope challenge before reaching its DTO.
+        if (change == "scope") Assert.Empty((await s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationsUnderFenceAsync(actor,100,null,ct),default)).Items);
+        else
+        {
+            var listed = await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationsUnderFenceAsync(actor,100,null,ct),default));
+            Assert.Equal(404,listed.Status);
+        }
+    }
     [Fact] public async Task Status_only_replay_rechecks_current_binding_and_scope_after_departure()
     {
         var s = await Create(true); var invitation = await Invite(s); var key = Key();

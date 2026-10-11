@@ -51,7 +51,6 @@ function Workspace({ config }: { config: AppConfig }) {
   const [error, setError] = useState(''), [notice, setNotice] = useState(''), [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('すべて');
   const [capabilities, setCapabilities] = useState<WorkspaceCapabilities>();
-  const [identitySession] = useState(() => crypto.randomUUID());
   const requestVersion = useRef(0);
   const api = useMemo(() => workspaceApi(config, person), [config, person]);
   const [page, id, caseQuery] = route.split('/');
@@ -119,7 +118,7 @@ function Workspace({ config }: { config: AppConfig }) {
       {page === 'invitations' && <><Head title="参加依頼" lead="相談内容を確認し、できる範囲で協力できます。" /><div className="cards">{invites.map(a => <InviteCard key={a.challenge.id} activity={a} />)}</div>{!invites.length && <Empty text="回答待ちの参加依頼はありません。" />}</>}
       {page === 'invitation' && (selected ? <Invitation activity={selected} api={api} onChanged={async accepted => { await load(); go(accepted ? `room/${selected.challenge.id}` : 'invitations'); }} /> : <Missing loading={loading} />)}
       {page === 'rooms' && <><Head title="活動ルーム" lead="相談した活動も、協力している活動も、ここから。" /><div className="cards">{rooms.map(a => <ActivityCard key={a.challenge.id} activity={a} />)}</div>{!rooms.length && <Empty text="参加している活動はありません。" />}</>}
-      {page === 'room' && (selected?.session ? <Room key={`${person}:${id}`} activity={selected} api={api} person={config.mode === "Demo" ? person : identitySession} config={config} onChanged={load} /> : <Missing loading={loading} />)}
+      {page === 'room' && (selected?.session ? <Room key={`${person}:${id}`} activity={selected} api={api} person={person} config={config} onChanged={load} /> : <Missing loading={loading} />)}
       {page === 'knowledge' && <CaseLibrary api={api} initial={cases} />}
       {page === 'case' && <CaseDetail api={api} id={id} key={`${person}:${id}`} />}
       {page === 'profile' && <><Head title="マイページ" lead="自分の経験と、協力できる範囲を登録します。" /><div className="notice">このページは自分用です。実名開示・事例公開の同意は活動ごとに確認します。</div><Profiles key={`profile:${person}`} config={config} person={person} /><Documents key={`documents:${person}`} config={config} person={person} /><BusinessAnalysisPanel key={`analysis:${person}`} api={api} /></>}
@@ -165,8 +164,14 @@ function Room({ activity, api, person, config, onChanged }: { activity: Activity
   const active = useRef(true), lock = useRef(false);
   const [pendingState, setPendingState] = useState(false);
   const request = useRef(0);
-  const storageKey = `dse-workspace-outbox:${config.tenantId}:${person}:${activity.session!.id}`;
+  // A server-authorized room-local self alias is stable across reloads and cannot
+  // restore another account's outbox. Never substitute the fixed client Demo ID.
+  const selfAlias = activity.session!.participants.find(p => p.isSelf)?.aliasId;
+  const storageKey = config.mode === 'Demo' ? `dse-workspace-outbox:${config.tenantId}:${person}:${activity.session!.id}`
+    : selfAlias ? `dse-workspace-outbox:v2:Azure:${config.tenantId}:${activity.session!.id}:${selfAlias}` : undefined;
   useEffect(() => {
+    pending.current = undefined; setText(''); setPendingState(false);
+    if (!storageKey) return;
     try { const saved = JSON.parse(sessionStorage.getItem(storageKey) ?? 'null'); if (saved?.body && saved?.key && saved?.clientMessageId) { pending.current = saved; setText(saved.body); setPendingState(true); } } catch { /* Invalid local pending data is not a saved message. */ }
   }, [storageKey]);
   const refresh = useCallback(async () => {
@@ -177,7 +182,7 @@ function Room({ activity, api, person, config, onChanged }: { activity: Activity
       if (!active.current || generation !== request.current) return;
       setSession(current); setMessages(all); setRevoked(false);
       if (pending.current && all.some(m => m.clientMessageId === pending.current?.clientMessageId && m.body === pending.current?.body)) {
-        pending.current = undefined; setPendingState(false); setText(''); sessionStorage.removeItem(storageKey);
+        pending.current = undefined; setPendingState(false); setText(''); if (storageKey) sessionStorage.removeItem(storageKey);
       }
     } catch (e) {
       if (!active.current || generation !== request.current) return;
@@ -192,6 +197,7 @@ function Room({ activity, api, person, config, onChanged }: { activity: Activity
   }, [refresh]);
   async function send() {
     if (lock.current || session.status === 'closed') return;
+    if (!storageKey) { setError('本人の参加状態を確認できません。最新の状態を読み込んでください。'); return; }
     lock.current = true; setBusy(true); setError('');
     const message = pending.current ?? { body: text.trim(), clientMessageId: crypto.randomUUID(), key: crypto.randomUUID() };
     pending.current = message; setPendingState(true); sessionStorage.setItem(storageKey, JSON.stringify(message));

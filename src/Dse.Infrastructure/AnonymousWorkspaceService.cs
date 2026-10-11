@@ -244,6 +244,9 @@ public sealed partial class AnonymousWorkspaceService
     {
         var pid = participation.Value.Text("personId"); var owner = session.Value.Text("ownerId") == actor.PrincipalId;
         if (!AccessPolicy.InScope(actor, session.Value) || (!owner && pid != actor.PersonId)) throw new DomainException(404, "NOT_FOUND");
+        // Listing/opening an invitation grants the same recipient authority as a
+        // decision, including the original stored principal and legacy alias pin.
+        if (!owner) await DecisionAuthorityAsync(actor, reference.Value.Text("id"), ct);
         var aliases = map["aliases"]!.AsArray();
         if (!aliases.Any(x => x!.AsObject().Text("internalPersonId") == pid))
         {

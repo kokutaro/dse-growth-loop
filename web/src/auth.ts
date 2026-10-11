@@ -54,11 +54,11 @@ async function acquireToken(config: AppConfig) {
 }
 export async function endAuth() {
   ended = true;
-  // Drop only this application's upload-resume IDs before any logout popup waits.
+  // Drop this application's private resume IDs and outboxes before logout waits.
   if (typeof sessionStorage !== 'undefined') {
     for (let index = sessionStorage.length - 1; index >= 0; index--) {
       const key = sessionStorage.key(index);
-      if (key === 'dse-upload-job' || key?.startsWith('dse-upload-job:')) sessionStorage.removeItem(key);
+      if (key === 'dse-upload-job' || key?.startsWith('dse-upload-job:') || key?.startsWith('dse-workspace-outbox:')) sessionStorage.removeItem(key);
     }
   }
   if (!instance) return;
