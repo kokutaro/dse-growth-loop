@@ -1,0 +1,59 @@
+{
+  "checkedAtUtc": "2026-10-08T13:09:33.446618+00:00",
+  "jobs": [
+    {
+      "name": "dse-validation-api",
+      "readSucceeded": true,
+      "executionsReturned": 1,
+      "runningExecutions": 0
+    },
+    {
+      "name": "dse-validation-worker",
+      "readSucceeded": true,
+      "executionsReturned": 1,
+      "runningExecutions": 0
+    },
+    {
+      "name": "dse-seed-demo",
+      "readSucceeded": true,
+      "executionsReturned": 1,
+      "runningExecutions": 0
+    },
+    {
+      "name": "dse-validation-ai",
+      "readSucceeded": true,
+      "executionsReturned": 1,
+      "runningExecutions": 0
+    },
+    {
+      "name": "dse-validation-reconcile",
+      "readSucceeded": true,
+      "executionsReturned": 1,
+      "runningExecutions": 0
+    },
+    {
+      "name": "dse-validation-once",
+      "readSucceeded": true,
+      "executionsReturned": 1,
+      "runningExecutions": 0
+    },
+    {
+      "name": "dse-validation-jobs",
+      "readSucceeded": true,
+      "executionsReturned": 2,
+      "runningExecutions": 0
+    },
+    {
+      "name": "dse-validation-chat13",
+      "readSucceeded": true,
+      "executionsReturned": 4,
+      "runningExecutions": 0
+    },
+    {
+      "name": "dse-validation-issue30",
+      "readSucceeded": true,
+      "executionsReturned": 59,
+      "runningExecutions": 0
+    }
+  ]
+}

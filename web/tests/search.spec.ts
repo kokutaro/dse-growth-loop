@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test("ダミーの相談候補と根拠を検索できる", async ({ page }) => {
   // Initial upload authorization holds the tenant fence. Wait for that read before searching.
   const uploadContext = page.waitForResponse(response => response.url().endsWith("/api/v1/upload-context") && response.ok());
-  await page.goto("/");
+  await page.goto("/validation.html");
   await (await uploadContext).finished();
   await expect(page.getByText("ローカル・ダミーデータ")).toBeVisible();
   await page.getByRole("button", { name: "相談候補を探す" }).click();
@@ -18,7 +18,7 @@ test("ダミーの相談候補と根拠を検索できる", async ({ page }) => 
 });
 
 test("副分類のソフトウェア経験を拾う", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("分野").selectOption("software");
   await page.getByLabel("検索語").fill("");
   await page.getByLabel("引き継ぎ経験の補助判定を加える").uncheck();
@@ -30,7 +30,7 @@ test("副分類のソフトウェア経験を拾う", async ({ page }) => {
 });
 
 test("空結果と障害を区別する", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("分野").selectOption("");
   await page.getByLabel("検索語").fill("該当しない語");
   await page.getByLabel("引き継ぎ経験の補助判定を加える").uncheck();
@@ -42,7 +42,7 @@ test("空結果と障害を区別する", async ({ page }) => {
 });
 
 test("fake AIで自然文・条件編集・結果・出典を確認できる", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("自然文の課題").fill("ソフトウェアの引き継ぎを改善したい");
   await page.getByRole("button", { name: "自然文から条件を生成" }).click();
   await expect(page.getByText("条件を生成しました。", { exact: false })).toBeVisible();
@@ -60,7 +60,7 @@ test("fake AIで自然文・条件編集・結果・出典を確認できる", a
 
 test("分類停止時に手動条件へ戻せる", async ({ page }) => {
   await page.route("**/api/v2/search/conditions", route => route.fulfill({ json: { conditions: null, status: "manual_required:stopped" } }));
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("自然文の課題").fill("引き継ぎの改善");
   await page.getByRole("button", { name: "自然文から条件を生成" }).click();
   await expect(page.getByText("分類できませんでした。", { exact: false })).toBeVisible();
@@ -70,7 +70,7 @@ test("分類停止時に手動条件へ戻せる", async ({ page }) => {
 });
 
 test("自然文だけでも一度の検索で条件生成から結果へ進む", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("自然文の課題").fill("ソフトウェアの引き継ぎを改善したい");
   await page.getByRole("button", { name: "相談候補を探す" }).click();
   await expect(page.getByText("根拠に基づく再順位付け済み", { exact: true })).toBeVisible();
@@ -84,7 +84,7 @@ test("リランク失敗を正解なしと区別し、未評価候補を推薦�
     runId: "failed-run", rerankingStatus: "not_performed:inputlimit", assessments: [],
     primary: { candidates: [{ entityId: "unverified", entityType: "person", title: "未評価の人物", routes: [], units: [] }], rerankingStatus: "not_performed:inputlimit" }
   } }));
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("自然文の課題").fill("運用改善を相談したい");
   await page.getByRole("button", { name: "相談候補を探す" }).click();
   await expect(page.getByText("候補の評価を完了できませんでした", { exact: true })).toBeVisible();
@@ -93,7 +93,7 @@ test("リランク失敗を正解なしと区別し、未評価候補を推薦�
 });
 
 test("事例の指定を検索APIへ送り、人物を混ぜずに取得する", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("自然文の課題").fill("引き継ぎ改善の事例を探したい");
   await page.getByLabel("検索対象", { exact: true }).selectOption("knowledge");
   const request = page.waitForRequest(r => r.url().endsWith("/api/v2/search"));
@@ -110,7 +110,7 @@ for (const types of [["knowledge", "person", "knowledge", "person"], ["person"],
       units: [{ summary: "架空の原文", sourceRefs: [], confirmationState: "fixture" }] }));
     await page.route("**/api/v2/search", route => route.fulfill({ json: { runId: "grouped-run", rerankingStatus: candidates.length ? "succeeded" : "no_candidates",
       primary: { candidates, rerankingStatus: candidates.length ? "succeeded" : "no_candidates", matchedUnits: candidates.length, beforeLimit: candidates.length }, assessments: [] } }));
-    await page.goto("/");
+    await page.goto("/validation.html");
     await page.getByLabel("自然文の課題").fill("経験と事例を探したい");
     await page.getByRole("button", { name: "相談候補を探す" }).click();
     for (const [type, name] of [["person", "相談候補"], ["knowledge", "参考事例"]]) {
@@ -129,7 +129,7 @@ for (const code of ["CLASSIFICATION_OUT_OF_SCOPE", "CLASSIFICATION_MANUAL_REQUIR
       bodies.push(route.request().postDataJSON());
       return route.fulfill({ status: 422, json: { code } });
     });
-    await page.goto("/");
+    await page.goto("/validation.html");
     await page.getByLabel("自然文の課題").fill("以前の課題");
     await page.getByLabel("複数分野・技術要素の分類ID").fill("software");
     await page.getByLabel("自然文の課題").fill("対象分野が不明の新しい課題");

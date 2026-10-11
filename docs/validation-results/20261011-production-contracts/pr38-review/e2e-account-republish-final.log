@@ -1,0 +1,146 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs tests/documents.spec.ts tests/profiles.spec.ts --trace on
+
+
+[isolated 1/10] docxをアップロードして機械抽出結果と出典を確認できる
+[WebServer] (node:90404) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:90415) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:5:3 › docxをアップロードして機械抽出結果と出典を確認できる
+  1 passed (10.9s)
+
+[isolated 2/10] xlsxをアップロードして機械抽出結果と出典を確認できる
+[WebServer] (node:90911) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:90912) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:5:3 › xlsxをアップロードして機械抽出結果と出典を確認できる
+  1 passed (8.0s)
+
+[isolated 3/10] 偽装Officeファイルは拒否して入力を保持する
+[WebServer] (node:91412) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:91415) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:20:1 › 偽装Officeファイルは拒否して入力を保持する
+  1 passed (3.0s)
+
+[isolated 4/10] 処理待ちと失敗を区別して手動再実行できる（状態API fixture）
+[WebServer] (node:91475) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:91477) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:28:1 › 処理待ちと失敗を区別して手動再実行できる（状態API fixture）
+  1 passed (3.2s)
+
+[isolated 5/10] Azureの取込再開・アップロード・再実行はサーバーの本人IDで分離する（認証・API fixture）
+[WebServer] (node:91523) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:91524) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:45:1 › Azureの取込再開・アップロード・再実行はサーバーの本人IDで分離する（認証・API fixture）
+  1 passed (3.4s)
+
+[isolated 6/10] 副業務を原文付きの検索断片として追加し経験月数を重複加算しない
+[WebServer] (node:91580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:91581) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:4:1 › 副業務を原文付きの検索断片として追加し経験月数を重複加算しない
+  1 passed (5.2s)
+
+[isolated 7/10] docxから本人訂正と手動一次検索までfake AIで通る
+[WebServer] (node:91650) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:91651) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:31:3 › docxから本人訂正と手動一次検索までfake AIで通る
+  1 passed (9.8s)
+
+[isolated 8/10] xlsxから本人訂正と手動一次検索までfake AIで通る
+[WebServer] (node:91996) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:91997) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:31:3 › xlsxから本人訂正と手動一次検索までfake AIで通る
+  1 passed (9.8s)
+
+[isolated 9/10] 公開撤回を検索に反映し、明示再公開で復旧する
+[WebServer] (node:92311) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:92312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:57:1 › 公開撤回を検索に反映し、明示再公開で復旧する
+  1 passed (9.6s)
+
+[isolated 10/10] 再公開のACCESS_BUSYだけを同じ冪等キーで再試行し、412は本人確認に戻す
+[WebServer] (node:92601) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:92612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:78:1 › 再公開のACCESS_BUSYだけを同じ冪等キーで再試行し、412は本人確認に戻す
+  1 passed (3.9s)
+
+Isolated E2E: 10 passed, 0 failed (10 tests).

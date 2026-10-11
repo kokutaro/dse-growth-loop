@@ -2,9 +2,15 @@ using Dse.Infrastructure;
 using Dse.Domain;
 
 var command = args.Length == 0 ? "--consume" : args[0];
-if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--chat-smoke" or "--connection-smoke" or "--recover-ai-slot" or "--publish-knowledge"))
-    throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --connection-smoke / --recover-ai-slot / --publish-knowledge");
+if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--chat-smoke" or "--connection-smoke" or "--recover-ai-slot" or "--publish-knowledge" or "--analyze-business" or "--inspect-business-analysis-recovery" or "--recover-business-analysis"))
+    throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --connection-smoke / --recover-ai-slot / --publish-knowledge / --analyze-business / --inspect-business-analysis-recovery / --recover-business-analysis");
 var builder = Host.CreateApplicationBuilder([]);
+// Validate offline/Live switches before creating storage, credentials, or transports.
+if (command == "--analyze-business") BusinessAnalysisLiveRuntime.ValidateForStart(builder.Configuration);
+if (command is "--inspect-business-analysis-recovery" or "--recover-business-analysis")
+    BusinessAnalysisCommands.ValidateRecovery(builder.Configuration, builder.Environment.IsDevelopment(), command == "--recover-business-analysis");
+if (command == "--analyze-business" && builder.Configuration["Data:Mode"] == "Demo" && string.IsNullOrWhiteSpace(builder.Configuration["Data:LocalPath"]))
+    throw new InvalidOperationException("Business analysis worker requires Data__LocalPath for persistent run idempotency.");
 if (command == "--ai-smoke") AiSmoke.Validate(builder.Configuration);
 if (command == "--chat-smoke") ChatSmoke.Validate(builder.Configuration);
 if (command == "--connection-smoke")
@@ -24,6 +30,36 @@ using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(command == 
 var ct = timeout.Token;
 switch (command)
 {
+    case "--analyze-business":
+        var analysisPerson = builder.Configuration["BusinessAnalysis:PersonId"];
+        var analysisRun = builder.Configuration["BusinessAnalysis:RunId"];
+        if (string.IsNullOrWhiteSpace(analysisPerson) || !RecordJson.IsId(analysisRun ?? "") ||
+            !DateTimeOffset.TryParse(builder.Configuration["BusinessAnalysis:Cutoff"], System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.RoundtripKind, out var cutoff))
+            throw new ArgumentException("BusinessAnalysis__PersonId / RunId / Cutoff are required");
+        var analysisActor = builder.Configuration["Data:Mode"] == "Demo"
+            ? IdentityResolver.DemoPerson(analysisPerson) ?? throw new DomainException(403, "FORBIDDEN")
+            : host.Services.GetRequiredService<IdentityResolver>().ResolvePerson(tenant, analysisPerson) ?? throw new DomainException(403, "FORBIDDEN");
+        var analysis = await host.Services.GetRequiredService<BusinessAnalysisService>().StartAsync(analysisActor,
+            new(analysisRun!, cutoff, BusinessAnalysisLiveRuntime.ConfigVersion(builder.Configuration)), analysisRun!, ct);
+        Console.WriteLine($"Analysis run={analysis.Text("runId")} status={analysis.Text("status")} mode={analysis.Text("processingMode")}");
+        break;
+    case "--inspect-business-analysis-recovery":
+    case "--recover-business-analysis":
+        var recoveryActor = BusinessAnalysisCommands.RecoveryActor(builder.Configuration, builder.Environment.IsDevelopment(), tenant);
+        var recovery = host.Services.GetRequiredService<BusinessAnalysisRecovery>();
+        if (command == "--inspect-business-analysis-recovery")
+        {
+            var inspected = await recovery.InspectAsync(recoveryActor, builder.Configuration["Recovery:OwnerPrincipalId"]!,
+                builder.Configuration["Recovery:RunId"]!, ct);
+            Console.WriteLine(inspected.ToJsonString());
+        }
+        else
+        {
+            var recovered = await recovery.RecoverAsync(recoveryActor, BusinessAnalysisCommands.RecoveryRequest(builder.Configuration), ct);
+            Console.WriteLine(recovered.ToJsonString());
+        }
+        break;
     case "--chat-smoke":
         if (!await ChatSmoke.RunAsync(builder.Configuration, host.Services.GetRequiredService<IdentityResolver>(),
             host.Services.GetRequiredService<IPrimaryRepository>(), host.Services.GetRequiredService<ConversationService>(),

@@ -9,10 +9,12 @@ public sealed record AccessGrant(string PrincipalId, string[] ScopeIds);
 
 public sealed class IdentityResolver
 {
+    internal IConfiguration Configuration { get; }
     private readonly IdentityBinding[] bindings;
     private readonly AccessGrant[] grants;
     public IdentityResolver(IConfiguration config)
     {
+        Configuration = config;
         bindings = config.GetSection("Auth:Bindings").Get<IdentityBinding[]>() ?? [];
         grants = config.GetSection("Auth:Grants").Get<AccessGrant[]>() ?? [];
         var active = bindings.Where(x => x.Enabled).ToArray();
@@ -41,6 +43,6 @@ public sealed class IdentityResolver
         return b is null || g is null ? null : new(tenant, b.PrincipalId, b.PersonId, b.Roles, g.ScopeIds);
     }
     public static ActorAccess? DemoPerson(string person) => person is "demo-person-01" or "demo-person-02" or "demo-person-03"
-        ? new("demo", "principal-demo-" + person[^2..], person, person == "demo-person-01" ? ["member", "publisher"] : ["member"], ["demo"]) : null;
-    public static ActorAccess Demo => new("demo", "principal-demo-01", "demo-person-01", ["member", "publisher"], ["demo"]);
+        ? new("demo", "principal-demo-" + person[^2..], person, person == "demo-person-01" ? ["member", "publisher", "analyst"] : ["member"], ["demo"]) : null;
+    public static ActorAccess Demo => new("demo", "principal-demo-01", "demo-person-01", ["member", "publisher", "analyst"], ["demo"]);
 }

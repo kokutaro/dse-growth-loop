@@ -1,0 +1,202 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs search.spec.ts
+
+
+[isolated 1/14] ダミーの相談候補と根拠を検索できる
+[WebServer] (node:45851) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:45852) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:3:1 › ダミーの相談候補と根拠を検索できる
+  1 passed (3.1s)
+
+[isolated 2/14] 副分類のソフトウェア経験を拾う
+[WebServer] (node:45897) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:45898) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:20:1 › 副分類のソフトウェア経験を拾う
+  1 passed (2.8s)
+
+[isolated 3/14] 空結果と障害を区別する
+[WebServer] (node:45953) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:45954) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:32:1 › 空結果と障害を区別する
+  1 passed (2.9s)
+
+[isolated 4/14] fake AIで自然文・条件編集・結果・出典を確認できる
+[WebServer] (node:45999) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:46000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:44:1 › fake AIで自然文・条件編集・結果・出典を確認できる
+  1 passed (3.0s)
+
+[isolated 5/14] 分類停止時に手動条件へ戻せる
+[WebServer] (node:46055) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:46056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:61:1 › 分類停止時に手動条件へ戻せる
+  1 passed (2.9s)
+
+[isolated 6/14] 自然文だけでも一度の検索で条件生成から結果へ進む
+[WebServer] (node:46312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:46313) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:72:1 › 自然文だけでも一度の検索で条件生成から結果へ進む
+  1 passed (2.9s)
+
+[isolated 7/14] リランク失敗を正解なしと区別し、未評価候補を推薦しない
+[WebServer] (node:46801) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:46802) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:82:1 › リランク失敗を正解なしと区別し、未評価候補を推薦しない
+  1 passed (3.8s)
+
+[isolated 8/14] 事例の指定を検索APIへ送り、人物を混ぜずに取得する
+[WebServer] (node:46857) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:46858) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:95:1 › 事例の指定を検索APIへ送り、人物を混ぜずに取得する
+  1 passed (2.9s)
+
+[isolated 9/14] 検索結果を種別別に表示する: knowledge,person,knowledge,person
+[WebServer] (node:47327) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:47328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:108:3 › 検索結果を種別別に表示する: knowledge,person,knowledge,person
+  1 passed (2.8s)
+
+[isolated 10/14] 検索結果を種別別に表示する: person
+[WebServer] (node:47385) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:47386) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:108:3 › 検索結果を種別別に表示する: person
+  1 passed (2.9s)
+
+[isolated 11/14] 検索結果を種別別に表示する: knowledge
+[WebServer] (node:47432) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:47444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:108:3 › 検索結果を種別別に表示する: knowledge
+  1 passed (2.8s)
+
+[isolated 12/14] 検索結果を種別別に表示する: 空
+[WebServer] (node:47489) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:47490) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:108:3 › 検索結果を種別別に表示する: 空
+  1 passed (2.8s)
+
+[isolated 13/14] 分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_OUT_OF_SCOPE
+[WebServer] (node:47535) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:47536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:126:3 › 分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_OUT_OF_SCOPE
+  1 passed (3.0s)
+
+[isolated 14/14] 分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_MANUAL_REQUIRED
+[WebServer] (node:47591) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:47592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:126:3 › 分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_MANUAL_REQUIRED
+  1 passed (3.0s)
+
+Isolated E2E: 14 passed, 0 failed (14 tests).

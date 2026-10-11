@@ -1,0 +1,48 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs tests/workspace.spec.ts tests/workspace-anonymity.spec.ts --grep 参加するだけ|辞退した|社員ワークスペース
+
+
+[isolated 1/3] 社員ワークスペースのリクエストと応答は匿名専用契約に収まり、内部識別情報を返さない
+[WebServer] (node:23204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:23205) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace-anonymity.spec.ts:16:1 › 社員ワークスペースのリクエストと応答は匿名専用契約に収まり、内部識別情報を返さない
+  1 passed (4.7s)
+
+[isolated 2/3] 参加するだけで追加承認なく会話でき、画面は匿名名を維持する
+[WebServer] (node:23262) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:23263) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:130:1 › 参加するだけで追加承認なく会話でき、画面は匿名名を維持する
+  1 passed (4.5s)
+
+[isolated 3/3] 辞退した依頼では会話を開けない
+[WebServer] (node:23320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:23321) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:150:1 › 辞退した依頼では会話を開けない
+  1 passed (4.4s)
+
+Isolated E2E: 3 passed, 0 failed (3 tests).

@@ -1,0 +1,164 @@
+[
+  {
+    "active": false,
+    "name": "dse-api--0000001",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--final5",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-auth",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-restored",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-auth2",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-live1",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-restored2",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-hardening-auth1",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-hardening1",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-hardening-restored1",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-v2-20261004",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-v2-restored-20261004",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-weekly-20261004",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-weekly-restored-20261004",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-bootstrap-20261005",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-bootstrap-restored-20261005",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-bootstrap2-20261005",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-bootstrap2-restored-20261005",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-bootstrap3-20261005",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-bootstrap3-restored-20261005",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--xdshjlf",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--queue-failure9",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--probe-failure9",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--probe-restored9",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--rollback9",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-weekly2-20261004",
+    "replicas": 0,
+    "runningState": "Stopped"
+  },
+  {
+    "active": false,
+    "name": "dse-api--issue30-weekly2-restored-20261004",
+    "replicas": 0,
+    "runningState": "Stopped"
+  }
+]

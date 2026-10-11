@@ -1,0 +1,11 @@
+case,status,failure,fakeAttempts,expectedAttempts,passed,estimatedAttempts,inputTokens,outputTokens,reservationUsd
+valid_empty,success,,1,1,True,0,100,20,0.00002
+invalid_json,failed,parse_failure,4,4,True,0,400,80,0.00008
+duplicate_json_key,failed,parse_failure,4,4,True,0,400,80,0.00008
+invented_candidate,failed,grounding_failure,1,1,True,0,100,20,0.00002
+invented_evidence,failed,grounding_failure,1,1,True,0,100,20,0.00002
+unsupported_quote,failed,grounding_failure,1,1,True,0,100,20,0.00002
+refused,refused,refused,1,1,True,0,100,20,0.00002
+truncated,truncated,truncated,1,1,True,0,100,20,0.00002
+http429,failed,http_429,1,1,True,1,16000,2000,0.0026
+http401,failed,http_401,1,1,True,1,16000,2000,0.0026

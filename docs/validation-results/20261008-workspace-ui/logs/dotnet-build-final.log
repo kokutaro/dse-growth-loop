@@ -1,0 +1,17 @@
+  Dse.Domain -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.Domain/bin/Debug/net10.0/Dse.Domain.dll
+/Users/nyanpass/.nuget/packages/aspire.hosting.apphost/13.5.4/build/Aspire.Hosting.AppHost.targets(157,5): warning ASPIRE010: Dse.AppHost is configured with AspireUseCliBundle=false. Some Aspire features require the Aspire CLI bundle. Set AspireUseCliBundle=true to enable those features, or suppress ASPIRE010 to continue without the bundle. See https://aka.ms/aspire/diagnostics/aspire010 for more information. [/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.AppHost/Dse.AppHost.csproj]
+  Dse.Evaluation -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.Evaluation/bin/Debug/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.Infrastructure/bin/Debug/net10.0/Dse.Infrastructure.dll
+  Dse.CosmosEvaluation -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.CosmosEvaluation/bin/Debug/net10.0/Dse.CosmosEvaluation.dll
+  Dse.Worker -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.Worker/bin/Debug/net10.0/Dse.Worker.dll
+  Dse.Api -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.Api/bin/Debug/net10.0/Dse.Api.dll
+  Dse.AppHost -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.AppHost/bin/Debug/net10.0/Dse.AppHost.dll
+  Dse.Tests -> /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll
+
+ビルドに成功しました。
+
+/Users/nyanpass/.nuget/packages/aspire.hosting.apphost/13.5.4/build/Aspire.Hosting.AppHost.targets(157,5): warning ASPIRE010: Dse.AppHost is configured with AspireUseCliBundle=false. Some Aspire features require the Aspire CLI bundle. Set AspireUseCliBundle=true to enable those features, or suppress ASPIRE010 to continue without the bundle. See https://aka.ms/aspire/diagnostics/aspire010 for more information. [/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo/src/Dse.AppHost/Dse.AppHost.csproj]
+    1 個の警告
+    0 エラー
+
+経過時間 00:00:02.60

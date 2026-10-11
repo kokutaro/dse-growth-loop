@@ -85,4 +85,25 @@ public class SourceGuardTests
         var units = await new MemoryProjectionRepository(store).FindAsync(new([], [], ["引き継ぎ"]), new("demo", ["demo"]), default);
         Assert.DoesNotContain(await new SourceGuard(repo).FilterAsync(IdentityResolver.Demo, units, default), x => x.EntityId == "demo-person-01");
     }
+
+    [Theory]
+    [InlineData("inactive")]
+    [InlineData("unavailable")]
+    [InlineData("old-taxonomy")]
+    public async Task Direct_AI_or_source_use_rejects_ineligible_projection_even_when_original_is_current(string condition)
+    {
+        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);
+        var repository = new PrimaryRepository(store); var counted = new CountingRepository(repository);
+        var unit = (await new MemoryProjectionRepository(store).FindAsync(new([], [], ["引き継ぎ"]), IdentityResolver.Demo.Search, default))[0];
+        unit = condition switch
+        {
+            "inactive" => unit with { Status = "withdrawn" },
+            "unavailable" => unit with { Available = false },
+            _ => unit with { TaxonomyVersion = "obsolete-taxonomy" }
+        };
+        var guard = new SourceGuard(counted);
+        Assert.Empty(await guard.FilterAsync(IdentityResolver.Demo, [unit], default));
+        Assert.Equal("SOURCE_REVOKED", (await Assert.ThrowsAsync<DomainException>(() => guard.RequireAsync(IdentityResolver.Demo, unit, default))).Code);
+        Assert.Empty(counted.Reads);
+    }
 }

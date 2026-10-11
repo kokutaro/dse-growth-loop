@@ -1,0 +1,11 @@
+....................................................................................................usage: rerank [-h] (--task TASK | --plan PLAN) --output OUTPUT
+              --approval APPROVAL --credit-usd CREDIT_USD [--live]
+              [--pilot-max-attempts {1,2,3,4}]
+rerank: error: Live capture requires explicit approval
+...........................
+----------------------------------------------------------------------
+Ran 127 tests in 2.085s
+
+OK
+Prepared independent draft: 24 questions, 60 sources, human review pending, model calls 0.
+Prepared independent draft: 24 questions, 60 sources, human review pending, model calls 0.

@@ -16,6 +16,7 @@ export default defineConfig({
         Data__Mode: "Demo",
         Ingestion__RunWorker: "true",
         Ai__Mode: "Mock",
+        BusinessAnalysis__DemoFixtures: process.env.DSE_ANALYSIS_FIXTURES ?? "false",
         Profile__SecondaryWorkFragments: "true",
         AiUsage__Stopped: "false",
         AiUsage__MaxOutputTokens: "3000",

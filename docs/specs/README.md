@@ -2,6 +2,8 @@
 
 更新日：2026-09-23。対象：[Issue #3](https://github.com/kokutaro/dse-growth-loop/issues/3)、親計画 [#1](https://github.com/kokutaro/dse-growth-loop/issues/1)。全件ダミーの開発契約。**この仕様を追加しただけでは、現APIに書込・認可・AI処理は実装されない。**
 
+2026-10-11の追加ランタイム契約は [匿名ワークスペース](openapi-workspace-v1.json)、[手動分析](openapi-business-analysis-v1.json)、[公開知識](openapi-knowledge-v1.json)。独立表示名同意のprivate保存stateはSession schemaに定義し、匿名DTOへは出さない。新Live traceは未測定RUをnullとして区別する。実環境の受入は別の検証である。
+
 ## 契約の入口
 
 | 資料 | 内容 |

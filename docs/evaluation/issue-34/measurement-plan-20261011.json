@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "issue34-measurement-v1",
+  "runId": "issue34-plan-20261011",
+  "state": "planned",
+  "evidenceKind": "plan",
+  "observedAt": null,
+  "provenance": {
+    "sourceCommit": "78f182a30f106a8d34f7989d39d23f622e5d5c08",
+    "sourceSha256": null,
+    "inputSha256": "1e0f23a34180237ae437056997c97e1c9c238c7b7ba8f0f567764c88cde88e84",
+    "configSha256": null,
+    "serviceStateSha256": null,
+    "candidateSha256": null,
+    "goldApprovalReference": "../../../evaluation/issue-30/independent-v3/approved/approval.json",
+    "executionApprovalReference": null,
+    "dummyOnly": true
+  },
+  "bounds": {
+    "maximumModelAttempts": null,
+    "maximumInputTokens": null,
+    "maximumOutputTokens": null,
+    "maximumAllCostsJpy": null,
+    "maximumApiReplicaSeconds": null,
+    "maximumJobSeconds": null,
+    "maximumWallClockSecondsIncludingRestore": null,
+    "restoreReserveSeconds": null,
+    "ledgerSnapshotReference": null,
+    "stopPlanReference": null
+  },
+  "operations": [],
+  "storage": [],
+  "latency": {
+    "method": "linear_interpolation_ranks_(n-1)*p",
+    "warmAll24": {
+      "expectedCount": 24,
+      "observedCount": null,
+      "p50Ms": null,
+      "p95Ms": null
+    },
+    "warmSearch22": {
+      "expectedCount": 22,
+      "observedCount": null,
+      "p50Ms": null,
+      "p95Ms": null
+    },
+    "cold3": {
+      "expectedCount": 3,
+      "observedCount": null,
+      "p50Ms": null,
+      "p95Ms": null,
+      "gate": "report_only"
+    },
+    "warmP95LimitMs": 15000,
+    "warmGate": "pending"
+  },
+  "cost": {
+    "prices": [],
+    "monthlySearchAssumption": 100,
+    "approvedMonthlyBudgetJpy": 8000,
+    "components": [],
+    "estimatedMonthlyTotalJpy": null,
+    "invoiceActualTotalJpy": null,
+    "unknownComponents": [
+      "applicable_azure_luna6_price",
+      "current_fx_tax_contract",
+      "all_cosmos_operations",
+      "index_data_backup_storage",
+      "all_ai_failures_reserves_and_invoice",
+      "api_worker_jobs_replica_runtime",
+      "blob_queue_acr",
+      "requests_network_transfer",
+      "logs_application_insights"
+    ],
+    "monthlyGate": "pending"
+  },
+  "limitations": [
+    "Design contract only; no collector implemented or real requests sent.",
+    "Fresh shared ledger, full cost bound, execution approval, and independently verified stop/restore path are absent.",
+    "Source/config/service hashes must be frozen for the actual reviewed checkout before execution.",
+    "Reuse existing normal classification and service48 captures; do not resend them.",
+    "Historical runtime counters and FX162 are not current balances or new spending authorization.",
+    "No Job execution, Azure activation, model call, RBAC/auth/network change, deployment, or data change is authorized by this plan.",
+    "Prior short activation then notification/login waiting must not be repeated."
+  ],
+  "evidenceReferences": [
+    "../../remaining-issues-acceptance-20261011.md",
+    "../../validation-results/20261004-issue-30-independent-v3-production/results.md",
+    "../../validation-results/20261008-workspace-ui/resume-issue30.md"
+  ]
+}

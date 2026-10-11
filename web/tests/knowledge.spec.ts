@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy case', async ({ page, request }) => {
-  await page.goto('/');
+  await page.goto('/validation.html');
   const panel = page.getByRole('region', { name: '課題と相談チャット' });
   const title = `知識化 ${Date.now()}`;
   await panel.getByLabel('課題名', { exact: true }).fill(title);

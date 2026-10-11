@@ -1,0 +1,1077 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DSE manual business analysis runtime API",
+    "version": "business-analysis-v1",
+    "description": "現行実装契約。member+analyst、tenant/scopeと本人run認可。公開・全参加者の分析同意の最新版だけ使用。集計はコードで独立課題/sessionを重複排除し未知値null。閾値はdemo設定で市場検証/売上/ROIの判定ではない。Demo/Mock fixtureとAzure/Liveの実装経路は別版。Liveは明示opt-in/停止解除/承認価格・FX/共有AiLedger上限が必要で、このローカル実装作業で実AIの有料送信は行っていない。"
+  },
+  "paths": {
+    "/api/v1/business-analysis": {
+      "post": {
+        "summary": "許可公開原本だけを手動分析（Demo fixture / 明示有効化されたAzure Live）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "analyst"
+        ],
+        "x-requires-owner": true,
+        "x-revalidates-current-analysis-consent": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: DTO/ID/header不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "memberとanalyst双方が必要、scope権限なし"
+          },
+          "404": {
+            "description": "本人run/許可対象/指定groupが存在しない"
+          },
+          "409": {
+            "description": "ANALYSIS_BUSY: tenant同時実行1/processing slot、ANALYSIS_RECOVERY_REQUIRED: timeout後のdurable blocked slot、IDEMPOTENCY_CONFLICT: 同一runで異なる入力/config/limits。新runでもblocked slotを迂回不可。 AI_BUDGET_STOPPED: AiUsage:Stopped=true または LiveOptIn不足。"
+          },
+          "413": {
+            "description": "32KiB本文上限"
+          },
+          "429": {
+            "description": "records要求数制限"
+          },
+          "503": {
+            "description": "依存障害・AccessFence閉鎖。認可失敗時fail-closed"
+          },
+          "200": {
+            "description": "最新scope/双方の公開・分析同意/原本版をAccessFence内で再確認してシリアライズ。runは撤回時invalidated/groups空、根拠閲覧は409。",
+            "headers": {
+              "Cache-Control": {
+                "description": "成功本文は常にno-store",
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "description": "現在runの強いETag。PATCHのIf-Matchに使用",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "ANALYSIS_CONFIGURATION_INVALID / ANALYSIS_SCAN_LIMIT / ANALYSIS_INPUT_LIMIT / ANALYSIS_METADATA_INVALID。最大原本数/bytes/token/scan/timeの有限上限。 ANALYSIS_LIVE_CONFIGURATION_INVALID: 正のtoken/JPY/call上限、適用model、承認price/fx版の欠落/不正。"
+          },
+          "501": {
+            "description": "ANALYSIS_LIVE_NOT_ENABLED: Demo/Mock以外はData:Mode=Azure、Ai:Mode=Live、BusinessAnalysis:Enabled=trueが必要。経路実装と実環境評価完了を区別する。"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartRequest"
+              }
+            }
+          }
+        },
+        "description": "actor tenantとAuth:TenantId一致。runtime config版と入力/config/model/prompt/limits hashを固定。許可公開原本を共有AccessFence内で送信直前/終了後にも再認可し、AiLedgerで上界予約/実usage精算。groupごと送信は最大1回・自動retry0。timeoutで終了不確実ならslotをblockedに保ち未確定予約を返金しない。新run/別analystも迂回不可。正常保存runの再送は推論せず再取得。scheduleは明示有効化しない。"
+      }
+    },
+    "/api/v1/business-analysis/{runId}": {
+      "get": {
+        "summary": "本人runを最新同意付きで取得",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "analyst"
+        ],
+        "x-requires-owner": true,
+        "x-revalidates-current-analysis-consent": true,
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: DTO/ID/header不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "memberとanalyst双方が必要、scope権限なし"
+          },
+          "404": {
+            "description": "本人run/許可対象/指定groupが存在しない"
+          },
+          "409": {
+            "description": "SOURCE_REVOKEDなど状態競合"
+          },
+          "413": {
+            "description": "32KiB本文上限"
+          },
+          "429": {
+            "description": "records要求数制限"
+          },
+          "503": {
+            "description": "依存障害・AccessFence閉鎖。認可失敗時fail-closed"
+          },
+          "200": {
+            "description": "最新scope/双方の公開・分析同意/原本版をAccessFence内で再確認してシリアライズ。runは撤回時invalidated/groups空、根拠閲覧は409。",
+            "headers": {
+              "Cache-Control": {
+                "description": "成功本文は常にno-store",
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "description": "現在runの強いETag。PATCHのIf-Matchに使用",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/business-analysis/{runId}/sources/{knowledgeId}": {
+      "get": {
+        "summary": "分析runの許可された公開根拠だけを取得",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "analyst"
+        ],
+        "x-requires-owner": true,
+        "x-revalidates-current-analysis-consent": true,
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "knowledgeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: DTO/ID/header不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "memberとanalyst双方が必要、scope権限なし"
+          },
+          "404": {
+            "description": "本人run/許可対象/指定groupが存在しない"
+          },
+          "409": {
+            "description": "SOURCE_REVOKEDなど状態競合"
+          },
+          "413": {
+            "description": "32KiB本文上限"
+          },
+          "429": {
+            "description": "records要求数制限"
+          },
+          "503": {
+            "description": "依存障害・AccessFence閉鎖。認可失敗時fail-closed"
+          },
+          "200": {
+            "description": "最新scope/双方の公開・分析同意/原本版をAccessFence内で再確認してシリアライズ。runは撤回時invalidated/groups空、根拠閲覧は409。",
+            "headers": {
+              "Cache-Control": {
+                "description": "成功本文は常にno-store",
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishedSource"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/business-analysis/{runId}/decision": {
+      "patch": {
+        "summary": "人が検証状況を判断",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "analyst"
+        ],
+        "x-requires-owner": true,
+        "x-revalidates-current-analysis-consent": true,
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "INVALID_INPUT: DTO/ID/header不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "memberとanalyst双方が必要、scope権限なし"
+          },
+          "404": {
+            "description": "本人run/許可対象/指定groupが存在しない"
+          },
+          "409": {
+            "description": "SOURCE_REVOKED / ANALYSIS_NOT_READY（completed/partial_failure以外） / IDEMPOTENCY_CONFLICT。再送receiptも最新同意を再確認。"
+          },
+          "413": {
+            "description": "32KiB本文上限"
+          },
+          "429": {
+            "description": "records要求数制限"
+          },
+          "503": {
+            "description": "依存障害・AccessFence閉鎖。認可失敗時fail-closed"
+          },
+          "200": {
+            "description": "最新scope/双方の公開・分析同意/原本版をAccessFence内で再確認してシリアライズ。runは撤回時invalidated/groups空、根拠閲覧は409。",
+            "headers": {
+              "Cache-Control": {
+                "description": "成功本文は常にno-store",
+                "schema": {
+                  "const": "no-store"
+                }
+              },
+              "ETag": {
+                "description": "現在runの強いETag。PATCHのIf-Matchに使用",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "STALE_VERSION: If-Matchが現在ETagと不一致。"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          }
+        },
+        "x-requires-current-version": true
+      }
+    },
+    "/api/v1/business-analysis/capabilities": {
+      "get": {
+        "summary": "認証主体の手動分析可否と現在runtime版",
+        "description": "analyst権限のない主体も200でallowed=false/enabled=false/reason=FORBIDDEN。allowedはmember+analyst、enabledはruntime明示有効化/停止/optin/上限/価格FX検査結果。能力情報は実サービス成功や追加課金承認を意味しない。 requestOwnerKeyは自己専用cache区画で認可credentialではない。currentTimeは400未受理要求の明示訂正に使うserver時計。停止中も本人runのGET確認は可能、POSTは停止境界で拒否する。",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [],
+        "x-eligible-roles": [
+          "member",
+          "analyst"
+        ],
+        "x-requires-owner": false,
+        "x-revalidates-current-analysis-consent": false,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "現在のruntime能力情報。秘密/IDを返さない。",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Capabilities"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "429": {
+            "description": "records要求上限"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "開始はrunIdと完全一致。保存runのrequest/config/limitsが同じ場合だけ再取得し、異なる場合409。失敗・中断runのAI自動再試行なし。判断は主体/run/key単位、status/groupId/If-Matchを照合して409。24時間TTLの保証はない。",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "GETで取得した強いETag。欠落400、不一致412。*は不可。",
+        "schema": {
+          "type": "string",
+          "pattern": "^\"[^\"\\r\\n]+\"$"
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "StartRequest": {
+        "type": "object",
+        "required": [
+          "runId",
+          "cutoff",
+          "configVersion"
+        ],
+        "properties": {
+          "runId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "minLength": 16,
+            "description": "Idempotency-Keyと完全一致"
+          },
+          "cutoff": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC比較。現在時刻+5秒より未来は400。許可原本の更新時刻がcutoff以下だけ対象。"
+          },
+          "configVersion": {
+            "enum": [
+              "business-analysis-demo-v1",
+              "business-analysis-live-v1"
+            ],
+            "description": "Demo+Mockはdemo-v1、それ以外の明示有効Azure+Liveはlive-v1。現在runtimeと異なる版は400。"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DecisionRequest": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "candidate",
+              "investigating",
+              "on_hold",
+              "rejected"
+            ]
+          },
+          "groupId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "省略/nullはrun全体と全group、指定は対象groupのみ。存在しないgroupは404。"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Run": {
+        "type": "object",
+        "required": [
+          "runId",
+          "status",
+          "groups",
+          "etag"
+        ],
+        "properties": {
+          "runId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "status": {
+            "enum": [
+              "processing",
+              "completed",
+              "partial_failure",
+              "invalidated",
+              "aborted"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Group"
+            }
+          },
+          "etag": {
+            "type": "string"
+          },
+          "decision": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "candidate",
+              "investigating",
+              "on_hold",
+              "rejected",
+              null
+            ]
+          },
+          "recoveryRequired": {
+            "type": "boolean"
+          },
+          "sourceCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "duplicateCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "processingMode": {
+            "enum": [
+              "fixture",
+              "live"
+            ]
+          },
+          "configurationHash": {
+            "type": "string",
+            "description": "Demoはfixture-v1、Liveはmodel/prompt/limits/config版hash。"
+          },
+          "exclusions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "reason"
+              ],
+              "properties": {
+                "groupId": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "metrics": {
+                  "$ref": "#/components/schemas/Metrics"
+                }
+              }
+            }
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cutoff": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sourceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "activeVersion": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "inputHash": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "configVersion": {
+            "enum": [
+              "business-analysis-demo-v1",
+              "business-analysis-live-v1"
+            ],
+            "description": "Demo+Mockはdemo-v1、それ以外の明示有効Azure+Liveはlive-v1。現在runtimeと異なる版は400。"
+          },
+          "recoveryReceiptId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PublishedSource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "knowledgeId",
+          "title",
+          "version",
+          "sections",
+          "analysisMetadata"
+        ],
+        "properties": {
+          "knowledgeId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "field",
+                "text",
+                "basis"
+              ],
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "basis": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "analysisMetadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "Capabilities": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "allowed",
+          "enabled",
+          "configVersion",
+          "mode",
+          "reason",
+          "automaticRetry",
+          "requestOwnerKey",
+          "currentTime"
+        ],
+        "properties": {
+          "allowed": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "configVersion": {
+            "enum": [
+              "business-analysis-demo-v1",
+              "business-analysis-live-v1"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "fixture",
+              "live"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "automaticRetry": {
+            "const": false
+          },
+          "requestOwnerKey": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^abr-[a-f0-9]{64}$",
+            "description": "serverが認可した本人cache区画。不透明なhashで、認可credentialではない。allowed=falseはnull。"
+          },
+          "currentTime": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "server時計。400で未受理の要求を同じrunIdのまま明示訂正するために使う。allowed=falseはnull。"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "allowed": {
+                  "const": false
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "enabled": {
+                  "const": false
+                },
+                "reason": {
+                  "const": "FORBIDDEN"
+                },
+                "requestOwnerKey": {
+                  "const": null
+                },
+                "currentTime": {
+                  "const": null
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "allowed": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "requestOwnerKey": {
+                  "type": "string"
+                },
+                "currentTime": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Metrics": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "independentChallenges",
+          "distinctDepartments",
+          "recurringChallenges",
+          "unresolvedRatio",
+          "reportedHours",
+          "lowRatedChallenges",
+          "missingMetadata"
+        ],
+        "properties": {
+          "independentChallenges": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "distinctDepartments": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recurringChallenges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "unresolvedRatio": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reportedHours": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "lowRatedChallenges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "missingMetadata": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "departmentId",
+                "recurrences",
+                "resolution",
+                "reportedHours",
+                "feedback"
+              ]
+            }
+          }
+        }
+      },
+      "Hypothesis": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "audience",
+          "problem",
+          "existingWorkaround",
+          "valueHypothesis",
+          "counterEvidence",
+          "nextCustomerCheck",
+          "evidenceIds"
+        ],
+        "properties": {
+          "audience": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1500
+          },
+          "problem": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1500
+          },
+          "existingWorkaround": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1500
+          },
+          "valueHypothesis": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1500
+          },
+          "counterEvidence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1500
+          },
+          "nextCustomerCheck": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1500
+          },
+          "evidenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Group": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "metrics",
+          "hypothesis",
+          "evidenceIds",
+          "decision"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/Metrics"
+          },
+          "hypothesis": {
+            "$ref": "#/components/schemas/Hypothesis"
+          },
+          "evidenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "decision": {
+            "enum": [
+              "candidate",
+              "investigating",
+              "on_hold",
+              "rejected"
+            ]
+          }
+        }
+      },
+      "Limits": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "maxInputs",
+          "maxInputBytes",
+          "maxInputTokens",
+          "timeoutSeconds",
+          "minimumIndependentChallenges",
+          "minimumDepartments",
+          "maxConcurrencyPerTenant",
+          "maxAttempts",
+          "tokenEstimatePolicy",
+          "thresholdPurpose"
+        ],
+        "properties": {
+          "maxInputs": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "maxInputBytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "maxInputTokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minimumIndependentChallenges": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minimumDepartments": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "maxConcurrencyPerTenant": {
+            "const": 1
+          },
+          "maxAttempts": {
+            "const": 1
+          },
+          "tokenEstimatePolicy": {
+            "const": "conservative_one_token_per_utf8_byte"
+          },
+          "thresholdPurpose": {
+            "const": "demo_parameter_not_market_validation"
+          }
+        }
+      },
+      "AnalysisMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "departmentId",
+          "resolution",
+          "reportedHours",
+          "recurrences",
+          "feedback"
+        ],
+        "properties": {
+          "departmentId": {
+            "type": "null",
+            "description": "内部部署IDは公開根拠DTOでは除去。内部集計のdistinctDepartmentsだけ保持。"
+          },
+          "resolution": {
+            "enum": [
+              "resolved",
+              "partial",
+              "unresolved",
+              null
+            ]
+          },
+          "reportedHours": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100000,
+            "multipleOf": 0.01
+          },
+          "recurrences": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "feedback": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      }
+    }
+  },
+  "x-runtime-contract-versions": {
+    "fixture": "business-analysis-demo-v1",
+    "live": "business-analysis-live-v1"
+  },
+  "x-production-restrictions": {
+    "requiresEnabled": true,
+    "requiresLiveOptIn": true,
+    "requiresCurrentBudgetAndPriceFxApproval": true,
+    "maximumAttemptsPerGroup": 1,
+    "automaticRetry": false,
+    "realServiceVerifiedInThisTask": false,
+    "humanDecisionOnly": true
+  },
+  "x-offline-recovery": {
+    "httpEndpoint": false,
+    "implementation": "src/Dse.Infrastructure/BusinessAnalysisRecovery.cs",
+    "requiredRoles": [
+      "operator",
+      "analyst"
+    ],
+    "requiresAiStopped": true,
+    "requiresLiveOptInFalse": true,
+    "requiresExplicitApprovalReference": true,
+    "requiresReviewedIndependentStopEvidenceSha256": true,
+    "requiresApiWorkerProviderStoppedAttestations": true,
+    "attestationProvesRemoteStop": false,
+    "requiresRunAndSlotEtag": true,
+    "requiresExactOwnedPendingReservationSet": true,
+    "refundJpy": 0,
+    "marksPendingUncertain": true,
+    "automaticInferenceRetry": false,
+    "description": "既存CLIに独立停止証拠を与える明示オフライン復旧。停止フラグ/本人申告だけでremote処理停止を証明しない。対象slot/run/予約/フェンスを検証し1batchでabort+slot解除、他runや留保を改変しない。HTTP APIとscheduleはない。"
+  }
+}

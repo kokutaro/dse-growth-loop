@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
 async function create(page: Page, title: string) {
-  await page.goto("/");
+  await page.goto("/validation.html");
   await page.getByLabel("課題名", { exact: true }).fill(title);
   await page.getByLabel("困っていること").fill("架空の相談です");
   await page.getByRole("button", { name: "課題を作成", exact: true }).click();
@@ -33,16 +33,23 @@ test("履歴取得中に相談を依頼しても参加者一覧を更新する",
     await page.evaluate(() => new Promise(requestAnimationFrame));
     release();
     await expect(page.getByText("demo-person-02：依頼中", { exact: true })).toBeVisible();
-  } finally { release(); }
+  } finally {
+    release();
+    // Finish delayed handlers before Playwright disposes their fetched responses.
+    await page.unrouteAll({ behavior: 'wait' });
+  }
 });
 test("二人で承諾・会話・退会し、AI停止中も保存できる", async ({ page, browser }) => {
+  // Two independent 10s database replays, creation/acceptance and leaving share this test.
+  // Keep each remote-message assertion at 20s; allow the complete workflow to finish.
+  test.setTimeout(60000);
   const title = `二人の相談 ${Date.now()}`;
   await create(page, title);
   await page.getByLabel("相談する人物ID").fill("demo-person-02");
   await page.getByRole("button", { name: "相談を依頼" }).click();
   await expect(page.getByText("demo-person-02：依頼中", { exact: true })).toBeVisible();
   const context = await browser.newContext(); const guest = await context.newPage();
-  await guest.goto("/"); await guest.getByLabel("ローカルテスト主体").selectOption("demo-person-02");
+  await guest.goto("/validation.html"); await guest.getByLabel("ローカルテスト主体").selectOption("demo-person-02");
   await guest.getByRole("button", { name: title, exact: true }).click();
   await expect(guest.getByLabel("メッセージ", { exact: true })).not.toBeVisible();
   await guest.getByRole("button", { name: "参加を承諾" }).click();

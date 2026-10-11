@@ -18,6 +18,8 @@ param modelSku string = 'GlobalStandard'
 param modelCapacity int = 1
 
 param deployIngestionWorker bool = false
+// 配置も手動分析の実行も別承認。定期トリガーは定義しない。
+param deployBusinessAnalysisJob bool = false
 param runtimeSettings array = [
   { name: 'AiUsage__Stopped', value: 'true' }
   { name: 'Operations__AnalysisMode', value: 'Manual' }
@@ -84,6 +86,7 @@ module apps 'modules/apps.bicep' = if (deployApplications) {
   params: {
     location: location
     deployIngestionWorker: deployIngestionWorker
+    deployBusinessAnalysisJob: deployBusinessAnalysisJob
     runtimeSettings: runtimeSettings
     telemetrySamplingPercentage: telemetrySamplingPercentage
     environmentId: foundation.outputs.environmentId

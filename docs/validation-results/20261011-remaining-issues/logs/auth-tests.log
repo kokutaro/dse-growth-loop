@@ -1,0 +1,18 @@
+
+> dse-growth-loop-web@0.1.0 test:auth
+> node --experimental-test-module-mocks --test unit/auth.test.mjs
+
+(node:36817) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ logout blocks background token refresh immediately and clears cache (0.594208ms)
+✔ failed logout popup still clears local credentials and blocks token refresh (0.079833ms)
+✔ simultaneous initial requests share one login popup (0.528209ms)
+✔ token response completing after logout is never returned (0.2075ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 72.261709

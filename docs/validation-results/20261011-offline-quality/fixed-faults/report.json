@@ -1,0 +1,130 @@
+{
+  "version": "offline-quality-v1",
+  "origin": "fixed-fake-protocol-regression",
+  "qualityClaim": false,
+  "callsThisRun": 0,
+  "cases": [
+    {
+      "case": "valid_empty",
+      "status": "success",
+      "failure": null,
+      "fakeAttempts": 1,
+      "expectedAttempts": 1,
+      "passed": true,
+      "estimatedAttempts": 0,
+      "inputTokens": 100,
+      "outputTokens": 20,
+      "reservationUsd": "0.00002"
+    },
+    {
+      "case": "invalid_json",
+      "status": "failed",
+      "failure": "parse_failure",
+      "fakeAttempts": 4,
+      "expectedAttempts": 4,
+      "passed": true,
+      "estimatedAttempts": 0,
+      "inputTokens": 400,
+      "outputTokens": 80,
+      "reservationUsd": "0.00008"
+    },
+    {
+      "case": "duplicate_json_key",
+      "status": "failed",
+      "failure": "parse_failure",
+      "fakeAttempts": 4,
+      "expectedAttempts": 4,
+      "passed": true,
+      "estimatedAttempts": 0,
+      "inputTokens": 400,
+      "outputTokens": 80,
+      "reservationUsd": "0.00008"
+    },
+    {
+      "case": "invented_candidate",
+      "status": "failed",
+      "failure": "grounding_failure",
+      "fakeAttempts": 1,
+      "expectedAttempts": 1,
+      "passed": true,
+      "estimatedAttempts": 0,
+      "inputTokens": 100,
+      "outputTokens": 20,
+      "reservationUsd": "0.00002"
+    },
+    {
+      "case": "invented_evidence",
+      "status": "failed",
+      "failure": "grounding_failure",
+      "fakeAttempts": 1,
+      "expectedAttempts": 1,
+      "passed": true,
+      "estimatedAttempts": 0,
+      "inputTokens": 100,
+      "outputTokens": 20,
+      "reservationUsd": "0.00002"
+    },
+    {
+      "case": "unsupported_quote",
+      "status": "failed",
+      "failure": "grounding_failure",
+      "fakeAttempts": 1,
+      "expectedAttempts": 1,
+      "passed": true,
+      "estimatedAttempts": 0,
+      "inputTokens": 100,
+      "outputTokens": 20,
+      "reservationUsd": "0.00002"
+    },
+    {
+      "case": "refused",
+      "status": "refused",
+      "failure": "refused",
+      "fakeAttempts": 1,
+      "expectedAttempts": 1,
+      "passed": true,
+      "estimatedAttempts": 0,
+      "inputTokens": 100,
+      "outputTokens": 20,
+      "reservationUsd": "0.00002"
+    },
+    {
+      "case": "truncated",
+      "status": "truncated",
+      "failure": "truncated",
+      "fakeAttempts": 1,
+      "expectedAttempts": 1,
+      "passed": true,
+      "estimatedAttempts": 0,
+      "inputTokens": 100,
+      "outputTokens": 20,
+      "reservationUsd": "0.00002"
+    },
+    {
+      "case": "http429",
+      "status": "failed",
+      "failure": "http_429",
+      "fakeAttempts": 1,
+      "expectedAttempts": 1,
+      "passed": true,
+      "estimatedAttempts": 1,
+      "inputTokens": 16000,
+      "outputTokens": 2000,
+      "reservationUsd": "0.0026"
+    },
+    {
+      "case": "http401",
+      "status": "failed",
+      "failure": "http_401",
+      "fakeAttempts": 1,
+      "expectedAttempts": 1,
+      "passed": true,
+      "estimatedAttempts": 1,
+      "inputTokens": 16000,
+      "outputTokens": 2000,
+      "reservationUsd": "0.0026"
+    }
+  ],
+  "passed": true,
+  "protocolSha256": "b6e44f5b3b957aff7b5f4f10fed103a942e9b5d27c63be208c499f1997590168"
+}

@@ -1,0 +1,283 @@
+{
+  "tests": 44,
+  "passed": 44,
+  "failed": 0,
+  "records": [
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "投稿応答が遅れても戻る操作で入力を変更・二重送信できない",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "参加するだけで追加承認なく会話でき、画面は匿名名を維持する",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "辞退した依頼では会話を開けない",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "ETag競合では入力を保持し、再送で最新版を確認する",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "参加権限を失ったルームは本文を消して送信と公開操作を閉じる",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "事例詳細は表示前に公開状態を再照合し、撤回済みを表示しない",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "320pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "390pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "Azureでは匿名契約のないAPIを呼ばず、ログアウトで画面を閉じる",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/workspace.spec.ts",
+      "title": "新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "ダミーの相談候補と根拠を検索できる",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "副分類のソフトウェア経験を拾う",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "空結果と障害を区別する",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "fake AIで自然文・条件編集・結果・出典を確認できる",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "分類停止時に手動条件へ戻せる",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "自然文だけでも一度の検索で条件生成から結果へ進む",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "リランク失敗を正解なしと区別し、未評価候補を推薦しない",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "事例の指定を検索APIへ送り、人物を混ぜずに取得する",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "検索結果を種別別に表示する: knowledge,person,knowledge,person",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "検索結果を種別別に表示する: person",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "検索結果を種別別に表示する: knowledge",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "検索結果を種別別に表示する: 空",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_OUT_OF_SCOPE",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/search.spec.ts",
+      "title": "分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_MANUAL_REQUIRED",
+      "passed": true,
+      "log": "e2e-search.log"
+    },
+    {
+      "file": "tests/chat-assistance.spec.ts",
+      "title": "自動事例は一度だけ保存され、出典・フィードバック・再接続・停止を操作できる",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/conversations.spec.ts",
+      "title": "履歴取得中に相談を依頼しても参加者一覧を更新する",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/conversations.spec.ts",
+      "title": "二人で承諾・会話・退会し、AI停止中も保存できる",
+      "passed": true,
+      "log": "e2e-conversation-retry.log"
+    },
+    {
+      "file": "tests/conversations.spec.ts",
+      "title": "DB失敗と応答消失は未保存表示になり、同じキーで再送して一件だけ保存する",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/conversations.spec.ts",
+      "title": "通知なしでも履歴をページング回復し、画面の開き直しで重複しない",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/conversations.spec.ts",
+      "title": "表示済みAI引用は新着なしでも履歴を再照合して撤回表示へ更新する（応答fixture）",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/documents.spec.ts",
+      "title": "docxをアップロードして機械抽出結果と出典を確認できる",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/documents.spec.ts",
+      "title": "xlsxをアップロードして機械抽出結果と出典を確認できる",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/documents.spec.ts",
+      "title": "偽装Officeファイルは拒否して入力を保持する",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/documents.spec.ts",
+      "title": "処理待ちと失敗を区別して手動再実行できる（状態API fixture）",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/knowledge.spec.ts",
+      "title": "resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy case",
+      "passed": true,
+      "log": "e2e-final-ui.log"
+    },
+    {
+      "file": "tests/logout.spec.ts",
+      "title": "Azure logout removes protected panels even when the provider is unavailable",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/profiles.spec.ts",
+      "title": "副業務を原文付きの検索断片として追加し経験月数を重複加算しない",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/profiles.spec.ts",
+      "title": "docxから本人訂正と手動一次検索までfake AIで通る",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/profiles.spec.ts",
+      "title": "xlsxから本人訂正と手動一次検索までfake AIで通る",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/profiles.spec.ts",
+      "title": "公開撤回を検索に反映し、明示再公開で復旧する",
+      "passed": true,
+      "log": "e2e-remaining.log"
+    },
+    {
+      "file": "tests/business-analysis.spec.ts",
+      "title": "許可済みダミー課題を手動分析し、人の判断を保存する",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    },
+    {
+      "file": "tests/business-analysis.spec.ts",
+      "title": "分析後に許可確認が失敗すると候補と集計を閉じる",
+      "passed": true,
+      "log": "e2e-evidence.log"
+    }
+  ],
+  "initialFailure": {
+    "file": "tests/conversations.spec.ts",
+    "reason": "overall30s timeout across two10s replays; assertion deadlines20s unchanged",
+    "resolvedBy": "workflow60s timeout; replay14.5s success"
+  },
+  "latestRepeatedSuite": {
+    "tests": 14,
+    "passed": 14,
+    "failed": 0,
+    "log": "e2e-evidence.log",
+    "includes": "published evidence view and navigation scroll reset"
+  }
+}

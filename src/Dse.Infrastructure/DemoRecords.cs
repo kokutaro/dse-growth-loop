@@ -13,8 +13,9 @@ public static class DemoRecords
         var now = DateTimeOffset.Parse("2026-09-23T00:00:00Z");
         foreach (var unit in DemoData.Create(tenant))
         {
-            var owner = "principal-" + (unit.EntityType == "person" ? unit.EntityId : "demo-person-01");
-            if (unit.EntityId == "demo-person-01" || unit.EntityType == "knowledge") owner = "principal-demo-01";
+            var owner = unit.EntityType == "person"
+                ? IdentityResolver.DemoPerson(unit.EntityId)?.PrincipalId ?? "principal-" + unit.EntityId
+                : "principal-demo-01";
             var primary = RecordJson.New(unit.EntityType, unit.EntityId, tenant, owner, unit.ScopeIds, now);
             primary["activeVersion"] = 1;
             primary["accessVersion"] = 1;

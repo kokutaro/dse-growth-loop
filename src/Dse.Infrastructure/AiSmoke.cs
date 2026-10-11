@@ -35,7 +35,7 @@ public static class AiSmoke
             var units = await projections.FindAsync(new([], [], ["引き継ぎ"]), actor.Search, ct);
             candidate = units.SingleOrDefault(x => x.Id == "demo-person-01-projection-1")
                 ?? throw new DomainException(409, "SMOKE_FIXTURE_REQUIRED");
-            var validated = await new SourceGuard(repository).RequireAsync(actor, candidate, ct);
+            var validated = await new SourceGuard(repository, config).RequireAsync(actor, candidate, ct);
             var fixture = DemoData.Create(tenant).Single(x => x.EntityId == "demo-person-01");
             if (validated.Unit.EntityId != fixture.EntityId || validated.Unit.SourceRefs.Length != fixture.SourceRefs.Length ||
                 !validated.Unit.SourceRefs.SequenceEqual(fixture.SourceRefs)) throw new DomainException(409, "SMOKE_FIXTURE_REQUIRED");

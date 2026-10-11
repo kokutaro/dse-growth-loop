@@ -21,6 +21,7 @@ param allowedObjectIds array
 param modelDeploymentName string
 // Queue消費Workerは明示opt-in。実Azure起動停止検証は #9。
 param deployIngestionWorker bool = false
+param deployBusinessAnalysisJob bool = false
 param runtimeSettings array = []
 param telemetrySamplingPercentage int = 10
 var commonEnv = [
@@ -126,3 +127,23 @@ resource seed 'Microsoft.App/jobs@2025-07-01' = {
   }
 }
 output apiUrl string = 'https://${api.properties.configuration.ingress.fqdn}'
+// 定期実行なし、並列/自動再試行なし。実行識別子・実施者・cutoff は明示する。
+resource businessAnalysis 'Microsoft.App/jobs@2025-07-01' = if (deployBusinessAnalysisJob) {
+  name: 'dse-business-analysis'
+  location: location
+  identity: { type: 'UserAssigned', userAssignedIdentities: { '${workerIdentityId}': {} } }
+  properties: {
+    environmentId: environmentId
+    workloadProfileName: 'Consumption'
+    configuration: {
+      triggerType: 'Manual'
+      replicaTimeout: 180
+      replicaRetryLimit: 0
+      manualTriggerConfig: { parallelism: 1, replicaCompletionCount: 1 }
+      registries: [{ server: '${registryName}.azurecr.io', identity: workerIdentityId }]
+    }
+    template: {
+      containers: [{ name: 'analysis', image: '${registryName}.azurecr.io/dse-worker:${imageTag}', args: ['--analyze-business'], resources: { cpu: json('0.25'), memory: '0.5Gi' }, env: workerEnv }]
+    }
+  }
+}

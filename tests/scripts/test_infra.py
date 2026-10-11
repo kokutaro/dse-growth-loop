@@ -57,8 +57,14 @@ class InfrastructureTests(unittest.TestCase):
 
     def test_only_manual_jobs_and_no_cleanup_resources(self):
         jobs = [r for r in self.apps.values() if r['type'] == 'Microsoft.App/jobs']
-        self.assertEqual(len(jobs), 1)
-        self.assertEqual(jobs[0]['properties']['configuration']['triggerType'], 'Manual')
+        self.assertEqual(len(jobs), 2)
+        self.assertTrue(all(j['properties']['configuration']['triggerType'] == 'Manual' for j in jobs))
+        analysis = self.apps['dse-business-analysis']
+        self.assertFalse(self.template['parameters']['deployBusinessAnalysisJob']['defaultValue'])
+        self.assertEqual(analysis['condition'], "[parameters('deployBusinessAnalysisJob')]")
+        configuration = analysis['properties']['configuration']
+        self.assertEqual(configuration['replicaRetryLimit'], 0)
+        self.assertEqual(configuration['manualTriggerConfig'], {'parallelism': 1, 'replicaCompletionCount': 1})
         foundation = self.modules['dse-foundation']['properties']['template']['resources']
         self.assertFalse(any(r['type'].endswith(('/managementPolicies', '/tasks')) for r in foundation))
         runtime = {v['name']: v['value'] for v in self.template['parameters']['runtimeSettings']['defaultValue']}
@@ -75,6 +81,22 @@ class InfrastructureTests(unittest.TestCase):
         for notification in budget['properties']['notifications'].values():
             self.assertEqual(notification['thresholdType'], 'Actual')
             self.assertNotIn('contactGroups', notification)
+
+    def test_analysis_job_receives_server_runtime_identity_settings(self):
+        # Together with test_generated_apps_parameters_include_reviewed_analysis_identity,
+        # verify the compiled ARM path, rather than guessing from Bicep source text.
+        module = self.modules['dse-apps']['properties']
+        self.assertEqual(module['parameters']['runtimeSettings']['value'], "[parameters('runtimeSettings')]")
+        template = module['template']
+        self.assertEqual(template['variables']['appEnv'], "[concat(variables('commonEnv'), parameters('runtimeSettings'))]")
+        self.assertEqual(template['variables']['workerEnv'],
+                         "[concat(variables('appEnv'), createArray(createObject('name', 'AZURE_CLIENT_ID', 'value', parameters('workerClientId'))))]")
+        analysis = self.apps['dse-business-analysis']['properties']['template']['containers'][0]
+        self.assertEqual(analysis['env'], "[variables('workerEnv')]")
+        self.assertEqual(analysis['args'], ['--analyze-business'])
+        auth_tenant = next(v for v in template['variables']['commonEnv'] if v['name'] == 'Auth__TenantId')
+        self.assertEqual(auth_tenant['value'], "[parameters('entraTenantId')]")
+        self.assertFalse(any('Auth__' in name for name in template.get('outputs', {})))
 
     def test_cosmos_roles_cover_only_two_business_containers_and_storage_roles_are_scoped(self):
         foundation = self.modules['dse-foundation']['properties']['template']

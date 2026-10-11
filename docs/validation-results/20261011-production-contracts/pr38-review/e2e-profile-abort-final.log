@@ -1,0 +1,398 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs tests/profiles.spec.ts tests/documents.spec.ts tests/workspace.spec.ts tests/logout.spec.ts
+
+
+[isolated 1/28] docxをアップロードして機械抽出結果と出典を確認できる
+[WebServer] (node:95165) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:95176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:5:3 › docxをアップロードして機械抽出結果と出典を確認できる
+  1 passed (7.8s)
+
+[isolated 2/28] xlsxをアップロードして機械抽出結果と出典を確認できる
+[WebServer] (node:95246) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:95257) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:5:3 › xlsxをアップロードして機械抽出結果と出典を確認できる
+  1 passed (8.6s)
+
+[isolated 3/28] 偽装Officeファイルは拒否して入力を保持する
+[WebServer] (node:95342) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:95343) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:20:1 › 偽装Officeファイルは拒否して入力を保持する
+  1 passed (3.9s)
+
+[isolated 4/28] 処理待ちと失敗を区別して手動再実行できる（状態API fixture）
+[WebServer] (node:95401) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:95402) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:28:1 › 処理待ちと失敗を区別して手動再実行できる（状態API fixture）
+  1 passed (4.0s)
+
+[isolated 5/28] Azureの取込再開・アップロード・再実行はサーバーの本人IDで分離する（認証・API fixture）
+[WebServer] (node:95460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:95461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:45:1 › Azureの取込再開・アップロード・再実行はサーバーの本人IDで分離する（認証・API fixture）
+  1 passed (4.2s)
+
+[isolated 6/28] Azure logout removes protected panels even when the provider is unavailable
+[WebServer] (node:95519) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:95522) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/logout.spec.ts:3:1 › Azure logout removes protected panels even when the provider is unavailable
+  1 passed (3.8s)
+
+[isolated 7/28] 副業務を原文付きの検索断片として追加し経験月数を重複加算しない
+[WebServer] (node:96000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:96002) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:4:1 › 副業務を原文付きの検索断片として追加し経験月数を重複加算しない
+  1 passed (4.9s)
+
+[isolated 8/28] docxから本人訂正と手動一次検索までfake AIで通る
+[WebServer] (node:96064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:96075) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:31:3 › docxから本人訂正と手動一次検索までfake AIで通る
+  1 passed (10.6s)
+
+[isolated 9/28] xlsxから本人訂正と手動一次検索までfake AIで通る
+[WebServer] (node:96376) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:96377) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:31:3 › xlsxから本人訂正と手動一次検索までfake AIで通る
+  1 passed (10.6s)
+
+[isolated 10/28] 公開撤回を検索に反映し、明示再公開で復旧する
+[WebServer] (node:96681) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:96682) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:57:1 › 公開撤回を検索に反映し、明示再公開で復旧する
+  1 passed (10.3s)
+
+[isolated 11/28] 再公開のACCESS_BUSYだけを同じ冪等キーで再試行し、412は本人確認に戻す
+[WebServer] (node:96768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:96769) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:78:1 › 再公開のACCESS_BUSYだけを同じ冪等キーで再試行し、412は本人確認に戻す
+  1 passed (4.8s)
+
+[isolated 12/28] プロフィールPATCHのACCESS_BUSY再送をlogout後に中止する
+[WebServer] (node:97049) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:97050) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:110:3 › プロフィールPATCHのACCESS_BUSY再送をlogout後に中止する
+  1 passed (4.0s)
+
+[isolated 13/28] プロフィールPATCHのACCESS_BUSY再送をnavigation後に中止する
+[WebServer] (node:97107) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:97118) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:110:3 › プロフィールPATCHのACCESS_BUSY再送をnavigation後に中止する
+  1 passed (4.0s)
+
+[isolated 14/28] プロフィールPATCHのACCESS_BUSY再送をaccount後に中止する
+[WebServer] (node:97381) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:97382) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/profiles.spec.ts:110:3 › プロフィールPATCHのACCESS_BUSY再送をaccount後に中止する
+  1 passed (4.0s)
+
+[isolated 15/28] キーボードの本文スキップは現在のルートを保持して本文へフォーカスする
+[WebServer] (node:97442) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:97443) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:16:1 › キーボードの本文スキップは現在のルートを保持して本文へフォーカスする
+  1 passed (3.9s)
+
+[isolated 16/28] 下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない
+[WebServer] (node:97742) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:97916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:79:1 › 下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない
+  1 passed (4.7s)
+
+[isolated 17/28] 投稿応答が遅れても戻る操作で入力を変更・二重送信できない
+[WebServer] (node:98466) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:98481) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:104:1 › 投稿応答が遅れても戻る操作で入力を変更・二重送信できない
+  1 passed (4.0s)
+
+[isolated 18/28] 参加するだけで追加承認なく会話でき、画面は匿名名を維持する
+[WebServer] (node:98539) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:98540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:130:1 › 参加するだけで追加承認なく会話でき、画面は匿名名を維持する
+  1 passed (4.6s)
+
+[isolated 19/28] 辞退した依頼では会話を開けない
+[WebServer] (node:98808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:98816) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:150:1 › 辞退した依頼では会話を開けない
+  1 passed (4.5s)
+
+[isolated 20/28] Demo: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+[WebServer] (node:98878) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:98879) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:165:48 › Demo: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+  1 passed (4.3s)
+
+[isolated 21/28] Azure: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+[WebServer] (node:98938) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:98949) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:165:48 › Azure: 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+  1 passed (4.8s)
+
+[isolated 22/28] ETag競合では入力を保持し、再送で最新版を確認する
+[WebServer] (node:99011) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:99012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:235:1 › ETag競合では入力を保持し、再送で最新版を確認する
+  1 passed (4.2s)
+
+[isolated 23/28] 参加権限を失ったルームは本文を消して送信と公開操作を閉じる
+[WebServer] (node:99495) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:99497) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:254:1 › 参加権限を失ったルームは本文を消して送信と公開操作を閉じる
+  1 passed (4.2s)
+
+[isolated 24/28] 双方同意と承認のない旧サンプル事例を社員画面へ公開しない
+[WebServer] (node:99560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:99561) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:266:1 › 双方同意と承認のない旧サンプル事例を社員画面へ公開しない
+  1 passed (3.9s)
+
+[isolated 25/28] 320pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ
+[WebServer] (node:99618) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:99619) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:277:3 › 320pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ
+  1 passed (3.9s)
+
+[isolated 26/28] 390pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ
+[WebServer] (node:99676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:99677) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:277:3 › 390pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ
+  1 passed (3.9s)
+
+[isolated 27/28] Azureでは匿名契約のないAPIを呼ばず、ログアウトで画面を閉じる
+[WebServer] (node:99734) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:99735) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:292:1 › Azureでは匿名契約のないAPIを呼ばず、ログアウトで画面を閉じる
+  1 passed (4.0s)
+
+[isolated 28/28] 新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する
+[WebServer] (node:99795) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:99807) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:313:1 › 新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する
+  1 passed (5.8s)
+
+Isolated E2E: 28 passed, 0 failed (28 tests).

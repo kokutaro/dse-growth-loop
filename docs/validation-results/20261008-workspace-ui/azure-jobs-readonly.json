@@ -1,0 +1,29 @@
+[
+  {
+    "name": "dse-validation-api"
+  },
+  {
+    "name": "dse-validation-worker"
+  },
+  {
+    "name": "dse-seed-demo"
+  },
+  {
+    "name": "dse-validation-ai"
+  },
+  {
+    "name": "dse-validation-reconcile"
+  },
+  {
+    "name": "dse-validation-once"
+  },
+  {
+    "name": "dse-validation-jobs"
+  },
+  {
+    "name": "dse-validation-chat13"
+  },
+  {
+    "name": "dse-validation-issue30"
+  }
+]

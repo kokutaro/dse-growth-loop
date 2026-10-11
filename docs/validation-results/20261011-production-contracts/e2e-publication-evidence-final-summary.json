@@ -1,0 +1,14 @@
+{
+  "passed": 1,
+  "failed": 0,
+  "results": [
+    {
+      "file": "workspace.spec.ts",
+      "line": 235,
+      "title": "新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する",
+      "exitCode": 0,
+      "durationMs": 7020,
+      "output": "test-results/isolated/1"
+    }
+  ]
+}

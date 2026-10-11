@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-11T04:23:54.709512+00:00",
+  "ownedAspireStopped": true,
+  "ownChromeClosed": true,
+  "ports": [
+    5173,
+    5180
+  ],
+  "listeners": [],
+  "azureOperations": 0,
+  "externalModelCalls": 0
+}

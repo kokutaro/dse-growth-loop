@@ -1,0 +1,454 @@
+{
+  "passed": 49,
+  "failed": 0,
+  "uniqueTests": 49,
+  "mode": "Demo/Mock; isolated API/browser per test; latest result per file/title; excludes repeated earlier failures",
+  "sources": [
+    "e2e-continuation.final1-summary.json",
+    "e2e-publication-evidence-final-summary.json",
+    "e2e-legacy-continuation-summary.json"
+  ],
+  "results": [
+    {
+      "file": "business-analysis.spec.ts",
+      "line": 3,
+      "title": "許可済みダミー課題を手動分析し、人の判断を保存する",
+      "exitCode": 0,
+      "durationMs": 4712,
+      "output": "test-results/isolated/1",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "business-analysis.spec.ts",
+      "line": 20,
+      "title": "分析後に許可確認が失敗すると候補と集計を閉じる",
+      "exitCode": 0,
+      "durationMs": 3223,
+      "output": "test-results/isolated/2",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "identity-disclosure.spec.ts",
+      "line": 41,
+      "title": "独立した相互同意だけで表示名を開示し、撤回後は全員の再確認が必要",
+      "exitCode": 0,
+      "durationMs": 4464,
+      "output": "test-results/isolated/3",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "identity-disclosure.spec.ts",
+      "line": 72,
+      "title": "プロフィール変更・読み直し失敗で共有名を消し、古い同意を再利用しない",
+      "exitCode": 0,
+      "durationMs": 6244,
+      "output": "test-results/isolated/4",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace-anonymity.spec.ts",
+      "line": 16,
+      "title": "社員ワークスペースのリクエストと応答は匿名専用契約に収まり、内部識別情報を返さない",
+      "exitCode": 0,
+      "durationMs": 4110,
+      "output": "test-results/isolated/5",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace-anonymity.spec.ts",
+      "line": 51,
+      "title": "相談投稿の応答消失でも内容とキーを固定し、再確認後の保存は一件だけ",
+      "exitCode": 0,
+      "durationMs": 4285,
+      "output": "test-results/isolated/6",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace-anonymity.spec.ts",
+      "line": 75,
+      "title": "識別情報を含む本文の拒否を保存済みと扱わず、匿名の内容へ修正できる",
+      "exitCode": 0,
+      "durationMs": 4411,
+      "output": "test-results/isolated/7",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 39,
+      "title": "下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない",
+      "exitCode": 0,
+      "durationMs": 4550,
+      "output": "test-results/isolated/8",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 64,
+      "title": "投稿応答が遅れても戻る操作で入力を変更・二重送信できない",
+      "exitCode": 0,
+      "durationMs": 4138,
+      "output": "test-results/isolated/9",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 90,
+      "title": "参加するだけで追加承認なく会話でき、画面は匿名名を維持する",
+      "exitCode": 0,
+      "durationMs": 4923,
+      "output": "test-results/isolated/10",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 110,
+      "title": "辞退した依頼では会話を開けない",
+      "exitCode": 0,
+      "durationMs": 4612,
+      "output": "test-results/isolated/11",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 125,
+      "title": "会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する",
+      "exitCode": 0,
+      "durationMs": 4492,
+      "output": "test-results/isolated/12",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 157,
+      "title": "ETag競合では入力を保持し、再送で最新版を確認する",
+      "exitCode": 0,
+      "durationMs": 4337,
+      "output": "test-results/isolated/13",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 176,
+      "title": "参加権限を失ったルームは本文を消して送信と公開操作を閉じる",
+      "exitCode": 0,
+      "durationMs": 4373,
+      "output": "test-results/isolated/14",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 188,
+      "title": "双方同意と承認のない旧サンプル事例を社員画面へ公開しない",
+      "exitCode": 0,
+      "durationMs": 4084,
+      "output": "test-results/isolated/15",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 199,
+      "title": "320pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ",
+      "exitCode": 0,
+      "durationMs": 4085,
+      "output": "test-results/isolated/16",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 199,
+      "title": "390pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ",
+      "exitCode": 0,
+      "durationMs": 4085,
+      "output": "test-results/isolated/17",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 214,
+      "title": "Azureでは匿名契約のないAPIを呼ばず、ログアウトで画面を閉じる",
+      "exitCode": 0,
+      "durationMs": 6193,
+      "output": "test-results/isolated/18",
+      "summarySource": "e2e-continuation.final1-summary.json"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 235,
+      "title": "新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する",
+      "exitCode": 0,
+      "durationMs": 7020,
+      "output": "test-results/isolated/1",
+      "summarySource": "e2e-publication-evidence-final-summary.json"
+    },
+    {
+      "file": "chat-assistance.spec.ts",
+      "line": 15,
+      "title": "自動事例は一度だけ保存され、出典・フィードバック・再接続・停止を操作できる",
+      "exitCode": 0,
+      "durationMs": 15181,
+      "output": "test-results/isolated/1",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 14,
+      "title": "履歴取得中に相談を依頼しても参加者一覧を更新する",
+      "exitCode": 0,
+      "durationMs": 4228,
+      "output": "test-results/isolated/2",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 38,
+      "title": "二人で承諾・会話・退会し、AI停止中も保存できる",
+      "exitCode": 0,
+      "durationMs": 14762,
+      "output": "test-results/isolated/3",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 66,
+      "title": "DB失敗と応答消失は未保存表示になり、同じキーで再送して一件だけ保存する",
+      "exitCode": 0,
+      "durationMs": 4342,
+      "output": "test-results/isolated/4",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 88,
+      "title": "通知なしでも履歴をページング回復し、画面の開き直しで重複しない",
+      "exitCode": 0,
+      "durationMs": 4273,
+      "output": "test-results/isolated/5",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "conversations.spec.ts",
+      "line": 100,
+      "title": "表示済みAI引用は新着なしでも履歴を再照合して撤回表示へ更新する（応答fixture）",
+      "exitCode": 0,
+      "durationMs": 4086,
+      "output": "test-results/isolated/6",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "documents.spec.ts",
+      "line": 5,
+      "title": "docxをアップロードして機械抽出結果と出典を確認できる",
+      "exitCode": 0,
+      "durationMs": 7472,
+      "output": "test-results/isolated/7",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "documents.spec.ts",
+      "line": 5,
+      "title": "xlsxをアップロードして機械抽出結果と出典を確認できる",
+      "exitCode": 0,
+      "durationMs": 8728,
+      "output": "test-results/isolated/8",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "documents.spec.ts",
+      "line": 20,
+      "title": "偽装Officeファイルは拒否して入力を保持する",
+      "exitCode": 0,
+      "durationMs": 4072,
+      "output": "test-results/isolated/9",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "documents.spec.ts",
+      "line": 28,
+      "title": "処理待ちと失敗を区別して手動再実行できる（状態API fixture）",
+      "exitCode": 0,
+      "durationMs": 4196,
+      "output": "test-results/isolated/10",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "knowledge.spec.ts",
+      "line": 3,
+      "title": "resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy case",
+      "exitCode": 0,
+      "durationMs": 5066,
+      "output": "test-results/isolated/11",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "logout.spec.ts",
+      "line": 3,
+      "title": "Azure logout removes protected panels even when the provider is unavailable",
+      "exitCode": 0,
+      "durationMs": 3998,
+      "output": "test-results/isolated/12",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "profiles.spec.ts",
+      "line": 4,
+      "title": "副業務を原文付きの検索断片として追加し経験月数を重複加算しない",
+      "exitCode": 0,
+      "durationMs": 5167,
+      "output": "test-results/isolated/13",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "profiles.spec.ts",
+      "line": 31,
+      "title": "docxから本人訂正と手動一次検索までfake AIで通る",
+      "exitCode": 0,
+      "durationMs": 10741,
+      "output": "test-results/isolated/14",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "profiles.spec.ts",
+      "line": 31,
+      "title": "xlsxから本人訂正と手動一次検索までfake AIで通る",
+      "exitCode": 0,
+      "durationMs": 10731,
+      "output": "test-results/isolated/15",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "profiles.spec.ts",
+      "line": 57,
+      "title": "公開撤回を検索に反映し、明示再公開で復旧する",
+      "exitCode": 0,
+      "durationMs": 10556,
+      "output": "test-results/isolated/16",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 3,
+      "title": "ダミーの相談候補と根拠を検索できる",
+      "exitCode": 0,
+      "durationMs": 4077,
+      "output": "test-results/isolated/17",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 20,
+      "title": "副分類のソフトウェア経験を拾う",
+      "exitCode": 0,
+      "durationMs": 4051,
+      "output": "test-results/isolated/18",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 32,
+      "title": "空結果と障害を区別する",
+      "exitCode": 0,
+      "durationMs": 4104,
+      "output": "test-results/isolated/19",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 44,
+      "title": "fake AIで自然文・条件編集・結果・出典を確認できる",
+      "exitCode": 0,
+      "durationMs": 4215,
+      "output": "test-results/isolated/20",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 61,
+      "title": "分類停止時に手動条件へ戻せる",
+      "exitCode": 0,
+      "durationMs": 4169,
+      "output": "test-results/isolated/21",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 72,
+      "title": "自然文だけでも一度の検索で条件生成から結果へ進む",
+      "exitCode": 0,
+      "durationMs": 4078,
+      "output": "test-results/isolated/22",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 82,
+      "title": "リランク失敗を正解なしと区別し、未評価候補を推薦しない",
+      "exitCode": 0,
+      "durationMs": 4041,
+      "output": "test-results/isolated/23",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 95,
+      "title": "事例の指定を検索APIへ送り、人物を混ぜずに取得する",
+      "exitCode": 0,
+      "durationMs": 4137,
+      "output": "test-results/isolated/24",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 108,
+      "title": "検索結果を種別別に表示する: knowledge,person,knowledge,person",
+      "exitCode": 0,
+      "durationMs": 4036,
+      "output": "test-results/isolated/25",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 108,
+      "title": "検索結果を種別別に表示する: person",
+      "exitCode": 0,
+      "durationMs": 4079,
+      "output": "test-results/isolated/26",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 108,
+      "title": "検索結果を種別別に表示する: knowledge",
+      "exitCode": 0,
+      "durationMs": 4054,
+      "output": "test-results/isolated/27",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 108,
+      "title": "検索結果を種別別に表示する: 空",
+      "exitCode": 0,
+      "durationMs": 4104,
+      "output": "test-results/isolated/28",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 126,
+      "title": "分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_OUT_OF_SCOPE",
+      "exitCode": 0,
+      "durationMs": 4192,
+      "output": "test-results/isolated/29",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    },
+    {
+      "file": "search.spec.ts",
+      "line": 126,
+      "title": "分類対象外と障害を分け、前の条件を再送しない: CLASSIFICATION_MANUAL_REQUIRED",
+      "exitCode": 0,
+      "durationMs": 4140,
+      "output": "test-results/isolated/30",
+      "summarySource": "e2e-legacy-continuation-summary.json"
+    }
+  ]
+}

@@ -4,6 +4,10 @@
 
 ## 設計資料
 
+- [許可済み課題の手動分析](docs/business-analysis.md)：公開申告情報・双方同意・集計・候補ごとの人の判断、Demo/Mockと実環境の境界。
+- [残Issueの受入条件](docs/remaining-issues-acceptance-20261011.md)：最新Issueの棚卸し、実測・採用・運用の未完了条件。
+- [匿名専用API](docs/anonymous-workspace-contract.md)、[独立した表示名開示](docs/identity-disclosure.md)、[部分操作計測](docs/operation-measurements.md)。
+- [社員ワークスペース UI](docs/anonymous-workspace-ui.md)：5メニュー・マイページ、匿名専用API接続、起動方法と実環境で残る検証。
 - [アーキテクチャ文書](docs/architecture.md)：コンセプト、仕組み、構成、データ、処理、検証計画。
 - [正本永続化・認可・復旧手順](docs/persistence.md)：Issue #5のAPI、RBAC、失効フェンス、検証境界。
 - [AIアダプター・使用量台帳](docs/ai-adapters.md)：Issue #8の型付きポート、固定モデル、予算予約、承認後のライブ確認手順。
@@ -26,7 +30,7 @@ npm --prefix web ci
 dotnet run --project src/Dse.AppHost
 ```
 
-UIは `http://localhost:5173`。AppHostはAPIとViteを開発用Demoモードで起動する。DockerやCosmosエミュレーターは不要。
+UIは `http://localhost:5173`。新しい課題・協力ワークスペースを表示し、以前の検証画面は `/validation.html` に保持する。ワークスペースは匿名専用APIの能力・版・旧API隔離を確認して開く。Azureモード向けのDTOと認可コードも実装したが、実Entra・実Cosmosでの受入は未実施。自由入力の完全匿名化は保証しない。AppHostはAPIとViteを開発用Demoモードで起動する。DockerやCosmosエミュレーターは不要。
 
 個別起動や接続先設定には `.env` を使える。既存の環境変数が優先される。
 

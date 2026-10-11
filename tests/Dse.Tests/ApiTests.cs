@@ -87,7 +87,11 @@ public class ApiTests
         using var client = factory.CreateClient();
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
-        (await client.PostAsJsonAsync("/api/search", Request)).EnsureSuccessStatusCode();
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
+        using var operatorFactory = Factory(false).WithWebHostBuilder(b => b.UseSetting("Auth:Bindings:0:Roles:1", "operator"));
+        using var operatorClient = operatorFactory.CreateClient();
+        operatorClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        (await operatorClient.PostAsJsonAsync("/api/search", Request)).EnsureSuccessStatusCode();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token(audience: "wrong"));
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync("/api/search", Request)).StatusCode);
     }
@@ -162,9 +166,122 @@ public class ApiTests
         client.DefaultRequestHeaders.Add("X-Demo-Person", "demo-person-02");
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), path))).StatusCode);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
-        var context = await client.GetStringAsync("/api/v1/conversation-context");
-        Assert.Contains("principal-test", context); Assert.DoesNotContain("demo-person-02", context);
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/v1/conversation-context")).StatusCode);
     }
+    [Theory]
+    [InlineData("/api/v1/challenges", "GET")]
+    [InlineData("/API/V1/Challenges/", "GET")]
+    [InlineData("/API/SEARCH/", "POST")]
+    [InlineData("/api/v1/SessionS/opaque/messages/", "GET")]
+    [InlineData("/api/v1/conversation-context/", "GET")]
+    [InlineData("/api/v1/conversation-context", "GET")]
+    [InlineData("/api/v1/sessions/opaque/messages", "GET")]
+    [InlineData("/api/v1/sessions/opaque/knowledge", "GET")]
+    [InlineData("/api/v2/search", "POST")]
+    [InlineData("/api/v2/retrieval-runs/opaque", "GET")]
+    [InlineData("/api/hubs/conversations/negotiate?negotiateVersion=1", "POST")]
+    public async Task Production_employee_cannot_reidentify_collaborators_through_legacy_routes(string path, string method)
+    {
+        using var factory = Factory(false); using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), path));
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.DoesNotContain("principal-test", body);
+        Assert.DoesNotContain("demo-person-01", body);
+    }
+
+    [Fact]
+    public async Task Production_self_profile_endpoint_does_not_become_an_employee_directory()
+    {
+        var store = new MemoryRecordStore();
+        foreach (var pair in new[] { ("demo-person-01", "principal-test"), ("other-person", "other-principal") })
+        {
+            var person = RecordJson.New("person", pair.Item1, Tenant, pair.Item2, ["demo"], DateTimeOffset.UtcNow);
+            person["displayName"] = pair.Item1 == "other-person" ? "private-other-name" : "self-name";
+            await store.CommitAsync(RecordPartition.Catalog(Tenant), [RecordWrite.Create(person)], default);
+        }
+        using var factory = Factory(false).WithWebHostBuilder(b => b.ConfigureServices(s => s.AddSingleton<IRecordStore>(store)));
+        using var client = factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/v1/people/demo-person-01")).StatusCode);
+        var other = await client.GetAsync("/api/v1/people/other-person");
+        Assert.Equal(HttpStatusCode.NotFound, other.StatusCode);
+        var missing = await client.GetAsync("/api/v1/people/unknown-person");
+        Assert.Equal(other.StatusCode,missing.StatusCode);
+        Assert.Equal((await other.Content.ReadFromJsonAsync<System.Text.Json.Nodes.JsonObject>())!["code"]!.GetValue<string>(),
+            (await missing.Content.ReadFromJsonAsync<System.Text.Json.Nodes.JsonObject>())!["code"]!.GetValue<string>());
+        Assert.DoesNotContain("private-other-name", await other.Content.ReadAsStringAsync());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Production_raw_jobs_are_self_only_with_an_explicit_operator_exception(bool isOperator)
+    {
+        var store = new MemoryRecordStore();
+        foreach (var (id, owner) in new[] { ("self-job", "principal-test"), ("other-job", "other-principal") })
+        {
+            var job = RecordJson.New("job", id, Tenant, owner, ["demo"], DateTimeOffset.UtcNow);
+            job["documentId"] = id + "-private-document";
+            job["aiRun"] = new System.Text.Json.Nodes.JsonObject { ["providerRequestId"] = id + "-provider-request" };
+            await store.CommitAsync(RecordPartition.Catalog(Tenant), [RecordWrite.Create(job)], default);
+        }
+        using var factory = Factory(false).WithWebHostBuilder(b =>
+        {
+            if (isOperator) b.UseSetting("Auth:Bindings:0:Roles:1", "operator");
+            b.ConfigureServices(s => s.AddSingleton<IRecordStore>(store));
+        });
+        using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        var own = await client.GetAsync("/api/v1/jobs/self-job");
+        Assert.Equal(HttpStatusCode.OK, own.StatusCode);
+        Assert.NotNull(own.Headers.ETag);
+        var other = await client.GetAsync("/api/v1/jobs/other-job");
+        if (isOperator)
+        {
+            Assert.Equal(HttpStatusCode.OK, other.StatusCode);
+            Assert.Contains("other-job-provider-request", await other.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            var missing = await client.GetAsync("/api/v1/jobs/missing-job");
+            Assert.Equal(HttpStatusCode.NotFound, other.StatusCode);
+            Assert.Equal(missing.StatusCode, other.StatusCode);
+            var missingBody = (await missing.Content.ReadFromJsonAsync<System.Text.Json.Nodes.JsonObject>())!;
+            var otherBody = (await other.Content.ReadFromJsonAsync<System.Text.Json.Nodes.JsonObject>())!;
+            foreach (var field in new[] { "code", "status", "title", "detail", "type" })
+                Assert.Equal(missingBody[field]?.ToJsonString(), otherBody[field]?.ToJsonString());
+            Assert.Null(other.Headers.ETag);
+            foreach (var privateValue in new[] { "other-principal", "other-job-private-document", "other-job-provider-request", "aiRun" })
+                Assert.DoesNotContain(privateValue, await other.Content.ReadAsStringAsync());
+        }
+    }
+
+    [Theory]
+    [InlineData("principal-test")]
+    [InlineData("other-principal")]
+    public async Task Production_employee_cannot_read_raw_conversation_jobs_even_as_a_participant(string owner)
+    {
+        const string sid = "private-session";
+        var store = new MemoryRecordStore();
+        var session = RecordJson.New("session", sid, Tenant, owner, ["demo"], DateTimeOffset.UtcNow);
+        session["sessionId"] = sid;
+        session["participantIds"] = RecordJson.Array(["demo-person-01", "other-person"]);
+        var job = RecordJson.New("job", "conversation-job", Tenant, owner, ["demo"], DateTimeOffset.UtcNow);
+        job["container"] = "conversations";
+        job["sessionId"] = sid;
+        job["participantIds"] = session["participantIds"]!.DeepClone();
+        await store.CommitAsync(RecordPartition.Conversation(Tenant, sid), [RecordWrite.Create(session), RecordWrite.Create(job)], default);
+        using var factory = Factory(false).WithWebHostBuilder(b => b.ConfigureServices(s => s.AddSingleton<IRecordStore>(store)));
+        using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token());
+        var result = await client.GetAsync("/api/v1/jobs/conversation-job?sessionId=" + sid);
+        Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+        Assert.Null(result.Headers.ETag);
+        foreach (var privateValue in new[] { owner, "other-person", sid, "participantIds" })
+            Assert.DoesNotContain(privateValue, await result.Content.ReadAsStringAsync());
+    }
+
     [Fact]
     public async Task Hub_rejects_expired_tokens_and_disabled_bindings()
     {

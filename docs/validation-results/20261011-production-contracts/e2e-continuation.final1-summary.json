@@ -1,0 +1,158 @@
+{
+  "passed": 18,
+  "failed": 1,
+  "results": [
+    {
+      "file": "business-analysis.spec.ts",
+      "line": 3,
+      "title": "許可済みダミー課題を手動分析し、人の判断を保存する",
+      "exitCode": 0,
+      "durationMs": 4712,
+      "output": "test-results/isolated/1"
+    },
+    {
+      "file": "business-analysis.spec.ts",
+      "line": 20,
+      "title": "分析後に許可確認が失敗すると候補と集計を閉じる",
+      "exitCode": 0,
+      "durationMs": 3223,
+      "output": "test-results/isolated/2"
+    },
+    {
+      "file": "identity-disclosure.spec.ts",
+      "line": 41,
+      "title": "独立した相互同意だけで表示名を開示し、撤回後は全員の再確認が必要",
+      "exitCode": 0,
+      "durationMs": 4464,
+      "output": "test-results/isolated/3"
+    },
+    {
+      "file": "identity-disclosure.spec.ts",
+      "line": 72,
+      "title": "プロフィール変更・読み直し失敗で共有名を消し、古い同意を再利用しない",
+      "exitCode": 0,
+      "durationMs": 6244,
+      "output": "test-results/isolated/4"
+    },
+    {
+      "file": "workspace-anonymity.spec.ts",
+      "line": 16,
+      "title": "社員ワークスペースのリクエストと応答は匿名専用契約に収まり、内部識別情報を返さない",
+      "exitCode": 0,
+      "durationMs": 4110,
+      "output": "test-results/isolated/5"
+    },
+    {
+      "file": "workspace-anonymity.spec.ts",
+      "line": 51,
+      "title": "相談投稿の応答消失でも内容とキーを固定し、再確認後の保存は一件だけ",
+      "exitCode": 0,
+      "durationMs": 4285,
+      "output": "test-results/isolated/6"
+    },
+    {
+      "file": "workspace-anonymity.spec.ts",
+      "line": 75,
+      "title": "識別情報を含む本文の拒否を保存済みと扱わず、匿名の内容へ修正できる",
+      "exitCode": 0,
+      "durationMs": 4411,
+      "output": "test-results/isolated/7"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 39,
+      "title": "下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない",
+      "exitCode": 0,
+      "durationMs": 4550,
+      "output": "test-results/isolated/8"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 64,
+      "title": "投稿応答が遅れても戻る操作で入力を変更・二重送信できない",
+      "exitCode": 0,
+      "durationMs": 4138,
+      "output": "test-results/isolated/9"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 90,
+      "title": "参加するだけで追加承認なく会話でき、画面は匿名名を維持する",
+      "exitCode": 0,
+      "durationMs": 4923,
+      "output": "test-results/isolated/10"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 110,
+      "title": "辞退した依頼では会話を開けない",
+      "exitCode": 0,
+      "durationMs": 4612,
+      "output": "test-results/isolated/11"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 125,
+      "title": "会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する",
+      "exitCode": 0,
+      "durationMs": 4492,
+      "output": "test-results/isolated/12"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 157,
+      "title": "ETag競合では入力を保持し、再送で最新版を確認する",
+      "exitCode": 0,
+      "durationMs": 4337,
+      "output": "test-results/isolated/13"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 176,
+      "title": "参加権限を失ったルームは本文を消して送信と公開操作を閉じる",
+      "exitCode": 0,
+      "durationMs": 4373,
+      "output": "test-results/isolated/14"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 188,
+      "title": "双方同意と承認のない旧サンプル事例を社員画面へ公開しない",
+      "exitCode": 0,
+      "durationMs": 4084,
+      "output": "test-results/isolated/15"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 199,
+      "title": "320pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ",
+      "exitCode": 0,
+      "durationMs": 4085,
+      "output": "test-results/isolated/16"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 199,
+      "title": "390pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ",
+      "exitCode": 0,
+      "durationMs": 4085,
+      "output": "test-results/isolated/17"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 214,
+      "title": "Azureでは匿名契約のないAPIを呼ばず、ログアウトで画面を閉じる",
+      "exitCode": 0,
+      "durationMs": 6193,
+      "output": "test-results/isolated/18"
+    },
+    {
+      "file": "workspace.spec.ts",
+      "line": 235,
+      "title": "新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する",
+      "exitCode": 1,
+      "durationMs": 5630,
+      "output": "test-results/isolated/19"
+    }
+  ]
+}

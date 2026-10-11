@@ -1,0 +1,90 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs tests/logout.spec.ts tests/documents.spec.ts
+
+
+[isolated 1/6] docxをアップロードして機械抽出結果と出典を確認できる
+[WebServer] (node:57510) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:57512) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:5:3 › docxをアップロードして機械抽出結果と出典を確認できる
+  1 passed (7.7s)
+
+[isolated 2/6] xlsxをアップロードして機械抽出結果と出典を確認できる
+[WebServer] (node:57812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:57813) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:5:3 › xlsxをアップロードして機械抽出結果と出典を確認できる
+  1 passed (8.5s)
+
+[isolated 3/6] 偽装Officeファイルは拒否して入力を保持する
+[WebServer] (node:58318) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:58320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:20:1 › 偽装Officeファイルは拒否して入力を保持する
+  1 passed (3.9s)
+
+[isolated 4/6] 処理待ちと失敗を区別して手動再実行できる（状態API fixture）
+[WebServer] (node:58595) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:58596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:28:1 › 処理待ちと失敗を区別して手動再実行できる（状態API fixture）
+  1 passed (3.9s)
+
+[isolated 5/6] Azureの取込再開・アップロード・再実行はサーバーの本人IDで分離する（認証・API fixture）
+[WebServer] (node:59079) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:59080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/documents.spec.ts:45:1 › Azureの取込再開・アップロード・再実行はサーバーの本人IDで分離する（認証・API fixture）
+  1 passed (4.4s)
+
+[isolated 6/6] Azure logout removes protected panels even when the provider is unavailable
+[WebServer] (node:59153) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:59154) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/logout.spec.ts:3:1 › Azure logout removes protected panels even when the provider is unavailable
+  1 passed (4.9s)
+
+Isolated E2E: 6 passed, 0 failed (6 tests).

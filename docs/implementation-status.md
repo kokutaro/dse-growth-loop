@@ -1,5 +1,27 @@
 # 初期実装の状況
 
+## 2026-10-11：匿名契約・Live分析・復旧CLIの追加実装
+
+専用 `codex/remaining-issues-20261011` で、匿名専用の不透明DTO・活動内別名・候補token・公開事例、Productionの旧API隔離と本人限定読取を実装した。表示名の独立した双方同意は公開/分析同意と別に保存し、取消や観測したプロフィール・認可変更で失効する。名前は本人プロフィールの自己申告値である。自由文の完全匿名化、実Entra/Cosmos受入、未観測の認可設定変更と復元を検出する単調版は残る。
+
+Live分析を既存輸送・共有AiLedgerへ接続し、許可公開原本限定、設定固定、送信1回、費用予約、不明終結の保守保持を実装した。operator用の停止証跡付きinspect/recover CLIはローカル正本で検証する。既定のLive無効/停止は維持し、実モデル・Azure操作は0。部分操作計測は未観測RUをnull、complete/gateをfalseにする。
+
+[追加検証結果と実画面](validation-results/20261011-production-contracts/results.md)、[匿名API](anonymous-workspace-contract.md)、[表示名同意](identity-disclosure.md)、[分析・復旧](business-analysis.md)、[計測の残条件](operation-measurements.md)を参照。Issue状態、push/PR/merge/deploy、課金・権限設定は変更していない。
+
+## 以下は同日の前段のローカル実装・検証履歴
+
+最新 main `78f182a` と open Issue 10件・open PR 0件を照合し、前回のUI差分を保持した別ブランチで進めた。#33は処理中の根拠本文変更を最終表示前に拒否し、旧・参加不可投影の直接利用も拒否する。#15は公開申告情報の版・双方同意、手動分析、重複排除、コード集計、根拠要約の閲覧、候補ごとの人の判断と撤回後の派生集計抑止をDemo/Mockで実装した。#31/#32は保存応答再集計と人承認goldの評価器を追加、#34は測定schema/未承認計画、#35/#16/#14/#1は未達条件を整理した。
+
+[ローカル検証・実画面証跡](validation-results/20261011-remaining-issues/results.md)、[分析手順と未完了境界](business-analysis.md)、[Issue別受入条件](remaining-issues-acceptance-20261011.md)を参照。新しい実AI・実Cosmos・Azure変更は0件で、いずれのIssueも完了/closeしていない。この前段ではLive分析・管理用slot復旧は未実装だった。上記の追加実装後も、実環境の認証・停止・費用照合は未完了として維持する。
+
+## 2026-10-08：課題と匿名協力を中心にした社員UI
+
+5メニューとマイページを参照プレビューのデザインでReactへ実装した。課題投稿、即時参加、会話保存、活動完了、双方の事例公開同意と編集後の同意解除を既存Demo APIに接続。旧検証画面は `/validation.html` に保持している。本番の匿名DTO・匿名候補・実名開示同意APIは未完成のため、新UIはAzureモードで業務APIを呼ばず停止する。
+
+ローカル最終検証はE2E42、.NET368、認証4、Python107、契約17、評価fixture5件すべて成功。MacのChromeでPC・320px・390pxを確認した。詳細は [UIの実装境界・起動手順](anonymous-workspace-ui.md)、[最終検証結果](validation-results/20261008-workspace-ui/results.md)、[実環境検証の再開条件](validation-results/20261008-workspace-ui/resume-issue30.md) を参照。push・PR・Azureデプロイ・有料起動は行っていない。
+
+## 以下は2026-10-04までの実装・検証履歴
+
 更新日：2026-10-04。設計版0.2の実装着手分＋Issue #2〜#8の基盤・契約・評価・Office取込・会話・AIアダプター、およびIssue #10のプロフィール処理、#11の自然文検索、#12の解決評価・公開知識、#13のチャット事例自動支援。Issue #9で承認済みの固定ダミーAzure展開と3推論試行を実施した。[実環境結果](validation-results/20261001-issue-9-live/results.md)の未実施・失敗・費用照合待ちは残る。以下の各Issue当時の検証記録は履歴として区別する。
 
 ## 実装した範囲

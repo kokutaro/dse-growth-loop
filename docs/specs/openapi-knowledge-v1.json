@@ -403,6 +403,56 @@
                     "minItems": 1,
                     "maxItems": 20,
                     "uniqueItems": true
+                  },
+                  "analysisMetadata": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "description": "公開用部署IDと自己申告の分析項目。要約と同じ版・公開範囲で双方の公開・分析同意を必要とし、欠損は不明。市場性の合格判定ではない。",
+                    "properties": {
+                      "departmentId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                      },
+                      "resolution": {
+                        "enum": [
+                          null,
+                          "resolved",
+                          "partial",
+                          "unresolved"
+                        ]
+                      },
+                      "reportedHours": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 100000,
+                        "multipleOf": 0.01
+                      },
+                      "recurrences": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 10000
+                      },
+                      "feedback": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 5
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [

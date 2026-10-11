@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-11",
+  "scope": "offline documentation/schema/replay validation only; no Azure/AI requests",
+  "schemaValid": true,
+  "unapprovedPlanValid": true,
+  "negativeFixtures": [
+    {
+      "case": "unknown_measurement_cannot_pass_warm",
+      "rejected": true,
+      "errorCount": 6
+    },
+    {
+      "case": "unknown_components_cannot_pass_monthly",
+      "rejected": true,
+      "errorCount": 3
+    },
+    {
+      "case": "unapproved_plan_cannot_be_real_service",
+      "rejected": true,
+      "errorCount": 5
+    },
+    {
+      "case": "negative_bound_rejected",
+      "rejected": true,
+      "errorCount": 1
+    }
+  ],
+  "localMarkdownLinksValidated": 11,
+  "planEvidenceLinksValidated": 4,
+  "approvedDatasetHashMatched": true,
+  "files": [
+    {
+      "path": "docs/remaining-issues-acceptance-20261011.md",
+      "sha256": "16adee9783f1b54c211f28c370c3446cffeec29e2ce87d81092bf5a5d26ced29"
+    },
+    {
+      "path": "docs/evaluation/issue-34/measurement-record.schema.json",
+      "sha256": "3186ffd31ce2eed773029c5c2faaf58f3ea4e3c68e7b3fa06a9871fa0d373b5a"
+    },
+    {
+      "path": "docs/evaluation/issue-34/measurement-plan-20261011.json",
+      "sha256": "46f755e43733716e9c28d704d75f5ecaeee702226d3c1708cb88ec56f6742b28"
+    },
+    {
+      "path": "docs/validation-results/20261011-acceptance-inventory/issue30-v3-replay-summary.json",
+      "sha256": "58351ebe446591d8bc959c5e3bc59430bf0076d2a085ed3ec172ab198a2af257"
+    }
+  ]
+}

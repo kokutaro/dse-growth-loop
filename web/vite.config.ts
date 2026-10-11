@@ -10,6 +10,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         main: resolve(import.meta.dirname, "index.html"),
+        validation: resolve(import.meta.dirname, "validation.html"),
         redirect: resolve(import.meta.dirname, "redirect.html"),
       },
     },

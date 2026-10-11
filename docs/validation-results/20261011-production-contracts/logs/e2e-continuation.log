@@ -1,0 +1,353 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs tests/workspace.spec.ts tests/workspace-anonymity.spec.ts tests/identity-disclosure.spec.ts tests/business-analysis.spec.ts
+
+
+[isolated 1/19] 許可済みダミー課題を手動分析し、人の判断を保存する
+[WebServer] (node:50757) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:50768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/business-analysis.spec.ts:3:1 › 許可済みダミー課題を手動分析し、人の判断を保存する
+[WebServer] 1:49:08 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:08 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:08 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:08 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:08 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:08 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:08 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:08 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+  1 passed (6.4s)
+
+[isolated 2/19] 分析後に許可確認が失敗すると候補と集計を閉じる
+[WebServer] (node:50816) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:50817) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/business-analysis.spec.ts:20:1 › 分析後に許可確認が失敗すると候補と集計を閉じる
+[WebServer] 1:49:11 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:11 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:11 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:11 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:11 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:11 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:11 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:11 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+  1 passed (2.9s)
+
+[isolated 3/19] 独立した相互同意だけで表示名を開示し、撤回後は全員の再確認が必要
+[WebServer] (node:50873) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:50874) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/identity-disclosure.spec.ts:29:1 › 独立した相互同意だけで表示名を開示し、撤回後は全員の再確認が必要
+  1 passed (4.1s)
+
+[isolated 4/19] プロフィール変更・読み直し失敗で共有名を消し、古い同意を再利用しない
+[WebServer] (node:51156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:51157) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/identity-disclosure.spec.ts:60:1 › プロフィール変更・読み直し失敗で共有名を消し、古い同意を再利用しない
+[WebServer] 1:49:20 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+[WebServer] 1:49:20 PM [vite] (client) [console.error] Encountered two children with the same key, `demo-person-01`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+  1 passed (4.8s)
+
+[isolated 5/19] 社員ワークスペースのリクエストと応答は匿名専用契約に収まり、内部識別情報を返さない
+[WebServer] (node:51857) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:51858) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace-anonymity.spec.ts:4:1 › 社員ワークスペースのリクエストと応答は匿名専用契約に収まり、内部識別情報を返さない
+  1) tests/workspace-anonymity.spec.ts:4:1 › 社員ワークスペースのリクエストと応答は匿名専用契約に収まり、内部識別情報を返さない ─────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: /に参加依頼$/ }).first()
+
+
+      16 |   await page.getByText('匿名で協力を依頼する', { exact: true }).click();
+      17 |   await page.getByRole('button', { name: '匿名の候補を確認' }).click();
+    > 18 |   await page.getByRole('button', { name: /に参加依頼$/ }).first().click();
+         |                                                              ^
+      19 |   await page.getByLabel('ローカル検証の役割').selectOption('demo-person-02');
+      20 |   await page.getByRole('link', { name: /^参加依頼/ }).click();
+      21 |   await page.getByRole('link', { name: '内容を確認' }).click();
+        at /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/web/tests/workspace-anonymity.spec.ts:18:62
+
+    Error Context: test-results/isolated/5/workspace-anonymity-社員ワークス-187f3-トと応答は匿名専用契約に収まり、内部識別情報を返さない/error-context.md
+
+
+  1 failed
+    tests/workspace-anonymity.spec.ts:4:1 › 社員ワークスペースのリクエストと応答は匿名専用契約に収まり、内部識別情報を返さない ──────────────
+
+[isolated 6/19] 相談投稿の応答消失でも内容とキーを固定し、再確認後の保存は一件だけ
+[WebServer] (node:53575) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:53576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace-anonymity.spec.ts:39:1 › 相談投稿の応答消失でも内容とキーを固定し、再確認後の保存は一件だけ
+  1 passed (5.1s)
+
+[isolated 7/19] 識別情報を含む本文の拒否を保存済みと扱わず、匿名の内容へ修正できる
+[WebServer] (node:53845) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:53846) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace-anonymity.spec.ts:63:1 › 識別情報を含む本文の拒否を保存済みと扱わず、匿名の内容へ修正できる
+  1 passed (4.2s)
+
+[isolated 8/19] 下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない
+[WebServer] (node:54127) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:54128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:27:1 › 下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない
+  1 passed (6.2s)
+
+[isolated 9/19] 投稿応答が遅れても戻る操作で入力を変更・二重送信できない
+[WebServer] (node:54396) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:54407) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:52:1 › 投稿応答が遅れても戻る操作で入力を変更・二重送信できない
+  1 passed (4.0s)
+
+[isolated 10/19] 参加するだけで追加承認なく会話でき、画面は匿名名を維持する
+[WebServer] (node:54455) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:54466) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:78:1 › 参加するだけで追加承認なく会話でき、画面は匿名名を維持する
+  1 passed (4.4s)
+
+[isolated 11/19] 辞退した依頼では会話を開けない
+[WebServer] (node:54742) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:54743) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:98:1 › 辞退した依頼では会話を開けない
+  1 passed (4.3s)
+
+[isolated 12/19] 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+[WebServer] (node:55019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:55020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:113:1 › 会話保存の失敗と応答消失で同じキーを保持し、再読込後も一件だけ保存する
+  1 passed (4.2s)
+
+[isolated 13/19] ETag競合では入力を保持し、再送で最新版を確認する
+[WebServer] (node:55287) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:55288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:145:1 › ETag競合では入力を保持し、再送で最新版を確認する
+  1 passed (4.1s)
+
+[isolated 14/19] 参加権限を失ったルームは本文を消して送信と公開操作を閉じる
+[WebServer] (node:55345) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:55554) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:164:1 › 参加権限を失ったルームは本文を消して送信と公開操作を閉じる
+  1 passed (4.1s)
+
+[isolated 15/19] 双方同意と承認のない旧サンプル事例を社員画面へ公開しない
+[WebServer] (node:55625) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:55626) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:176:1 › 双方同意と承認のない旧サンプル事例を社員画面へ公開しない
+  1 passed (5.0s)
+
+[isolated 16/19] 320pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ
+[WebServer] (node:55682) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:55683) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:187:3 › 320pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ
+  1 passed (3.9s)
+
+[isolated 17/19] 390pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ
+[WebServer] (node:55955) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:55956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:187:3 › 390pxの全メニューとフォームは横はみ出しなく44pxの操作幅を保つ
+  1 passed (3.9s)
+
+[isolated 18/19] Azureでは匿名契約のないAPIを呼ばず、ログアウトで画面を閉じる
+[WebServer] (node:56228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:56232) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:202:1 › Azureでは匿名契約のないAPIを呼ばず、ログアウトで画面を閉じる
+  1 passed (4.0s)
+
+[isolated 19/19] 新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する
+[WebServer] (node:56508) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:56509) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/workspace.spec.ts:223:1 › 新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する
+  1) tests/workspace.spec.ts:223:1 › 新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する ────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('link', { name: '内容を確認' })
+
+
+      22 |   await page.getByLabel('ローカル検証の役割').selectOption('demo-person-02');
+      23 |   await page.getByRole('link', { name: /^参加依頼/ }).click();
+    > 24 |   await page.getByRole('link', { name: '内容を確認' }).click();
+         |                                                   ^
+      25 | }
+      26 |
+      27 | test('下書きと未保存入力を履歴移動で保持し、投稿済みURLから二重投稿しない', async ({ page, request }) => {
+        at asGuest (/Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/web/tests/workspace.spec.ts:24:51)
+        at /Users/nyanpass/Documents/Codex/2026-10-08/task-3/repo-issues-20261011/web/tests/workspace.spec.ts:224:82
+
+    Error Context: test-results/isolated/19/workspace-新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する/error-context.md
+
+
+  1 failed
+    tests/workspace.spec.ts:223:1 › 新UIで双方の事例公開同意を必須にし、公開後の編集で同意と検索公開を解除する ─────────────────────────
+
+Isolated E2E: 17 passed, 2 failed (19 tests).

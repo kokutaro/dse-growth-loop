@@ -1,0 +1,508 @@
+[
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜ホーム",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "page": "DSE Growth Loop｜相談",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "page": "DSE Growth Loop｜相談",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "page": "DSE Growth Loop｜事例・ナレッジ",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "page": "DSE Growth Loop｜マイページ",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜ホーム",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜自分の課題・相談",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜参加依頼",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜活動ルーム",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜事例・ナレッジ",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜ホーム",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜自分の課題・相談",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜参加依頼",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜活動ルーム",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜事例・ナレッジ",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜マイページ",
+    "scrollWidth": 320,
+    "width": 320
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜ホーム",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜自分の課題・相談",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜参加依頼",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜活動ルーム",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜事例・ナレッジ",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "menu": [
+      {
+        "height": 44,
+        "label": "⌂ホーム"
+      },
+      {
+        "height": 44,
+        "label": "▤自分の課題・相談"
+      },
+      {
+        "height": 44,
+        "label": "◇参加依頼"
+      },
+      {
+        "height": 44,
+        "label": "◫活動ルーム"
+      },
+      {
+        "height": 44,
+        "label": "▧事例・ナレッジ"
+      }
+    ],
+    "page": "DSE Growth Loop｜マイページ",
+    "scrollWidth": 390,
+    "width": 390
+  }
+]

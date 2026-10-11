@@ -67,3 +67,60 @@ class IndependentV3HttpTests(unittest.TestCase):
         with self.assertRaises(ValueError): score(self.fixture, bad, self.ui)
         self.http[0]['body']['assessments'][0]['reason'] = 'invented evidence'
         self.assertFalse(score(self.fixture, self.http, self.ui)['qualityPassed'])
+
+    def test_outside_http_200_empty_success_is_a_contract_failure(self):
+        index = next(i for i, r in enumerate(self.http) if r['httpStatus'] == 422)
+        qid = self.http[index]['questionId']
+        self.http[index].update(httpStatus=200, body={
+            'runId': qid, 'rerankingStatus': 'no_candidates', 'assessments': [],
+            'primary': {'candidates': []}})
+        self.ui[index].update(runId=qid, ui={
+            'groups': [{'name': '相談候補', 'titles': []}, {'name': '参考事例', 'titles': []}],
+            'status': '完了', 'alerts': []})
+        result = score(self.fixture, self.http, self.ui)
+        self.assertFalse(result['qualityPassed'])
+        self.assertIn(qid, result['failedQuestions'])
+        self.assertEqual(result['networkTiming']['count'], 22)
+        self.assertEqual(result['allResponseTiming']['count'], 24)
+
+    def test_both_linear_p95_populations_must_pass(self):
+        inside = [r for r in self.http if r['httpStatus'] == 200]
+        inside[-2]['networkMs'], inside[-1]['networkMs'] = 15001, 16000
+        result = score(self.fixture, self.http, self.ui)
+        self.assertAlmostEqual(result['networkTiming']['p95Ms'], 14300.95)
+        self.assertTrue(result['warmSloPassed'])
+        for r in self.http:
+            if r['httpStatus'] == 422: r['networkMs'] = 20000
+        result = score(self.fixture, self.http, self.ui)
+        self.assertGreater(result['allResponseTiming']['p95Ms'], 15000)
+        self.assertFalse(result['warmSloPassed'])
+
+    def test_ui_alert_cannot_count_as_completed_search(self):
+        self.ui[0]['ui']['alerts'] = ['検索に失敗しました']
+        result = score(self.fixture, self.http, self.ui)
+        self.assertFalse(result['qualityPassed'])
+
+    def test_each_group_recall_below_90_percent_fails_even_when_hit_and_precision_pass(self):
+        for kind in ['person', 'knowledge']:
+            with self.subTest(kind=kind):
+                http, ui = copy.deepcopy(self.http), copy.deepcopy(self.ui)
+                positives = {q['id'] for q in self.fixture['questions'] if q['entityType'] == kind and q['positiveIds']}
+                # Every result remains correct, but three of ten two-answer questions lose one answer.
+                for row in [r for r in http if r['questionId'] in positives][:3]:
+                    body = row['body']; body['primary']['candidates'].pop(); body['assessments'].pop()
+                    observation = next(o for o in ui if o['questionId'] == row['questionId'])
+                    observation['ui']['groups'] = [
+                        {'name': name, 'titles': [c['title'] for c in body['primary']['candidates'] if c['entityType'] == group]}
+                        for group, name in [('person','相談候補'),('knowledge','参考事例')]]
+                result = score(self.fixture,http,ui)
+                self.assertEqual(result['metrics'][kind]['groupHitAt5'],1)
+                self.assertEqual(result['metrics'][kind]['groupPrecisionAt5'],1)
+                self.assertAlmostEqual(result['metrics'][kind]['groupRecallAt5'],.85)
+                self.assertFalse(result['qualityPassed'])
+                third = [r for r in http if r['questionId'] in positives][2]['questionId']
+                hi = next(i for i,r in enumerate(http) if r['questionId'] == third)
+                ui_index = next(i for i,r in enumerate(ui) if r['questionId'] == third)
+                http[hi] = copy.deepcopy(self.http[hi]); ui[ui_index] = copy.deepcopy(self.ui[ui_index])
+                boundary = score(self.fixture,http,ui)
+                self.assertAlmostEqual(boundary['metrics'][kind]['groupRecallAt5'],.9)
+                self.assertTrue(boundary['qualityPassed'])

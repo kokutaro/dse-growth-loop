@@ -56,7 +56,7 @@ public static class ChatSmoke
         var actor = identities.ResolvePerson(tenant, "demo-person-01") ?? throw new DomainException(403, "FORBIDDEN");
         var fixture = (await projections.FindAsync(new([], [], ["引き継ぎ"]), actor.Search, ct))
             .SingleOrDefault(x => x.Id == "demo-knowledge-01-projection-1") ?? throw new DomainException(409, "SMOKE_FIXTURE_REQUIRED");
-        var validated = await new SourceGuard(repository).RequireAsync(actor, fixture, ct);
+        var validated = await new SourceGuard(repository, c).RequireAsync(actor, fixture, ct);
         if (!validated.Unit.SourceRefs.SequenceEqual(DemoData.Create(tenant).Single(x => x.EntityId == "demo-knowledge-01").SourceRefs))
             throw new DomainException(409, "SMOKE_FIXTURE_REQUIRED");
         var run = c["ChatSmoke:RunId"]!; var suite = c["ChatSmoke:Suite"]!;

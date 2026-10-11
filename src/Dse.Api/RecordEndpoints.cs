@@ -5,12 +5,12 @@ using Dse.Infrastructure;
 public static class RecordEndpoints
 {
     public static ActorAccess Actor(HttpContext context) => (ActorAccess)context.Items[typeof(ActorAccess)]!;
-    public static void MapRecords(this RouteGroupBuilder api)
+    public static void MapRecords(this RouteGroupBuilder api, bool demo = false)
     {
         api.MapGet("/people/{id}", (string id, HttpContext context, IPrimaryRepository repository, AccessFence fence, CancellationToken ct) =>
             new FencedResult(fence, Actor(context).TenantId, async token =>
             {
-                var record = await Read(repository, Actor(context), "person", id, token);
+                var record = await Read(repository, Actor(context), "person", id, token, !demo);
                 context.Response.Headers.ETag = record.ETag;
                 return Results.Ok(record.Value);
             }, ct));
@@ -28,7 +28,7 @@ public static class RecordEndpoints
             new FencedResult(fence, Actor(context).TenantId, async token =>
             {
                 var actor = Actor(context);
-                var person = await Read(repository, actor, "person", id, token);
+                var person = await Read(repository, actor, "person", id, token, !demo);
                 AccessPolicy.RequireSelf(actor, person.Value);
                 var filter = $"experience:{id}:id:{pageSize ?? 20}";
                 var page = await repository.QueryAsync(RecordPartition.Catalog(actor.TenantId), "experience", "personId", id,
@@ -39,7 +39,7 @@ public static class RecordEndpoints
         api.MapGet("/documents/{id}", (string id, HttpContext context, IPrimaryRepository repository, AccessFence fence, CancellationToken ct) =>
             new FencedResult(fence, Actor(context).TenantId, async token =>
             {
-                var record = await Read(repository, Actor(context), "document", id, token);
+                var record = await Read(repository, Actor(context), "document", id, token, !demo);
                 context.Response.Headers.ETag = record.ETag;
                 return Results.Ok(record.Value);
             }, ct));
@@ -48,7 +48,7 @@ public static class RecordEndpoints
             new FencedResult(fence, Actor(context).TenantId, async token =>
             {
                 var actor = Actor(context);
-                var document = (await Read(repository, actor, "document", id, token)).Value;
+                var document = (await Read(repository, actor, "document", id, token, !demo)).Value;
                 if (!AccessPolicy.CanUse(actor, document)) throw new DomainException(409, "SOURCE_REVOKED");
                 var filter = $"evidence:{id}:{document.Number("activeVersion")}:id:{pageSize ?? 20}";
                 var page = await repository.QueryAsync(RecordPartition.Catalog(actor.TenantId), "evidenceSpan", "documentId", id,
@@ -65,7 +65,7 @@ public static class RecordEndpoints
             new FencedResult(fence, Actor(context).TenantId, async token =>
             {
                 var actor = Actor(context);
-                var doc = await Read(repository, actor, "document", id, token);
+                var doc = await Read(repository, actor, "document", id, token, !demo);
                 if (doc.Value.Text("ownerId") != actor.PrincipalId && !actor.HasRole("operator")) throw new DomainException(403, "FORBIDDEN");
                 var partition = RecordPartition.Catalog(actor.TenantId);
                 var jobId = doc.Value.Text("enrichmentJobId");
@@ -80,22 +80,31 @@ public static class RecordEndpoints
             new FencedResult(fence, Actor(context).TenantId, async token =>
             {
                 var actor = Actor(context);
+                // Production employees use opaque workspace routes for shared activity.
+                // Raw conversation jobs remain an operator-only diagnostic route.
+                if (!demo && !actor.HasRole("operator") && sessionId is not null)
+                    throw new DomainException(404, "NOT_FOUND");
                 var partition = sessionId is null ? RecordPartition.Catalog(actor.TenantId) : RecordPartition.Conversation(actor.TenantId, sessionId);
                 if (sessionId is not null) await context.RequestServices.GetRequiredService<ConversationService>().SessionAsync(actor, sessionId, token);
                 var job = await repository.ReadAsync(partition, id, token);
                 if (job is null || job.Value.Text("kind") != "job") throw new DomainException(404, "NOT_FOUND");
                 AccessPolicy.RequireRead(actor, job.Value);
                 context.Response.Headers.ETag = job.ETag;
-                // Job records contain operational metadata only, never payload text or credentials.
+                // Operational metadata can identify its owner; production access is self/operator only.
                 return Results.Ok(job.Value);
             }, ct));
     }
-    private static async Task<StoredRecord> Read(IPrimaryRepository repository, ActorAccess actor, string kind, string id, CancellationToken ct)
+    private static async Task<StoredRecord> Read(IPrimaryRepository repository, ActorAccess actor, string kind, string id, CancellationToken ct, bool selfOnly = false)
     {
         if (!RecordJson.IsId(id)) throw new ArgumentException("Invalid id");
         var value = await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), id, ct);
         if (value is null || value.Value.Text("kind") != kind) throw new DomainException(404, "NOT_FOUND");
         AccessPolicy.RequireRead(actor, value.Value);
+        if (selfOnly && !actor.HasRole("operator"))
+        {
+            if (kind == "person" && (value.Value.Text("ownerId") != actor.PrincipalId || value.Value.Text("id") != actor.PersonId)) throw new DomainException(404, "NOT_FOUND");
+            else if (value.Value.Text("ownerId") != actor.PrincipalId) throw new DomainException(404, "NOT_FOUND");
+        }
         return value;
     }
 }

@@ -96,6 +96,7 @@ def parameters(env):
         raise ValueError('Ai__Mode は Mock / Live を指定してください。')
     runtime['Ai__Mode'] = mode
     runtime['AiUsage__LiveOptIn'] = str(boolean(env, 'AiUsage__LiveOptIn', 'false')).lower()
+    runtime['BusinessAnalysis__Enabled'] = str(boolean(env, 'BusinessAnalysis__Enabled', 'false')).lower()
     for name, default, ceiling in [('MaxInputTokens', 8000, 16000), ('MaxOutputTokens', 1000, 8000), ('MaxConcurrency', 1, 8), ('MaxAttempts', 2, 3), ('TimeoutSeconds', 30, 120)]:
         runtime['AiUsage__' + name] = str(integer(env, 'AiUsage__' + name, default, 1, ceiling))
     # 明示allowlist。キー本文やsmoke承認を通常配置へコピーしない。
@@ -110,6 +111,7 @@ def parameters(env):
         'budgetStartDate': f'{start}T00:00:00Z' if budget else '',
         # Queue消費Workerは明示opt-in。既定は未配置。
         'deployIngestionWorker': boolean(env, 'DEPLOY_INGESTION_WORKER', 'false'),
+        'deployBusinessAnalysisJob': boolean(env, 'DEPLOY_BUSINESS_ANALYSIS_JOB', 'false'),
         'logsDailyQuotaGb': decimal_value(env, 'LOGS_DAILY_QUOTA_GB', '0.05', Decimal('0.023')),
         'logsRetentionDays': integer(env, 'LOGS_RETENTION_DAYS', 30, 30, 730),
         'telemetrySamplingPercentage': integer(env, 'TELEMETRY_SAMPLING_PERCENTAGE', 10, 1, 100),

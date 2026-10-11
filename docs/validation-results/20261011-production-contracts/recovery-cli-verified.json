@@ -1,0 +1,12 @@
+{
+  "fixture": "isolated-dummy-local-store",
+  "inspect": "passed",
+  "apply": "passed",
+  "sameRequestReplay": "sameReceipt",
+  "derivedFieldsCleared": true,
+  "slot": "ready",
+  "refundedJpy": 0,
+  "remoteStopProved": false,
+  "azureOperations": 0,
+  "paidAiCalls": 0
+}
