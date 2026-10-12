@@ -70,6 +70,14 @@ class ColdTimingTests(unittest.TestCase):
                                       '--cold-question-ids',*self.plan]),contextlib.redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):
             report_module.main()
 
+    def test_cold_snapshot_rejects_conflicting_environment_aliases(self):
+        for wrong in ('other-env','',False,{}):
+            rows=copy.deepcopy(self.rows)
+            rows[0]['zeroSnapshot']['checks'][0]['data']['managedEnvironment']=wrong
+            with self.subTest(wrong=wrong),self.assertRaises(ValueError):self.score(rows)
+        self.rows[0]['zeroSnapshot']['checks'][0]['data']['managedEnvironment']=environment_id(SUB,'dse-environment-vnet-jpe').upper()
+        self.assertTrue(self.score()['coldMeasurementComplete'])
+
     def test_cli_cold_http_response_contract_failure_is_retained_as_failed_sample(self):
         import test_issue30_independent_v3_http_report as warm_fixture
         warm=warm_fixture.IndependentV3HttpTests();warm.setUp()

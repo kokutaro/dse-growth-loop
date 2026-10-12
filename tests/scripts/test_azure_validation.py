@@ -88,6 +88,29 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(checks[0]["status"], "failed")
         self.assertFalse(validation.confirmed_stopped(checks))
 
+    def test_environment_aliases_must_all_match_when_supplied(self):
+        env=validation.environment_id('sub','dse-environment-vnet-jpe')
+        for aliases in ({'environment':env},{'managedEnvironment':env},
+                        {'environment':env,'managedEnvironment':None},
+                        {'environment':env,'managedEnvironment':env.upper()}):
+            self.assertTrue(validation.matches_environment(dict(name='dse-api-vnet',**aliases),'dse-api-vnet',env))
+        for wrong in ('other-env','',False,{},[]):
+            for first in ('environment','managedEnvironment'):
+                aliases={'environment':env,'managedEnvironment':env};aliases[first]=wrong
+                with self.subTest(first=first,wrong=wrong):
+                    self.assertFalse(validation.matches_environment(dict(name='dse-api-vnet',**aliases),'dse-api-vnet',env))
+
+    def test_conflicting_alias_cannot_be_hidden_by_sanitization(self):
+        env=validation.environment_id('sub','dse-environment-vnet-jpe')
+        for wrong in ('other-env',{'secret':'never-store'}):
+            raw={'name':'dse-api-vnet','environment':env,'managedEnvironment':wrong}
+            response=subprocess.CompletedProcess([],0,json.dumps(raw),'')
+            with self.subTest(wrong=wrong),patch.object(validation.subprocess,'run',return_value=response) as cli:
+                checks=validation.replicas('sub','dse-api-vnet','dse-environment-vnet-jpe')
+            self.assertEqual(cli.call_count,1)
+            self.assertEqual(checks[0]['status'],'failed')
+            self.assertNotIn('never-store',json.dumps(checks))
+
     def test_revision_changes_during_replica_reads_cannot_confirm_snapshot(self):
         original=[{'name':'rev','active':False,'replicas':0,'status':'Stopped'}]
         for final in (original+[{'name':'new','active':True,'replicas':1,'status':'Running'}],

@@ -34,6 +34,14 @@ def stop_reports():
 
 
 class RestorePlanTests(unittest.TestCase):
+    def test_conflicting_template_environment_alias_refuses_freeze(self):
+        value=copy.deepcopy(snapshot())
+        value['apps'][0]['template']['properties']['managedEnvironmentId']='other-env'
+        with tempfile.TemporaryDirectory() as directory:
+            source=Path(directory)/'source';dest=Path(directory)/'frozen';source.write_text(json.dumps(value))
+            with self.assertRaises(ValueError):restore.freeze_snapshot(source,dest)
+            self.assertFalse(dest.exists())
+
     def test_snapshot_write_is_exclusive_hash_bound_and_private(self):
         with tempfile.TemporaryDirectory() as directory:
             source=Path(directory)/'original.json'; destination=Path(directory)/'frozen.json'

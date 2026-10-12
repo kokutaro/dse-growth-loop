@@ -29,8 +29,17 @@ def environment_id(subscription, environment):
 
 
 def matches_environment(value, app, expected):
-    observed = value.get("environment") or value.get("managedEnvironment")
-    return value.get("name") == app and isinstance(observed, str) and observed.lower() == expected.lower()
+    if not isinstance(value, dict): return False
+    observed = [value.get(key) for key in ("environment", "managedEnvironment") if value.get(key) is not None]
+    return value.get("name") == app and bool(observed) and all(isinstance(v, str) and v.lower() == expected.lower() for v in observed)
+
+
+def app_identity(value):
+    if not isinstance(value, dict): raise ValueError("App identity object required")
+    # Preserve invalid alias presence as a safe sentinel; filtering it out could
+    # hide a conflicting identity while the other alias matches.
+    return {key: value.get(key) if value.get(key) is None or isinstance(value.get(key), str) else False
+            for key in ("name", "environment", "managedEnvironment")}
 
 
 def utc_now():
@@ -213,7 +222,7 @@ def replicas(subscription, app, environment=None):
     identity = check_command("app-environment", az(["containerapp", "show", "--name", app,
         "--resource-group", RG, "--query",
         "{name:name,environment:properties.environmentId,managedEnvironment:properties.managedEnvironmentId}"], subscription),
-        lambda v: fields(v, ("name", "environment", "managedEnvironment")),
+        app_identity,
         lambda v: matches_environment(v, app, expected))
     checks = [identity]
     if identity["status"] != "passed":

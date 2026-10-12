@@ -46,7 +46,9 @@ preflightのreportもApp/Environmentの組を固定して照合する。新Envir
 
 開始/終了ログのpipeが閉じるなど報告先I/Oが失敗しても停止経路は省略しない。開始報告失敗は `REPORT_SINK_FAILED` の緊急停止トリガーとし、報告未確認としてexit2を返す。終了ログ失敗も停止要求の実行後にexit2とし、ログがないことを「停止済み」にせず別host担当が確認する。
 
-warmの `httpStatus` はboolを除く100〜599の整数を必須とする。coldも同じ型・範囲を要求し、transport失敗だけnullを許可する。HTTP statusがある記録の非null `errorCode` は矛盾した計測構造としてexit2・summaryなしで拒否する。
+対象Appの `environment` / `managedEnvironment` は、非nullの別名すべてが期待Environmentと一致することを要求する。型不正や矛盾した別名を無視して停止・復元点検・cold完了としない。
+
+warmの `httpStatus` はboolを除く100〜599の整数を必須とする。coldも同じ型・範囲を要求し、transport失敗だけnullを許可する。warm/coldともHTTP statusがある記録の非null `errorCode` は矛盾した計測構造としてexit2・summaryなしで拒否する。
 
 `http-cold.json` は3件の配列。各件には `questionId`, `cycleId`, `attempt=1`, `request={query,target:all}`, `httpStatus`（transport失敗はnullと `TIMEOUT` / `NETWORK_ERROR` / `CANCELLED` のいずれかの文字列 `errorCode`）, 有限・非負の `networkMs`, `uiCompletionUpperBoundMs`（未完了はnull）, UTCの `startedAtUtc`/`finishedAtUtc`, `preSearchRequestCount=0`, `zeroSnapshot`, `body`, `uiObservation` が必要。`networkMs` は開始/終了UTCの差と1ms以内で一致させる。subscriptionは上表の固定GUID以外を拒否し、操作者がsnapshotと期待先を一緒に変更しても通さない。`uiObservation` はwarmと同じquestionId/runId/groups/status/alertsとUI時間のshapeで、同じcaptureへ対応させる。応答runIdはcold3件の間とwarmとの間で重複を拒否する。同じ応答を別cycle/zero snapshotへ付け替えて完了にしない。`zeroSnapshot` は新APIを対象にした `azure_validation.py replicas` の完全なreportであり、`finishedAt` と `checks` を保持する。生HAR/JWT/token/秘密envを含めない。
 

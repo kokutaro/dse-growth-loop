@@ -23,6 +23,16 @@ class Clock:
 
 
 class SupervisorUnitTests(unittest.TestCase):
+    def test_conflicting_environment_identity_prevents_deactivation(self):
+        calls=[]
+        def call(parts,budget):
+            calls.append(parts)
+            return {'name':'dse-api-vnet','environment':safety.ENV,'managedEnvironment':'other-env'}
+        cli=type('Cli',(),{'call':staticmethod(call)})()
+        with self.assertRaises(safety.SafetyError):safety.stop_app(cli,'dse-api-vnet',safety.Deadline(1))
+        self.assertEqual(len(calls),1)
+        self.assertFalse(any('deactivate' in p for p in calls))
+
     def test_remaining_deadline_reaches_every_cli_call_and_revision(self):
         clock = Clock()
         deadline = safety.Deadline(1.0, clock.monotonic)

@@ -113,6 +113,15 @@ class IndependentV3HttpTests(unittest.TestCase):
                 with self.subTest(index=index,status=status),self.assertRaises(ValueError):
                     score(self.fixture,http,self.ui)
 
+    def test_warm_transport_error_cannot_coexist_with_observed_status(self):
+        outside=next(i for i,r in enumerate(self.http) if r['httpStatus']==422)
+        for index in (0,outside):
+            for code in ('TIMEOUT','NETWORK_ERROR','CANCELLED','',False,{}):
+                http=copy.deepcopy(self.http);http[index]['errorCode']=code
+                with self.subTest(index=index,code=code),self.assertRaises(ValueError):score(self.fixture,http,self.ui)
+        self.http[0]['errorCode']=None
+        self.assertTrue(score(self.fixture,self.http,self.ui)['qualityPassed'])
+
     def test_cli_malformed_outside_status_has_no_summary(self):
         http=copy.deepcopy(self.http)
         next(r for r in http if r['httpStatus']==422)['httpStatus']=True

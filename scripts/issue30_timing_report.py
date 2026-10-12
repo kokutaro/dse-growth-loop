@@ -6,7 +6,7 @@ import json
 import math
 from pathlib import Path
 
-from azure_validation import RG, confirmed_stopped, environment_id, revision_inventory, rows
+from azure_validation import RG, confirmed_stopped, environment_id, matches_environment, revision_inventory, rows
 from issue30_http_report import quantile
 from issue30_independent_v3_http_report import SCOPE, response_evidence, score as score_warm
 from issue30_safety_supervisor import SUB
@@ -87,9 +87,7 @@ def score_cold(fixture, planned_ids, records, subscription, warm_run_ids=()):
         identity = checks[0].get('data') or {}
         if not isinstance(identity, dict):
             raise ValueError('App/environment identity required')
-        observed_env = identity.get('environment') or identity.get('managedEnvironment')
-        if (identity.get('name') != target['app'] or not isinstance(observed_env, str)
-                or observed_env.lower() != expected_env or not confirmed_stopped(checks)):
+        if not matches_environment(identity, target['app'], expected_env) or not confirmed_stopped(checks):
             raise ValueError('All revisions inactive, Stopped and actual replica lists empty required')
         cycle, snapshot_id = record['cycleId'], snapshot.get('runId')
         if (not isinstance(cycle, str) or not cycle or cycle in cycles

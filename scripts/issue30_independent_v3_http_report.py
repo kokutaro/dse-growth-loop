@@ -51,6 +51,7 @@ def score(fixture,http,ui):
         validate_ui_shape(o)
         if r['request']!={'query':q['text'],'target':'all'}:raise ValueError('Manual conditions or changed query')
         if type(r['httpStatus']) is not int or not 100<=r['httpStatus']<=599:raise ValueError('Observed integer HTTP status from 100 to 599 required')
+        if r.get('errorCode') is not None:raise ValueError('Observed HTTP status cannot coexist with transport errorCode')
         outside=q['draftDomain']=='unknown' and not q['positiveIds']
         expected_outside=r['httpStatus']==422 and body.get('code')=='CLASSIFICATION_OUT_OF_SCOPE' and outside
         candidates=body.get('primary',{}).get('candidates',[])
