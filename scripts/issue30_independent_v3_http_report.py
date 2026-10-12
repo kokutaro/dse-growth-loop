@@ -5,6 +5,15 @@ from pathlib import Path
 from issue30_http_report import quantile
 ROOT=Path(__file__).resolve().parents[1]
 SCOPE='issue30-independent-20261004-v3'
+def validate_ui_shape(observation):
+    ui=observation.get('ui') if isinstance(observation,dict) else None
+    if (not isinstance(ui,dict) or not isinstance(ui.get('status'),str)
+            or not isinstance(ui.get('alerts'),list) or any(not isinstance(a,str) for a in ui['alerts'])
+            or not isinstance(ui.get('groups'),list)
+            or any(not isinstance(g,dict) or not isinstance(g.get('name'),str)
+                   or not isinstance(g.get('titles'),list) or any(not isinstance(t,str) for t in g['titles'])
+                   for g in ui['groups'])):raise ValueError('UI status/alerts/groups shape mismatch')
+    return ui
 def response_evidence(fixture, body, observation):
     """Shared HTTP200/UI/grounding contract for warm and cold captures."""
     if not isinstance(body,dict) or not isinstance(observation,dict):raise ValueError('Response and UI record required')
@@ -12,11 +21,10 @@ def response_evidence(fixture, body, observation):
     if not isinstance(run_id,str) or not run_id or run_id!=observation.get('runId'):raise ValueError('UI run mismatch')
     primary=body.get('primary')
     if not isinstance(primary,dict):raise ValueError('Response primary object required')
-    candidates=primary.get('candidates');assessments=body.get('assessments');ui=observation.get('ui')
+    candidates=primary.get('candidates');assessments=body.get('assessments');ui=validate_ui_shape(observation)
     if (not isinstance(candidates,list) or any(not isinstance(c,dict) for c in candidates)
             or not isinstance(assessments,list) or any(not isinstance(a,dict) for a in assessments)
             or not isinstance(ui,dict)):raise ValueError('Response shape mismatch')
-    if not isinstance(ui.get('status'),str) or not isinstance(ui.get('alerts'),list) or any(not isinstance(a,str) for a in ui['alerts']):raise ValueError('UI status/alerts shape mismatch')
     if body.get('code') is not None or any(c.get('entityType') not in ('person','knowledge') for c in candidates):raise ValueError('Error response or unknown candidate type')
     if body.get('rerankingStatus')!='succeeded' and candidates:raise ValueError('Non-success reranking cannot retain visible candidates')
     if any(not isinstance(c.get('entityId'),str) or not c['entityId'].startswith(SCOPE+'-') for c in candidates):raise ValueError('Candidate ID must belong to the expected v3 scope')
@@ -40,6 +48,7 @@ def score(fixture,http,ui):
     rows=[];grounded=[];response_ids=set()
     for qid,q in questions.items():
         r=responses[qid];o=observations[qid];body=r['body']
+        validate_ui_shape(o)
         if r['request']!={'query':q['text'],'target':'all'}:raise ValueError('Manual conditions or changed query')
         if type(r['httpStatus']) is not int or not 100<=r['httpStatus']<=599:raise ValueError('Observed integer HTTP status from 100 to 599 required')
         outside=q['draftDomain']=='unknown' and not q['positiveIds']

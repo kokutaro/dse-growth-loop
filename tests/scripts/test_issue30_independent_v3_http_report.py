@@ -128,6 +128,31 @@ class IndependentV3HttpTests(unittest.TestCase):
             self.assertNotIn('Traceback',errors.getvalue())
             self.assertFalse((folder/'http-warm-summary.json').exists())
 
+    def test_ui_shape_is_required_for_success_and_outside_records(self):
+        outside=next(i for i,r in enumerate(self.http) if r['httpStatus']==422)
+        for index in (0,outside):
+            for field,value in (('status',True),('alerts',{}),('alerts',[None]),('groups',{}),
+                                ('groups',[None]),('groups',[{'name':'相談候補','titles':{}}])):
+                ui=copy.deepcopy(self.ui);ui[index]['ui'][field]=value
+                with self.subTest(index=index,field=field,value=value),self.assertRaises(ValueError):
+                    score(self.fixture,self.http,ui)
+
+    def test_cli_empty_object_outside_ui_is_not_successful_evidence(self):
+        ui=copy.deepcopy(self.ui)
+        outside=next(i for i,r in enumerate(self.http) if r['httpStatus']==422)
+        ui[outside]['ui'].update(groups={},alerts={})
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)
+            (folder/'http-warm.json').write_text(json.dumps(self.http))
+            (folder/'ui-warm-observations.json').write_text(json.dumps(ui))
+            with patch.object(sys,'argv',['warm-report','--directory',directory]),contextlib.redirect_stderr(io.StringIO()) as errors, \
+                    contextlib.redirect_stdout(io.StringIO()) as output,self.assertRaises(SystemExit) as error:
+                report_module.main()
+            self.assertEqual(error.exception.code,2)
+            self.assertEqual(output.getvalue(),'')
+            self.assertNotIn('Traceback',errors.getvalue())
+            self.assertFalse((folder/'http-warm-summary.json').exists())
+
     def test_changed_request_and_fast_outside_cannot_hide_slow_search(self):
         bad = copy.deepcopy(self.http)
         bad[0]['request']['conditions'] = {}
