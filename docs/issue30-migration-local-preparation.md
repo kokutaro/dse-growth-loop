@@ -32,7 +32,7 @@ Issue #30 は retrieval-v2 の Recall と分類漏れを扱う。保存された
 
 preflightのreportもApp/Environmentの組を固定して照合する。新Environmentを点検する際は新Appを明示し、旧Appとの混在はCLI読取前に拒否する。停止CLIの成功応答が空の場合はdeactivateに限りnullとして受け取り、後続の全revision/実replica確認で判断する。読取CLIの空応答を停止証跡にはしない。
 
-採点器が扱う値は提供された記録であり、操作者の申告だけで独立証跡が成立するとは判定しない。`liveAcceptance=pending`・請求額nullを維持する。Mockの `qualityPassed` やCLI exit0は実Entra/実Cosmos/実AI・費用・停止保証の合格ではない。
+採点器が扱う値は提供された記録であり、操作者の申告だけで独立証跡が成立するとは判定しない。入れ子のnull・不正shapeや表現できない時間値も、入力内容やtracebackを出さずCLI exit2で拒否する。`liveAcceptance=pending`・請求額nullを維持する。Mockの `qualityPassed` やCLI exit0は実Entra/実Cosmos/実AI・費用・停止保証の合格ではない。
 
 ## warm24 / cold3 の具体手順（実行は別途承認後）
 

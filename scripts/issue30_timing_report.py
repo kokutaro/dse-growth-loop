@@ -155,7 +155,7 @@ def main():
         print(json.dumps({'warmSloPassed': warm['warmSloPassed'], 'coldMeasurementComplete': cold['coldMeasurementComplete'],
                           'liveAcceptance': result['liveAcceptance']}))
         return 0 if warm['qualityPassed'] and warm['warmSloPassed'] and cold['coldMeasurementComplete'] else 1
-    except (OSError, ValueError, TypeError, KeyError):
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, OverflowError):
         parser.exit(2, 'Invalid or incomplete timing records, or output already exists; no live acceptance granted.\n')
 
 

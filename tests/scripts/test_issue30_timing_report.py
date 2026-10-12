@@ -217,3 +217,27 @@ class ColdTimingTests(unittest.TestCase):
                 report_module.main()
             self.assertEqual(error.exception.code,2)
             self.assertFalse((folder/'timing-summary.json').exists())
+
+    def test_cli_malformed_warm_shapes_and_duration_return_sanitized_exit2(self):
+        import test_issue30_independent_v3_http_report as warm_fixture
+        warm=warm_fixture.IndependentV3HttpTests();warm.setUp()
+        for kind in ('null-candidate','null-primary','null-body','unrepresentable-duration'):
+            http=copy.deepcopy(warm.http)
+            http[0]['body']['secret']='never-store'
+            if kind=='null-candidate':http[0]['body']['primary']['candidates']=[None]
+            elif kind=='null-primary':http[0]['body']['primary']=None
+            elif kind=='null-body':http[0]['body']=None
+            else:http[0]['networkMs']=10**1000
+            with self.subTest(kind=kind),tempfile.TemporaryDirectory() as directory:
+                folder=Path(directory)
+                for name,value in (('http-warm.json',http),('ui-warm-observations.json',warm.ui),('http-cold.json',self.rows)):
+                    (folder/name).write_text(json.dumps(value))
+                args=['timing-report','--directory',directory,'--subscription',SUB,'--cold-question-ids',*self.plan]
+                with patch.object(sys,'argv',args),contextlib.redirect_stderr(io.StringIO()) as error_output, \
+                        contextlib.redirect_stdout(io.StringIO()) as output,self.assertRaises(SystemExit) as error:
+                    report_module.main()
+                self.assertEqual(error.exception.code,2)
+                self.assertEqual(output.getvalue(),'')
+                self.assertNotIn('Traceback',error_output.getvalue())
+                self.assertNotIn('never-store',error_output.getvalue())
+                self.assertFalse((folder/'timing-summary.json').exists())
