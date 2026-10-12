@@ -32,7 +32,7 @@ Issue #30 は retrieval-v2 の Recall と分類漏れを扱う。保存された
 
 preflightのreportもApp/Environmentの組を固定して照合する。新Environmentを点検する際は新Appを明示し、旧Appとの混在はCLI読取前に拒否する。停止CLIの成功応答が空の場合はdeactivateに限りnullとして受け取り、後続の全revision/実replica確認で判断する。読取CLIの空応答を停止証跡にはしない。
 
-採点器が扱う値は提供された記録であり、操作者の申告だけで独立証跡が成立するとは判定しない。warmのHTTP200応答runIdも非空・一意を必須とし、異なるquestionへの応答流用を拒否する。warmの入れ子null・不正shapeや、計測記録の不正なUTC/時間値/停止snapshotは、入力内容やtracebackを出さずCLI exit2、summaryなしで拒否する。一方、正しい計測構造で記録されたcoldの実HTTP応答/画面の契約違反（HTTP200でもprimary=nullや空本文など）は観測された失敗標本として保持し、CLI exit1のsummaryで3件の時間とfailedQuestionsを残す。元の入力記録は書き換えず、どちらも再送や試行の除外を承認しない。非succeededのreranking応答に候補が残る場合もwarmでは不正応答、coldでは失敗標本とする。`liveAcceptance=pending`・請求額nullを維持する。Mockの `qualityPassed` やCLI exit0は実Entra/実Cosmos/実AI・費用・停止保証の合格ではない。
+採点器が扱う値は提供された記録であり、操作者の申告だけで独立証跡が成立するとは判定しない。warmのHTTP200応答runIdも非空・一意を必須とし、異なるquestionへの応答流用を拒否する。warmの入れ子null・不正shapeや、coldを含むUI観測の不正status/alerts/groups型・UI時間型、計測記録の不正なUTC/時間値/停止snapshotは、入力内容やtracebackを出さずCLI exit2、summaryなしで拒否する。一方、正しい計測構造で記録されたcoldの実HTTP応答/画面の契約違反（HTTP200でもprimary=nullや空本文など）は観測された失敗標本として保持し、CLI exit1のsummaryで3件の時間とfailedQuestionsを残す。元の入力記録は書き換えず、どちらも再送や試行の除外を承認しない。非succeededのreranking応答に候補が残る場合もwarmでは不正応答、coldでは失敗標本とする。`liveAcceptance=pending`・請求額nullを維持する。Mockの `qualityPassed` やCLI exit0は実Entra/実Cosmos/実AI・費用・停止保証の合格ではない。
 
 ## warm24 / cold3 の具体手順（実行は別途承認後）
 

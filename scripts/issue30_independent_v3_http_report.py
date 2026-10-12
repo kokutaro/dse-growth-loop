@@ -13,6 +13,9 @@ def validate_ui_shape(observation):
             or any(not isinstance(g,dict) or not isinstance(g.get('name'),str)
                    or not isinstance(g.get('titles'),list) or any(not isinstance(t,str) for t in g['titles'])
                    for g in ui['groups'])):raise ValueError('UI status/alerts/groups shape mismatch')
+    if 'uiCompletionUpperBoundMs' not in observation:raise ValueError('UI completion observation required')
+    ui_ms=observation['uiCompletionUpperBoundMs']
+    if ui_ms is not None and (type(ui_ms) not in (int,float) or not math.isfinite(ui_ms) or ui_ms<0):raise ValueError('Finite nonnegative UI completion observation required')
     return ui
 def response_evidence(fixture, body, observation):
     """Shared HTTP200/UI/grounding contract for warm and cold captures."""

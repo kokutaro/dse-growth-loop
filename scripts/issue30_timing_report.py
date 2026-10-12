@@ -8,7 +8,7 @@ from pathlib import Path
 
 from azure_validation import RG, confirmed_stopped, environment_id, matches_environment, revision_inventory, rows
 from issue30_http_report import quantile
-from issue30_independent_v3_http_report import SCOPE, response_evidence, score as score_warm
+from issue30_independent_v3_http_report import SCOPE, response_evidence, score as score_warm, validate_ui_shape
 from issue30_safety_supervisor import SUB
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -114,6 +114,7 @@ def score_cold(fixture, planned_ids, records, subscription, warm_run_ids=()):
             raise ValueError('Transport failure must be retained explicitly')
         if status is not None and record.get('errorCode') is not None:
             raise ValueError('Transport errorCode requires a null HTTP status')
+        validate_ui_shape(record.get('uiObservation'))
         body = record.get('body')
         response_id = body.get('runId') if isinstance(body, dict) else None
         if isinstance(response_id, str) and response_id:

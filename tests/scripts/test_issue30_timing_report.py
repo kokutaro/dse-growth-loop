@@ -97,6 +97,55 @@ class ColdTimingTests(unittest.TestCase):
             self.assertNotIn('never-store',text+errors.getvalue())
             self.assertNotIn('Traceback',errors.getvalue())
 
+    def test_cold_ui_structure_is_required_before_failure_classification(self):
+        for status in (200,503,None):
+            for change in ('missing','alerts-object','groups-object','status-bool','nested-time-bool'):
+                rows=copy.deepcopy(self.rows);rows[0]['httpStatus']=status
+                if status is None:rows[0]['errorCode']='TIMEOUT'
+                if change=='missing':rows[0]['uiObservation']=None
+                elif change=='alerts-object':rows[0]['uiObservation']['ui']['alerts']={}
+                elif change=='groups-object':rows[0]['uiObservation']['ui']['groups']={}
+                elif change=='status-bool':rows[0]['uiObservation']['ui']['status']=True
+                else:
+                    rows[0]['networkMs']=0;rows[0]['finishedAtUtc']=rows[0]['startedAtUtc']
+                    rows[0]['uiCompletionUpperBoundMs']=1;rows[0]['uiObservation']['uiCompletionUpperBoundMs']=True
+                with self.subTest(status=status,change=change),self.assertRaises(ValueError):self.score(rows)
+
+    def test_cli_malformed_cold_ui_has_no_summary(self):
+        import test_issue30_independent_v3_http_report as warm_fixture
+        warm=warm_fixture.IndependentV3HttpTests();warm.setUp()
+        rows=copy.deepcopy(self.rows);rows[0]['uiObservation']['ui']['alerts']={};rows[0]['secret']='never-store'
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)
+            for name,value in (('http-warm.json',warm.http),('ui-warm-observations.json',warm.ui),('http-cold.json',rows)):
+                (folder/name).write_text(json.dumps(value))
+            original=(folder/'http-cold.json').read_bytes()
+            args=['timing-report','--directory',directory,'--subscription',SUB,'--cold-question-ids',*self.plan]
+            with patch.object(sys,'argv',args),contextlib.redirect_stderr(io.StringIO()) as errors, \
+                    contextlib.redirect_stdout(io.StringIO()) as output,self.assertRaises(SystemExit) as error:
+                report_module.main()
+            self.assertEqual(error.exception.code,2)
+            self.assertEqual(output.getvalue(),'')
+            self.assertNotIn('never-store',errors.getvalue())
+            self.assertNotIn('Traceback',errors.getvalue())
+            self.assertFalse((folder/'timing-summary.json').exists())
+            self.assertEqual((folder/'http-cold.json').read_bytes(),original)
+
+    def test_cli_valid_ui_alert_is_retained_in_all_three_samples(self):
+        import test_issue30_independent_v3_http_report as warm_fixture
+        warm=warm_fixture.IndependentV3HttpTests();warm.setUp()
+        rows=copy.deepcopy(self.rows);rows[0]['uiObservation']['ui']['alerts']=['検索失敗']
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)
+            for name,value in (('http-warm.json',warm.http),('ui-warm-observations.json',warm.ui),('http-cold.json',rows)):
+                (folder/name).write_text(json.dumps(value))
+            args=['timing-report','--directory',directory,'--subscription',SUB,'--cold-question-ids',*self.plan]
+            with patch.object(sys,'argv',args),contextlib.redirect_stdout(io.StringIO()):self.assertEqual(report_module.main(),1)
+            result=json.loads((folder/'timing-summary.json').read_text())
+            self.assertEqual(result['cold']['failedQuestions'],[self.plan[0]])
+            self.assertEqual(result['cold']['networkTiming']['count'],3)
+            self.assertEqual(result['liveAcceptance'],'pending')
+
     def test_missing_duplicate_changed_or_unplanned_questions_are_rejected(self):
         for rows in (self.rows[:2], self.rows + [self.rows[0]], [self.rows[0]] * 3):
             with self.subTest(rows=len(rows)), self.assertRaises(ValueError): self.score(rows)
