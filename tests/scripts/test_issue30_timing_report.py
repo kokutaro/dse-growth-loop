@@ -59,6 +59,17 @@ class ColdTimingTests(unittest.TestCase):
         self.assertEqual(report['liveAcceptance'], 'pending')
         self.assertEqual(report['evidenceKind'], 'supplied-records-not-independently-attested')
 
+    def test_cold_cannot_accept_another_subscription_with_matching_fabricated_target(self):
+        wrong='11111111-1111-1111-1111-111111111111'
+        rows=copy.deepcopy(self.rows)
+        for row in rows:
+            row['zeroSnapshot']['target']['subscription']=wrong
+            row['zeroSnapshot']['checks'][0]['data']['environment']=environment_id(wrong,'dse-environment-vnet-jpe')
+        with self.assertRaises(ValueError):score_cold(self.fixture,self.plan,rows,wrong)
+        with patch.object(sys,'argv',['timing-report','--directory','/nonexistent','--subscription',wrong,
+                                      '--cold-question-ids',*self.plan]),contextlib.redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):
+            report_module.main()
+
     def test_missing_duplicate_changed_or_unplanned_questions_are_rejected(self):
         for rows in (self.rows[:2], self.rows + [self.rows[0]], [self.rows[0]] * 3):
             with self.subTest(rows=len(rows)), self.assertRaises(ValueError): self.score(rows)

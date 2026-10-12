@@ -6,16 +6,29 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import types
 import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2] / 'scripts/validation_safety'
+ORIGINAL_HASHES = {'post-pilot-stop-watchdog.py':'c3401c14daca7538e39603329b5e5e5bc7e9ef1cc21d235e7657e4c3cb5167f4',
+                   'queued-worker-stop-watchdog.py':'9681887e45f1e922a1aa7054660155ec22add870e1ad7c7a61c8d5eb6ccf040e'}
 
 
 def load(name):
     spec = importlib.util.spec_from_file_location(name.replace('-', '_'), ROOT / name)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    return module
+
+
+def load_archive(name):
+    # Frozen, hash-checked source is loaded only as a Mock regression fixture.
+    entry=next(e for e in json.loads((ROOT/'provenance.json').read_text())['files'] if e['file']==name)
+    raw=entry['sourceText'].encode('utf-8')
+    if hashlib.sha256(raw).hexdigest()!=ORIGINAL_HASHES[name]:raise ValueError('Archive hash mismatch')
+    module=types.ModuleType('archived_'+name.replace('-','_'))
+    exec(compile(raw,name+' (archival Mock fixture)','exec'),module.__dict__)
     return module
 
 
@@ -31,13 +44,16 @@ class Clock:
 
 class WatchdogTests(unittest.TestCase):
     def setUp(self):
-        self.modules = [load(name) for name in ('post-pilot-stop-watchdog.py', 'queued-worker-stop-watchdog.py')]
+        self.modules = [load_archive(name) for name in ORIGINAL_HASHES]
 
     def test_imports_match_preserved_migration_sources(self):
         provenance = json.loads((ROOT / 'provenance.json').read_text())
         for entry in provenance['files']:
-            self.assertEqual(hashlib.sha256((ROOT / entry['file']).read_bytes()).hexdigest(), entry['sha256'])
-            self.assertFalse(entry['modified'])
+            self.assertEqual(hashlib.sha256(entry['sourceText'].encode('utf-8')).hexdigest(), ORIGINAL_HASHES[entry['file']])
+            self.assertEqual(entry['sourceSha256'], ORIGINAL_HASHES[entry['file']])
+            self.assertFalse(entry['sourceModified'])
+            self.assertEqual(hashlib.sha256((ROOT/entry['file']).read_bytes()).hexdigest(),entry['entryPointSha256'])
+            self.assertEqual(entry['entryPointState'],'DISABLED_ARCHIVED_ONLY')
 
     def test_default_plan_only_never_calls_azure(self):
         for module in self.modules:
@@ -47,6 +63,20 @@ class WatchdogTests(unittest.TestCase):
                 module.main()
             run.assert_not_called()
             self.assertIn('PLAN ONLY', output.getvalue())
+
+    def test_preserved_entrypoints_refuse_execution_even_after_approval_flag(self):
+        for name in ('post-pilot-stop-watchdog.py','queued-worker-stop-watchdog.py'):
+            module=load(name)
+            for args in ([],['--execute-after-approval'],['--execute-after-approval','--watchdog-seconds','0']):
+                with self.subTest(name=name,args=args),patch.object(sys,'argv',['watchdog',*args]), \
+                        patch.object(subprocess,'run',side_effect=AssertionError('Archived entrypoint must never call Azure')) as run, \
+                        patch.object(subprocess,'Popen',side_effect=AssertionError('Archived entrypoint must never spawn CLI')) as launch, \
+                        contextlib.redirect_stdout(io.StringIO()) as output:
+                    self.assertEqual(module.main(),2 if args else 0)
+                run.assert_not_called();launch.assert_not_called()
+                result=json.loads(output.getvalue())
+                self.assertFalse(result['executionEnabled'])
+                self.assertFalse(result['stopConfirmed'])
 
     def test_old_apps_and_out_of_bounds_deadlines_are_rejected_without_cli(self):
         for module in self.modules:

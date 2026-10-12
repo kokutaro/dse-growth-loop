@@ -24,7 +24,7 @@ Issue #30 は retrieval-v2 の Recall と分類漏れを扱う。保存された
 ## ローカル実装
 
 - `scripts/azure_validation.py`：旧/新AppとEnvironmentの明示組を検証。App実参照先が違えばrevision読取前に止まる。`--all` の全revisionと各revisionの実replica一覧を取得後、`all-revisions-final` で全revisionを再読する。初回/最終の名前・active・replicas・statusが一致し、active=false・runningState=Stopped・metadata replica=0・実一覧0の全条件が揃う場合だけ `stopSnapshotConfirmed=true`。最終読戻しのない過去snapshot、取得中の追加/削除/状態変化、欠落・重複・未知値は停止未確認。新Environmentのpreflightは旧Environmentの存在からquota再利用を認めない。
-- `scripts/validation_safety/`：移行時API用post watchdogとWorker用queued watchdogを変更せず取り込み、source/hashを `provenance.json` に保存。既定plan-onlyはAzure呼出し0。旧Appへの操作拒否、環境違い、全revision停止、inactive残存replica、CLI timeout、停止未確認をMockで確認する。
+- `scripts/validation_safety/`：移行時API用post watchdogとWorker用queued watchdogの原本バイトは `provenance.json` の `sourceText` に変更せず保存し、元のSHAを検証する。原本には空の再取得を停止成功にする既知の問題があるため、公開 `.py` 入口はAzure呼出し0の実行拒否stubとし、運用は新supervisorのみを使う。出典付き原本はMock回帰の参照データであり、実行・復元する経路ではない。
 - `scripts/issue30_timing_report.py`：ネットワークを使わない保存記録の採点器。既存warm24の品質/双方の線形p95採点と、別のcold3の完全性を集約。coldは固定3問の順序、単一試行、各回別の停止snapshot、時刻順、事前API要求0、HTTP/UI時間、失敗標本保持を検証する。coldに合否時間閾値を作らない。固定3問の既存@5品質基準（Precision/Recall各90%以上）と基本応答契約を確認する保存応答回帰であり、新規独立評価ではない。
 - `scripts/issue30_safety_supervisor.py`：新API/Workerの両方を固定対象にし、親PIDをMacのkqueue（process handle）で監視。親終了・SIGTERM/SIGINT・実行期限から停止へ移る。実行窓+停止余裕の単調時計期限を固定し、停止段階の共通残量を全App/revision/CLIへ渡す。各CLI timeoutはmin(設定値,残量)、期限後の新規呼出しをしない。共通残量を未準備App数で分け、各Appの枠の2/3を対象/環境/revisionの準備に、少なくとも1/3を初回停止要求に確保する。確認できたAppから初回停止を要求し、残りrevisionもApp間で予算を分けて交互に要求した後に停止確認する。APIの準備・要求・確認でWorkerの停止要求を遅らせない。準備が期限内に完了しなければ未確認を保ち、対象未確認のまま停止を要求しない。CLI不在・権限拒否・不正JSON/shapeは停止未確認。成功/失敗いずれも専用CLI process groupを回収し、標準出力/エラーを閉じた子も残さない。有界waitを使う。
 - `scripts/issue30_restore_plan.py`：private元snapshotをtarget照合後に0600/exclusiveで保存。既存file/symlinkを上書きしない。SHA・新App/Environment・Single/max1・両App停止証跡を照合するオフライン計画検証。未確認はplanValid=false、keepStoppedRequired=true、executionEnabled=false。実復元もrestorationConfirmedの成立も行わない。
@@ -42,7 +42,7 @@ preflightのreportもApp/Environmentの組を固定して照合する。新Envir
 4. **cold**：読み込み済みSPAを保持。各回APIを停止し、全revisionの実replica0とStoppedを確認。確認後に別のcycleとして起動し、GET/health/ready等で温めず固定問を最初のAPI要求として送る。3回をwarmに混ぜず、失敗も残す。実停止が確認できない回はcold扱いにせず中断する。
 5. **終了/中断**：独立経路で新API・Workerの全active revision停止要求→全revision読戻し→各実replica一覧0を確認。Running Job0 / schedule / AI停止 / private設定 / ingress / 同意状態を保存した基準と照合。未確認は終了成功にせず、停止担当が既存権限でPortal/CLIを確認する。
 
-`http-cold.json` は3件の配列。各件には `questionId`, `cycleId`, `attempt=1`, `request={query,target:all}`, `httpStatus`（transport失敗はnullと有限の`errorCode`）, `networkMs`, `uiCompletionUpperBoundMs`（未完了はnull）, UTCの `startedAtUtc`/`finishedAtUtc`, `preSearchRequestCount=0`, `zeroSnapshot`, `body`, `uiObservation` が必要。`uiObservation` はwarmと同じquestionId/runId/groups/status/alertsとUI時間のshapeで、同じcaptureへ対応させる。応答runIdはcold3件の間とwarmとの間で重複を拒否する。同じ応答を別cycle/zero snapshotへ付け替えて完了にしない。`zeroSnapshot` は新APIを対象にした `azure_validation.py replicas` の完全なreportであり、`finishedAt` と `checks` を保持する。生HAR/JWT/token/秘密envを含めない。
+`http-cold.json` は3件の配列。各件には `questionId`, `cycleId`, `attempt=1`, `request={query,target:all}`, `httpStatus`（transport失敗はnullと `TIMEOUT` / `NETWORK_ERROR` / `CANCELLED` のいずれかの文字列 `errorCode`）, 有限・非負の `networkMs`, `uiCompletionUpperBoundMs`（未完了はnull）, UTCの `startedAtUtc`/`finishedAtUtc`, `preSearchRequestCount=0`, `zeroSnapshot`, `body`, `uiObservation` が必要。`networkMs` は開始/終了UTCの差と1ms以内で一致させる。subscriptionは上表の固定GUID以外を拒否し、操作者がsnapshotと期待先を一緒に変更しても通さない。`uiObservation` はwarmと同じquestionId/runId/groups/status/alertsとUI時間のshapeで、同じcaptureへ対応させる。応答runIdはcold3件の間とwarmとの間で重複を拒否する。同じ応答を別cycle/zero snapshotへ付け替えて完了にしない。`zeroSnapshot` は新APIを対象にした `azure_validation.py replicas` の完全なreportであり、`finishedAt` と `checks` を保持する。生HAR/JWT/token/秘密envを含めない。
 
 保存記録だけを採点する例：
 
@@ -58,7 +58,7 @@ python3 scripts/issue30_timing_report.py --directory /path/to/sanitized-run \
 
 watchdogの既定plan-onlyは安全にローカル確認できる。実行flagは今回使用しない。親の終了、ブラウザー認証失効/準備不能、CLI/計測故障、想定外revision/replica/Job、AI停止設定のずれ、未承認モデル要求、予算/累計時間の上限到達、復元失敗のいずれでも計測を中断し、独立停止経路へ移る。自動再送や短時間の起動→ログイン待ちの再試行をしない。
 
-既存移行watchdogは出典付きで変更せず保持する。旧900秒待機と外側75秒ループを全体hard deadlineとして採用しない。新supervisorを、承認済みrun-secondsと停止余裕stop-seconds、計測controllerの親PIDを明示し、別session・privateログ出力・stdin切離しで**起動前に**用意する。controllerはSUPERVISOR_ARMEDを確認してから計測を開始する。supervisorはrun中にCLIを呼ばず、trigger後に停止のみを実行する。既定はplan-only、今回の実行flag付き試験はfake CLIのみ。
+移行watchdog原本は出典とSHAを付けて参照データとして保持し、実行入口は無効化する。旧900秒待機と外側75秒ループを全体hard deadlineとして採用しない。新supervisorを、承認済みrun-secondsと停止余裕stop-seconds、計測controllerの親PIDを明示し、別session・privateログ出力・stdin切離しで**起動前に**用意する。controllerはSUPERVISOR_ARMEDを確認してから計測を開始する。supervisorはrun中にCLIを呼ばず、trigger後に停止のみを実行する。既定はplan-only、今回の実行flag付き試験はfake CLIのみ。
 
 停止期限は `min(起動時の全体期限, trigger時刻+承認停止余裕)` に固定する。signal/親終了/再確認で期限を延長しない。全CLIへ残量を渡し、revision追加/変化を最後にも再確認する。deadline/CLI故障で確認できなければexit2・stopConfirmed=false・restorationConfirmed=false。OSのprocess終了後の回収に有界50msの余裕を持ち、scheduler遅延を0秒と保証しない。これを課金hard capとは呼ばない。
 

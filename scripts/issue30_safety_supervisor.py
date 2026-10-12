@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Independent Issue30 stop supervisor. Default plan only; never activates/restores.
-Legacy migration helpers remain immutable under validation_safety/.
+Frozen legacy source is data in validation_safety/provenance.json; its CLI entry points are disabled.
 A sleeping/offline host or SIGKILL requires a separate-host stop operator.
 """
 import argparse

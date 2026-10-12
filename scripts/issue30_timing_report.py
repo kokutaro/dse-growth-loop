@@ -9,6 +9,7 @@ from pathlib import Path
 from azure_validation import RG, confirmed_stopped, environment_id, revision_inventory, rows
 from issue30_http_report import quantile
 from issue30_independent_v3_http_report import SCOPE, response_evidence, score as score_warm
+from issue30_safety_supervisor import SUB
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -54,6 +55,8 @@ def cold_quality(fixture, question, record):
 
 
 def score_cold(fixture, planned_ids, records, subscription, warm_run_ids=()):
+    if subscription != SUB:
+        raise ValueError('Issue30 subscription mismatch')
     rows(records)
     questions = {q['id']: q for q in fixture['questions']}
     if (len(planned_ids) != 3 or len(set(planned_ids)) != 3 or not set(planned_ids) <= set(questions)
@@ -133,7 +136,7 @@ def score_cold(fixture, planned_ids, records, subscription, warm_run_ids=()):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--directory', required=True, type=Path)
-    parser.add_argument('--subscription', required=True)
+    parser.add_argument('--subscription', required=True, choices=(SUB,))
     parser.add_argument('--cold-question-ids', nargs=3, required=True)
     args = parser.parse_args()
     fixture = json.loads((ROOT / 'evaluation/issue-30/independent-v3/approved/dataset.json').read_text())
