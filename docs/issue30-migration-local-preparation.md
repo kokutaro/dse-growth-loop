@@ -36,11 +36,13 @@ preflightのreportもApp/Environmentの組を固定して照合する。新Envir
 
 ## warm24 / cold3 の具体手順（実行は別途承認後）
 
-1. **起動前**：開発者が操作可能なMacブラウザーと本人認証、sanitized HTTP/UI収集、別プロセス/別操作経路の停止担当を準備。旧/新の全revision、Job実行0、schedule、AI停止、maxReplica、原本/同意状態、復元先、最新共有台帳と累計稼働を確認・保存する。認証準備が未完なら課金起動しない。
+1. **起動前**：開発者が操作可能なMacブラウザーと本人認証、sanitized HTTP/UI収集、別プロセス/別操作経路の停止担当を準備。検索性能計測にWorker起動は不要なので、Workerのpolling停止・処理lease/in-flight 0を既存権限の独立経路で確認し、全revision inactive/Stopped・実replica0へ停止済みに固定して計測中も起動しない。Azure Manual JobのRunning0はqueue処理lease0の代用ではない。現在のアプリにはpolling停止/lease集計APIがなく、信頼できる静止確認経路と有限の待機期限・未確認時の中止手順が整うまで実測を開始しない。旧/新の全revision、Job実行0、schedule、AI停止、maxReplica、原本/同意状態、復元先、最新共有台帳と累計稼働を確認・保存する。認証準備が未完なら課金起動しない。
 2. **固定**：対象source/image/settings/dataset/gold/candidate hash、warmの24原文、coldの3 question ID と順序、上限時間/費用、停止復元の余裕をレビュー可能な計画へ保存する。この資料は新しい3問を選定・ラベル承認していない。既存固定3問の確定は再開前に必要。
 3. **warm**：SPA/認証を用意済みで、固定24原文をtarget=`all`、1名・逐次・各1回。期待422の2件と検索22件を区別し、失敗/取消/timeoutも母集団へ残す。全24応答と検索22件の線形p95がそれぞれ15秒以下か採点。HTTP開始/終了、UI完了、内部処理時間は別に保存する。
 4. **cold**：読み込み済みSPAを保持。各回APIを停止し、全revisionの実replica0とStoppedを確認。確認後に別のcycleとして起動し、GET/health/ready等で温めず固定問を最初のAPI要求として送る。3回をwarmに混ぜず、失敗も残す。実停止が確認できない回はcold扱いにせず中断する。
-5. **終了/中断**：独立経路で新API・Workerの全active revision停止要求→全revision読戻し→各実replica一覧0を確認。Running Job0 / schedule / AI停止 / private設定 / ingress / 同意状態を保存した基準と照合。未確認は終了成功にせず、停止担当が既存権限でPortal/CLIを確認する。
+5. **通常終了**：Workerは起動前の静止/停止済みを維持し、基準のlease/in-flight 0と停止状態を再照合する。運用のWorkerを通常停止する場合も先にpolling停止→有限の期限でlease/in-flight 0確認→deactivateの順が必要で、静止を確認できなければ通常のgraceful終了とは扱わない。API停止要求→全revision読戻し→各実replica一覧0、Running Job0 / schedule / AI停止 / private設定 / ingress / 同意状態も保存した基準と照合する。
+
+**緊急中断**（親終了・signal・費用/実行期限）：独立supervisorはresource停止を優先し、Worker lease解放を待って共通期限を延長しない。処理中のcancelでattempt/leaseが残る可能性があるため、台帳・原本を保護し、再送/attemptリセットをせず独立担当が復旧要否を確認する。`stopConfirmed` は後方互換のresource停止snapshotのみで、同値の `resourceStopConfirmed` を追加する。`workerQuiescenceConfirmed=false`, `gracefulStopConfirmed=false`, `inFlightRecoveryRequired=true` を返し、resource0を業務静止・graceful終了・復元完了へ昇格しない。未確認のresource停止はkeepStoppedRequiredを維持し、別hostの停止担当が既存権限でPortal/CLIを確認する。このPRは静止APIや新権限を実装・許可していない。
 
 `http-cold.json` は3件の配列。各件には `questionId`, `cycleId`, `attempt=1`, `request={query,target:all}`, `httpStatus`（transport失敗はnullと `TIMEOUT` / `NETWORK_ERROR` / `CANCELLED` のいずれかの文字列 `errorCode`）, 有限・非負の `networkMs`, `uiCompletionUpperBoundMs`（未完了はnull）, UTCの `startedAtUtc`/`finishedAtUtc`, `preSearchRequestCount=0`, `zeroSnapshot`, `body`, `uiObservation` が必要。`networkMs` は開始/終了UTCの差と1ms以内で一致させる。subscriptionは上表の固定GUID以外を拒否し、操作者がsnapshotと期待先を一緒に変更しても通さない。`uiObservation` はwarmと同じquestionId/runId/groups/status/alertsとUI時間のshapeで、同じcaptureへ対応させる。応答runIdはcold3件の間とwarmとの間で重複を拒否する。同じ応答を別cycle/zero snapshotへ付け替えて完了にしない。`zeroSnapshot` は新APIを対象にした `azure_validation.py replicas` の完全なreportであり、`finishedAt` と `checks` を保持する。生HAR/JWT/token/秘密envを含めない。
 

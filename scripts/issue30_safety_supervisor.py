@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Independent Issue30 stop supervisor. Default plan only; never activates/restores.
+"""Issue30 emergency resource-stop supervisor; not a graceful Worker drain.
+Default plan only; never activates/restores. Search pilots must begin with Worker
+already stopped/quiescent and keep it stopped. Never wait for leases on emergency
+parent exit or deadline: preserve uncertain attempts/leases for operator recovery.
 Frozen legacy source is data in validation_safety/provenance.json; its CLI entry points are disabled.
 A sleeping/offline host or SIGKILL requires a separate-host stop operator.
 """
@@ -220,7 +223,11 @@ def stop_apps(cli, apps, deadline, poll_seconds):
             if pending: time.sleep(min(poll_seconds, deadline.remaining()))
     except SafetyError as error:
         failures.append({'code': error.code})
-    return {'stopConfirmed': len(confirmed) == len(apps), 'confirmedApps': confirmed,
+    resource_stopped = len(confirmed) == len(apps)
+    return {'stopConfirmed': resource_stopped, 'resourceStopConfirmed': resource_stopped,
+            'shutdownMode': 'emergency-resource-stop', 'workerQuiescenceConfirmed': False,
+            'gracefulStopConfirmed': False, 'inFlightRecoveryRequired': 'dse-worker-vnet' in apps,
+            'confirmedApps': confirmed,
             'unconfirmedApps': [app for app in apps if app not in confirmed], 'failures': failures,
             'keepStoppedRequired': True, 'restorationConfirmed': False, 'liveAcceptance': 'pending'}
 

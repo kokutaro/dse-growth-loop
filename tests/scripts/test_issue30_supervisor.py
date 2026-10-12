@@ -112,6 +112,16 @@ class SupervisorUnitTests(unittest.TestCase):
         self.assertFalse(result['stopConfirmed'])
         self.assertTrue(any(f.get('app')=='dse-api-vnet' and f['code']=='CLI_TIMEOUT' for f in result['failures']))
 
+    def test_emergency_resource_stop_never_claims_worker_quiescence(self):
+        with patch.object(safety,'prepare_stop',return_value=[]),patch.object(safety,'confirm_stop',return_value=True):
+            result=safety.stop_apps(None,list(safety.ALLOWED),safety.Deadline(1),.1)
+        self.assertTrue(result['resourceStopConfirmed'])
+        self.assertTrue(result['stopConfirmed'])
+        self.assertEqual(result['shutdownMode'],'emergency-resource-stop')
+        self.assertFalse(result['workerQuiescenceConfirmed'])
+        self.assertFalse(result['gracefulStopConfirmed'])
+        self.assertTrue(result['inFlightRecoveryRequired'])
+
     def test_timeout_kills_cli_group_even_if_cli_parent_has_already_exited(self):
         from unittest.mock import Mock
         process=Mock(pid=123,returncode=0)

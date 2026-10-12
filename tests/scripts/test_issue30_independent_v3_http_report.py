@@ -1,12 +1,17 @@
 import copy
+import contextlib
+import io
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from issue30_independent_v3_http_report import SCOPE, score
+import issue30_independent_v3_http_report as report_module
 
 
 class IndependentV3HttpTests(unittest.TestCase):
@@ -69,6 +74,19 @@ class IndependentV3HttpTests(unittest.TestCase):
         for status in ('no_candidates','all_unsuitable','failed'):
             http=copy.deepcopy(self.http);http[0]['body']['rerankingStatus']=status
             with self.subTest(status=status),self.assertRaises(ValueError):score(self.fixture,http,self.ui)
+
+    def test_standalone_cli_malformed_records_exit2_without_traceback_or_output(self):
+        http=copy.deepcopy(self.http);http[0]['body']['primary']['candidates']=[None];http[0]['body']['secret']='never-store'
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory);(folder/'http-warm.json').write_text(json.dumps(http));(folder/'ui-warm-observations.json').write_text(json.dumps(self.ui))
+            with patch.object(sys,'argv',['warm-report','--directory',directory]),contextlib.redirect_stderr(io.StringIO()) as errors, \
+                    contextlib.redirect_stdout(io.StringIO()) as output,self.assertRaises(SystemExit) as error:
+                report_module.main()
+            self.assertEqual(error.exception.code,2)
+            self.assertEqual(output.getvalue(),'')
+            self.assertNotIn('Traceback',errors.getvalue())
+            self.assertNotIn('never-store',errors.getvalue())
+            self.assertFalse((folder/'http-warm-summary.json').exists())
 
     def test_expected_outside_is_not_failure_or_empty_search(self):
         result = score(self.fixture, self.http, self.ui)

@@ -10,8 +10,12 @@ def response_evidence(fixture, body, observation):
     if not isinstance(body,dict) or not isinstance(observation,dict):raise ValueError('Response and UI record required')
     run_id=body.get('runId')
     if not isinstance(run_id,str) or not run_id or run_id!=observation.get('runId'):raise ValueError('UI run mismatch')
-    candidates=body['primary']['candidates'];assessments=body['assessments'];ui=observation['ui']
-    if not isinstance(candidates,list) or not isinstance(assessments,list) or not isinstance(ui,dict):raise ValueError('Response shape mismatch')
+    primary=body.get('primary')
+    if not isinstance(primary,dict):raise ValueError('Response primary object required')
+    candidates=primary.get('candidates');assessments=body.get('assessments');ui=observation.get('ui')
+    if (not isinstance(candidates,list) or any(not isinstance(c,dict) for c in candidates)
+            or not isinstance(assessments,list) or any(not isinstance(a,dict) for a in assessments)
+            or not isinstance(ui,dict)):raise ValueError('Response shape mismatch')
     if not isinstance(ui.get('status'),str) or not isinstance(ui.get('alerts'),list) or any(not isinstance(a,str) for a in ui['alerts']):raise ValueError('UI status/alerts shape mismatch')
     if body.get('code') is not None or any(c.get('entityType') not in ('person','knowledge') for c in candidates):raise ValueError('Error response or unknown candidate type')
     if body.get('rerankingStatus')!='succeeded' and candidates:raise ValueError('Non-success reranking cannot retain visible candidates')
@@ -67,5 +71,13 @@ def score(fixture,http,ui):
     return {'scope':SCOPE,'observedQuestions':24,'all24HttpStatusAndTimeMeasured':True,'qualityPassed':quality,'warmSloThresholdMs':15000,'warmSloPassed':slo,'networkTiming':successful,'allResponseTiming':overall,'timingDefinition':'Linear p95; both all24 responses and searched requests must meet15s. Expected out-of-scope422 durations reported separately, never used to hide slower searches. UI upper bounds include observation overhead.','metrics':metrics,'noGoldFalseQuestions':false,'groundingChecked':len(grounded),'groundingPassed':sum(grounded),'failedQuestions':[r['questionId'] for r in rows if not r['outcomePassed']],'rows':rows}
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--directory',required=True,type=Path);args=parser.parse_args();p=args.directory
-    fixture=json.loads((ROOT/'evaluation/issue-30/independent-v3/approved/dataset.json').read_text());result=score(fixture,json.loads((p/'http-warm.json').read_text()),json.loads((p/'ui-warm-observations.json').read_text()));(p/'http-warm-summary.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps({k:result[k] for k in ['qualityPassed','warmSloPassed','networkTiming','allResponseTiming']},indent=2))
-if __name__=='__main__':main()
+    try:
+        fixture=json.loads((ROOT/'evaluation/issue-30/independent-v3/approved/dataset.json').read_text())
+        result=score(fixture,json.loads((p/'http-warm.json').read_text()),json.loads((p/'ui-warm-observations.json').read_text()))
+        with (p/'http-warm-summary.json').open('x',encoding='utf-8') as file:
+            json.dump(result,file,ensure_ascii=False,indent=2,allow_nan=False);file.write('\n')
+        print(json.dumps({k:result[k] for k in ['qualityPassed','warmSloPassed','networkTiming','allResponseTiming']},indent=2))
+        return 0 if result['qualityPassed'] and result['warmSloPassed'] else 1
+    except (OSError,ValueError,TypeError,KeyError,AttributeError,OverflowError):
+        parser.exit(2,'Invalid or incomplete warm records, or output already exists; no live acceptance granted.\n')
+if __name__=='__main__':raise SystemExit(main())
