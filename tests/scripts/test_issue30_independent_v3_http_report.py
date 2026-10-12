@@ -60,6 +60,11 @@ class IndependentV3HttpTests(unittest.TestCase):
                     assessment['entityId']=assessment['entityId'].removeprefix(SCOPE+'-')
         with self.assertRaises(ValueError):score(self.fixture,http,self.ui)
 
+    def test_successful_warm_response_run_ids_must_be_distinct(self):
+        self.http[1]['body']['runId']=self.http[0]['body']['runId']
+        self.ui[1]['runId']=self.http[0]['body']['runId']
+        with self.assertRaises(ValueError):score(self.fixture,self.http,self.ui)
+
     def test_expected_outside_is_not_failure_or_empty_search(self):
         result = score(self.fixture, self.http, self.ui)
         self.assertTrue(result['qualityPassed'])

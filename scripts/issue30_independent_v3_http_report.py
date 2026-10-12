@@ -32,7 +32,7 @@ def score(fixture,http,ui):
     if len(ui)!=24 or len(http)!=24 or {r['questionId'] for r in ui}!=set(questions) or {r['questionId'] for r in http}!=set(questions):raise ValueError('Exact24 UI and HTTP records required')
     responses={r['questionId']:r for r in http};observations={r['questionId']:r for r in ui}
     prefix=SCOPE+'-'
-    rows=[];grounded=[]
+    rows=[];grounded=[];response_ids=set()
     for qid,q in questions.items():
         r=responses[qid];o=observations[qid];body=r['body']
         if r['request']!={'query':q['text'],'target':'all'}:raise ValueError('Manual conditions or changed query')
@@ -45,6 +45,8 @@ def score(fixture,http,ui):
         if ui_ms<r['networkMs']:raise ValueError('UI completion cannot precede HTTP completion')
         if r['httpStatus']==200:
             candidates,checked=response_evidence(fixture,body,o)
+            if body['runId'] in response_ids:raise ValueError('Warm response runId reused')
+            response_ids.add(body['runId'])
             grounded.extend(checked)
         elif expected_outside:
             if o['ui']['groups'] or '自動検索対象外' not in o['ui']['status'] or o['ui']['alerts']:raise ValueError('Out-of-scope falsely displayed as search/failure')
