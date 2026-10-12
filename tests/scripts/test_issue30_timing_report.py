@@ -70,6 +70,25 @@ class ColdTimingTests(unittest.TestCase):
                                       '--cold-question-ids',*self.plan]),contextlib.redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):
             report_module.main()
 
+    def test_cli_cold_http_response_contract_failure_is_retained_as_failed_sample(self):
+        import test_issue30_independent_v3_http_report as warm_fixture
+        warm=warm_fixture.IndependentV3HttpTests();warm.setUp()
+        rows=copy.deepcopy(self.rows);rows[0]['body']={'primary':None,'secret':'never-store'}
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)
+            for name,value in (('http-warm.json',warm.http),('ui-warm-observations.json',warm.ui),('http-cold.json',rows)):
+                (folder/name).write_text(json.dumps(value))
+            args=['timing-report','--directory',directory,'--subscription',SUB,'--cold-question-ids',*self.plan]
+            with patch.object(sys,'argv',args),contextlib.redirect_stderr(io.StringIO()) as errors,contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(report_module.main(),1)
+            text=(folder/'timing-summary.json').read_text();result=json.loads(text)
+            self.assertFalse(result['cold']['coldMeasurementComplete'])
+            self.assertEqual(result['cold']['networkTiming']['count'],3)
+            self.assertEqual(result['cold']['failedQuestions'],[self.plan[0]])
+            self.assertEqual(result['liveAcceptance'],'pending')
+            self.assertNotIn('never-store',text+errors.getvalue())
+            self.assertNotIn('Traceback',errors.getvalue())
+
     def test_missing_duplicate_changed_or_unplanned_questions_are_rejected(self):
         for rows in (self.rows[:2], self.rows + [self.rows[0]], [self.rows[0]] * 3):
             with self.subTest(rows=len(rows)), self.assertRaises(ValueError): self.score(rows)
@@ -165,7 +184,7 @@ class ColdTimingTests(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(ValueError): self.score(rows)
 
     def test_cold_http200_empty_body_invalid_evidence_or_ui_error_cannot_pass(self):
-        for kind in ('empty-body','invalid-evidence','ui-alert','empty-positive-candidates','wrong-run','unscoped-candidate'):
+        for kind in ('empty-body','invalid-evidence','ui-alert','empty-positive-candidates','wrong-run','unscoped-candidate','non-success-visible-candidates'):
             rows=copy.deepcopy(self.rows)
             if kind=='empty-body':rows[0]['body']={}
             elif kind=='invalid-evidence':rows[0]['body']['assessments'][0]['evidenceIds']=['invented']
@@ -174,9 +193,10 @@ class ColdTimingTests(unittest.TestCase):
                 rows[0]['body']['primary']['candidates']=[];rows[0]['body']['assessments']=[]
                 rows[0]['uiObservation']['ui']['groups']=[{'name':'相談候補','titles':[]},{'name':'参考事例','titles':[]}]
             elif kind=='wrong-run':rows[0]['uiObservation']['runId']='other-request'
-            else:
+            elif kind=='unscoped-candidate':
                 for item in rows[0]['body']['primary']['candidates']+rows[0]['body']['assessments']:
                     item['entityId']=item['entityId'].removeprefix(report_module.SCOPE+'-')
+            else:rows[0]['body']['rerankingStatus']='no_candidates'
             with self.subTest(kind=kind):
                 result=self.score(rows)
                 self.assertFalse(result['coldQualityPassed'])

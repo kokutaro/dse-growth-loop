@@ -65,6 +65,11 @@ class IndependentV3HttpTests(unittest.TestCase):
         self.ui[1]['runId']=self.http[0]['body']['runId']
         with self.assertRaises(ValueError):score(self.fixture,self.http,self.ui)
 
+    def test_non_success_reranking_status_cannot_keep_visible_candidates(self):
+        for status in ('no_candidates','all_unsuitable','failed'):
+            http=copy.deepcopy(self.http);http[0]['body']['rerankingStatus']=status
+            with self.subTest(status=status),self.assertRaises(ValueError):score(self.fixture,http,self.ui)
+
     def test_expected_outside_is_not_failure_or_empty_search(self):
         result = score(self.fixture, self.http, self.ui)
         self.assertTrue(result['qualityPassed'])

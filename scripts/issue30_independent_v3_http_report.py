@@ -14,6 +14,7 @@ def response_evidence(fixture, body, observation):
     if not isinstance(candidates,list) or not isinstance(assessments,list) or not isinstance(ui,dict):raise ValueError('Response shape mismatch')
     if not isinstance(ui.get('status'),str) or not isinstance(ui.get('alerts'),list) or any(not isinstance(a,str) for a in ui['alerts']):raise ValueError('UI status/alerts shape mismatch')
     if body.get('code') is not None or any(c.get('entityType') not in ('person','knowledge') for c in candidates):raise ValueError('Error response or unknown candidate type')
+    if body.get('rerankingStatus')!='succeeded' and candidates:raise ValueError('Non-success reranking cannot retain visible candidates')
     if any(not isinstance(c.get('entityId'),str) or not c['entityId'].startswith(SCOPE+'-') for c in candidates):raise ValueError('Candidate ID must belong to the expected v3 scope')
     expected=[{'name':name,'titles':[c['title'] for c in candidates if c['entityType']==kind]} for kind,name in [('person','相談候補'),('knowledge','参考事例')]]
     if ui['groups']!=expected:raise ValueError('UI grouping/order mismatch')
