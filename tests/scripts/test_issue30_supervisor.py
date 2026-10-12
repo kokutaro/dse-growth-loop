@@ -299,3 +299,10 @@ with log.open('w') as output:
         self.assertIn('dse-worker-vnet',result['confirmedApps'])
         self.assertFalse(json.loads(self.state.read_text())['dse-worker-vnet'][0]['active'])
         self.assertTrue(result['keepStoppedRequired'])
+
+    def test_real_empty_successful_deactivation_response_can_be_confirmed(self):
+        process,first=self.launch('empty-deactivate',run_seconds=.05,stop_seconds=2)
+        result,_,_=self.finish(process,first)
+        self.assertEqual(process.returncode,0)
+        self.assertTrue(result['stopConfirmed'])
+        self.assertEqual(set(result['confirmedApps']),set(safety.ALLOWED))

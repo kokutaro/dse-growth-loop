@@ -28,7 +28,9 @@ Issue #30 は retrieval-v2 の Recall と分類漏れを扱う。保存された
 - `scripts/issue30_timing_report.py`：ネットワークを使わない保存記録の採点器。既存warm24の品質/双方の線形p95採点と、別のcold3の完全性を集約。coldは固定3問の順序、単一試行、各回別の停止snapshot、時刻順、事前API要求0、HTTP/UI時間、失敗標本保持を検証する。coldに合否時間閾値を作らない。固定3問の既存@5品質基準（Precision/Recall各90%以上）と基本応答契約を確認する保存応答回帰であり、新規独立評価ではない。
 - `scripts/issue30_safety_supervisor.py`：新API/Workerの両方を固定対象にし、親PIDをMacのkqueue（process handle）で監視。親終了・SIGTERM/SIGINT・実行期限から停止へ移る。実行窓+停止余裕の単調時計期限を固定し、停止段階の共通残量を全App/revision/CLIへ渡す。各CLI timeoutはmin(設定値,残量)、期限後の新規呼出しをしない。共通残量を未準備App数で分け、各Appの枠の2/3を対象/環境/revisionの準備に、少なくとも1/3を初回停止要求に確保する。確認できたAppから初回停止を要求し、残りrevisionもApp間で予算を分けて交互に要求した後に停止確認する。APIの準備・要求・確認でWorkerの停止要求を遅らせない。準備が期限内に完了しなければ未確認を保ち、対象未確認のまま停止を要求しない。CLI不在・権限拒否・不正JSON/shapeは停止未確認。成功/失敗いずれも専用CLI process groupを回収し、標準出力/エラーを閉じた子も残さない。有界waitを使う。
 - `scripts/issue30_restore_plan.py`：private元snapshotをtarget照合後に0600/exclusiveで保存。既存file/symlinkを上書きしない。SHA・新App/Environment・Single/max1・両App停止証跡を照合するオフライン計画検証。未確認はplanValid=false、keepStoppedRequired=true、executionEnabled=false。実復元もrestorationConfirmedの成立も行わない。
-- v3 warm/cold採点：bool・負数・NaN・Infinity・未取得を時間として採用せず、HTTP応答より早いUI完了時間も拒否する。応答のrun/group順序/assessment一意性と原本・対象entityへ結び付いた根拠を共用契約で確認。coldは空本文、不正/借用根拠、HTTPエラー、UI alert、正解ありの空候補、既存@5品質基準未達を失敗として保持する。
+- v3 warm/cold採点：bool・負数・NaN・Infinity・未取得を時間として採用せず、HTTP応答より早いUI完了時間も拒否する。候補IDには独立v3のscope prefixを必須とし、原本のraw IDを付けただけの別scope応答は受理しない。応答のrun/group順序/assessment一意性と原本・対象entityへ結び付いた根拠を共用契約で確認。coldは空本文、不正/借用根拠、HTTPエラー、UI alert、正解ありの空候補、既存@5品質基準未達を失敗として保持する。
+
+preflightのreportもApp/Environmentの組を固定して照合する。新Environmentを点検する際は新Appを明示し、旧Appとの混在はCLI読取前に拒否する。停止CLIの成功応答が空の場合はdeactivateに限りnullとして受け取り、後続の全revision/実replica確認で判断する。読取CLIの空応答を停止証跡にはしない。
 
 採点器が扱う値は提供された記録であり、操作者の申告だけで独立証跡が成立するとは判定しない。`liveAcceptance=pending`・請求額nullを維持する。Mockの `qualityPassed` やCLI exit0は実Entra/実Cosmos/実AI・費用・停止保証の合格ではない。
 

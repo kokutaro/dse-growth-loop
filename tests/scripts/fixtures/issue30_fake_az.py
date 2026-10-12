@@ -47,6 +47,9 @@ elif args[1:3] == ['replica', 'list']:
 else:
     raise SystemExit(3)
 
+if scenario == 'empty-deactivate' and args[1:3] == ['revision','deactivate']:
+    raise SystemExit(0)
+
 if scenario == 'spawn-child':
     child=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)'],
                            stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)

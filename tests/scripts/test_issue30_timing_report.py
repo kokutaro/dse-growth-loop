@@ -154,7 +154,7 @@ class ColdTimingTests(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(ValueError): self.score(rows)
 
     def test_cold_http200_empty_body_invalid_evidence_or_ui_error_cannot_pass(self):
-        for kind in ('empty-body','invalid-evidence','ui-alert','empty-positive-candidates','wrong-run'):
+        for kind in ('empty-body','invalid-evidence','ui-alert','empty-positive-candidates','wrong-run','unscoped-candidate'):
             rows=copy.deepcopy(self.rows)
             if kind=='empty-body':rows[0]['body']={}
             elif kind=='invalid-evidence':rows[0]['body']['assessments'][0]['evidenceIds']=['invented']
@@ -162,7 +162,10 @@ class ColdTimingTests(unittest.TestCase):
             elif kind=='empty-positive-candidates':
                 rows[0]['body']['primary']['candidates']=[];rows[0]['body']['assessments']=[]
                 rows[0]['uiObservation']['ui']['groups']=[{'name':'相談候補','titles':[]},{'name':'参考事例','titles':[]}]
-            else:rows[0]['uiObservation']['runId']='other-request'
+            elif kind=='wrong-run':rows[0]['uiObservation']['runId']='other-request'
+            else:
+                for item in rows[0]['body']['primary']['candidates']+rows[0]['body']['assessments']:
+                    item['entityId']=item['entityId'].removeprefix(report_module.SCOPE+'-')
             with self.subTest(kind=kind):
                 result=self.score(rows)
                 self.assertFalse(result['coldQualityPassed'])

@@ -59,6 +59,10 @@ class AzureCli:
             deadline.remaining()
             if process.returncode:
                 raise SafetyError('CLI_REJECTED')
+            # Azure CLI may emit no document for a successful stop mutation.
+            # Reads still require valid JSON; only deactivation accepts silence.
+            if isinstance(output, str) and not output.strip() and tuple(parts[:3]) == ('containerapp', 'revision', 'deactivate'):
+                return None
             def invalid_constant(_): raise ValueError('Nonfinite JSON')
             return json.loads(output, parse_constant=invalid_constant)
         except subprocess.TimeoutExpired:

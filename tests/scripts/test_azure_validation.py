@@ -248,3 +248,21 @@ class ValidationTests(unittest.TestCase):
             self.assertEqual(report['target']['environment'],'dse-environment-vnet-jpe')
             self.assertFalse(report['stopSnapshotConfirmed'])
             self.assertEqual(report['liveAcceptance'],'not_run')
+
+    def test_preflight_target_requires_matching_app_environment(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for args in (['--environment','dse-environment-vnet-jpe'],
+                         ['--app','dse-api-vnet','--environment','dse-environment']):
+                argv=['azure_validation.py','preflight','--run-id','new-preflight','--out',folder,'--subscription','sub',*args]
+                with self.subTest(args=args),patch.object(sys,'argv',argv),patch.object(validation,'revision',return_value=('a'*40,True)) as rev, \
+                        patch.object(validation,'preflight',return_value=[]) as read,patch('sys.stdout'),patch('sys.stderr'),self.assertRaises(SystemExit):
+                    validation.main()
+                rev.assert_not_called();read.assert_not_called()
+            argv=['azure_validation.py','preflight','--run-id','new-preflight','--out',folder,'--subscription','sub',
+                  '--app','dse-api-vnet','--environment','dse-environment-vnet-jpe']
+            with patch.object(sys,'argv',argv),patch.object(validation,'revision',return_value=('a'*40,True)), \
+                    patch.object(validation,'preflight',return_value=[]) as read,patch('sys.stdout'):
+                self.assertEqual(validation.main(),0)
+            read.assert_called_once_with('sub','japaneast','japaneast','dse-environment-vnet-jpe')
+            target=json.loads((Path(folder)/'new-preflight/report.json').read_text())['target']
+            self.assertEqual((target['app'],target['environment']),('dse-api-vnet','dse-environment-vnet-jpe'))

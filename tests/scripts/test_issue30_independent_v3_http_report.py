@@ -50,6 +50,16 @@ class IndependentV3HttpTests(unittest.TestCase):
             ui[index]['uiCompletionUpperBoundMs']=self.http[index]['networkMs']-1
             with self.subTest(index=index),self.assertRaises(ValueError):score(self.fixture,self.http,ui)
 
+    def test_unscoped_candidate_and_assessment_ids_are_rejected(self):
+        http=copy.deepcopy(self.http)
+        for row in http:
+            if row['httpStatus']==200:
+                for candidate in row['body']['primary']['candidates']:
+                    candidate['entityId']=candidate['entityId'].removeprefix(SCOPE+'-')
+                for assessment in row['body']['assessments']:
+                    assessment['entityId']=assessment['entityId'].removeprefix(SCOPE+'-')
+        with self.assertRaises(ValueError):score(self.fixture,http,self.ui)
+
     def test_expected_outside_is_not_failure_or_empty_search(self):
         result = score(self.fixture, self.http, self.ui)
         self.assertTrue(result['qualityPassed'])

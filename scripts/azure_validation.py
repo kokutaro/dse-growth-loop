@@ -263,7 +263,7 @@ def main():
     if any(not re.fullmatch(r"[a-z0-9]+", v) for v in (args.location, args.foundry_location)):
         parser.error("リージョン識別子が不正です。")
     environment = args.environment or APP_ENVIRONMENTS[args.app]
-    if args.action == "replicas" and APP_ENVIRONMENTS[args.app] != environment:
+    if args.action in ("preflight", "replicas") and APP_ENVIRONMENTS[args.app] != environment:
         parser.error("app と environment の組み合わせが不正です。")
     folder = args.out / args.run_id
     try:
