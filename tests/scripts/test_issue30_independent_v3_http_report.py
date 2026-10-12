@@ -105,6 +105,29 @@ class IndependentV3HttpTests(unittest.TestCase):
         self.assertIn(self.http[0]['questionId'], result['failedQuestions'])
         with self.assertRaises(ValueError): score(self.fixture, self.http[:-1], self.ui)
 
+    def test_warm_status_requires_integer_http_range_for_every_question(self):
+        outside=next(i for i,r in enumerate(self.http) if r['httpStatus']==422)
+        for index in (0,outside):
+            for status in (True,False,None,'200',200.0,99,600,{},[]):
+                http=copy.deepcopy(self.http);http[index]['httpStatus']=status
+                with self.subTest(index=index,status=status),self.assertRaises(ValueError):
+                    score(self.fixture,http,self.ui)
+
+    def test_cli_malformed_outside_status_has_no_summary(self):
+        http=copy.deepcopy(self.http)
+        next(r for r in http if r['httpStatus']==422)['httpStatus']=True
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)
+            (folder/'http-warm.json').write_text(json.dumps(http))
+            (folder/'ui-warm-observations.json').write_text(json.dumps(self.ui))
+            with patch.object(sys,'argv',['warm-report','--directory',directory]),contextlib.redirect_stderr(io.StringIO()) as errors, \
+                    contextlib.redirect_stdout(io.StringIO()) as output,self.assertRaises(SystemExit) as error:
+                report_module.main()
+            self.assertEqual(error.exception.code,2)
+            self.assertEqual(output.getvalue(),'')
+            self.assertNotIn('Traceback',errors.getvalue())
+            self.assertFalse((folder/'http-warm-summary.json').exists())
+
     def test_changed_request_and_fast_outside_cannot_hide_slow_search(self):
         bad = copy.deepcopy(self.http)
         bad[0]['request']['conditions'] = {}

@@ -136,6 +136,32 @@ class ColdTimingTests(unittest.TestCase):
         self.assertEqual(report['failedQuestions'], [self.plan[1]])
         self.assertIsNone(report['billedCost'])
 
+    def test_http_status_and_transport_error_code_cannot_coexist(self):
+        for status in (200,422,503):
+            for code in ('TIMEOUT','NETWORK_ERROR','CANCELLED','',False,{}):
+                rows=copy.deepcopy(self.rows);rows[0].update(httpStatus=status,errorCode=code)
+                with self.subTest(status=status,code=code),self.assertRaises(ValueError):self.score(rows)
+        self.rows[0]['errorCode']=None
+        self.assertTrue(self.score()['coldMeasurementComplete'])
+
+    def test_cli_success_status_with_transport_error_is_sanitized_exit2(self):
+        import test_issue30_independent_v3_http_report as warm_fixture
+        warm=warm_fixture.IndependentV3HttpTests();warm.setUp()
+        rows=copy.deepcopy(self.rows);rows[0]['errorCode']='TIMEOUT';rows[0]['secret']='never-store'
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)
+            for name,value in (('http-warm.json',warm.http),('ui-warm-observations.json',warm.ui),('http-cold.json',rows)):
+                (folder/name).write_text(json.dumps(value))
+            args=['timing-report','--directory',directory,'--subscription',SUB,'--cold-question-ids',*self.plan]
+            with patch.object(sys,'argv',args),contextlib.redirect_stderr(io.StringIO()) as errors, \
+                    contextlib.redirect_stdout(io.StringIO()) as output,self.assertRaises(SystemExit) as error:
+                report_module.main()
+            self.assertEqual(error.exception.code,2)
+            self.assertEqual(output.getvalue(),'')
+            self.assertNotIn('never-store',errors.getvalue())
+            self.assertNotIn('Traceback',errors.getvalue())
+            self.assertFalse((folder/'timing-summary.json').exists())
+
     def test_ui_failure_or_timing_before_http_completion_is_not_complete(self):
         self.rows[0]['uiCompletionUpperBoundMs'] = None
         self.assertFalse(self.score()['coldMeasurementComplete'])

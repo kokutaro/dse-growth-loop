@@ -41,6 +41,7 @@ def score(fixture,http,ui):
     for qid,q in questions.items():
         r=responses[qid];o=observations[qid];body=r['body']
         if r['request']!={'query':q['text'],'target':'all'}:raise ValueError('Manual conditions or changed query')
+        if type(r['httpStatus']) is not int or not 100<=r['httpStatus']<=599:raise ValueError('Observed integer HTTP status from 100 to 599 required')
         outside=q['draftDomain']=='unknown' and not q['positiveIds']
         expected_outside=r['httpStatus']==422 and body.get('code')=='CLASSIFICATION_OUT_OF_SCOPE' and outside
         candidates=body.get('primary',{}).get('candidates',[])

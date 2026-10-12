@@ -114,6 +114,8 @@ def score_cold(fixture, planned_ids, records, subscription, warm_run_ids=()):
             raise ValueError('HTTP status required; use null and errorCode for transport failure')
         if status is None and record.get('errorCode') not in ('TIMEOUT', 'NETWORK_ERROR', 'CANCELLED'):
             raise ValueError('Transport failure must be retained explicitly')
+        if status is not None and record.get('errorCode') is not None:
+            raise ValueError('Transport errorCode requires a null HTTP status')
         body = record.get('body')
         response_id = body.get('runId') if isinstance(body, dict) else None
         if isinstance(response_id, str) and response_id:
