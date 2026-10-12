@@ -122,6 +122,15 @@ class SupervisorUnitTests(unittest.TestCase):
         self.assertFalse(result['gracefulStopConfirmed'])
         self.assertTrue(result['inFlightRecoveryRequired'])
 
+    def test_final_report_io_failure_returns_unconfirmed_after_stop_execution(self):
+        args=['supervisor','--execute-after-approval','--parent-pid','99999','--run-seconds','0','--stop-seconds','1']
+        with patch.object(sys,'argv',args),patch.object(safety,'ParentWatch'), \
+                patch.object(safety,'stop_apps',return_value={'stopConfirmed':True}) as stop, \
+                patch.object(safety,'emit',side_effect=[None,BrokenPipeError('secret-pipe')]), \
+                patch.object(safety,'mute_failed_stdout') as mute:
+            self.assertEqual(safety.main(),2)
+        stop.assert_called_once();mute.assert_called_once()
+
     def test_timeout_kills_cli_group_even_if_cli_parent_has_already_exited(self):
         from unittest.mock import Mock
         process=Mock(pid=123,returncode=0)
@@ -316,3 +325,17 @@ with log.open('w') as output:
         self.assertEqual(process.returncode,0)
         self.assertTrue(result['stopConfirmed'])
         self.assertEqual(set(result['confirmedApps']),set(safety.ALLOWED))
+
+    def test_closed_stdout_before_readiness_does_not_skip_emergency_stop(self):
+        read_fd,write_fd=os.pipe();os.close(read_fd)
+        command=[sys.executable,str(ROOT/'scripts/issue30_safety_supervisor.py'),'--execute-after-approval',
+                 '--parent-pid',str(self.parent.pid),'--run-seconds','10','--stop-seconds','2',
+                 '--poll-seconds','.03','--call-timeout-seconds','.3','--cli-command',
+                 sys.executable,str(ROOT/'tests/scripts/fixtures/issue30_fake_az.py')]
+        try:process=subprocess.Popen(command,stdout=write_fd,stderr=subprocess.PIPE,text=True,env=self.env,start_new_session=True)
+        finally:os.close(write_fd)
+        self.supervisors.append(process);_,stderr=process.communicate(timeout=5)
+        self.assertEqual(process.returncode,2)
+        self.assertNotIn('Traceback',stderr)
+        self.assertTrue(all(not r['active'] and r['replicas']==0 for app in json.loads(self.state.read_text()).values() for r in app))
+        self.record_evidence({'event':'CLOSED_REPORT_SINK_EMERGENCY_STOP','resourceStopObserved':True,'reportConfirmed':False})

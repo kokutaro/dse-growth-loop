@@ -44,6 +44,8 @@ preflightのreportもApp/Environmentの組を固定して照合する。新Envir
 
 **緊急中断**（親終了・signal・費用/実行期限）：独立supervisorはresource停止を優先し、Worker lease解放を待って共通期限を延長しない。処理中のcancelでattempt/leaseが残る可能性があるため、台帳・原本を保護し、再送/attemptリセットをせず独立担当が復旧要否を確認する。`stopConfirmed` は後方互換のresource停止snapshotのみで、同値の `resourceStopConfirmed` を追加する。`workerQuiescenceConfirmed=false`, `gracefulStopConfirmed=false`, `inFlightRecoveryRequired=true` を返し、resource0を業務静止・graceful終了・復元完了へ昇格しない。未確認のresource停止はkeepStoppedRequiredを維持し、別hostの停止担当が既存権限でPortal/CLIを確認する。このPRは静止APIや新権限を実装・許可していない。
 
+開始/終了ログのpipeが閉じるなど報告先I/Oが失敗しても停止経路は省略しない。開始報告失敗は `REPORT_SINK_FAILED` の緊急停止トリガーとし、報告未確認としてexit2を返す。終了ログ失敗も停止要求の実行後にexit2とし、ログがないことを「停止済み」にせず別host担当が確認する。
+
 `http-cold.json` は3件の配列。各件には `questionId`, `cycleId`, `attempt=1`, `request={query,target:all}`, `httpStatus`（transport失敗はnullと `TIMEOUT` / `NETWORK_ERROR` / `CANCELLED` のいずれかの文字列 `errorCode`）, 有限・非負の `networkMs`, `uiCompletionUpperBoundMs`（未完了はnull）, UTCの `startedAtUtc`/`finishedAtUtc`, `preSearchRequestCount=0`, `zeroSnapshot`, `body`, `uiObservation` が必要。`networkMs` は開始/終了UTCの差と1ms以内で一致させる。subscriptionは上表の固定GUID以外を拒否し、操作者がsnapshotと期待先を一緒に変更しても通さない。`uiObservation` はwarmと同じquestionId/runId/groups/status/alertsとUI時間のshapeで、同じcaptureへ対応させる。応答runIdはcold3件の間とwarmとの間で重複を拒否する。同じ応答を別cycle/zero snapshotへ付け替えて完了にしない。`zeroSnapshot` は新APIを対象にした `azure_validation.py replicas` の完全なreportであり、`finishedAt` と `checks` を保持する。生HAR/JWT/token/秘密envを含めない。
 
 保存記録だけを採点する例：

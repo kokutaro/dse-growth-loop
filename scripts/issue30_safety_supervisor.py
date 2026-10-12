@@ -13,6 +13,7 @@ import os
 import select
 import signal
 import subprocess
+import sys
 import time
 
 from azure_validation import RG, environment_id, matches_environment, revision_inventory, rows
@@ -236,6 +237,18 @@ def emit(value):
     print(json.dumps(value, allow_nan=False), flush=True)
 
 
+def mute_failed_stdout():
+    # Prevent a second broken-pipe flush during interpreter shutdown. Reporting
+    # must never replace or prevent the emergency resource-stop path.
+    try:
+        descriptor = sys.stdout.fileno()
+        sink = os.open(os.devnull, os.O_WRONLY)
+        try: os.dup2(sink, descriptor)
+        finally: os.close(sink)
+    except (OSError, ValueError):
+        pass
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--execute-after-approval', action='store_true')
@@ -273,6 +286,7 @@ def main():
     for s in handlers: signal.signal(s, request_stop)
     watcher = None
     trigger = 'RUN_DEADLINE'
+    reporting_failed = False
     try:
         watcher = ParentWatch(args.parent_pid)
         emit({'event': 'SUPERVISOR_ARMED', 'parentPid': args.parent_pid, 'apps': apps,
@@ -286,17 +300,28 @@ def main():
                 trigger = 'PARENT_EXIT'; break
     except SafetyError as error:
         trigger = error.code
+    except (OSError, ValueError):
+        trigger = 'REPORT_SINK_FAILED'
+        reporting_failed = True
+        mute_failed_stdout()
     finally:
-        if watcher: watcher.close()
+        if watcher:
+            try: watcher.close()
+            except OSError: trigger = 'PARENT_WATCH_CLEANUP_FAILED'
     # One fixed stop deadline shared by every app, revision and CLI call.
     # Early parent exit/signal does not spend the unused run window on retries.
     stop_deadline = Deadline.at(min(total.end, time.monotonic() + args.stop_seconds))
     result = stop_apps(AzureCli(args.cli_command, args.call_timeout_seconds), apps, stop_deadline, args.poll_seconds)
     result.update(event='SUPERVISOR_FINISHED', trigger=trigger, elapsedSeconds=time.monotonic()-started,
                   totalBudgetSeconds=args.run_seconds+args.stop_seconds)
-    emit(result)
-    for s, handler in handlers.items(): signal.signal(s, handler)
-    return 0 if result['stopConfirmed'] else 2
+    try:
+        emit(result)
+    except (OSError, ValueError):
+        reporting_failed = True
+        mute_failed_stdout()
+    finally:
+        for s, handler in handlers.items(): signal.signal(s, handler)
+    return 0 if result['stopConfirmed'] and not reporting_failed else 2
 
 
 if __name__ == '__main__':
