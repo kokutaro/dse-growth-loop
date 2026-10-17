@@ -1,0 +1,57 @@
+  Dse.Domain -> /workspace/dse-growth-loop/src/Dse.Domain/bin/Release/net10.0/Dse.Domain.dll
+  Dse.Evaluation -> /workspace/dse-growth-loop/src/Dse.Evaluation/bin/Release/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /workspace/dse-growth-loop/src/Dse.Infrastructure/bin/Release/net10.0/Dse.Infrastructure.dll
+  Dse.Api -> /workspace/dse-growth-loop/src/Dse.Api/bin/Release/net10.0/Dse.Api.dll
+  Dse.Tests -> /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll
+Test run for /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.46]     Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(race: "fence") [FAIL]
+[xUnit.net 00:00:00.47]     Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(race: "person") [FAIL]
+[xUnit.net 00:00:00.47]     Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(race: "control") [FAIL]
+[xUnit.net 00:00:00.48]     Dse.Tests.BusinessAnalysisTests.Recovery_rechecks_operator_revocation_during_ledger_scan(inspect: True) [FAIL]
+[xUnit.net 00:00:00.49]     Dse.Tests.BusinessAnalysisTests.Recovery_rechecks_operator_revocation_during_ledger_scan(inspect: False) [FAIL]
+[xUnit.net 00:00:00.49]     Dse.Tests.BusinessAnalysisTests.Recovery_rejects_forged_operator_claims_without_canonical_operator_role [FAIL]
+  Failed Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(race: "fence") [138 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.StoreConflictException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(String race) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 805
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(race: "person") [7 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.StoreConflictException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(String race) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 805
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(race: "control") [5 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.StoreConflictException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(String race) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 805
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Recovery_rechecks_operator_revocation_during_ledger_scan(inspect: True) [12 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Recovery_rechecks_operator_revocation_during_ledger_scan(Boolean inspect) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 794
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Recovery_rechecks_operator_revocation_during_ledger_scan(inspect: False) [7 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Recovery_rechecks_operator_revocation_during_ledger_scan(Boolean inspect) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 794
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Recovery_rejects_forged_operator_claims_without_canonical_operator_role [6 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Recovery_rejects_forged_operator_claims_without_canonical_operator_role() in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 785
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     6, Passed:     0, Skipped:     0, Total:     6, Duration: 193 ms - Dse.Tests.dll (net10.0)

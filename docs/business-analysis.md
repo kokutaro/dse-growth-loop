@@ -98,6 +98,12 @@ HTTP復旧APIは公開しない。Workerの `--inspect-business-analysis-recover
 
 復旧serviceはrole/tenant/scope、run所有者、run/slot ETag、slotの対象run、全pending予約IDを照合する。保持中のaccess fenceは勝手に解除せず `RECOVERY_REQUIRES_FENCE_RECOVERY` で拒否し、既存の証跡付きfence復旧を別途要求する。対象runの派生候補・集計・manifestを消してabortedにし、対象slotだけreadyに戻し、対象pending予約を全予約額のuncertainとして共通gateから解除する。日/週の金額・tokens/callsは払い戻さず、他runの予約・slotや共有blocked状態は変更しない。単一catalog batchのCASで保存し、安全な参照・digest・結果だけを監査に残す。同じapprovalと同じ要求の再送は同じreceiptを返す。違う証跡/予約/ETagは競合し、AIの自動再試行や再開は起こさない。
 
+Worker入口に加えて復旧service自身も、現在のPersonAuthorityと設定に一致するoperator/analyst・principal・scope・accessEpochを検査する。inspectの出力前、復旧receiptの再読込結果を返す前、復旧batchの直前にも再照合する。正本上のroleを持たない呼出者、失効後の古いactor、役割/本人紐付けが設定と不一致の主体は拒否し、CLIのselectorや過去のreceiptから権限を補わない。
+
+復旧batchにはcontrol・管理者PersonAuthority・解放済みaccess fenceの同値ReplaceをCAS条件として含める。最終検査後に失効・所属変更・別操作のfence取得があれば、復旧のrun/slot/予約/gate更新を一括拒否する。正本のrole/scope/enabled/generation/revision/accessEpochやfenceのholder値は変えず、guard行のETagだけが進むため、別の管理変更には新しいETagを取得する。inspectと同じreceiptの再読込はguard行も書き換えない。fenceが欠損・不正なら `RECOVERY_FENCE_INCONSISTENT`、正本が検査中に変われば失効または `STALE_AUTHORITY`、検査後の競合は `StoreConflictException` とし、停止証拠と状態を再確認する。外部プロセスの終結をこのCASだけで保証したとは扱わない。
+
+正本初期化や復元後にoperatorだけを残した状態では、復旧用analyst権限を自動追加しない。別途確認した管理主体・権限と停止証跡が必要である。[2026-10-17のローカル回帰と受入の残範囲](validation-results/20261017-analysis-recovery-authority/results.md)を参照。
+
 fake輸送とLocalRecordStoreのテストは、Liveモード設定・共有台帳・再起動時再送禁止・不正応答・入力上限・予算停止・timeout保守保持・オフライン復旧のコード契約を確認するためのもの。実AI共通課題判定、事業仮説の品質、実認証とAzureの費用/停止は合格と呼ばない。
 
 識別子検査は許可公開正本に既にあるparticipant/owner/承認者/scope/部署/根拠参照と必要なsession/challenge link、呼出者のIDに限定し、既知literal・email/GUID/内部ID prefix形状を入力/titleと生成本文で拒否する。検査のためにpersonやprivate profile、原チャット、非同意者の資料を追加照会しない。既知でない人名・職務記述による間接特定などの意味的匿名化は保証しない。実社員の匿名ワークスペースを開ける前に、これを別の品質・プライバシー受入条件として検証する。

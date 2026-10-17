@@ -47,4 +47,10 @@ public class BusinessAnalysisCommandTests
         BusinessAnalysisCommands.ValidateRecovery(config,true,false); // inspection neither unlocks nor mutates the run
         Assert.ThrowsAny<Exception>(()=>BusinessAnalysisCommands.ValidateRecovery(config,true,true));
     }
+    [Fact] public void Stop_evidence_digest_with_a_trailing_newline_is_rejected_before_storage()
+    {
+        var values=Settings();values["Recovery:StopEvidenceSha256"]=new string('a',64)+"\n";
+        var config=new ConfigurationBuilder().AddInMemoryCollection(values).Build();
+        Assert.Throws<ArgumentException>(()=>BusinessAnalysisCommands.ValidateRecovery(config,true,true));
+    }
 }

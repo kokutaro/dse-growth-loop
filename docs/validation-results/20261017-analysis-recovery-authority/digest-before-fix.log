@@ -1,0 +1,26 @@
+  Dse.Domain -> /workspace/dse-growth-loop/src/Dse.Domain/bin/Release/net10.0/Dse.Domain.dll
+  Dse.Evaluation -> /workspace/dse-growth-loop/src/Dse.Evaluation/bin/Release/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /workspace/dse-growth-loop/src/Dse.Infrastructure/bin/Release/net10.0/Dse.Infrastructure.dll
+  Dse.Api -> /workspace/dse-growth-loop/src/Dse.Api/bin/Release/net10.0/Dse.Api.dll
+  Dse.Tests -> /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll
+Test run for /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.39]     Dse.Tests.BusinessAnalysisCommandTests.Stop_evidence_digest_with_a_trailing_newline_is_rejected_before_storage [FAIL]
+[xUnit.net 00:00:00.52]     Dse.Tests.BusinessAnalysisTests.Recovery_rejects_a_stop_digest_with_a_trailing_newline_without_writes [FAIL]
+  Failed Dse.Tests.BusinessAnalysisCommandTests.Stop_evidence_digest_with_a_trailing_newline_is_rejected_before_storage [20 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(System.ArgumentException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisCommandTests.Stop_evidence_digest_with_a_trailing_newline_is_rejected_before_storage() in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisCommandTests.cs:line 54
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Dse.Tests.BusinessAnalysisTests.Recovery_rejects_a_stop_digest_with_a_trailing_newline_without_writes [162 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(System.ArgumentException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Recovery_rejects_a_stop_digest_with_a_trailing_newline_without_writes() in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 909
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     2, Passed:     0, Skipped:     0, Total:     2, Duration: 166 ms - Dse.Tests.dll (net10.0)
