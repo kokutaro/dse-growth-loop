@@ -3,6 +3,8 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Pin the patched transitive dependency used by Aspire's local dashboard. -->
+    <PackageReference Include="MessagePack" Version="2.5.303" />
     <ProjectReference Include="../Dse.Api/Dse.Api.csproj" />
     <ProjectReference Include="../Dse.Worker/Dse.Worker.csproj" />
   </ItemGroup>
