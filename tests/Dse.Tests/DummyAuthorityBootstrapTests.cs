@@ -162,6 +162,29 @@ public sealed class DummyAuthorityBootstrapTests
             await inner.CommitAsync(p,writes,ct);throw new IOException("simulated response loss");
         }
     }
+    private sealed class JsonRoundTripStore(IRecordStore inner) : IRecordStore
+    {
+        private static JsonObject Wire(JsonObject value)=>JsonNode.Parse(RecordJson.ToStorage(value).ToJsonString())!.AsObject();
+        private static StoredRecord Read(StoredRecord row)=>new(RecordJson.FromStorage(Wire(row.Value),row.ETag),row.ETag);
+        public async Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)
+        {var row=await inner.ReadAsync(p,id,ct);return row is null?null:Read(row);}
+        public async Task<RecordPage> QueryAsync(RecordPartition p,string kind,string? field,string? parent,int size,string? token,CancellationToken ct)
+        {var page=await inner.QueryAsync(p,kind,field,parent,size,token,ct);return new(page.Items.Select(Read).ToArray(),page.ContinuationToken);}
+        public Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite> writes,CancellationToken ct)=>
+            inner.CommitAsync(p,writes.Select(w=>new RecordWrite(Wire(w.Value),w.IfMatch)).ToArray(),ct);
+    }
+    [Theory][InlineData(false)][InlineData(true)]
+    public async Task Receipt_retry_survives_storage_json_round_trip(bool loseResponse)
+    {
+        var(memory,legacy)=await Legacy();IRecordStore store=new JsonRoundTripStore(memory);var config=Config();
+        config["Bootstrap:ExpectedPlanHash"]=await Plan(store,config);
+        if(loseResponse) await Assert.ThrowsAsync<IOException>(()=>DummyAuthorityBootstrap.RunAsync(new CommitResponseLost(store),config,true,default));
+        else await DummyAuthorityBootstrap.RunAsync(store,config,true,default);
+        var control=(await store.ReadAsync(Partition,AuthorityProvider.ControlId,default))!;
+        Assert.Equal("already_applied",(await DummyAuthorityBootstrap.RunAsync(store,config,true,default)).Text("status"));
+        Assert.Equal(control.ETag,(await store.ReadAsync(Partition,AuthorityProvider.ControlId,default))!.ETag);
+        await Unchanged(memory,legacy);
+    }
     [Fact] public async Task Uncertain_commit_is_resolved_by_receipt_instead_of_recreating_generation()
     {
         var(store,legacy)=await Legacy();var config=Config();config["Bootstrap:ExpectedPlanHash"]=await Plan(store,config);

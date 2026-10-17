@@ -15,7 +15,9 @@ public static class DummyAuthorityBootstrap
     public const string Person = "demo-person-01";
     private static readonly string[] Departments = ["demo-department-a", "demo-department-b"];
     private static readonly DateTimeOffset From = DateTimeOffset.Parse("2026-09-01T00:00:00Z");
-    private static string Hash(JsonObject value) => ConversationService.Hash(RecordJson.Canonical(RecordJson.ToStorage(value)));
+    // Normalize typed DateTimeOffset/scalars through the same JSON boundary as Cosmos before canonicalizing.
+    private static string Hash(JsonObject value) => ConversationService.Hash(RecordJson.Canonical(
+        JsonNode.Parse(RecordJson.ToStorage(value).ToJsonString())));
     private static bool Digest(string? value) => Regex.IsMatch(value ?? "", "\\A[0-9a-f]{64}\\z");
 
     public static void Validate(IConfiguration config, bool apply)

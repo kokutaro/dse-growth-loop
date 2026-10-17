@@ -4,11 +4,12 @@
 
 ## ローカル検証
 
-- .NET 675/675成功。既存647件と新規限定初期化28件を含む。LargeEvaluationのfixture試験を1件含むが、実AI品質・速度の測定ではない。
+- .NET 677/677成功。既存647件と新規限定初期化30件を含む。LargeEvaluationのfixture試験を1件含むが、実AI品質・速度の測定ではない。
 - 93人の旧ダミーprofileを持つstoreでplanが無変更であること、applyが対象1名だけを登録し旧行の内容/ETagを保つことを確認。他92名、旧knowledge token、旧Sessionの参加pinは許可しない。
 - 停止/承認/設定一致/Mock/MI/接続先の前提が欠けた場合、credentialやstorage生成前に拒否。
 - 所有者・scope・有効状態の不一致、profile ETag/承認入力変更後の古いplan、既存正本の存在を拒否。
 - 同じキーの再試行は無変更。失効後の再実行や別キーによるリセットを拒否。transaction応答不明時はreceiptで既存結果を確認し、generationを再生成しない。不完全receiptも成功扱いしない。
+- Copilot指摘の日時JSON表現差を、保存JSONへ正規化してからhash化するよう修正。JSON保存/再読込を模した2ケースで修正前の誤拒否を再現し、通常再試行・commit応答不明後の再試行とも無変更で確認できることを回帰試験した。
 
 ## 実環境との境界
 
