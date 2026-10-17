@@ -4,14 +4,14 @@
   "realAcceptance": false,
   "baselineMain": "ca75ded43bd0a93a73ff58059633bc74ed21e8d4",
   "dotnet": {
-    "total": 628,
-    "passed": 628,
+    "total": 633,
+    "passed": 633,
     "failed": 0,
-    "standardRegression": 627,
+    "standardRegression": 632,
     "largeEvaluationFixture": 1,
-    "authorityTests": 31,
+    "authorityTests": 36,
     "filter": null,
-    "logSha256": "a8928cbfd59ad0c0318d1004251b0179bd93ccd48753d083c1af72e981c7462a"
+    "logSha256": "852c1d2b3a24ab92a9bfcc96d9edb63a88a3a93fc0f18676ece934365180b4ba"
   },
   "python": {
     "scripts": 241,
@@ -60,6 +60,29 @@
       "workspace.spec.ts",
       "workspace-anonymity.spec.ts",
       "identity-disclosure.spec.ts"
+    ]
+  },
+  "firstReviewDotnet": {
+    "total": 628,
+    "passed": 628,
+    "failed": 0,
+    "standardRegression": 627,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 31,
+    "filter": null,
+    "logSha256": "a8928cbfd59ad0c0318d1004251b0179bd93ccd48753d083c1af72e981c7462a"
+  },
+  "secondReviewFollowup": {
+    "priorHead": "660c6811fa5e455326ce1d7c3cca14870b554e01",
+    "copilotFindingsAddressed": 3,
+    "newRegressionCases": 5,
+    "contracts": 20,
+    "targetedE2e": 19,
+    "targetedE2eFailed": 0,
+    "targetedE2eLogSha256": "7be2e4c6390c2048f884d33913e1ceeef329c46208a48b6ff140ecc69ef31303",
+    "suites": [
+      "workspace.spec.ts",
+      "workspace-anonymity.spec.ts"
     ]
   }
 }

@@ -21,6 +21,8 @@ catalogの同一tenant partitionに `authorityControl`、`department`、`personA
 
 参加者のID配列に履歴が残っていても、Sessionの本人epochと現在の正本が一致しなければ会話の読取・送信・AI共有を許可しない。検索候補のopaque tokenも発行時のauthorityTokenと対象epochに固定し、退職→再有効化を挟んだ古い候補から招待できない。
 
+課題と同じcatalog batchで初期化Jobへ作成時の `ownerAccessEpoch` を固定する。Session作成前に中断しても、再開時に新epochを付け直さない。旧epochまたはpinのない未完了Jobは再開を拒否し、新しい活動を作る。依頼者が失効した旧活動は直接アクセスを拒否し、本人の課題・ルーム一覧から除外する。19件の招待上限は新しい参加行に適用し、失効した同一人の行を置き換える再招待では行数を増やさない。
+
 公開同意は元の参加者（退会者を含む）全員が対象、表示名は現在の参加者全員が対象で、混同しない。必要な元参加者が再同意できない場合は公開・分析を停止したままにする。
 
 要約のGETは `reviewedVersion` を返し、request-review/consent/approveで表示済みの同じ値を必須とする。要約版・scope・本文・発生部署snapshot・現authorityTokenに束縛したopaque hashであり、サーバーが新しい版へ黙って同意を付け替えない。旧公開原本の再レビューはdraftへ戻し、同意・承認・activeVersionを消してsource/access版を進める。公開の再承認には全員の新しい公開同意が必要で、分析利用は別の同意値である。

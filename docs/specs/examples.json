@@ -1780,5 +1780,47 @@
         }
       ]
     }
+  },
+  {
+    "name": "session-initialization-pins-owner-epoch",
+    "schema": "Job",
+    "value": {
+      "id": "session-init-example",
+      "kind": "job",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "container": "catalog",
+      "sessionId": null,
+      "jobType": "sessionInitialization",
+      "aggregateId": "challenge-001",
+      "aggregateVersion": 1,
+      "payloadVersion": "1.0",
+      "dedupKey": "sessionInitialization:challenge-001:1",
+      "status": "queued",
+      "attempt": 0,
+      "availableAt": "2026-09-23T00:00:00Z",
+      "leaseUntil": null,
+      "notificationState": "pending",
+      "lastErrorCode": null,
+      "supersedesJobId": null,
+      "resultId": null,
+      "requestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "ownerPersonId": "person-001",
+      "ownerAccessEpoch": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
   }
 ]

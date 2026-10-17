@@ -1790,6 +1790,10 @@
             "threshold"
           ],
           "additionalProperties": false
+        },
+        "ownerAccessEpoch": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
         }
       },
       "required": [
@@ -1836,6 +1840,22 @@
                 "type": "null"
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "jobType": {
+                "const": "sessionInitialization"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "requestHash",
+              "ownerPersonId",
+              "ownerAccessEpoch"
+            ]
           }
         }
       ],

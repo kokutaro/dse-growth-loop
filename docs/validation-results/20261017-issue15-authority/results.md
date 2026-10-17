@@ -26,6 +26,14 @@ PR #43のCopilot指摘2件に対応し、無効化した協力者の保存済み
 
 `workspace.spec.ts`・`workspace-anonymity.spec.ts`・`identity-disclosure.spec.ts` の画面試験21件も修正後にisolated実行し、全件成功した。前節の初回28件とは重複するため、合算した件数として扱わない。
 
+### 第2回レビュー対応
+
+初期化Jobへ所有者の作成時epochを課題と同じbatchで保存し、Session未作成の中断後に失効・復元を挟んでも現在epochを付け直さない。pinのない旧Jobも拒否する。再有効化した依頼者の旧活動はmap更新前に一覧から除外し、新しい活動の取得を妨げない。19件ある招待の同一人置換では上限を適用せず、新しい人の追加は引き続き拒否する。
+
+追加の5ケース（初期化中断後の再有効化・世代更新・pin欠落、匿名HTTP一覧、招待上限）が成功した。第2回修正後の.NET Release全633件（通常回帰632件とLargeEvaluation fixture 1件、部署正本関連36件を含む）と、生成された最新fixtureによる契約20件が成功した。初期化Jobの保存契約・例もepoch pinを必須にした。
+
+第2回修正後の `workspace.spec.ts`・`workspace-anonymity.spec.ts` のisolated E2E19件も成功した。過去の画面試験とは合算しない。
+
 ## クラウド環境での再現条件
 
 SDK 10.0.400、Python 3.12.14、Node 24.19.0、npm 11.9.0を使用した。SDK/cache/CLI設定・展開先はworkspaceまたはtmpであり、ホームディレクトリーの書換えは要求しない。

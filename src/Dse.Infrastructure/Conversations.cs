@@ -84,7 +84,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
                 value["sessionId"] = "session-" + Hash(id); value["analysisConsent"] = "not_granted";
                 value["consentedVersion"] = null; value["accessVersion"] = 1;
                 var job = Jobs.Create(value, "sessionInitialization", now, jobId);
-                job["requestHash"] = fingerprint; job["ownerPersonId"] = actor.PersonId;
+                job["requestHash"] = fingerprint; job["ownerPersonId"] = actor.PersonId; job["ownerAccessEpoch"] = actor.AccessEpoch;
                 await repository.CommitAsync(partition, [RecordWrite.Create(value), RecordWrite.Create(job)], ct);
                 challenge = (await repository.ReadAsync(partition, id, ct))!;
             }
@@ -98,6 +98,10 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
     // Catalog -> conversations is a resumable, deterministic saga, never a cross-container transaction.
     private async Task InitializeAsync(JsonObject challenge, StoredRecord job, CancellationToken ct)
     {
+        var owner = await authority.PersonAsync(challenge.Text("tenantId"), job.Value.Text("ownerPersonId"), ct);
+        if (owner is null || owner.PrincipalId != challenge.Text("ownerId") || !owner.HasRole("member") || !AccessPolicy.InScope(owner,challenge) ||
+            string.IsNullOrEmpty(job.Value.Text("ownerAccessEpoch")) || job.Value.Text("ownerAccessEpoch") != owner.AccessEpoch)
+            throw new DomainException(404,"NOT_FOUND");
         var sid = challenge.Text("sessionId");
         var partition = RecordPartition.Conversation(challenge.Text("tenantId"), sid);
         var existing = await repository.ReadAsync(partition, sid, ct);
@@ -107,9 +111,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
             var session = RecordJson.New("session", sid, challenge.Text("tenantId"), challenge.Text("ownerId"), challenge.Strings("scopeIds"), now);
             session["sessionId"] = sid; session["challengeId"] = challenge.Text("id");
             session["participantIds"] = RecordJson.Array([job.Value.Text("ownerPersonId")]);
-            var owner = await authority.PersonAsync(challenge.Text("tenantId"), job.Value.Text("ownerPersonId"), ct)
-                ?? throw new DomainException(409, "SOURCE_REVOKED");
-            session["participantEpochs"] = new JsonObject { [owner.PersonId] = owner.AccessEpoch };
+            session["participantEpochs"] = new JsonObject { [owner.PersonId] = job.Value.Text("ownerAccessEpoch") };
             session["originalParticipantIds"] = session["participantIds"]!.DeepClone();
             session["membershipVersion"] = 1; session["status"] = "open"; session["aiAssistance"] = "stopped"; session["lastSequence"] = 0;
             try { await repository.CommitAsync(partition, [RecordWrite.Create(session)], ct); }
@@ -197,11 +199,14 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
             if (target is null || person is null || !AccessPolicy.CanUse(actor, person.Value) || !AccessPolicy.InScope(target, session.Value) ||
                 !target.HasRole("member") || input.PersonId == actor.PersonId) throw new DomainException(404, "NOT_FOUND");
             var partition = Partition(actor, sid);
-            var invitations = await repository.QueryAsync(partition, "participation", null, null, 100, null, ct);
-            if (invitations.Items.Length >= 19 || invitations.ContinuationToken is not null) throw new DomainException(409, "PARTICIPANT_LIMIT");
             var id = ParticipationId(input.PersonId);
             var previous = await repository.ReadAsync(partition, id, ct);
             if (previous is not null && previous.Value.Text("accessEpoch") == target.AccessEpoch) throw new DomainException(409, "INVALID_TRANSITION");
+            if (previous is null)
+            {
+                var invitations = await repository.QueryAsync(partition, "participation", null, null, 100, null, ct);
+                if (invitations.Items.Length >= 19 || invitations.ContinuationToken is not null) throw new DomainException(409, "PARTICIPANT_LIMIT");
+            }
             var participation = RecordJson.New("participation", id, actor.TenantId, actor.PrincipalId, session.Value.Strings("scopeIds"), clock.GetUtcNow());
             participation["sessionId"] = sid; participation["challengeId"] = session.Value.Text("challengeId");
             participation["personId"] = input.PersonId; participation["status"] = "requested"; participation["decidedBy"] = null;
