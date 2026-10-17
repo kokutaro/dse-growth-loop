@@ -71,6 +71,11 @@ public sealed class OrganizationService(IPrimaryRepository repository, AccessFen
                     change.SuccessorIds is null || change.SuccessorIds.Length > 20 || change.SuccessorIds.Distinct().Count() != change.SuccessorIds.Length ||
                     change.SuccessorIds.Any(x => !RecordJson.IsId(x) || x == change.Id)) throw new ArgumentException("Invalid department");
                 before = await repository.ReadAsync(partition, AuthorityProvider.DepartmentId(change.Id), token);
+                if (before is null)
+                {
+                    var departments = await repository.QueryAsync(partition,"department",null,null,100,null,token);
+                    if (departments.Items.Length >= 100 || departments.ContinuationToken is not null) throw new DomainException(422,"ORGANIZATION_LIMIT");
+                }
                 if (before is not null && (before.Value["validFrom"]!.GetValue<DateTimeOffset>() != change.ValidFrom ||
                     before.Value["validTo"] is not null && !JsonNode.DeepEquals(before.Value["validTo"], body["validTo"])))
                     throw new DomainException(409, "DEPARTMENT_ID_REUSE");

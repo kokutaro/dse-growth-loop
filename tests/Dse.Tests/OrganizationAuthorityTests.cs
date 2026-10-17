@@ -444,8 +444,12 @@ public sealed class OrganizationAuthorityTests
         await Access(s,false,subject:Owner);await Access(s,true,subject:Owner);
         using var api=Api(s);using var owner=api.CreateClient();
         var created=await Post(owner,"/api/v1/workspace/challenges",new{title="架空の新しい活動",summary="現在の資格で相談する"},null);
+        await Get(owner,"/api/v1/workspace/capabilities");
         var challenge=Assert.Single((await Get(owner,"/api/v1/workspace/challenges"))["items"]!.AsArray())!.AsObject();Assert.Equal(created.Text("id"),challenge.Text("id"));
         var room=Assert.Single((await Get(owner,"/api/v1/workspace/rooms"))["items"]!.AsArray())!.AsObject();Assert.Equal(created.Text("roomId"),room.Text("id"));
+        // Exercise every data read used by Workspace.load; a failed invitation list clears the UI's activities.
+        Assert.Empty((await Get(owner,"/api/v1/workspace/invitations"))["items"]!.AsArray());
+        await Get(owner,"/api/v1/workspace/knowledge");
         Assert.Equal(created.Text("roomId"),(await Get(owner,"/api/v1/workspace/rooms/"+created.Text("roomId"))).Text("id"));
         foreach(var path in new[]{"/api/v1/workspace/challenges/"+s.Challenge,"/api/v1/workspace/rooms/"+s.Room,"/api/v1/workspace/rooms/"+s.Room+"/messages"})
             Assert.Equal(HttpStatusCode.NotFound,(await owner.GetAsync(path)).StatusCode);
@@ -467,5 +471,26 @@ public sealed class OrganizationAuthorityTests
         var invitation=(await s.Repo.ReadAsync(partition,ConversationService.ParticipationId(Guest.PersonId),default))!;Assert.Equal("requested",invitation.Value.Text("status"));
         Assert.Equal(19,(await s.Repo.QueryAsync(partition,"participation",null,null,100,null,default)).Items.Length);
         await s.Chat.DecideAsync(Guest,s.Sid,Key(),invitation.ETag,new("accepted"),default);await s.Chat.SessionAsync(Guest,s.Sid,default);
+    }
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Department_limit_rejects_new_rows_before_any_write_and_keeps_inspect_and_existing_updates_available(bool apply)
+    {
+        var store=new FaultStore();var s=await Create(store,analysisFixtures:false);
+        async Task<JsonObject> Change(string id,bool save,string key)
+        {
+            var control=await s.Authority.ControlAsync("demo",default);
+            var change=new DepartmentChange(id,"架空の上限試験部署",DateTimeOffset.Parse("2026-09-01T00:00:00Z"),null,[],"dummy department limit",AuthorityProvider.Token(control.Value));
+            return await s.Organization.ChangeAsync(Operator,key,control.ETag,new(){["type"]="department",["change"]=JsonSerializer.SerializeToNode(change,Json)},save,default);
+        }
+        for(var i=1;i<=98;i++) await Change("dummy-limit-"+i,true,Key());
+        Assert.Equal(100,(await s.Organization.ReadAsync(Operator,default))["departments"]!.AsArray().Count);
+        var before=await s.Authority.ControlAsync("demo",default);var audits=store.AuditIds.Count;var key=Key();
+        Assert.Equal("ORGANIZATION_LIMIT",(await Assert.ThrowsAsync<DomainException>(()=>Change("dummy-over-limit",apply,key))).Code);
+        Assert.Equal(before.ETag,(await s.Authority.ControlAsync("demo",default)).ETag);Assert.Equal(audits,store.AuditIds.Count);
+        Assert.Null(await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),AuthorityProvider.DepartmentId("dummy-over-limit"),default));
+        Assert.Null(await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),"idempotency-org-"+ConversationService.Hash(Operator.PrincipalId+":"+key),default));
+        await Change("dummy-limit-98",true,Key());
+        Assert.Equal(100,(await s.Organization.ReadAsync(Operator,default))["departments"]!.AsArray().Count);
+        Assert.Equal(before.Value.Number("revision")+1,(await s.Authority.ControlAsync("demo",default)).Value.Number("revision"));
     }
 }

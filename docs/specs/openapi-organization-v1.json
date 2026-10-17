@@ -32,6 +32,9 @@
           },
           "503": {
             "description": "正本不明・maintenance・フェンス閉鎖"
+          },
+          "422": {
+            "description": "ORGANIZATION_LIMIT：部署上限100件。新規追加を拒否し、既存更新と管理読取は維持する"
           }
         }
       }
@@ -120,6 +123,9 @@
           },
           "503": {
             "description": "正本不明・maintenance・フェンス閉鎖"
+          },
+          "422": {
+            "description": "ORGANIZATION_LIMIT：部署上限100件。新規追加を拒否し、既存更新と管理読取は維持する"
           }
         }
       }
@@ -178,6 +184,9 @@
           },
           "503": {
             "description": "正本不明・maintenance・フェンス閉鎖"
+          },
+          "422": {
+            "description": "ORGANIZATION_LIMIT：部署上限100件。新規追加を拒否し、既存更新と管理読取は維持する"
           }
         }
       }

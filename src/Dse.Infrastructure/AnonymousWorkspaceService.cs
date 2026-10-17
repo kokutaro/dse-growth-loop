@@ -294,6 +294,11 @@ public sealed partial class AnonymousWorkspaceService
             var sid = challenge.Value.Text("sessionId");
             await chat.LockedAsync(actor, sid, async () =>
             {
+                if (challenge.Value.Text("ownerId") == actor.PrincipalId)
+                {
+                    try { await chat.SessionAsync(actor,sid,ct); }
+                    catch (DomainException e) when (e.Status == 404) { return false; }
+                }
                 var current = await chat.ChallengeAsync(actor, challenge.Value.Text("id"), ct);
                 var session = (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, sid), sid, ct))!;
                 var map = await EnsureRoomMapAsync(actor, current.Value, session.Value, ct);
