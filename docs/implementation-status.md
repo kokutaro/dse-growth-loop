@@ -1,5 +1,9 @@
 # 初期実装の状況
 
+## 2026-10-17：保存済み分析の主体と設定の整合
+
+資料の同意者とは別の分析主体を使い、設定不一致でも保存結果・根拠・判断/receiptを利用できた20ケースを再現した。分析service内のAuthorityProviderへ設定を一貫して渡し、各入口と現行性検査で正本・現在設定を照合する。別所有者拒否と本文消費0・保存データ無変更を確認する。[ローカル回帰](validation-results/20261017-analysis-reader-authority/results.md)を参照。実認可・同意追加や実分析受入は行っていない。
+
 ## 2026-10-17：事業分析の復旧時認可と競合検知
 
 既存オフライン復旧serviceを強化した。現在の管理者正本と設定を入口・inspect/receipt出力前・保存前に照合し、control/管理者PersonAuthority/access fenceのETagも既存復旧batchへ固定する。失効後の復旧や別処理のfence取得との競合では、run/slot/予約の更新を一括拒否する。元の停止証拠・払い戻し禁止・他run保護を維持し、HTTP復旧APIや実権限の追加はない。[回帰と受入照合](validation-results/20261017-analysis-recovery-authority/results.md)を参照。コードとローカル試験の完了は、実Job/復旧・人の安全レビュー・Issue15/16全体の受入完了を意味しない。

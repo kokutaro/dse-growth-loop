@@ -1,5 +1,11 @@
 # 残Issueの受入条件・計測準備（2026-10-11）
 
+## 2026-10-17：保存済み分析の設定照合を追補
+
+復旧修正PR45はmain `528e117`へマージし、ローカル705件・main CI12件成功を確認した。#15/#16へ証拠と未完了条件を反映し、Openを維持した。
+
+続けて、資料の同意者と異なる分析主体のbinding/role/scope/OID/有効状態が設定と不一致でも、保存済み結果・根拠・判断/receiptを利用できる不足を再現した。[設定付きAuthorityProviderの共通利用と4経路の回帰](validation-results/20261017-analysis-reader-authority/results.md)で修正する。既存の参加者同意・所有者・scope・fence検査を再利用し、認可を設定だけから新設しない。この追補もコード/ローカル検証であり、実Azure・新規権限/同意・恒久展開は実行しない。#15/#16の残る全体受入・人の判断を完了扱いにしない。
+
 ## 2026-10-17：#15/#16のオフライン復旧を優先
 
 main `2f780b1` でopen PRは0件、open Issueは #1/#14/#15/#16/#30〜#35。既存のJob通知漏れ/reconcile・重複通知・リース切れ・明示retry試験と、事業分析の停止/uncertain予約回収を再利用し、[復旧serviceの管理者再照合と保存直前競合の不足](validation-results/20261017-analysis-recovery-authority/results.md)を修正する。偽role、走査中の失効、検査後のcontrol/person/fence変更をローカル故障注入で再現した。新しい復旧経路を作り直さず、既存batchに認可とCASを追加する。

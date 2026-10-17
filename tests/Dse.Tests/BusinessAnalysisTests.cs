@@ -355,7 +355,7 @@ public sealed class BusinessAnalysisTests
         var text = body.ToJsonString();
         foreach (var forbidden in new[] { "sessionId", "principal", "participantIds", "evidenceIds", "demo-approved-evidence", "sourceManifest", "ownerId" }) Assert.DoesNotContain(forbidden, text);
         Assert.Equal("FORBIDDEN", (await Assert.ThrowsAsync<DomainException>(() => s.Service.SourceAsync(Analyst with { Roles = ["member"] }, request.RunId, id, default))).Code);
-        Assert.Equal("NOT_FOUND", (await Assert.ThrowsAsync<DomainException>(() => s.Service.SourceAsync(Analyst with { PrincipalId = "other" }, request.RunId, id, default))).Code);
+        Assert.Equal("AUTHORITY_REVOKED", (await Assert.ThrowsAsync<DomainException>(() => s.Service.SourceAsync(Analyst with { PrincipalId = "other" }, request.RunId, id, default))).Code);
         Assert.Equal("NOT_FOUND", (await Assert.ThrowsAsync<DomainException>(() => s.Service.SourceAsync(Analyst with { ScopeIds = ["outside"] }, request.RunId, id, default))).Code);
         Assert.Equal("NOT_FOUND", (await Assert.ThrowsAsync<DomainException>(() => s.Service.SourceAsync(Analyst, request.RunId, "invented-knowledge", default))).Code);
         await s.Service.ConsumeSourceAsync(Analyst, request.RunId, id, async (dto, ct) =>
@@ -415,11 +415,12 @@ public sealed class BusinessAnalysisTests
     private const string LiveTenant = "11111111-1111-4111-8111-111111111111";
     private static readonly ActorAccess LiveAnalyst = Analyst with { TenantId = LiveTenant };
     private static readonly ActorAccess LiveOperator = Operator with { TenantId = LiveTenant };
+    private static readonly ActorAccess LiveObserver = new(LiveTenant,"principal-observing-analyst","observing-analyst",["member","analyst"],["demo"]);
     private sealed record LiveSetup(string Path, IRecordStore Store, IPrimaryRepository Repo, IConfigurationRoot Config, BusinessAnalysisService Service, WireFake Wire) : IDisposable
     {
         public void Dispose() { if (Directory.Exists(Path)) Directory.Delete(Path, true); }
     }
-    private static async Task<LiveSetup> CreateLive(string variation = "success", bool recoveryOperator = false)
+    private static async Task<LiveSetup> CreateLive(string variation = "success", bool recoveryOperator = false, bool observingAnalyst = false)
     {
         var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dse-analysis-fake-" + Guid.NewGuid().ToString("N"));
         IRecordStore store = new OperationMeasuredRecordStore(new LocalRecordStore(new LocalIngestionFiles(path))); var repo = new PrimaryRepository(store);
@@ -443,12 +444,14 @@ public sealed class BusinessAnalysisTests
             config[$"Auth:Grants:{i}:PrincipalId"] = "principal-demo-"+suffix; config[$"Auth:Grants:{i}:ScopeIds:0"] = "demo";
         }
         config["Auth:Bindings:0:Roles:1"] = "analyst";
-        if(recoveryOperator)
+        if(recoveryOperator || observingAnalyst)
         {
+            Assert.False(recoveryOperator && observingAnalyst);
+            var additional=recoveryOperator?LiveOperator:LiveObserver;
             config["Auth:Bindings:2:TenantId"]=LiveTenant;config["Auth:Bindings:2:Oid"]="33333333-3333-4333-8333-000000000003";
-            config["Auth:Bindings:2:PrincipalId"]=LiveOperator.PrincipalId;config["Auth:Bindings:2:PersonId"]=LiveOperator.PersonId;
-            config["Auth:Bindings:2:Enabled"]="true";config["Auth:Bindings:2:Roles:0"]="operator";config["Auth:Bindings:2:Roles:1"]="analyst";
-            config["Auth:Grants:2:PrincipalId"]=LiveOperator.PrincipalId;config["Auth:Grants:2:ScopeIds:0"]="demo";
+            config["Auth:Bindings:2:PrincipalId"]=additional.PrincipalId;config["Auth:Bindings:2:PersonId"]=additional.PersonId;
+            config["Auth:Bindings:2:Enabled"]="true";config["Auth:Bindings:2:Roles:0"]=additional.Roles[0];config["Auth:Bindings:2:Roles:1"]=additional.Roles[1];
+            config["Auth:Grants:2:PrincipalId"]=additional.PrincipalId;config["Auth:Grants:2:ScopeIds:0"]="demo";
         }
         await AuthorityFixture.InitializeAsync(store,config,LiveTenant);
         await BusinessAnalysisDemoFixtures.SeedAsync(store, default, LiveTenant);
@@ -908,6 +911,61 @@ public sealed class BusinessAnalysisTests
         var before=await RecoveryState(s,run.RunId);var input=RecoveryRequest(inspection,run.RunId);
         await Assert.ThrowsAsync<ArgumentException>(()=>recovery.RecoverAsync(Operator,input with{StopEvidenceSha256=input.StopEvidenceSha256+"\n"},default));
         await RecoveryUnchanged(s,before);
+    }
+    [Theory]
+    [InlineData("roles","result")][InlineData("roles","source")][InlineData("roles","decision")][InlineData("roles","decision_receipt")]
+    [InlineData("scope","result")][InlineData("scope","source")][InlineData("scope","decision")][InlineData("scope","decision_receipt")]
+    [InlineData("principal","result")][InlineData("principal","source")][InlineData("principal","decision")][InlineData("principal","decision_receipt")]
+    [InlineData("oid","result")][InlineData("oid","source")][InlineData("oid","decision")][InlineData("oid","decision_receipt")]
+    [InlineData("disabled","result")][InlineData("disabled","source")][InlineData("disabled","decision")][InlineData("disabled","decision_receipt")]
+    public async Task Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(string change,string action)
+    {
+        using var s=await CreateLive(observingAnalyst:true);var request=LiveRequest();
+        var actor=(await new AuthorityProvider(s.Repo,s.Config).PersonAsync(LiveTenant,LiveObserver.PersonId,default))!;
+        var result=await s.Service.StartAsync(actor,request,request.RunId,default);
+        Assert.Equal("completed",result.Text("status"));Assert.NotEmpty(result["groups"]!.AsArray());
+        var before=await s.Service.GetAsync(actor,request.RunId,default);Assert.Equal("completed",before.Text("status"));
+        var knowledge=KnowledgeService.Id("demo-business-session-1");await s.Service.SourceAsync(actor,request.RunId,knowledge,default);
+        var input=new BusinessAnalysisDecision("on_hold");var key="reader-decision-"+Guid.NewGuid().ToString("N");var etag=before.Text("etag");
+        if(action=="decision_receipt")await s.Service.DecideAsync(actor,request.RunId,input,key,etag,default);
+        var p=RecordPartition.Catalog(LiveTenant);var id=BusinessAnalysisService.StorageId(actor.PrincipalId,request.RunId);
+        var saved=(await s.Store.ReadAsync(p,id,default))!;var receipts=(await Rows(s,"idempotency")).Items;
+        var control=(await s.Store.ReadAsync(p,AuthorityProvider.ControlId,default))!;
+        var person=(await s.Store.ReadAsync(p,AuthorityProvider.PersonId(actor.PersonId),default))!;
+        Dictionary<string,string?> original=[];
+        void Set(string setting,string value){original[setting]=s.Config[setting];s.Config[setting]=value;}
+        if(change=="roles")Set("Auth:Bindings:2:Roles:1","publisher");
+        else if(change=="scope")Set("Auth:Grants:2:ScopeIds:0","outside");
+        else if(change=="disabled")Set("Auth:Bindings:2:Enabled","false");
+        else if(change=="oid")Set("Auth:Bindings:2:Oid","44444444-4444-4444-8444-000000000004");
+        else{Set("Auth:Bindings:2:PrincipalId","principal-rebound-observer");Set("Auth:Grants:2:PrincipalId","principal-rebound-observer");}
+        var consumed=false;
+        Task<JsonObject> Consume(JsonObject body,CancellationToken _){consumed=true;return Task.FromResult(body);}
+        Task<JsonObject> Attempt()=>action switch
+        {
+            "result"=>s.Service.ConsumeAsync(actor,request.RunId,Consume,default),
+            "source"=>s.Service.ConsumeSourceAsync(actor,request.RunId,knowledge,Consume,default),
+            _=>s.Service.DecideAsync(actor,request.RunId,input,key,etag,default)
+        };
+        Assert.Equal("AUTHORITY_REVOKED",(await Assert.ThrowsAsync<DomainException>(Attempt)).Code);Assert.False(consumed);
+        var after=(await s.Store.ReadAsync(p,id,default))!;Assert.Equal(saved.ETag,after.ETag);Assert.True(JsonNode.DeepEquals(saved.Value,after.Value));
+        Assert.Equal(receipts.Select(x=>x.ETag),(await Rows(s,"idempotency")).Items.Select(x=>x.ETag));
+        Assert.Equal(control.ETag,(await s.Store.ReadAsync(p,AuthorityProvider.ControlId,default))!.ETag);
+        Assert.Equal(person.ETag,(await s.Store.ReadAsync(p,AuthorityProvider.PersonId(actor.PersonId),default))!.ETag);
+        foreach(var(setting,value) in original)s.Config[setting]=value;
+        Assert.Equal("completed",(await s.Service.GetAsync(actor,request.RunId,default)).Text("status"));
+        Assert.Equal(1,s.Wire.Calls);
+    }
+    [Fact] public async Task Valid_separate_analyst_still_cannot_read_or_decide_another_owners_analysis()
+    {
+        using var s=await CreateLive(observingAnalyst:true);var request=LiveRequest();var result=await StartLive(s,request);
+        var viewer=(await new AuthorityProvider(s.Repo,s.Config).PersonAsync(LiveTenant,LiveObserver.PersonId,default))!;
+        var consumed=false;Task<JsonObject> Consume(JsonObject body,CancellationToken _){consumed=true;return Task.FromResult(body);}
+        Assert.Equal("NOT_FOUND",(await Assert.ThrowsAsync<DomainException>(()=>s.Service.ConsumeAsync(viewer,request.RunId,Consume,default))).Code);
+        Assert.Equal("NOT_FOUND",(await Assert.ThrowsAsync<DomainException>(()=>s.Service.ConsumeSourceAsync(viewer,request.RunId,KnowledgeService.Id("demo-business-session-1"),Consume,default))).Code);
+        Assert.Equal("NOT_FOUND",(await Assert.ThrowsAsync<DomainException>(()=>s.Service.DecideAsync(viewer,request.RunId,new("on_hold"),Guid.NewGuid().ToString("N"),result.Text("etag"),default))).Code);
+        Assert.False(consumed);Assert.Equal(1,s.Wire.Calls);
+        Assert.Equal(result.Text("etag"),(await s.Service.GetAsync(LiveAnalyst,request.RunId,default)).Text("etag"));
     }
 
 }
