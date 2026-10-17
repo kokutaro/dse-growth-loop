@@ -2,6 +2,27 @@ using Dse.Infrastructure;
 using Dse.Domain;
 
 var command = args.Length == 0 ? "--consume" : args[0];
+if (args.Length == 1 && command is "--dummy-authority-plan" or "--dummy-authority-apply")
+{
+    var bootstrap = Host.CreateApplicationBuilder([]);
+    using var deadline = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+    try
+    {
+        Console.WriteLine("DummyAuthorityBootstrap " + (await DummyAuthorityBootstrap.RunAzureAsync(bootstrap.Configuration,
+            command == "--dummy-authority-apply", deadline.Token)).ToJsonString());
+    }
+    catch (Exception e)
+    {
+        // No Cosmos response body, endpoint, binding, credential or exception message in CLI output.
+        Console.WriteLine("DummyAuthorityBootstrap " + new System.Text.Json.Nodes.JsonObject
+        {
+            ["status"] = "failed", ["errorCode"] = e is DomainException d ? d.Code : "DUMMY_BOOTSTRAP_FAILED",
+            ["exceptionClass"] = e.GetType().Name
+        }.ToJsonString());
+        Environment.ExitCode = 1;
+    }
+    return;
+}
 if (args.Length == 1 && command.StartsWith("--organization-", StringComparison.Ordinal))
 {
     var local = Host.CreateApplicationBuilder([]);

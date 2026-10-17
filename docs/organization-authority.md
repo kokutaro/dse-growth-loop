@@ -65,6 +65,32 @@ enabled・binding・role・scope変更はHTTPへ公開せず、停止下の `--o
 
 同じDB内の増分値だけで、未申告のDB全体巻戻りを自動検出することはできない。世代更新を省略した復元を安全化したとは扱わない。maintenanceの復旧や実データを保持するオンライン復元は、停止証拠・権限再確認・復元対象外の世代アンカーを含む別の受入が必要である。
 
+## 承認済みAzureダミー環境の限定初期化
+
+`--dummy-authority-plan` / `--dummy-authority-apply` は、旧ダミー人物はあるが正本が全くない停止済みAzure環境に限る。通常起動・一般seed・復元CLIとは別で、対象DBは `dse-growth-loop`、catalogの設定済みtenant区画、人物は `demo-person-01` に固定する。既存人物の所有者と既存bindingを照合し、既存roleがmember/operator/publisher、grantが同じ人物へ対応する場合だけ実行できる。analystや他の人物の資格を追加しない。API/Worker/他Manual Jobの停止と、各実行設定のbinding/role/scope一致は作業者が事前確認する。フラグだけでAzureの停止状態を自動検出する機能ではない。
+
+MIのみでCosmosに接続し、AI・KeyVault・queue・blob・既存データ削除を呼ばない。次の設定を明示し、既存のCosmos/tenant/MI/binding/grantを維持する。
+
+```sh
+export Data__Mode=Azure Ai__Mode=Mock
+export AiUsage__Stopped=true AiUsage__LiveOptIn=false
+export Bootstrap__Approved=true Bootstrap__DummyOnly=true
+export Bootstrap__ApiStopped=true Bootstrap__WorkerStopped=true Bootstrap__JobsStopped=true
+export Bootstrap__ConfigurationMatched=true
+export Bootstrap__ApprovalReference=approved-dummy-bootstrap
+export Bootstrap__IdempotencyKey=unique-dummy-bootstrap-key
+dotnet Dse.Worker.dll --dummy-authority-plan
+# 秘密値を含まないplanHashを確認して、その値を設定する。
+export Bootstrap__ExpectedPlanHash='<planHash>'
+dotnet Dse.Worker.dll --dummy-authority-apply
+```
+
+planは読取専用。applyは同じ設定・所有者・profile ETagから作ったplanHashを要求し、control1件・架空部署2件・対象personAuthority1件・監査1件・冪等receipt1件を同じcatalog transactionでcreateする。新generation/accessEpochを使う。旧人物・knowledge・投影・同意・活動参加・AI履歴の内容とETagを変更せず、旧同意/token/参加epochを新世代へ補填しない。残りの人物は正本未登録のため利用不可のままである。旧活動を継続する移行機能ではなく、新しい活動と再同意が必要になる。
+
+既存control・部署・personAuthorityが1件でもあれば、上書きや世代リセットを拒否する。同じキーの再実行はreceiptと作成済み行のhashを確認して無変更で返す。行が失効・変更されていれば再有効化せず拒否する。transaction応答が不明でも、同じキーで結果を確認してから次操作を判断する。CLIはplanHash・固定dummy ID・件数・結果コードのみ出力し、OID、principal、本文、secret、SDK例外本文を出力しない。
+
+このCLIの存在は実行承認ではない。実環境への投入と有料AI試験は対象・影響を示した明示承認が必要。Azure RBAC、Entra、ネットワーク設定を変更しない。
+
 ## 環境互換と残る受入
 
 Aspireは開発機のOS用Dashboard/DCPを暗黙参照するため、Linux x64では `src/Dse.AppHost/packages.linux-x64.lock.json` を使う。既存 `packages.lock.json` は変更しない。差はOSX arm64の2パッケージをLinux x64の2パッケージへ置き換えた点だけで、共通依存の版・hashは同一。Linuxのlocked restoreを検証し、Mac/Windows用の従来の選択は変えない。この作業でMac/Windowsの実行成功を新たに測定したとは扱わない。
