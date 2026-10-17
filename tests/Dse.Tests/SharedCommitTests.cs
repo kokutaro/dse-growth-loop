@@ -7,6 +7,13 @@ namespace Dse.Tests;
 
 public class SharedCommitTests
 {
+    private sealed class GroundedRanker : IReranker
+    {
+        public Task<AiResult<Ranking>> RerankAsync(AiContext context, string query, CancellationToken ct) =>
+            Task.FromResult(new AiResult<Ranking>(AiStatus.Succeeded,
+                new(context.Candidates.Select(c => new RankedCandidate(c.Id, c.SourceRefs[0].Text, [c.SourceRefs[0].Id])).ToArray()),
+                "fake-search-to-share", null));
+    }
     private const string Tenant = "11111111-1111-4111-8111-111111111111";
     [Theory]
     [InlineData(false, false, false, null)]
@@ -34,8 +41,15 @@ public class SharedCommitTests
         var identities = new IdentityResolver(new ConfigurationBuilder().AddInMemoryCollection(settings).Build());
         var actor = identities.ResolvePerson(Tenant, "person-0")!;
         var service = new SourceUseService(repo, guard, fence, identities);
-        var units = await new MemoryProjectionRepository(store).FindAsync(new([], [], ["引き継ぎ"]), actor.Search, default);
-        var source = await guard.RequireAsync(actor, units.Single(u => u.EntityType == "knowledge"), default);
+        var config = new ConfigurationBuilder().Build();
+        var search = new NaturalSearchService(new MemoryProjectionRepository(store), repo, guard, fence, null!, new GroundedRanker(), config, TimeProvider.System);
+        NaturalSearchResponse? found = null;
+        await search.SearchAndConsumeAsync(new("引き継ぎ", new([], [], ["引き継ぎ"]), "knowledge"), actor,
+            (response, _) => { found = response; return Task.CompletedTask; }, default);
+        Assert.Equal("succeeded", found!.RerankingStatus);
+        var unit = Assert.Single(found.Primary.Candidates).Units[0];
+        Assert.Equal("knowledge", unit.EntityType);
+        var source = await guard.RequireAsync(actor, unit, default);
         var session = PersistenceTests.Example("Session"); session["tenantId"] = Tenant;
         session["participantIds"] = RecordJson.Array(["person-0", "person-1"]);
         var partition = RecordPartition.Conversation(Tenant, session.Text("id"));
