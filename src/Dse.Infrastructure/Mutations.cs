@@ -82,6 +82,7 @@ public sealed class ProfileService(IPrimaryRepository repository, AccessFence fe
         IdempotencyExecutor.ValidateHeaders(key, etag, true);
         return fence.RunAsync(actor.TenantId, async token =>
         {
+            actor = await new AuthorityProvider(repository).RequireAsync(actor, token);
             var partition = RecordPartition.Catalog(actor.TenantId);
             var person = await repository.ReadAsync(partition, id, token) ?? throw new DomainException(404, "NOT_FOUND");
             AccessPolicy.RequireSelf(actor, person.Value);

@@ -121,7 +121,17 @@ app.Use(async (context, next) =>
 {
     if (context.Request.Path.StartsWithSegments("/api") && context.Request.Path != "/api/config")
     {
-        var actor = demo ? DemoActor.Resolve(context) : new IdentityResolver(builder.Configuration).Resolve(context.User);
+        if (!demo)
+        {
+            var configured = new IdentityResolver(builder.Configuration).Resolve(context.User);
+            WorkspaceIsolation.Require(configured, context.Request.Path.Value ?? "", false,
+                context.GetEndpoint()?.Metadata.GetMetadata<LegacyWorkspaceEndpoint>() is not null);
+            if ((context.Request.Path == "/api/search" || context.Request.Path.StartsWithSegments("/api/v2/search")) && !configured.HasRole("member"))
+                throw new DomainException(403, "FORBIDDEN");
+        }
+        var authority = context.RequestServices.GetRequiredService<AuthorityProvider>();
+        var actor = demo ? await authority.RequireAsync(DemoActor.Resolve(context), context.RequestAborted)
+            : await authority.ClaimsAsync(context.User.FindFirst("tid")?.Value ?? "", context.User.FindFirst("oid")?.Value ?? "", context.RequestAborted);
         context.Items[typeof(ActorAccess)] = actor;
         WorkspaceIsolation.Require(actor, context.Request.Path.Value ?? "", demo,
             context.GetEndpoint()?.Metadata.GetMetadata<LegacyWorkspaceEndpoint>() is not null);
@@ -139,6 +149,7 @@ legacyRecords.MapKnowledge();
 records.MapBusinessAnalysis();
 records.MapAnonymousWorkspace();
 records.MapIdentityDisclosure();
+records.MapOrganization();
 records.MapGet("/operation-measurements", (HttpContext context, Dse.Api.OperationMeasurementBuffer measurements) =>
 {
     if (!RecordEndpoints.Actor(context).HasRole("operator")) throw new DomainException(403, "FORBIDDEN");

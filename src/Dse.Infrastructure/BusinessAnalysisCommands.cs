@@ -17,7 +17,9 @@ public static class BusinessAnalysisCommands
             if (!development || config["Recovery:LocalOperatorConfirmed"] != "true" || tenant != "demo" ||
                 string.IsNullOrWhiteSpace(config["Data:LocalPath"]))
                 throw new DomainException(403, "LOCAL_RECOVERY_NOT_CONFIRMED");
-            // Explicit console permission for dummy local records; never used by the HTTP Demo identity.
+            // Preflight identity selector only. Worker must resolve its current canonical authority.
+            if (person == "dummy-operator") return new("demo","principal-dummy-operator","dummy-operator",["operator","analyst"],["demo"]);
+            // Never used by the HTTP Demo identity.
             actor = IdentityResolver.DemoPerson(person!) is { } local ? local with { Roles = ["operator", "analyst"] } : null;
         }
         else actor = new IdentityResolver(config).ResolvePerson(tenant, person!);

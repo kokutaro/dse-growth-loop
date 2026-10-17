@@ -14,29 +14,22 @@ public sealed class IdentityDisclosureService(IPrimaryRepository repository, Ano
 
     // Production resolutions are recreated from the current binding/grant configuration,
     // so disabling an account or changing a grant invalidates previously issued consent.
-    private ActorAccess? Identity(string tenant, string person)
+    private Task<ActorAccess?> Identity(string tenant, string person, CancellationToken ct) =>
+        new AuthorityProvider(repository,configuration).PersonAsync(tenant, person, ct);
+    private async Task<ActorAccess> CurrentActor(ActorAccess actor, CancellationToken ct)
     {
-        if (configuration["Data:Mode"] == "Demo" && tenant == "demo") return IdentityResolver.DemoPerson(person);
-        return new IdentityResolver(configuration).ResolvePerson(tenant, person);
-    }
-    private ActorAccess CurrentActor(ActorAccess actor)
-    {
-        var current = Identity(actor.TenantId, actor.PersonId);
-        if (current is null || current.PrincipalId != actor.PrincipalId || !current.HasRole("member") || !actor.HasRole("member"))
-            throw new DomainException(404, "NOT_FOUND");
-        var scopes = current.ScopeIds.Intersect(actor.ScopeIds, StringComparer.Ordinal).ToArray();
-        if (scopes.Length == 0) throw new DomainException(404, "NOT_FOUND");
-        return current with { ScopeIds = scopes };
+        try { return await new AuthorityProvider(repository,configuration).RequireAsync(actor, ct); }
+        catch (DomainException e) when (e.Status == 403) { throw new DomainException(404,"NOT_FOUND"); }
     }
     private async Task<Snapshot> SnapshotAsync(ActorAccess actor, string publicRoomId, CancellationToken ct)
     {
-        var room = await workspace.ResolveIdentityConsentRoomAsync(CurrentActor(actor), publicRoomId, ct);
-        var session = await chat.SessionAsync(CurrentActor(actor), room.SessionId, ct);
+        var room = await workspace.ResolveIdentityConsentRoomAsync(await CurrentActor(actor, ct), publicRoomId, ct);
+        var session = await chat.SessionAsync(await CurrentActor(actor, ct), room.SessionId, ct);
         var state = session.Value["identityDisclosure"] as JsonObject;
         var members = session.Value.Strings("participantIds").Order(StringComparer.Ordinal).ToArray();
         var fingerprint = new JsonObject
         {
-            ["room"] = publicRoomId, ["session"] = room.SessionId, ["membership"] = session.Value.Number("membershipVersion"),
+            ["authorityToken"] = AuthorityProvider.Token((await new AuthorityProvider(repository,configuration).ControlAsync(actor.TenantId, ct)).Value), ["room"] = publicRoomId, ["session"] = room.SessionId, ["membership"] = session.Value.Number("membershipVersion"),
             ["scopeIds"] = session.Value["scopeIds"]?.DeepClone(), ["status"] = session.Value.Text("status"),
             ["generation"] = state?.Text("generation") ?? "initial", ["fieldSet"] = IdentityDisclosureConsent.DisplayNameFieldSet
         };
@@ -44,7 +37,7 @@ public sealed class IdentityDisclosureService(IPrimaryRepository repository, Ano
         var eligible = members.Length >= 2 && room.Participants.Length == members.Length;
         foreach (var personId in members)
         {
-            var identity = Identity(actor.TenantId, personId);
+            var identity = await Identity(actor.TenantId, personId, ct);
             var person = await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), personId, ct);
             // Keep all current profile content in the private fingerprint, never the public DTO.
             var row = new JsonObject { ["person"] = personId, ["profile"] = person?.Value.DeepClone(),
@@ -53,6 +46,7 @@ public sealed class IdentityDisclosureService(IPrimaryRepository repository, Ano
                     .SingleOrDefault(b => b.Enabled && b.TenantId == actor.TenantId && b.PersonId == personId), ProjectionRules.Json) };
             people.Add(row);
             var valid = identity is not null && person is not null && identity.HasRole("member") &&
+                session.Value["participantEpochs"]?[personId]?.GetValue<string>() == identity.AccessEpoch &&
                 person.Value.Text("kind") == "person" && person.Value.Text("id") == personId &&
                 person.Value.Text("ownerId") == identity.PrincipalId && AccessPolicy.InScope(identity, session.Value) &&
                 AccessPolicy.InScope(identity, person.Value) && AccessPolicy.InScope(actor, person.Value) &&
@@ -91,7 +85,7 @@ public sealed class IdentityDisclosureService(IPrimaryRepository repository, Ano
     private Task<T> LockedAsync<T>(ActorAccess actor, string publicRoomId, Func<CancellationToken, Task<T>> action, CancellationToken ct)
         => fence.RunAsync(actor.TenantId, async token =>
         {
-            var room = await workspace.ResolveIdentityConsentRoomAsync(CurrentActor(actor), publicRoomId, token);
+            var room = await workspace.ResolveIdentityConsentRoomAsync(await CurrentActor(actor, token), publicRoomId, token);
             return await chat.LockedAsync(actor, room.SessionId, () => action(token), token);
         }, ct);
 

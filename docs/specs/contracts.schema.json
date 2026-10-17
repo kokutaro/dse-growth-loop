@@ -2458,6 +2458,10 @@
         "accessVersion": {
           "type": "integer",
           "minimum": 1
+        },
+        "creatorPersonId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
         }
       },
       "required": [
@@ -2512,6 +2516,10 @@
         "sessionId": {
           "type": "string",
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "accessEpoch": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
         }
       },
       "required": [
@@ -2642,6 +2650,21 @@
             "consents"
           ],
           "additionalProperties": false
+        },
+        "participantEpochs": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{32}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "maxProperties": 20
         }
       },
       "required": [
@@ -4657,6 +4680,10 @@
           "minItems": 0,
           "maxItems": 20,
           "uniqueItems": true
+        },
+        "authorityToken": {
+          "type": "string",
+          "maxLength": 64
         }
       },
       "required": [
@@ -4764,6 +4791,10 @@
                 "at": {
                   "type": "string",
                   "format": "date-time"
+                },
+                "authorityToken": {
+                  "type": "string",
+                  "maxLength": 64
                 }
               },
               "required": [
@@ -4836,6 +4867,14 @@
             }
           },
           "additionalProperties": false
+        },
+        "authorityToken": {
+          "type": "string",
+          "minLength": 34,
+          "maxLength": 64
+        },
+        "departmentSnapshot": {
+          "$ref": "#/$defs/DepartmentSnapshot"
         }
       },
       "required": [
@@ -4981,6 +5020,14 @@
               "confirmedAt": {
                 "type": "string",
                 "format": "date-time"
+              },
+              "authorityToken": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "accessEpoch": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{32}$"
               }
             },
             "required": [
@@ -5014,6 +5061,10 @@
                 "at": {
                   "type": "string",
                   "format": "date-time"
+                },
+                "authorityToken": {
+                  "type": "string",
+                  "maxLength": 64
                 }
               },
               "required": [
@@ -5096,6 +5147,14 @@
             }
           },
           "additionalProperties": false
+        },
+        "authorityToken": {
+          "type": "string",
+          "minLength": 34,
+          "maxLength": 64
+        },
+        "departmentSnapshot": {
+          "$ref": "#/$defs/DepartmentSnapshot"
         }
       },
       "required": [
@@ -5260,6 +5319,256 @@
         "sourceVersion"
       ],
       "additionalProperties": false
+    },
+    "AuthorityControl": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "authorityControl"
+        },
+        "generation": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "enum": [
+            "active",
+            "maintenance"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "generation",
+        "revision",
+        "state"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "Department": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "department"
+        },
+        "departmentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validTo": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "successorIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "kind",
+        "departmentId",
+        "name",
+        "validFrom",
+        "validTo",
+        "successorIds",
+        "reason"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "PersonAuthority": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "personAuthority"
+        },
+        "personId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "oid": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "member",
+              "operator",
+              "publisher",
+              "analyst"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "generation": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "accessEpoch": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "departmentTerms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "termId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "departmentId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "from": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "to": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "termId",
+              "departmentId",
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "kind",
+        "personId",
+        "principalId",
+        "oid",
+        "enabled",
+        "roles",
+        "generation",
+        "accessEpoch",
+        "departmentTerms"
+      ],
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ]
+    },
+    "DepartmentSnapshot": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "departmentId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "termId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "asOf": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "source": {
+              "const": "manual-dummy-authority-v1"
+            },
+            "generation": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "departmentId",
+            "termId",
+            "asOf",
+            "source",
+            "generation",
+            "revision"
+          ],
+          "additionalProperties": false
+        }
+      ]
     }
   },
   "oneOf": [

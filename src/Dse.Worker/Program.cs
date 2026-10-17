@@ -2,6 +2,13 @@ using Dse.Infrastructure;
 using Dse.Domain;
 
 var command = args.Length == 0 ? "--consume" : args[0];
+if (args.Length == 1 && command.StartsWith("--organization-", StringComparison.Ordinal))
+{
+    var local = Host.CreateApplicationBuilder([]);
+    using var deadline = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+    await OrganizationCommands.RunAsync(command, local.Configuration, local.Environment.IsDevelopment(), deadline.Token);
+    return;
+}
 if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--chat-smoke" or "--connection-smoke" or "--recover-ai-slot" or "--publish-knowledge" or "--analyze-business" or "--inspect-business-analysis-recovery" or "--recover-business-analysis"))
     throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --connection-smoke / --recover-ai-slot / --publish-knowledge / --analyze-business / --inspect-business-analysis-recovery / --recover-business-analysis");
 var builder = Host.CreateApplicationBuilder([]);
@@ -37,16 +44,16 @@ switch (command)
             !DateTimeOffset.TryParse(builder.Configuration["BusinessAnalysis:Cutoff"], System.Globalization.CultureInfo.InvariantCulture,
                 System.Globalization.DateTimeStyles.RoundtripKind, out var cutoff))
             throw new ArgumentException("BusinessAnalysis__PersonId / RunId / Cutoff are required");
-        var analysisActor = builder.Configuration["Data:Mode"] == "Demo"
-            ? IdentityResolver.DemoPerson(analysisPerson) ?? throw new DomainException(403, "FORBIDDEN")
-            : host.Services.GetRequiredService<IdentityResolver>().ResolvePerson(tenant, analysisPerson) ?? throw new DomainException(403, "FORBIDDEN");
+        var analysisActor = await host.Services.GetRequiredService<AuthorityProvider>().PersonAsync(tenant,analysisPerson,ct) ?? throw new DomainException(403,"FORBIDDEN");
         var analysis = await host.Services.GetRequiredService<BusinessAnalysisService>().StartAsync(analysisActor,
             new(analysisRun!, cutoff, BusinessAnalysisLiveRuntime.ConfigVersion(builder.Configuration)), analysisRun!, ct);
         Console.WriteLine($"Analysis run={analysis.Text("runId")} status={analysis.Text("status")} mode={analysis.Text("processingMode")}");
         break;
     case "--inspect-business-analysis-recovery":
     case "--recover-business-analysis":
-        var recoveryActor = BusinessAnalysisCommands.RecoveryActor(builder.Configuration, builder.Environment.IsDevelopment(), tenant);
+        var recoverySelector = BusinessAnalysisCommands.RecoveryActor(builder.Configuration, builder.Environment.IsDevelopment(), tenant);
+        var recoveryActor = await host.Services.GetRequiredService<AuthorityProvider>().RequireAsync(recoverySelector,ct);
+        if (!recoveryActor.HasRole("operator") || !recoveryActor.HasRole("analyst")) throw new DomainException(403,"FORBIDDEN");
         var recovery = host.Services.GetRequiredService<BusinessAnalysisRecovery>();
         if (command == "--inspect-business-analysis-recovery")
         {

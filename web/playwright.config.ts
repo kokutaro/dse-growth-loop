@@ -4,6 +4,9 @@ export default defineConfig({
   // Tests update the same seeded identities and use one in-memory API instance.
   workers: 1,
   use: {
+    // Optional local browser when the pinned download CDN is unavailable.
+    // CI leaves this unset and continues using Playwright's pinned Chromium.
+    launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH },
     baseURL: "http://127.0.0.1:5173",
     viewport: { width: 1280, height: 900 },
   },

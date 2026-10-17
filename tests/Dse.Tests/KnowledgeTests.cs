@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Dse.Domain;
 using Dse.Infrastructure;
@@ -71,8 +72,13 @@ public class KnowledgeTests
         Assert.Equal(1, await s.Service.RecoverAsync("demo", s.Sid, default));
         Assert.Single((await store.QueryAsync(RecordPartition.Catalog("demo"), "searchUnit", "entityId", KnowledgeService.Id(s.Sid), 100, null, default)).Items);
     }
-    private static async Task<JsonObject> Change(Setup s, ActorAccess a, string op, object input) => await s.Service.ChangeAsync(a, s.Sid, op, Key(),
-        (await s.Service.StateAsync(a, s.Sid, default)).Text("etag"), System.Text.Json.JsonSerializer.SerializeToNode(input, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web))!.AsObject(), default);
+    private static async Task<JsonObject> Change(Setup s, ActorAccess a, string op, object input)
+    {
+        var state = await s.Service.StateAsync(a,s.Sid,default);
+        var body = JsonSerializer.SerializeToNode(input,new JsonSerializerOptions(JsonSerializerDefaults.Web))!.AsObject();
+        if (op is "request-review" or "consent" or "approve") body["reviewedVersion"] = state.Text("reviewedVersion");
+        return await s.Service.ChangeAsync(a,s.Sid,op,Key(),state.Text("etag"),body,default);
+    }
     private static async Task<JsonObject> Review(Setup s)
     {
         await Change(s, Owner, "outcome", new { resolution = "unresolved", result = "原因は未解決" });
@@ -205,7 +211,7 @@ public class KnowledgeTests
     public async Task Same_request_replays_and_payload_changes_or_stale_ETag_are_rejected()
     {
         var s = await Create(); await Review(s); var state = await s.Service.StateAsync(Owner, s.Sid, default);
-        var key = Key(); var input = new JsonObject { ["version"] = state.Number("sourceVersion"), ["publication"] = true, ["analysis"] = false };
+        var key = Key(); var input = new JsonObject { ["reviewedVersion"] = state.Text("reviewedVersion"), ["version"] = state.Number("sourceVersion"), ["publication"] = true, ["analysis"] = false };
         var first = await s.Service.ChangeAsync(Owner, s.Sid, "consent", key, state.Text("etag"), input, default);
         var replay = await s.Service.ChangeAsync(Owner, s.Sid, "consent", key, state.Text("etag"), input, default);
         Assert.Equal(first.Text("etag"), replay.Text("etag"));
@@ -277,18 +283,18 @@ public class KnowledgeTests
         var draft = await Body(await Post(owner, path + "/knowledge/draft", new { }, state.Text("sessionEtag")));
         Assert.Equal("fixture", draft.Text("processingMode")); Assert.Equal(6, draft["sections"]!.AsArray().Count);
         state = await Get(path + "/knowledge");
-        await Body(await Post(owner, path + "/knowledge/request-review", new { version = 1 }, state.Text("etag")));
+        await Body(await Post(owner, path + "/knowledge/request-review", new { version = 1, reviewedVersion = state.Text("reviewedVersion") }, state.Text("etag")));
         state = await Get(path + "/knowledge");
-        Assert.Equal(System.Net.HttpStatusCode.Conflict, (await Post(owner, path + "/knowledge/approve", new { version = 1 }, state.Text("etag"))).StatusCode);
+        Assert.Equal(System.Net.HttpStatusCode.Conflict, (await Post(owner, path + "/knowledge/approve", new { version = 1, reviewedVersion = state.Text("reviewedVersion") }, state.Text("etag"))).StatusCode);
         foreach (var actor in new[] { owner, guest })
         {
             state = await Get(path + "/knowledge");
-            await Body(await Post(actor, path + "/knowledge/consent", new { version = 1, publication = true, analysis = false }, state.Text("etag")));
+            await Body(await Post(actor, path + "/knowledge/consent", new { version = 1, reviewedVersion = state.Text("reviewedVersion"), publication = true, analysis = false }, state.Text("etag")));
         }
         state = await Get(path + "/knowledge");
-        Assert.Equal(System.Net.HttpStatusCode.Forbidden, (await Post(guest, path + "/knowledge/approve", new { version = 1 }, state.Text("etag"))).StatusCode);
-        Assert.Equal(System.Net.HttpStatusCode.NotFound, (await Post(other, path + "/knowledge/approve", new { version = 1 }, state.Text("etag"))).StatusCode);
-        await Body(await Post(owner, path + "/knowledge/approve", new { version = 1 }, state.Text("etag")));
+        Assert.Equal(System.Net.HttpStatusCode.Forbidden, (await Post(guest, path + "/knowledge/approve", new { version = 1, reviewedVersion = state.Text("reviewedVersion") }, state.Text("etag"))).StatusCode);
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, (await Post(other, path + "/knowledge/approve", new { version = 1, reviewedVersion = state.Text("reviewedVersion") }, state.Text("etag"))).StatusCode);
+        await Body(await Post(owner, path + "/knowledge/approve", new { version = 1, reviewedVersion = state.Text("reviewedVersion") }, state.Text("etag")));
         var diagnostic = await Get(path + "/knowledge");
         Assert.True(diagnostic["publicationJob"]!["status"]!.GetValue<string>() == "ready", diagnostic["publicationJob"]!.ToJsonString());
         await Body(await Post(owner, path + "/knowledge-recovery", new { }));

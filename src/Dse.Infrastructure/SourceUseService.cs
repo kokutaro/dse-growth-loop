@@ -24,13 +24,16 @@ public sealed class SourceUseService(IPrimaryRepository repository, SourceGuard 
         var partition = RecordPartition.Conversation(actor.TenantId, sessionId);
         var session = await repository.ReadAsync(partition, sessionId, token) ?? throw new DomainException(404, "NOT_FOUND");
         AccessPolicy.RequireRead(actor, session.Value);
+        await new AuthorityProvider(repository).RequireSessionAsync(actor, session.Value, token);
         if (session.ETag != sessionEtag || session.Value.Text("status") != "open" || session.Value.Text("aiAssistance") != "enabled")
             throw new DomainException(409, "SOURCE_REVOKED");
         if (snapshots.Length == 0 || message.Text("kind") != "message" || message.Text("sessionId") != sessionId ||
             message.Text("tenantId") != actor.TenantId) throw new ArgumentException("Invalid shared commit");
         foreach (var principal in session.Value.Strings("participantIds"))
         {
-            var participant = identities.ResolvePerson(actor.TenantId, principal) ?? throw new DomainException(409, "SOURCE_REVOKED");
+            _ = identities.Configuration;
+            var participant = await new AuthorityProvider(repository).PersonAsync(actor.TenantId, principal, token) ?? throw new DomainException(409, "SOURCE_REVOKED");
+            await new AuthorityProvider(repository).RequireSessionAsync(participant, session.Value, token);
             await guard.RequireSnapshotsAsync(participant, snapshots, token);
         }
         List<RecordWrite> writes = [];

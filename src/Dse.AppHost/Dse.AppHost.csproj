@@ -1,6 +1,9 @@
 <Project Sdk="Aspire.AppHost.Sdk/13.5.4">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <!-- Aspire injects host-specific Dashboard/DCP packages. Preserve the existing
+         macOS lock and other hosts' restore behavior instead of replacing their graph. -->
+    <NuGetLockFilePath Condition="'$(NETCoreSdkRuntimeIdentifier)' == 'linux-x64'">packages.linux-x64.lock.json</NuGetLockFilePath>
   </PropertyGroup>
   <ItemGroup>
     <!-- Pin the patched transitive dependency used by Aspire's local dashboard. -->

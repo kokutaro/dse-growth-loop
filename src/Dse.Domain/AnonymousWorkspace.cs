@@ -35,7 +35,7 @@ public sealed record AnonymousWorkspaceKnowledge(string Etag, string SessionEtag
     IReadOnlyDictionary<string, string> ParticipantLabels, IReadOnlyDictionary<string, AnonymousWorkspaceConsent> Consents,
     bool CanApprove, string ProcessingMode, AnonymousWorkspaceOutcome? Outcome,
     AnonymousWorkspaceFeedback[] Feedback, AnonymousWorkspacePublication? PublicationJob,
-    BusinessAnalysisMetadata? AnalysisMetadata);
+    BusinessAnalysisMetadata? AnalysisMetadata, string ReviewedVersion, bool OccurrenceDepartmentVerified);
 public sealed record AnonymousWorkspacePublishedSection(string Field, string Text, string Basis);
 public sealed record AnonymousWorkspaceCase(string Id, string Title, string Summary,
     AnonymousWorkspacePublishedSection[] Sections, int Version, string ProcessingMode);

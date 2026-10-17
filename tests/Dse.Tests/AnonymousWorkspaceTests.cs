@@ -32,7 +32,9 @@ public sealed class AnonymousWorkspaceTests
             settings[$"Auth:Grants:{i}:PrincipalId"] = "principal-demo-"+suffix; settings[$"Auth:Grants:{i}:ScopeIds:0"] = "demo";
         }
         var config = new ConfigurationBuilder().AddInMemoryCollection(settings).Build(); var identities = new IdentityResolver(config);
-        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store,tenant,default); var repo = new PrimaryRepository(store);
+        var store = new MemoryRecordStore();
+        if (azure) { config["Auth:Bindings:0:Roles:1"] = "publisher"; await AuthorityFixture.InitializeAsync(store,config,tenant); }
+        await DemoRecords.SeedAsync(store,tenant,default); var repo = new PrimaryRepository(store);
         for(var i=1;i<=3;i++)
         { var p = (await repo.ReadAsync(RecordPartition.Catalog(tenant),$"demo-person-{i:D2}",default))!; p.Value["ownerId"] = $"principal-demo-{i:D2}"; await repo.CommitAsync(RecordPartition.Catalog(tenant),[RecordWrite.Replace(p.Value,p.ETag)],default); }
         var owner = (azure ? identities.ResolvePerson(tenant,"demo-person-01")! : IdentityResolver.Demo) with { Roles = ["member","publisher"] };
@@ -56,7 +58,9 @@ public sealed class AnonymousWorkspaceTests
     private static async Task<AnonymousWorkspaceKnowledge> Change(Setup s,string operation,object input,ActorAccess? a = null)
     {
         var actor = a ?? s.Owner; var state = await State(s,actor);
-        await s.Workspace.ChangeKnowledgeAsync(actor,s.Room,operation,Key(),operation == "draft" ? state.SessionEtag : state.Etag,JsonSerializer.SerializeToNode(input,Json)!.AsObject(),default);
+        var body = JsonSerializer.SerializeToNode(input,Json)!.AsObject();
+        if (operation is "request-review" or "consent" or "approve") body["reviewedVersion"] = state.ReviewedVersion;
+        await s.Workspace.ChangeKnowledgeAsync(actor,s.Room,operation,Key(),operation == "draft" ? state.SessionEtag : state.Etag,body,default);
         return await State(s,actor);
     }
     private static void PrivateIdentifiersAbsent(Setup s,object value)
@@ -378,8 +382,8 @@ public sealed class AnonymousWorkspaceTests
         // The list may omit an out-of-scope challenge before reaching its DTO.
         if (change == "scope")
         {
-            Assert.Empty((await s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationsUnderFenceAsync(actor,100,null,ct),default)).Items);
-            Assert.Empty((await s.Workspace.ConsumeAsync(actor,ct => s.Workspace.ChallengesUnderFenceAsync(actor,100,null,ct),default)).Items);
+            Assert.Equal(404,(await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(actor,ct => s.Workspace.InvitationsUnderFenceAsync(actor,100,null,ct),default))).Status);
+            Assert.Equal(404,(await Assert.ThrowsAsync<DomainException>(() => s.Workspace.ConsumeAsync(actor,ct => s.Workspace.ChallengesUnderFenceAsync(actor,100,null,ct),default))).Status);
         }
         else
         {

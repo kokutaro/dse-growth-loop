@@ -47,3 +47,5 @@ CIでは検証器だけを対象にカバレッジをレポートする。`.NET`
 追加フィールドや状態を無断で意味変更しない。破壊的変更は`schemaVersion`とAPIメジャー版を更新し、移行・旧版読取・再投影方針を同じPRに記載する。
 
 Issue #13のMessageサブタイプ `messageKind=ai_case`、`ChatAssistanceRules`、事例ごとの評価、出典・評価APIを正本Schema/OpenAPIへ追加した。`kind=message` は既存Messageの識別子として維持する。[設定と検証境界](../chat-assistance.md)を参照。
+
+- [手動ダミー部署正本のAPI](openapi-organization-v1.json)：期間検証、operator限定変更、本人所属確認。権限・退職・復元は[停止下のローカルCLI](../organization-authority.md)。

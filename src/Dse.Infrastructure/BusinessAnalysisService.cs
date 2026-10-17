@@ -49,7 +49,7 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
         if (!AccessPolicy.CanUse(actor, catalog) || catalog.Text("sessionId") == "") return null;
         var sid = catalog.Text("sessionId"); var version = catalog.Number("activeVersion");
         var authority = await KnowledgeService.PublishedAsync(repository, actor.TenantId, sid, version, ct);
-        if (authority is null || !KnowledgeService.AllConsented(authority, true) || !AccessPolicy.InScope(actor, authority) ||
+        if (authority is null || !await new AuthorityProvider(repository).CurrentTokenAsync(actor.TenantId, catalog, ct) || !KnowledgeService.AllConsented(authority, true) || !AccessPolicy.InScope(actor, authority) ||
             !JsonNode.DeepEquals(authority["scopeIds"], catalog["scopeIds"]) || catalog.Number("sourceVersion") != version ||
             catalog.Number("accessVersion") != authority.Number("accessVersion")) return null;
         var consenting = await KnowledgeService.CurrentConsentParticipantsAsync(repository,config,actor.TenantId,authority,true,ct);
@@ -71,6 +71,11 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
             }
             catch (ArgumentException) { throw new DomainException(422, "ANALYSIS_METADATA_INVALID"); }
         }
+        var challenge = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), session.Text("challengeId"), ct))?.Value;
+        var verifiedDepartment = challenge is null || string.IsNullOrEmpty(challenge.Text("creatorPersonId")) ? null :
+            await new AuthorityProvider(repository).DepartmentSnapshotAsync(actor.TenantId, challenge.Text("creatorPersonId"), challenge["createdAt"]!.GetValue<DateTimeOffset>(), ct);
+        if (!JsonNode.DeepEquals(verifiedDepartment, authority["departmentSnapshot"]) || !JsonNode.DeepEquals(verifiedDepartment, catalog["departmentSnapshot"])) return null;
+        metadata = metadata with { DepartmentId = verifiedDepartment?.Text("departmentId") };
         // Classification and terms are projections: use only the current ready projection with the same approved summary/version.
         var projection = await store.ReadAsync(RecordPartition.Catalog(actor.TenantId), $"{catalog.Text("id")}:projection:{version}", ct);
         // Field labels/basis markers and generic attempt text must not join unrelated challenges.
@@ -154,6 +159,8 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
     }
     private async Task<bool> CurrentAsync(ActorAccess actor, JsonObject run, CancellationToken ct)
     {
+        actor = await new AuthorityProvider(repository).RequireAsync(actor, ct);
+        Analyst(actor);
         foreach (var saved in run["sourceManifest"]!.AsArray().Select(x => x!.AsObject()))
         {
             var row = await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), saved.Text("knowledgeId"), ct);
@@ -176,6 +183,7 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
     {
         Analyst(actor);
         BusinessAnalysisLiveRuntime.ValidateForStart(config);
+        actor = await new AuthorityProvider(repository,config).RequireAsync(actor, ct);
         if (!BusinessAnalysisLiveRuntime.IsFixture(config) && actor.TenantId != config["Auth:TenantId"]) throw new DomainException(403, "FORBIDDEN");
         IdempotencyExecutor.ValidateHeaders(key, null, false);
         if (!RecordJson.IsId(request.RunId) || key != request.RunId || request.ConfigVersion != BusinessAnalysisLiveRuntime.ConfigVersion(config) || request.Cutoff == default || request.Cutoff > clock.GetUtcNow().AddSeconds(5))
@@ -284,6 +292,7 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
         if (!RecordJson.IsId(runId)) throw new ArgumentException("Invalid run ID");
         return fence.RunAsync(actor.TenantId, async token =>
         {
+            actor = await new AuthorityProvider(repository).RequireAsync(actor, token); Analyst(actor);
             var row = await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), Id(actor, runId), token) ?? throw new DomainException(404, "NOT_FOUND");
             AccessPolicy.RequireRead(actor, row.Value);
             if (row.Value.Text("ownerId") != actor.PrincipalId) throw new DomainException(404, "NOT_FOUND");

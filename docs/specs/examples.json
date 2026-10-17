@@ -1682,5 +1682,103 @@
       "draftRunId": "ai-run-example",
       "processingMode": "fixture"
     }
+  },
+  {
+    "name": "AuthorityControl",
+    "schema": "AuthorityControl",
+    "value": {
+      "id": "dummy-authoritycontrol",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "kind": "authorityControl",
+      "generation": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "revision": 1,
+      "state": "active"
+    }
+  },
+  {
+    "name": "Department",
+    "schema": "Department",
+    "value": {
+      "id": "dummy-department",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "kind": "department",
+      "departmentId": "dummy-department",
+      "name": "架空部署",
+      "validFrom": "2026-09-01T00:00:00Z",
+      "validTo": null,
+      "successorIds": [],
+      "reason": "dummy fixture"
+    }
+  },
+  {
+    "name": "PersonAuthority",
+    "schema": "PersonAuthority",
+    "value": {
+      "id": "dummy-personauthority",
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"etag-1\"",
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "kind": "personAuthority",
+      "personId": "demo-person-01",
+      "principalId": "principal-demo-01",
+      "oid": "",
+      "enabled": true,
+      "roles": [
+        "member"
+      ],
+      "generation": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "accessEpoch": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "departmentTerms": [
+        {
+          "termId": "dummy-term",
+          "departmentId": "dummy-department",
+          "from": "2026-09-01T00:00:00Z",
+          "to": null
+        }
+      ]
+    }
   }
 ]

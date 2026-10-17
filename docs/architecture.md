@@ -1,5 +1,7 @@
 # DSE Growth Loop — アーキテクチャ設計案
 
+2026-10-17追記：[手動ダミー部署正本・所属履歴](organization-authority.md)を既存catalog内へ追加した。部署を認可scopeと同一視せず、参加epochと同意tokenを現在正本で照合する。構成図の既存catalog/API/Workerの範囲内の変更で、新しい外部接続は追加しない。初回検索遅延の追加測定・最適化はこの変更に含めない。
+
 更新日：2026-09-21 / 版：0.2 / 状態：分類索引＋LLM再順位付け方式で検証着手するための設計
 
 実装着手：API/Worker基盤、一次検索UI、Cosmos接続、Bicepを追加。RGは `dse-growth-loop-rg`。設定は環境変数／`.env`で注入する。本書と構成図は目標構成であり、[実装状況](implementation-status.md)と[展開手順](deployment.md)を別途参照。Azure実展開は未実施。

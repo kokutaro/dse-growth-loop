@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-17",
+  "evidenceKind": "local_dummy_tests",
+  "realAcceptance": false,
+  "baselineMain": "ca75ded43bd0a93a73ff58059633bc74ed21e8d4",
+  "dotnet": {
+    "total": 623,
+    "passed": 623,
+    "failed": 0,
+    "authorityTests": 27,
+    "filter": "Category!=LargeEvaluation",
+    "trxSha256": "1e88815d2f94b4d8c87c46f8643fa5d0500642b3e1d6da15f4727eda43a7a626"
+  },
+  "python": {
+    "scripts": 241,
+    "contracts": 20,
+    "evaluationFixtures": 5,
+    "contractRulesCoveragePercent": 100
+  },
+  "web": {
+    "authTests": 7,
+    "build": "passed",
+    "coreE2e": 12,
+    "workspaceE2e": 16,
+    "browser": "Chromium 154.0.8037.57",
+    "pinnedBrowserDownload": "403; local executable override only; CI unchanged"
+  },
+  "cliSmoke": "cli-summary.json",
+  "linuxLockedRestore": "passed",
+  "macLockChanged": false,
+  "solutionBuild": "passed; existing ASPIRE010 warning",
+  "azureDeployments": 0,
+  "realPermissionChanges": 0,
+  "paidModelCalls": 0,
+  "issue15Complete": false,
+  "limitations": [
+    "real HR/Entra/Cosmos integration and multi-process acceptance pending",
+    "live AI/Job/recovery acceptance pending",
+    "unannounced whole-DB rollback requires an external generation anchor; not automatically detected"
+  ]
+}

@@ -20,9 +20,11 @@ public class ChatSharedAccessTests
             ["Auth:Grants:1:PrincipalId"] = "guest", ["Auth:Grants:1:ScopeIds:0"] = "common"
         }).Build();
         var store = new MemoryRecordStore();
+        await AuthorityFixture.InitializeAsync(store,config,tenant);
         foreach (var row in DemoRecords.Create(tenant))
         {
             row["scopeIds"] = RecordJson.Array(["common"]);
+            if (row.Text("kind") == "knowledge") row["authorityToken"] = AuthorityProvider.Token((await store.ReadAsync(RecordPartition.Catalog(tenant),AuthorityProvider.ControlId,default))!.Value);
             await store.CommitAsync(RecordPartition.Catalog(tenant), [RecordWrite.Create(row)], default);
         }
         var repo = new PrimaryRepository(store); var identities = new IdentityResolver(config); var owner = identities.ResolvePerson(tenant, "demo-person-01")!;

@@ -69,8 +69,11 @@ public static class DemoRecords
     }
     public static async Task SeedAsync(IRecordStore store, string tenant, CancellationToken ct)
     {
+        await AuthorityProvider.SeedDemoAsync(store, tenant, ct);
+        var control = (await store.ReadAsync(RecordPartition.Catalog(tenant),AuthorityProvider.ControlId,ct))!;
         foreach (var group in Create(tenant).Chunk(5))
         {
+            foreach (var value in group.Where(v => v.Text("kind") == "knowledge")) value["authorityToken"] = AuthorityProvider.Token(control.Value);
             // Idempotent fixture installation. Never overwrite a correction or resurrect a withdrawn record.
             try { await store.CommitAsync(RecordPartition.Catalog(tenant), group.Select(RecordWrite.Create).ToArray(), ct); }
             catch (StoreConflictException) { }

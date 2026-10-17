@@ -34,7 +34,9 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
         var enrichment = job.Text("jobType") == "enrichment";
         var document = enrichment ? aggregate : null;
         var personId = enrichment ? aggregate.Value.Text("personId") : aggregate.Value.Text("id");
-        var actor = config["Data:Mode"] == "Demo" && tenant == "demo" ? IdentityResolver.DemoPerson(personId) : identities.ResolvePerson(tenant, personId);
+        _ = identities.Configuration;
+        var actor = await new AuthorityProvider(repository,config).PersonAsync(tenant,personId,ct);
+        await Read(AuthorityProvider.ControlId); await Read(AuthorityProvider.PersonId(personId));
         if (actor is null || actor.PrincipalId != aggregate.Value.Text("ownerId")) throw new DomainException(409, "SOURCE_REVOKED");
         var person = enrichment ? await Read(personId) ?? throw new DomainException(409, "SOURCE_REVOKED") : aggregate;
         AccessPolicy.RequireSelf(actor, person.Value);

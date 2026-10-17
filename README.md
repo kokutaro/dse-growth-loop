@@ -4,6 +4,8 @@
 
 ## 設計資料
 
+- [手動ダミー部署正本と同意失効](docs/organization-authority.md)：発生時の主部署、通常異動、退職・認可変更・復元後の再確認。
+
 - [許可済み課題の手動分析](docs/business-analysis.md)：公開申告情報・双方同意・集計・候補ごとの人の判断、Demo/Mockと実環境の境界。
 - [残Issueの受入条件](docs/remaining-issues-acceptance-20261011.md)：最新Issueの棚卸し、実測・採用・運用の未完了条件。
 - [匿名専用API](docs/anonymous-workspace-contract.md)、[独立した表示名開示](docs/identity-disclosure.md)、[部分操作計測](docs/operation-measurements.md)。

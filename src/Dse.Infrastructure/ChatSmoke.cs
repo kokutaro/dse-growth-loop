@@ -53,7 +53,8 @@ public static class ChatSmoke
     {
         Validate(c);
         var tenant = c["Auth:TenantId"]!;
-        var actor = identities.ResolvePerson(tenant, "demo-person-01") ?? throw new DomainException(403, "FORBIDDEN");
+        _ = identities.Configuration;
+        var actor = await new AuthorityProvider(repository,c).PersonAsync(tenant,"demo-person-01",ct) ?? throw new DomainException(403,"FORBIDDEN");
         var fixture = (await projections.FindAsync(new([], [], ["引き継ぎ"]), actor.Search, ct))
             .SingleOrDefault(x => x.Id == "demo-knowledge-01-projection-1") ?? throw new DomainException(409, "SMOKE_FIXTURE_REQUIRED");
         var validated = await new SourceGuard(repository, c).RequireAsync(actor, fixture, ct);

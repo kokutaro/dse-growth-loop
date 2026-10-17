@@ -41,7 +41,17 @@ public class ApiTests
         }) b.UseSetting(entry.Key, entry.Value);
         b.ConfigureServices(s =>
         {
-            s.AddSingleton<ICatalog, DemoCatalog>();
+            if (!demo) s.AddSingleton<ICatalog, DemoCatalog>();
+            if (!demo)
+            {
+                s.AddSingleton<IRecordStore,MemoryRecordStore>();
+                s.AddSingleton<AuthorityProvider>(sp =>
+                {
+                    var cfg = sp.GetRequiredService<IConfiguration>(); var store = sp.GetRequiredService<IRecordStore>();
+                    AuthorityFixture.InitializeAsync(store,cfg,Tenant).GetAwaiter().GetResult();
+                    return new(sp.GetRequiredService<IPrimaryRepository>(),cfg);
+                });
+            }
             s.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, o =>
             {
                 o.Configuration = new OpenIdConnectConfiguration { Issuer = $"https://login.microsoftonline.com/{Tenant}/v2.0" };
