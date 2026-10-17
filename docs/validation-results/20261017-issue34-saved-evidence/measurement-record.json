@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "issue34-measurement-v1",
+  "runId": "issue34-offline-631620ca61c7cb9d62fd",
+  "state": "incomplete",
+  "evidenceKind": "offline_replay",
+  "observedAt": null,
+  "provenance": {
+    "sourceCommit": "743f22fd6a3efe585a60dbae36278a88c67ab011",
+    "sourceSha256": null,
+    "inputSha256": "1e0f23a34180237ae437056997c97e1c9c238c7b7ba8f0f567764c88cde88e84",
+    "configSha256": null,
+    "serviceStateSha256": null,
+    "candidateSha256": null,
+    "goldApprovalReference": null,
+    "executionApprovalReference": null,
+    "dummyOnly": true
+  },
+  "bounds": {
+    "maximumModelAttempts": null,
+    "maximumInputTokens": null,
+    "maximumOutputTokens": null,
+    "maximumAllCostsJpy": null,
+    "maximumApiReplicaSeconds": null,
+    "maximumJobSeconds": null,
+    "maximumWallClockSecondsIncludingRestore": null,
+    "restoreReserveSeconds": null,
+    "ledgerSnapshotReference": null,
+    "stopPlanReference": null
+  },
+  "operations": [],
+  "storage": [],
+  "latency": {
+    "method": "linear_interpolation_ranks_(n-1)*p",
+    "warmAll24": {
+      "expectedCount": 24,
+      "observedCount": 24,
+      "p50Ms": 10063.252999971155,
+      "p95Ms": 17403.440200071876
+    },
+    "warmSearch22": {
+      "expectedCount": 22,
+      "observedCount": 22,
+      "p50Ms": 10303.48049994791,
+      "p95Ms": 18002.211400072265
+    },
+    "cold3": {
+      "expectedCount": 3,
+      "observedCount": 2,
+      "p50Ms": null,
+      "p95Ms": null,
+      "gate": "report_only"
+    },
+    "warmP95LimitMs": 15000,
+    "warmGate": "failed"
+  },
+  "cost": {
+    "prices": [],
+    "monthlySearchAssumption": 100,
+    "approvedMonthlyBudgetJpy": 8000,
+    "components": [],
+    "estimatedMonthlyTotalJpy": null,
+    "invoiceActualTotalJpy": null,
+    "unknownComponents": [
+      "all_cosmos_operations_and_sdk_retries",
+      "all_ai_usage_failures_and_prices",
+      "index_data_backup_storage",
+      "api_worker_job_runtime",
+      "blob_queue_acr",
+      "requests_network_logging",
+      "fx_tax_contract_and_invoice_reconciliation"
+    ],
+    "monthlyGate": "pending"
+  },
+  "limitations": [
+    "Offline replay of saved numeric observations; no new service call or execution approval.",
+    "Warm all24 and fixed searched22 include first-after-startup observations; threshold remains 15000 ms.",
+    "Cold means first search after stop/reactivation; container startup-wait inclusion is unverified.",
+    "Incomplete cohorts have null p50/p95; missing cold HTTP evidence: cold02",
+    "UI completion, response quality, and the authenticity of saved observations are not revalidated by this converter.",
+    "Source commit is reported by the capture; executed source/config/service-state hashes remain unverified.",
+    "No service request/correlation IDs or same-run operation/RU evidence are reconstructed from aggregate observations.",
+    "AI usage, prices, storage, runtime, full costs and invoice reconciliation remain unknown; no ledger is read.",
+    "Warm timing status is separate from overall acceptance; state stays incomplete and monthly gate stays pending.",
+    "Observed unexpected warm HTTP outcomes: 0"
+  ],
+  "evidenceReferences": [
+    "capture-sha256:631620ca61c7cb9d62fded9e64566c67a8979c2459d36d7e71cc17309f9e5b3d",
+    "dataset-sha256:1e0f23a34180237ae437056997c97e1c9c238c7b7ba8f0f567764c88cde88e84"
+  ]
+}
