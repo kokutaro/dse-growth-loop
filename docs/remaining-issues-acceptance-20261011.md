@@ -4,6 +4,18 @@
 
 #34は引き続き#30/#33に依存し、実環境受入の完了待ちは残る。一方、[保存済み数値観測を既存測定契約へ変換するオフラインCLI](validation-results/20261017-issue34-saved-evidence/results.md)を追加した。warm全24件p95=17.403440秒、固定22件p95=18.002211秒で15秒未達。cold02 HTTP欠落、RU/AI/保存量/総月額不明を保持し、部分変換を#34/#35の合格へ昇格しない。初回遅延の追加計測・最適化・追加Azure計測・台帳照合・監視基盤改修は行わない。
 
+## 2026-10-17：#33のquery-only経路回帰
+
+最新main `e61f7a3` を基点に、[query-only分類からAI入力・HTTP応答・共有確定までのローカル回帰](validation-results/20261017-issue33-query-boundaries/results.md)を追加した。分類中のscope/撤回/参加可否/版/根拠変更と分類後の原本読取障害を検証する。既存の条件指定済み検索・再順位付け中の再照合回帰を維持し、全体の実JWT/実Cosmos受入はpending。#33は先行完了待ち不要、#34は#30/#33、#35は#30〜#34に依存するため#33から進める。
+
+初回検索遅延はユーザーの06:06:41 UTCの指示で既知課題として残す。正式p95未達・cold証跡制約を合格へ変更せず、段階別計測追加・最適化・Azure追加稼働・台帳照合・監視基盤改修は今回行わない。以下は保存当時の履歴として区別する。
+
+## 2026-10-17 の更新
+
+[Issue30認証付き測定結果](validation-results/20261017-issue30-measurement-summary/results.md)：warm24/cold3のUI実行は終了。warm HTTP p95は全24件17.403440秒／200のみ18.002211秒で15秒未達。cold02のHTTP/HAR等欠落、coldの起動待ち包含未確認、完全なUI品質再検証未了により受入pending。全46revisionの復元・actual0を05:56:53 UTCに二重確認した。ユーザーは06:06:41 UTCに初回検索遅延の追加計測・改善を延期し、既知課題を残して他の未完了Issueへ進むと判断した。閾値緩和・受入承認ではない。Azure停止維持、追加実測・台帳照合・監視改修は今回行わない。
+
+最新GitHubでは#33は先行完了待ち不要、#34は#30/#33、#35は#30〜#34に依存する。次は#33の既存ローカル認可回帰を照合し、query-only分類からAI入力・最終表示・共有確定までの不足境界を偽AIで検証する。以下の棚卸しは保存当時の履歴として残す。
+
 今回のローカル作業は受入に必要な実装・回帰・資料の準備であり、Azure検証版の最終受入ではない。GitHub mainは `78f182a30f106a8d34f7989d39d23f622e5d5c08`、open Issueは #1、#14、#15、#16、#30〜#35、open PRは0件という読み取り結果を基点にした。GitHubのチェック欄、Issue状態、Azure設定は変更していない。
 
 前段のDemo実装から継続し、匿名DTO/API、独立した表示名開示同意、Live分析アダプター・共有AiLedger連携・オフライン復旧CLI、操作の部分収集器をローカルコードへ追加した。これらは**実装済み・最終ローカル検証成功（.NET535、E2E49件）**。最新段階の結果は [20261011-production-contracts/results.md](validation-results/20261011-production-contracts/results.md) で判定し、前段の成功件数を追加後の最終成功件数として再利用しない。この継続段階の実Azure接続/データプレーン操作は0回、有料モデル送信は0回で、設定有効化や展開も行っていない。
@@ -88,6 +100,8 @@ CSVはschemaの各operationを1行へ平坦化し、runId/operationId/attemptを
 `--ledger-status` はCosmos監査/台帳読取であり、`--weekly-budget-initialize` は名前や `readOnlyExport` 変数によらず正本を更新する。今回どちらも実行しない。Budget表示は共有AI台帳や確定請求の代わりにならず、Cost Management 429や価格検索0行も料金0円を意味しない。
 
 別タスクのTailscale/Foundry Private Endpoint接続成功は、この台帳・費用・停止・認証・採用条件の証拠を追加しない。匿名UI向けDTOは継続コードで実装したが、実JWT/実Cosmos/通知/ログ/運用経路を含む匿名性の受入は別課題。既存の固定検索検証経路でのSLOと匿名性の合格を混同しない。
+
+2026-10-11のVNet移行後に、[Issue30のローカル検証準備](issue30-migration-local-preparation.md)を追加した。全revision/実replicaの停止snapshotと移行watchdogのMock回帰、共通期限の独立supervisor/実OS故障回帰、snapshot保護、warm24/cold3の保存記録・根拠採点を整備。独立レビューで再現したAPI確認によるWorker停止要求の遅延、成功CLIの子process残留、cold応答runIdの相互/warm流用を修正し回帰を追加。Copilot指摘の準備期限によるWorker要求の枯渇、snapshot取得中のrevision競合、HTTPより早いwarm UI時間の受理も回帰を追加して修正した。さらにv3候補IDのscope、成功deactivateの空応答、preflightのApp/Environment組を検証した。上表の「checkoutにwatchdog実装/回帰なし」はこの追加前の状態であり、独立した実停止/復元・最新台帳・本人認証・費用承認は引き続き未確認。今回Azureを起動せず、合格へ変更しない。
 
 ## 追加実装の状態と具体的な未完了
 
