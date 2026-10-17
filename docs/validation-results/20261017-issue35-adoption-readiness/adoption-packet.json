@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "issue35-adoption-packet-v1",
+  "evidenceKind": "offline_inventory",
+  "decision": "pending-human-decision",
+  "adoptionStatus": "not_adopted",
+  "productionApplicationAllowed": false,
+  "candidate": {
+    "sourceCommit": "743f22fd6a3efe585a60dbae36278a88c67ab011",
+    "datasetSha256": "1e0f23a34180237ae437056997c97e1c9c238c7b7ba8f0f567764c88cde88e84",
+    "configurationDocumentSha256": "f6b94453037e4ba546cfdcded9c839d92340b160adb752acdd908d3da2edac3d",
+    "unknownSettingSlots": [
+      "classificationPromptSha256",
+      "effectiveRuntimeConfigSha256",
+      "rerankModelId",
+      "rerankModelVersion",
+      "rerankPromptSha256"
+    ],
+    "effectiveConfigurationVerified": false
+  },
+  "dependencies": {
+    "30": {
+      "status": "failed",
+      "warmGate": "failed",
+      "coldHttpObservedCount": 2
+    },
+    "31": {
+      "status": "pending",
+      "conditionCount": 1,
+      "historicalFalsePositiveQuestionCount": 1
+    },
+    "32": {
+      "status": "pending",
+      "humanGoldApproved": false,
+      "reportedComplete": false,
+      "reportedGatePassed": false,
+      "agreement": null,
+      "denominator": 0
+    },
+    "33": {
+      "status": "pending",
+      "evidenceKind": "local_tests",
+      "targetedTestsPassed": 30,
+      "allDotnetTestsPassed": 596
+    },
+    "34": {
+      "status": "pending",
+      "measurementState": "incomplete",
+      "monthlyGate": "pending"
+    }
+  },
+  "monthly": {
+    "searchAssumption": 100,
+    "approvedBudgetJpy": 8000,
+    "estimatedTotalJpy": null,
+    "invoiceActualJpy": null,
+    "gate": "pending",
+    "unknownComponents": [
+      "all_cosmos_operations_and_sdk_retries",
+      "all_ai_usage_failures_and_prices",
+      "index_data_backup_storage",
+      "api_worker_job_runtime",
+      "blob_queue_acr",
+      "requests_network_logging",
+      "fx_tax_contract_and_invoice_reconciliation"
+    ]
+  },
+  "blockingConditions": [
+    "ISSUE30_ACCEPTANCE_PENDING",
+    "ISSUE31_INDEPENDENT_COMPARISON_PENDING",
+    "ISSUE32_SEMANTIC_ACCEPTANCE_PENDING",
+    "ISSUE33_REAL_SERVICE_ACCEPTANCE_PENDING",
+    "ISSUE34_FULL_MEASUREMENT_PENDING",
+    "CURRENT_PRICES_FX_TAX_INVOICE_UNVERIFIED",
+    "EFFECTIVE_RUNTIME_CONFIG_UNVERIFIED",
+    "HUMAN_ADOPTION_DECISION_REQUIRED",
+    "WARM_GATE_FAILED",
+    "COLD_HTTP_EVIDENCE_INCOMPLETE",
+    "CANDIDATE_SETTINGS_INCOMPLETE"
+  ],
+  "evidence": [
+    {
+      "role": "candidate",
+      "path": "docs/evaluation/issue-35/candidate-settings-20261017.json",
+      "sha256": "f6b94453037e4ba546cfdcded9c839d92340b160adb752acdd908d3da2edac3d"
+    },
+    {
+      "role": "issue30",
+      "path": "docs/validation-results/20261017-issue34-saved-evidence/capture.json",
+      "sha256": "631620ca61c7cb9d62fded9e64566c67a8979c2459d36d7e71cc17309f9e5b3d"
+    },
+    {
+      "role": "issue31",
+      "path": "docs/validation-results/20261011-offline-quality/rerank-current/report.json",
+      "sha256": "a5aaf56b1b52178fed968d59545b74768e98bd76dae508ca24f119faceceb5ab"
+    },
+    {
+      "role": "issue32",
+      "path": "docs/validation-results/20261011-offline-quality/semantic-readiness/report.json",
+      "sha256": "b687f624ea4ae3fbf38367c1604ad565f66879838f778aeb132196dcf9ff5d3e"
+    },
+    {
+      "role": "issue33",
+      "path": "docs/validation-results/20261017-issue35-adoption-readiness/issue33-local-receipt.json",
+      "sha256": "6476604590d4555201779592a55cd8cd6feda64f74ac5b1ea138d4b4c701561f"
+    },
+    {
+      "role": "issue34",
+      "path": "docs/validation-results/20261017-issue34-saved-evidence/measurement-record.json",
+      "sha256": "264a93261dc520b3decf211a9c73b7b338458d9e353b6430215062c4554fa8bb"
+    }
+  ],
+  "limitations": [
+    "No new measurements, model calls, ledger reads, price lookups, or runtime changes.",
+    "Reported fixture success and deferred optimization are not service acceptance or adoption approval.",
+    "Historical comparison results are not independent evidence for the current candidate.",
+    "Settings describe a code-default candidate; hashes do not prove the effective deployed configuration.",
+    "This packet cannot authorize production or deployment, even when a reported timing gate passes."
+  ]
+}

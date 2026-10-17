@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "issue33-local-evidence-v1",
+  "evidenceKind": "local_tests",
+  "sourceCommit": "8e163f7607d68a88eecf875bf0648408293033e1",
+  "sourceReference": "https://github.com/kokutaro/dse-growth-loop/pull/40",
+  "realAcceptance": "pending",
+  "targetedTestsPassed": 30,
+  "allDotnetTestsPassed": 596,
+  "ciChecksPassed": 25,
+  "limitation": "Local Memory/Fake and CI success; no real JWT/Cosmos/multiple-replica acceptance."
+}

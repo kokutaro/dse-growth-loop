@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "issue35-candidate-v1",
+  "sourceCommit": "743f22fd6a3efe585a60dbae36278a88c67ab011",
+  "datasetSha256": "1e0f23a34180237ae437056997c97e1c9c238c7b7ba8f0f567764c88cde88e84",
+  "configurationOrigin": "code-default-candidate-not-effective-runtime",
+  "configurationValidated": false,
+  "settings": {
+    "classificationModelId": "jev-1.13.0",
+    "classificationModelVersion": "jev-1.13.0",
+    "rerankModelId": null,
+    "rerankModelVersion": null,
+    "classificationPromptVersion": "search-query-v2",
+    "rerankPromptVersion": "search-rerank-v2",
+    "classificationPromptSha256": null,
+    "rerankPromptSha256": null,
+    "promptImplementationSha256": "d27a68d4b3361a774f51e1464dcb115fdea7cc6148ca0083bfcc9b05e219f50b",
+    "evidenceBytesPerCandidate": 1200,
+    "taxonomyVersion": "taxonomy-v1",
+    "taxonomySha256": "f28fd895fd7d6faf16e0ceb9543f1531d327f1cbfe1c82f5aa8685ae4463185e",
+    "normalizationVersion": "normalization-v1",
+    "normalizationImplementationSha256": "bb49f26e25d7c3241febebe974763080dc4247fed2aa0b998962d5b67357bdc9",
+    "retrievalRulesVersion": "retrieval-v2",
+    "retrievalRulesImplementationSha256": "19187c420e859bdf6d9bd2c45a04cd4ba575e59e462e6d239d7b7d4dbb5e9f59",
+    "personLimit": 10,
+    "caseLimit": 10,
+    "rescueSlots": 2,
+    "questionTopCategories": 3,
+    "questionThreshold": 0.1,
+    "documentThreshold": 0.2,
+    "noulThreshold": 0.5,
+    "effectiveRuntimeConfigSha256": null
+  }
+}
