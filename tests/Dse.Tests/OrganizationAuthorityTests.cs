@@ -493,4 +493,26 @@ public sealed class OrganizationAuthorityTests
         Assert.Equal(100,(await s.Organization.ReadAsync(Operator,default))["departments"]!.AsArray().Count);
         Assert.Equal(before.Value.Number("revision")+1,(await s.Authority.ControlAsync("demo",default)).Value.Number("revision"));
     }
+    [Theory] [InlineData("2026-10-01T00:00:00Z")] [InlineData("2026-10-01T00:00:00+00:00")]
+    public async Task Closed_department_updates_compare_end_instants_but_reject_changing_or_reopening_the_lifetime(string sameEnd)
+    {
+        var s=await Create(analysisFixtures:false);
+        async Task<JsonObject> Change(string name,string? end,string[] successors)
+        {
+            var control=await s.Authority.ControlAsync("demo",default);
+            var body=new JsonObject{["id"]="dummy-closed-format",["name"]=name,["validFrom"]="2026-09-01T00:00:00Z",["validTo"]=end,
+                ["successorIds"]=RecordJson.Array(successors),["reason"]="dummy ended department correction",["expectedAuthorityToken"]=AuthorityProvider.Token(control.Value)};
+            return await s.Organization.ChangeAsync(Operator,Key(),control.ETag,new(){["type"]="department",["change"]=body},true,default);
+        }
+        await Change("架空の終了部署","2026-10-01T00:00:00Z",[]);
+        await Change("架空の終了部署改称",sameEnd,["demo-department-b"]);
+        var ended=(await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),AuthorityProvider.DepartmentId("dummy-closed-format"),default))!;
+        Assert.Equal("架空の終了部署改称",ended.Value.Text("name"));Assert.Equal(new[]{"demo-department-b"},ended.Value.Strings("successorIds"));
+        Assert.Equal(DateTimeOffset.Parse(sameEnd),ended.Value["validTo"]!.GetValue<DateTimeOffset>());
+        var control=await s.Authority.ControlAsync("demo",default);
+        foreach(var changed in new string?[]{"2026-10-02T00:00:00Z",null})
+            Assert.Equal("DEPARTMENT_ID_REUSE",(await Assert.ThrowsAsync<DomainException>(()=>Change("旧IDでの期間変更",changed,[]))).Code);
+        Assert.Equal(control.ETag,(await s.Authority.ControlAsync("demo",default)).ETag);
+        Assert.Equal(ended.ETag,(await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),AuthorityProvider.DepartmentId("dummy-closed-format"),default))!.ETag);
+    }
 }

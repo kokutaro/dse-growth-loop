@@ -4,14 +4,14 @@
   "realAcceptance": false,
   "baselineMain": "ca75ded43bd0a93a73ff58059633bc74ed21e8d4",
   "dotnet": {
-    "total": 635,
-    "passed": 635,
+    "total": 637,
+    "passed": 637,
     "failed": 0,
-    "standardRegression": 634,
+    "standardRegression": 636,
     "largeEvaluationFixture": 1,
-    "authorityTests": 38,
+    "authorityTests": 40,
     "filter": null,
-    "logSha256": "d94efd00bea464bd9c70c259e8d8803c967352bd8c347e8b94124a9e0f5c98b9"
+    "logSha256": "8cb2c80f443edd8c25f1c3b2ced0f65b6f64034c3a8b968323b0f44e21945171"
   },
   "python": {
     "scripts": 241,
@@ -107,5 +107,22 @@
     "suites": [
       "workspace.spec.ts"
     ]
+  },
+  "thirdReviewDotnet": {
+    "total": 635,
+    "passed": 635,
+    "failed": 0,
+    "standardRegression": 634,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 38,
+    "filter": null,
+    "logSha256": "d94efd00bea464bd9c70c259e8d8803c967352bd8c347e8b94124a9e0f5c98b9"
+  },
+  "fourthReviewFollowup": {
+    "priorHead": "649961edfc134b8dea3dbc19b00f79d911786667",
+    "copilotFindingsAddressed": 1,
+    "departmentEndFormatCases": 2,
+    "scope": "admin department end timestamp comparison",
+    "contractAndBrowserEvidence": "thirdReviewFollowup"
   }
 }

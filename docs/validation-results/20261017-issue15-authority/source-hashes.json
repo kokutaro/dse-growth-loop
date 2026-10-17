@@ -1,9 +1,9 @@
 {
-  "phase": "post-third-Copilot local validation",
+  "phase": "post-fourth-Copilot local validation",
   "baselineMain": "ca75ded43bd0a93a73ff58059633bc74ed21e8d4",
   "files": {
     "Directory.Build.props": "a2ca8fa4be58f93b401108d4f8b4f383365c7df16f2a6274ebc058503dbc1878",
-    "docs/organization-authority.md": "ea826e4f1ece627b4006637a32fef4ae95c6c24ba8cdaea91685df189bc7b490",
+    "docs/organization-authority.md": "8f405f9b3925c5086ea37ecdfbe8e146ff934fce64dfeb633d8a0efe814805bc",
     "docs/specs/README.md": "76e4e1f360941aa25d0d1eb92ba0f9eb8d4a406456f56c542ea45de55c37d728",
     "docs/specs/contracts.schema.json": "8686c9e1a7cec1e994460451faa6bd885995e7357243d266d0645a8edd68aac3",
     "docs/specs/examples.json": "21c416657837badc6338112128bc8a78814a0e555da6bf44fe6623594356a575",
@@ -42,7 +42,7 @@
     "src/Dse.Infrastructure/Knowledge.cs": "4707e7f4e051d17dcdcb370499bddd82195bf324d8ab6d196cfe66e88234370d",
     "src/Dse.Infrastructure/Mutations.cs": "58659b6248a330d25d2523faee947799d145e87d341392534dd1c36b13b82717",
     "src/Dse.Infrastructure/OrganizationCommands.cs": "b6abfd302d9d32aa313c1ff7d2ca1fa72dd27ec2efe3efb3df7dc89897b9b9a0",
-    "src/Dse.Infrastructure/OrganizationService.cs": "f9eabdcf2b08ff677bb0f7a85db237fb88f7212f637aa053e866213a5a5b1fb7",
+    "src/Dse.Infrastructure/OrganizationService.cs": "88feb148037806300df047592d7bc37f909a3e503be12f83be2d1ce4fd30f656",
     "src/Dse.Infrastructure/ProfilePipeline.cs": "6dd1d2bceed9b2c2c8bdfa88d6d8aa938a0fa6f9e0702086ca29f800603e249f",
     "src/Dse.Infrastructure/Projections.cs": "ee1862e8ca0c7eb82656e451c09e1246da428e7cabf3874c21691ef75a51f287",
     "src/Dse.Infrastructure/SourceUseService.cs": "d37e0d4ee139de5b3cdb75ebcbc782a8bee441d81228f0f8d3d9dc1246505528",
@@ -57,12 +57,12 @@
     "tests/Dse.Tests/ConversationTests.cs": "feb8d757d598d82763c65db6a816b28b665a8c824185873ea6ea74f379e476df",
     "tests/Dse.Tests/IdentityDisclosureTests.cs": "44abafecc928477a649df849bbbc4a02b49a4e4658602230195dce0a3928849b",
     "tests/Dse.Tests/KnowledgeTests.cs": "4f1b124e40138f88d9d0d9a119e682df17090acc40e2c776f929992878d5f6b3",
-    "tests/Dse.Tests/OrganizationAuthorityTests.cs": "7e9f2b7298820f7fb2b0493a7ce7aa0eed39e625ddad82e38919730c3f697c28",
+    "tests/Dse.Tests/OrganizationAuthorityTests.cs": "09cd7b3cac0884f784ef05cb8801a1a6bc6024d6e299d2b53165788be13607c4",
     "tests/Dse.Tests/SharedCommitTests.cs": "9999a93a1a2b336dc4fdf50beee9721e630859aa44ac9f676e362db0a1f30da4",
     "web/package-lock.json": "0f160f36b143aa53bf5395e12a295cd740b34e1dab1b9abb2579e504c15ea3a5",
     "web/playwright.config.ts": "034fd3ad6b2eeb42f288d51f40c48274498e8bea518c37fd2fb05969190f44eb",
     "web/src/knowledge.tsx": "f6d0d688732286e1e967652e62b8aeb4f0862f5050d58201720fa6d8ca315012",
     "web/tests/workspace.spec.ts": "e9eb69ee620a07bab4fbcd82749a2f68336ef01eb730052863045e0cf34af6e5"
   },
-  "priorHead": "c3ce32b70b0a8764ff347fa74864ea9e9594a41b"
+  "priorHead": "649961edfc134b8dea3dbc19b00f79d911786667"
 }

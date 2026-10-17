@@ -77,7 +77,7 @@ public sealed class OrganizationService(IPrimaryRepository repository, AccessFen
                     if (departments.Items.Length >= 100 || departments.ContinuationToken is not null) throw new DomainException(422,"ORGANIZATION_LIMIT");
                 }
                 if (before is not null && (before.Value["validFrom"]!.GetValue<DateTimeOffset>() != change.ValidFrom ||
-                    before.Value["validTo"] is not null && !JsonNode.DeepEquals(before.Value["validTo"], body["validTo"])))
+                    before.Value["validTo"] is JsonNode previousEnd && previousEnd.GetValue<DateTimeOffset>() != change.ValidTo))
                     throw new DomainException(409, "DEPARTMENT_ID_REUSE");
                 foreach (var successor in change.SuccessorIds)
                     if (await repository.ReadAsync(partition, AuthorityProvider.DepartmentId(successor), token) is null) throw new ArgumentException("Unknown successor");
