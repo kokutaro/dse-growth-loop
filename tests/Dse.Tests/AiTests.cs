@@ -49,6 +49,60 @@ public class AiTests
     private static Task<AiResult<Decisions>> Decide(AiService service, AiContext? context = null, CancellationToken ct = default) =>
         service.DecideAsync(context ?? Context(), "Dummy billing request", Questions(), [], ct);
 
+    public static IEnumerable<object?[]> AuthorityConfigurationCases() =>
+        from mode in new string?[] { null, "Azure" }
+        from mismatch in new[] { "role", "scope", "principal", "oid", "disabled" }
+        from cached in new[] { false, true }
+        select new object?[] { mode, mismatch, cached };
+
+    [Theory]
+    [MemberData(nameof(AuthorityConfigurationCases))]
+    public async Task Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(string? mode, string mismatch, bool cached)
+    {
+        const string tenant = "11111111-1111-4111-8111-111111111111", oid = "22222222-2222-4222-8222-222222222222";
+        var actor = new ActorAccess(tenant, "principal-ai-authority", "person-ai-authority", ["member", "analyst"], ["demo"]);
+        var store = new MemoryRecordStore();
+        await AuthorityProvider.InitializeAsync(store, tenant, [new(tenant, oid, actor.PrincipalId, actor.PersonId, actor.Roles, true)], [new(actor.PrincipalId, actor.ScopeIds)], default);
+        var config = Config(); config["Data:Mode"] = mode; config["Auth:TenantId"] = tenant;
+        config["Auth:Bindings:0:TenantId"] = tenant; config["Auth:Bindings:0:Oid"] = oid;
+        config["Auth:Bindings:0:PrincipalId"] = actor.PrincipalId; config["Auth:Bindings:0:PersonId"] = actor.PersonId;
+        config["Auth:Bindings:0:Roles:0"] = "member"; config["Auth:Bindings:0:Roles:1"] = "analyst"; config["Auth:Bindings:0:Enabled"] = "true";
+        config["Auth:Grants:0:PrincipalId"] = actor.PrincipalId; config["Auth:Grants:0:ScopeIds:0"] = "demo";
+        var repo = new PrimaryRepository(store); actor = await new AuthorityProvider(repo, config).RequireAsync(actor, default);
+        var handler = new Handler((_, _) => Task.FromResult(Response(Fixture("choice"))));
+        using var service = new AiService(config, repo, new(repo, config), new(repo), new(store, TimeProvider.System),
+            new AiHttpTransport(new HttpClient(handler), new Credentials(), TimeProvider.System, config), TimeProvider.System);
+        var context = Context() with { Actor = actor, PromptVersion = "search-query-v2" };
+        if (cached) Assert.Equal(AiStatus.Succeeded, (await Decide(service, context)).Status);
+        var partition = RecordPartition.Catalog(tenant);
+        async Task<string> Snapshot()
+        {
+            var records = new List<object>();
+            foreach (var kind in new[] { "aiRun", "aiReservation", "authorityControl", "personAuthority" })
+            {
+                var page = await store.QueryAsync(partition, kind, null, null, 100, null, default);
+                Assert.Null(page.ContinuationToken);
+                records.AddRange(page.Items.Select(row => new { row.ETag, Value = row.Value.ToJsonString() }));
+            }
+            foreach (var id in new[] { "ai-day-" + DateTimeOffset.UtcNow.ToString("yyyy-MM-dd"), "system-ai-gate" })
+            {
+                var row = await store.ReadAsync(partition, id, default);
+                records.Add(new { Id = id, row?.ETag, Value = row?.Value.ToJsonString() });
+            }
+            return Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(records)));
+        }
+        var before = await Snapshot();
+        if (mismatch == "role") config["Auth:Bindings:0:Roles:1"] = "publisher";
+        if (mismatch == "scope") config["Auth:Grants:0:ScopeIds:0"] = "other";
+        if (mismatch == "principal") { config["Auth:Bindings:0:PrincipalId"] = "replacement"; config["Auth:Grants:0:PrincipalId"] = "replacement"; }
+        if (mismatch == "oid") config["Auth:Bindings:0:Oid"] = "33333333-3333-4333-8333-333333333333";
+        if (mismatch == "disabled") config["Auth:Bindings:0:Enabled"] = "false";
+        var error = await Assert.ThrowsAsync<DomainException>(() => Decide(service, context));
+        Assert.Equal("AUTHORITY_REVOKED", error.Code);
+        Assert.Equal(cached ? 1 : 0, handler.Calls);
+        Assert.Equal(before, await Snapshot());
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

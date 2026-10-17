@@ -2,6 +2,10 @@
 
 更新日：2026-09-29。Issue #8のローカル実装。全件ダミー限定。実Azure・有料推論・実請求との照合は未実施で、#9の承認ゲートで行う。
 
+## 2026-10-17：送信前の主体設定照合
+
+共通AI実行器は設定付きAuthorityProviderを保持し、tenant fence取得後、入力組立・AiRun作成・使用量予約・HTTP送信・キャッシュ参照より前に正本と現在設定を照合する。既定/明示Azureではrole/scope/principal/OID/enabled不一致を `AUTHORITY_REVOKED` で拒否する。会話参加の照合にも同じProviderを使う。根拠なしの質問分類も対象で、入力の根拠検査や送信後検査だけに依存しない。[再現・回帰証跡](validation-results/20261017-ai-authority-before-send/results.md)。この変更で実主体の権限や同意を付与せず、実AI品質・実環境認可受入も完了扱いにしない。
+
 ## 呼出し境界
 
 Domainの`ITextStructurer`、`IDecisionProvider`、`IReranker`、`ISummarizer`をAPI/WorkerのDIへ登録する。業務層へ提供元JSONを渡さず、`StructuredText`、`Decisions`、`Ranking`、`GroundedText`を返す。実HTTPと決定論的Mockは同じ応答検証を通る。`Ai__Mode=Mock`の結果は`modelId=mock-v1`で区別し、使用トークン・推定費用は0。
