@@ -31,7 +31,7 @@ PR41のオフライン変換器を再利用する。6資料のpath/SHA256を照�
 
 ## 検証と成果物
 
-追加11件、全Python154件成功。新CLI行カバレッジ99%（入口1行は親の集計外）。hash改変・候補/dataset不一致・改変#34資料・root逸脱・fixtureの実受入への付替え・不正候補設定・出力保護・本番適用不可のschema不変条件を検証した。新しい実AI・Azure計測・台帳照合・遅延改善は0。
+追加11件、依存統合前の全Python154件、PR39/40/41統合後の全Python241件成功。新CLI行カバレッジ99%（入口1行は親の集計外）。hash改変・候補/dataset不一致・改変#34資料・root逸脱・fixtureの実受入への付替え・不正候補設定・出力保護・本番適用不可のschema不変条件を検証した。新しい実AI・Azure計測・台帳照合・遅延改善は0。
 
 [manifest.json](manifest.json) は6資料の参照とhash、[adoption-packet.json](adoption-packet.json) は生成結果、[issue33-local-receipt.json](issue33-local-receipt.json) はPR40時点の検証記録。[schema](../../evaluation/issue-35/adoption-packet.schema.json) は未採用・費用null・本番適用禁止の不変条件を検証する。入力資料の型・候補と資料のbindingはコンパイラが別途検証する。保存品質reportを新規測定へ付替えず、#35/#14/#16を自動完了にしない。
 

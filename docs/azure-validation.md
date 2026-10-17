@@ -1,6 +1,6 @@
 # Azure接続・権限・起動停止の検証
 
-更新日：2026-10-01。Issue #9。全件ダミー・許可ユーザー1名の初期接続検証。[展開](deployment.md)、[永続化とRBAC](persistence.md)、[取込と回復](document-ingestion.md)、[AI台帳](ai-adapters.md)を併用する。アプリ全体の受入は #16。
+CLI停止snapshot説明の更新日：2026-10-12。実環境記録は2026-10-01のまま。Issue #9。全件ダミー・許可ユーザー1名の初期接続検証。[展開](deployment.md)、[永続化とRBAC](persistence.md)、[取込と回復](document-ingestion.md)、[AI台帳](ai-adapters.md)を併用する。アプリ全体の受入は #16。
 
 ## 実行ゲートと証跡
 
@@ -16,12 +16,18 @@ python3 scripts/azure_validation.py local --run-id YYYYMMDD-local-01
 python3 scripts/azure_validation.py preflight --run-id YYYYMMDD-preflight-01 \
   --subscription <subscription-id> --location japaneast --foundry-location <region>
 
-# アプリへのHTTP要求なし。全active revisionのレプリカ数を単発で保存
+# アプリへのHTTP要求なし。全revision・各実replica一覧・最後の全revision読戻しを保存
 python3 scripts/azure_validation.py replicas --run-id YYYYMMDD-api-zero-01 \
   --subscription <subscription-id> --app dse-api
+
+# VNet移行後の新API。preflightでもApp/Environmentの組を一致させる
+python3 scripts/azure_validation.py replicas --run-id YYYYMMDD-api-vnet-zero-01 \
+  --subscription <subscription-id> --app dse-api-vnet --environment dse-environment-vnet-jpe
 ```
 
-終了0はコマンドの成功／読み取り点検の条件成立だけを表す。`report.json`の`liveAcceptance`とライブscenarioは必ず`not_run`で作成される。欠けた測定値は`null`で、0 RU／0秒と解釈しない。未登録Provider、CLI失敗、active revisionなしは終了1。RG不存在は「不存在を読み取れた」という結果で、基盤構築済みを意味しない。モデル一覧・クォータ・ARM permissionsの読取成功も、選択モデルの利用可能性やMIのデータ権限の合格にはならない。
+終了0はコマンドの成功／読み取り点検の条件成立だけを表し、停止確認とは区別する。全revision一覧が取得できればactiveがなくても読取成功になり、activeや実replicaが残る場合でもCLI読取が正常ならexit0・`stopSnapshotConfirmed=false`になり得る。停止確認はreportの `stopSnapshotConfirmed=true` を別途確認する。これは全revisionがinactive/Stopped/metadata replica0、各実replica一覧が空、最終読戻しの名前/状態が初回と一致する場合だけ成立する。一覧が空・未知値・最終取得中の追加/削除/状態変化・CLI失敗は停止未確認。空の全revision一覧、未登録Provider、CLI失敗、読取前提不成立は終了1、引数不正は終了2。preflight/replicasのAppとEnvironmentの混在も引数段階で拒否する。
+
+`report.json`の`liveAcceptance`とライブscenarioは必ず`not_run`で作成される。欠けた測定値は`null`で、0 RU／0秒と解釈しない。RG不存在は「不存在を読み取れた」という結果で、基盤構築済みを意味しない。モデル一覧・クォータ・ARM permissionsの読取成功も、選択モデルの利用可能性やMIのデータ権限の合格にはならない。停止snapshotは取得時点のcontrol-plane情報であり、将来の停止継続・請求hard cap・実環境受入を保証しない。
 
 各段階で別run-idを使用し、`docs/validation-results/<run-id>/`へ次を保存する。個人ID・subscription等の識別子を伏せる場合は、実行者が保管する対応表の参照を残す。原ログ、トークン、秘密、アプリの全env／全ARM出力はコミットしない。`--out .artifacts/azure-validation`ならローカル保管だけになる。
 
@@ -97,7 +103,7 @@ az containerapp job stop --name dse-seed-demo --job-execution-name "$DSE_EXECUTI
 # 一時validation Job等、対象RGの他の承認済み実行も個別に停止
 ```
 
-5. revision一覧でactiveなし、Job一覧でRunningなしを確認する。`replicas`のactiveなしは停止確認では予期した状態だが、0→1→0試験の0台成功に流用しない。Queueはpurgeせず残件数／不可視期限を記録し、消費MIの全プロセスが停止していることを確認する。モデルを削除せず全呼出し元を停止し、usage増加が止まることを確認する。外部呼出し元があれば別途停止が必要。
+5. 全revisionでactiveなし・Stopped・metadata/実replica0、Job一覧でRunningなしを確認する。`replicas`のexit0やactiveなしだけでは停止成功にせず、最終読戻し付きの `stopSnapshotConfirmed=true` を読む。このsnapshotを0→1→0試験の全体成功へ流用しない。Queueはpurgeせず残件数／不可視期限を記録し、消費MIの全プロセスが停止していることを確認する。モデルを削除せず全呼出し元を停止し、usage増加が止まることを確認する。外部呼出し元があれば別途停止が必要。
 6. `DEPLOY_INGESTION_WORKER=false`、モデル名空欄、基盤だけの再配置は停止／削除操作ではない。コンパイル済みARMの全nested deploymentはIncremental。省略したWorker／モデル／Budgetは既存のまま残る一方、テンプレートに含めた既存リソースの設定は再適用される。特に空modelDeploymentNameはアプリの推論設定を空にするため、通常の再配置／image復帰でモデル設定を消さない。停止後の`apps`もAPIを再有効化するため、復帰は別途承認して行う。
 
 ## 費用の後日照合とTodoの更新
