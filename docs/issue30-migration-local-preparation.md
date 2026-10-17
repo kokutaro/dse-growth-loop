@@ -2,6 +2,8 @@
 
 ## 2026-10-17 の測定結果と継続方針
 
+Copilotの追加指摘により、親監視のselect/kqueue中にSIGTERM/SIGINTを受けた場合の起床と期限起点を修正した。nonblocking self-pipeでwaitを起床し、停止期限は最初のsignalの単調時刻から固定する。繰返しsignalやwait復帰/cleanup遅延で猶予を延ばさない。修正前の偽時計回帰は期限12.3に対し期待10.3で失敗し、修正後はMac実OSのpoll4秒/停止猶予0.3秒のSIGTERM・SIGINT回帰、Linux pidfd経路の単体回帰、wakeup設定失敗のfail-closedを含む全Python215件が成功。Linux実OSは新CIで確認し、Azure故障受入の代用にはしない。
+
 認証付きwarm24/cold3の観測は終了し、[測定結果](validation-results/20261017-issue30-measurement-summary/results.md)へ保存した。全24件HTTP p95は17.403440秒、200のみ22件は18.002211秒で15秒未達。cold02のHAR/HTTP時間・状態等は欠落し、coldは停止・再有効化後の初回検索で起動待ち包含は未確認。総合受入pendingを維持する。全46revisionの復元・active/metadata/actual0は05:56:53 UTCに二重確認済み。
 
 ユーザーは06:06:41 UTCに初回検索の遅延を既知課題として残し、他の作業へ進むと判断した。段階別計測追加・最適化・追加実測は行わず、閾値変更や合格への置換もしない。作業台帳・試行数台帳は05:45:52 UTCの方針で実行条件から外しており、追加照合は行わない。アプリの台帳・上限・認証設定の無効化ではない。以下の「未実測」「実行前条件」は10/11時点の履歴であり、最新結果は上記リンクを参照する。

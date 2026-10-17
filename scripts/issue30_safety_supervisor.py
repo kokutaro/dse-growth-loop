@@ -91,7 +91,8 @@ class AzureCli:
 
 class ParentWatch:
     """Watch an immutable OS process handle; never confuse PID reuse with liveness."""
-    def __init__(self, pid):
+    def __init__(self, pid, wake_fd=None):
+        self.wake_fd = wake_fd
         self.handle = None
         self.exited = False
         try:
@@ -99,7 +100,10 @@ class ParentWatch:
                 self.handle = select.kqueue()
                 event = select.kevent(pid, filter=select.KQ_FILTER_PROC,
                     flags=select.KQ_EV_ADD | select.KQ_EV_ONESHOT, fflags=select.KQ_NOTE_EXIT)
-                self.handle.control([event], 0, 0)
+                events = [event]
+                if wake_fd is not None:
+                    events.append(select.kevent(wake_fd, filter=select.KQ_FILTER_READ, flags=select.KQ_EV_ADD))
+                self.handle.control(events, 0, 0)
                 self.kind = 'kqueue'
             elif hasattr(os, 'pidfd_open'):
                 self.handle = os.pidfd_open(pid)
@@ -117,8 +121,18 @@ class ParentWatch:
     def wait(self, timeout):
         if self.exited: return True
         try:
-            if self.kind == 'kqueue': return bool(self.handle.control(None, 1, timeout))
-            return bool(select.select([self.handle], [], [], timeout)[0])
+            if self.kind == 'kqueue':
+                events = self.handle.control(None, 2, timeout)
+                parent_exited = any(event.filter == select.KQ_FILTER_PROC for event in events)
+                wake_ready = any(event.filter == select.KQ_FILTER_READ for event in events)
+            else:
+                ready = select.select([self.handle] + ([self.wake_fd] if self.wake_fd is not None else []), [], [], timeout)[0]
+                parent_exited = self.handle in ready
+                wake_ready = self.wake_fd is not None and self.wake_fd in ready
+            if wake_ready:
+                try: os.read(self.wake_fd, 4096)
+                except BlockingIOError: pass
+            return parent_exited
         except OSError:
             raise SafetyError('PARENT_WATCH_FAILED') from None
 
@@ -278,21 +292,33 @@ def main():
     started = time.monotonic()
     total = Deadline.at(started + args.run_seconds + args.stop_seconds)
     run_end = started + args.run_seconds
-    requested = False
+    requested_at = None
     def request_stop(_signal, _frame):
-        nonlocal requested
-        requested = True
+        nonlocal requested_at
+        # Repeated signals must not move the first stop deadline forward.
+        if requested_at is None:
+            requested_at = time.monotonic()
     handlers = {s: signal.getsignal(s) for s in (signal.SIGTERM, signal.SIGINT)}
     for s in handlers: signal.signal(s, request_stop)
     watcher = None
+    wake_read = wake_write = previous_wakeup = None
     trigger = 'RUN_DEADLINE'
     reporting_failed = False
     try:
-        watcher = ParentWatch(args.parent_pid)
+        try:
+            # Python retries interrupted select/kqueue calls (PEP 475). A wakeup
+            # descriptor makes the first signal observable without waiting for poll.
+            wake_read, wake_write = os.pipe()
+            os.set_blocking(wake_read, False)
+            os.set_blocking(wake_write, False)
+            previous_wakeup = signal.set_wakeup_fd(wake_write, warn_on_full_buffer=False)
+        except (OSError, ValueError):
+            raise SafetyError('SIGNAL_WAKEUP_UNAVAILABLE') from None
+        watcher = ParentWatch(args.parent_pid, wake_read)
         emit({'event': 'SUPERVISOR_ARMED', 'parentPid': args.parent_pid, 'apps': apps,
               'runSeconds': args.run_seconds, 'stopSeconds': args.stop_seconds})
         while True:
-            if requested:
+            if requested_at is not None:
                 trigger = 'SIGNAL'; break
             remaining = run_end - time.monotonic()
             if remaining <= 0: break
@@ -310,16 +336,26 @@ def main():
             except OSError: trigger = 'PARENT_WATCH_CLEANUP_FAILED'
     # One fixed stop deadline shared by every app, revision and CLI call.
     # Early parent exit/signal does not spend the unused run window on retries.
-    stop_deadline = Deadline.at(min(total.end, time.monotonic() + args.stop_seconds))
-    result = stop_apps(AzureCli(args.cli_command, args.call_timeout_seconds), apps, stop_deadline, args.poll_seconds)
-    result.update(event='SUPERVISOR_FINISHED', trigger=trigger, elapsedSeconds=time.monotonic()-started,
-                  totalBudgetSeconds=args.run_seconds+args.stop_seconds)
+    stopped_at = time.monotonic()
+    stop_deadline = Deadline.at(min(total.end, stopped_at + args.stop_seconds,
+        (requested_at + args.stop_seconds) if requested_at is not None else total.end))
     try:
-        emit(result)
-    except (OSError, ValueError):
-        reporting_failed = True
-        mute_failed_stdout()
+        result = stop_apps(AzureCli(args.cli_command, args.call_timeout_seconds), apps, stop_deadline, args.poll_seconds)
+        result.update(event='SUPERVISOR_FINISHED', trigger=trigger, elapsedSeconds=time.monotonic()-started,
+                      totalBudgetSeconds=args.run_seconds+args.stop_seconds)
+        try:
+            emit(result)
+        except (OSError, ValueError):
+            reporting_failed = True
+            mute_failed_stdout()
     finally:
+        if previous_wakeup is not None:
+            try: signal.set_wakeup_fd(previous_wakeup)
+            except (OSError, ValueError): reporting_failed = True
+        for descriptor in (wake_read, wake_write):
+            if descriptor is not None:
+                try: os.close(descriptor)
+                except OSError: reporting_failed = True
         for s, handler in handlers.items(): signal.signal(s, handler)
     return 0 if result['stopConfirmed'] and not reporting_failed else 2
 
