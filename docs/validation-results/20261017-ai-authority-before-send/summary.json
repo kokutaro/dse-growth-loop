@@ -1,0 +1,37 @@
+{
+  "schema": "ai-authority-before-send-local-v1",
+  "baseCommit": "46f2ecacdafe6d9f60b30102874a75e90527ec57",
+  "dotnet": {
+    "passed": 746,
+    "failed": 0,
+    "skipped": 0,
+    "newRegressionCases": 20
+  },
+  "python": {
+    "passed": 40,
+    "failed": 0,
+    "offlineQuality": 14,
+    "savedMeasurements": 15,
+    "adoptionPacket": 11
+  },
+  "preFixFailureCases": 20,
+  "workerBuild": {
+    "success": true,
+    "warnings": 0,
+    "errors": 0
+  },
+  "azureOperations": 0,
+  "externalModelCalls": 0,
+  "issuesToRemainOpen": [
+    1,
+    14,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35
+  ],
+  "minimumNextHumanAction": "Create and review Issue32 field-level gold in the existing 120-record draft; no blanket approval of unreviewed labels",
+  "realAuthorizationAcceptance": "pending"
+}

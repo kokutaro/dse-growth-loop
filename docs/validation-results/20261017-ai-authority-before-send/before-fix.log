@@ -1,0 +1,209 @@
+  Dse.Domain -> /workspace/dse-growth-loop/src/Dse.Domain/bin/Release/net10.0/Dse.Domain.dll
+  Dse.Evaluation -> /workspace/dse-growth-loop/src/Dse.Evaluation/bin/Release/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /workspace/dse-growth-loop/src/Dse.Infrastructure/bin/Release/net10.0/Dse.Infrastructure.dll
+  Dse.Api -> /workspace/dse-growth-loop/src/Dse.Api/bin/Release/net10.0/Dse.Api.dll
+  Dse.Tests -> /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll
+Test run for /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.49]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "disabled", cached: True) [FAIL]
+[xUnit.net 00:00:00.51]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "oid", cached: True) [FAIL]
+[xUnit.net 00:00:00.51]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "disabled", cached: False) [FAIL]
+[xUnit.net 00:00:00.51]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "scope", cached: False) [FAIL]
+[xUnit.net 00:00:00.51]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "disabled", cached: True) [FAIL]
+[xUnit.net 00:00:00.51]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "role", cached: True) [FAIL]
+[xUnit.net 00:00:00.51]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "scope", cached: True) [FAIL]
+[xUnit.net 00:00:00.51]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "principal", cached: False) [FAIL]
+[xUnit.net 00:00:00.51]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "oid", cached: False) [FAIL]
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "disabled", cached: True) [161 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "b632358503795da884ab1b58a2067bc787e64f221"···
+Actual:   "44c14e61352868e428538cbd8886d5457a4d9cd26"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "oid", cached: True) [3 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "05a47af7ab2cec84ac0a56247fc08ea4b7ace6175"···
+Actual:   "2c175735041fe1f8602ffbc00c039e8113c7b7c3b"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "disabled", cached: False) [2 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "scope", cached: False) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "disabled", cached: True) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "92f0367f75ca1d6634aee1f264f420d9c7578d54d"···
+Actual:   "2359192903b151dd28f2cfe20b7345587d1075694"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "role", cached: True) [6 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "8fa9107d129b5eb5e1852f8937d06b9aa9b781adc"···
+Actual:   "3ed40599562fb80d033fd343d0c3822b3ffa25ee8"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "scope", cached: True) [2 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "cfb1539235c5c7512b4dc7dd5b3068f9c5cc2ed31"···
+Actual:   "46dbd50cb6f3d68c9a10c2c0e39427ebede0f8631"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "principal", cached: False) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "oid", cached: False) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "scope", cached: True) [FAIL]
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "principal", cached: True) [FAIL]
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "principal", cached: False) [FAIL]
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "oid", cached: True) [FAIL]
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "role", cached: False) [FAIL]
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "principal", cached: True) [FAIL]
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "disabled", cached: False) [FAIL]
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "role", cached: True) [FAIL]
+[xUnit.net 00:00:00.53]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "scope", cached: False) [FAIL]
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "scope", cached: True) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "3492823fa51ef9489cad17d71595750c07f35dcbd"···
+Actual:   "c70f3df8581ca894ef8d151074db64103647a5e1b"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "principal", cached: True) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "2731a67b461d6a0b9d612e7a965c8f49a2fc5ec6f"···
+Actual:   "4cef7ba28cf189d7c031f58fe7008fdc69049a2ef"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "principal", cached: False) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "oid", cached: True) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "49ebce925dcaa772757618d82a2c811d5a2d993d6"···
+Actual:   "9ad04ff1544730ae294614a3a7c638404cabb22b4"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "role", cached: False) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "principal", cached: True) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "dd199d5eacb57056f5431248e7c59e7731afe53b3"···
+Actual:   "59ad60129232b5c53ffea1e92ed4005fbbae106d9"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "disabled", cached: False) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "role", cached: True) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "dc32446f111c11fa75cc77add38a5145d66e24eaf"···
+Actual:   "28d63e080085c1df8c45b1bd5c3f22ec77b1f3f86"···
+           ↑ (pos 0)
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 103
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "scope", cached: False) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.54]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "oid", cached: False) [FAIL]
+[xUnit.net 00:00:00.54]     Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "role", cached: False) [FAIL]
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: "Azure", mismatch: "oid", cached: False) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(mode: null, mismatch: "role", cached: False) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1
+  Stack Trace:
+     at Dse.Tests.AiTests.Current_configuration_mismatch_blocks_classification_before_send_cache_or_usage_writes(String mode, String mismatch, Boolean cached) in /workspace/dse-growth-loop/tests/Dse.Tests/AiTests.cs:line 102
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:    20, Passed:     0, Skipped:     0, Total:    20, Duration: 221 ms - Dse.Tests.dll (net10.0)

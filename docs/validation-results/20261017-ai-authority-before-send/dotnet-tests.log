@@ -1,0 +1,9 @@
+  Dse.Domain -> /workspace/dse-growth-loop/src/Dse.Domain/bin/Release/net10.0/Dse.Domain.dll
+  Dse.Evaluation -> /workspace/dse-growth-loop/src/Dse.Evaluation/bin/Release/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /workspace/dse-growth-loop/src/Dse.Infrastructure/bin/Release/net10.0/Dse.Infrastructure.dll
+  Dse.Api -> /workspace/dse-growth-loop/src/Dse.Api/bin/Release/net10.0/Dse.Api.dll
+  Dse.Tests -> /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll
+Test run for /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   746, Skipped:     0, Total:   746, Duration: 27 s - Dse.Tests.dll (net10.0)

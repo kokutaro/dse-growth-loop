@@ -12,6 +12,7 @@ namespace Dse.Infrastructure;
 public sealed class AiService(IConfiguration config, IPrimaryRepository repository, SourceGuard guard,
     AccessFence fence, AiLedger ledger, IAiTransport transport, TimeProvider clock) : ITextStructurer, IDecisionProvider, IReranker, ISummarizer, IKnowledgeDrafter, IDisposable
 {
+    private readonly AuthorityProvider authorityProvider = new(repository, config);
     private readonly MemoryCache cache = new(new MemoryCacheOptions { SizeLimit = 128 });
     private sealed record Cached(byte[] Value, string RunId);
     public void Dispose() => cache.Dispose();
@@ -48,7 +49,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
     private async Task<AiResult<T>> RunProtectedAsync<T>(AiContext context, string operation, string text, ChoiceQuestion[] choices, NoulQuestion[] nouls,
         Func<JsonObject, AiModel, HashSet<string>, IReadOnlyDictionary<string, HashSet<string>>, T> parse, CancellationToken ct)
     {
-        var actor = await new AuthorityProvider(repository).RequireAsync(context.Actor, ct);
+        var actor = await authorityProvider.RequireAsync(context.Actor, ct);
         var searchRerank = operation == "rerank" && context.PromptVersion is "search-rerank-v1" or "search-rerank-v2";
         ChatAccess? chat = null;
         ActorAccess[] sharedActors = [];
@@ -64,7 +65,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             var session = (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, context.SessionId), context.SessionId, ct))?.Value
                 ?? throw new DomainException(404, "NOT_FOUND");
             AccessPolicy.RequireRead(actor, session);
-            await new AuthorityProvider(repository).RequireSessionAsync(actor, session, ct);
+            await authorityProvider.RequireSessionAsync(actor, session, ct);
             if (operation == "knowledgeDraft" && context.PromptVersion == "knowledge-draft-v1")
             {
                 if (session.Text("ownerId") != actor.PrincipalId || session.Number("sourceVersion") != context.DataVersion || context.ConversationEvidenceIds is not { Length: > 0 }) throw new DomainException(409, "SOURCE_REVOKED");
