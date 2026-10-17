@@ -515,4 +515,30 @@ public sealed class OrganizationAuthorityTests
         Assert.Equal(control.ETag,(await s.Authority.ControlAsync("demo",default)).ETag);
         Assert.Equal(ended.ETag,(await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),AuthorityProvider.DepartmentId("dummy-closed-format"),default))!.ETag);
     }
+    [Theory]
+    [InlineData(null,"role")] [InlineData("Azure","role")] [InlineData(null,"scope")] [InlineData("Azure","scope")]
+    [InlineData(null,"principal")] [InlineData("Azure","principal")] [InlineData(null,"oid")] [InlineData("Azure","oid")]
+    [InlineData(null,"disabled")] [InlineData("Azure","disabled")]
+    public async Task Explicit_and_default_Azure_reject_configuration_mismatch_without_restoring_catalog_privileges(string? mode,string mismatch)
+    {
+        const string tenant="11111111-1111-4111-8111-111111111111",oid="22222222-2222-4222-8222-222222222222";
+        var actor=new ActorAccess(tenant,"principal-mode-fixture","person-mode-fixture",["member","operator"],["demo"]);
+        var store=new MemoryRecordStore();await AuthorityProvider.InitializeAsync(store,tenant,[new(tenant,oid,actor.PrincipalId,actor.PersonId,actor.Roles,true)],[new(actor.PrincipalId,actor.ScopeIds)],default);
+        var settings=new Dictionary<string,string?>{
+            ["Auth:Bindings:0:TenantId"]=tenant,["Auth:Bindings:0:Oid"]=oid,["Auth:Bindings:0:PrincipalId"]=actor.PrincipalId,
+            ["Auth:Bindings:0:PersonId"]=actor.PersonId,["Auth:Bindings:0:Roles:0"]="member",["Auth:Bindings:0:Roles:1"]="operator",["Auth:Bindings:0:Enabled"]="true",
+            ["Auth:Grants:0:PrincipalId"]=actor.PrincipalId,["Auth:Grants:0:ScopeIds:0"]="demo"};
+        if(mode is not null) settings["Data:Mode"]=mode;
+        var config=new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
+        var provider=new AuthorityProvider(new PrimaryRepository(store),config);var original=await provider.ClaimsAsync(tenant,oid,default);Assert.True(original.HasRole("operator"));
+        if(mismatch=="role") settings.Remove("Auth:Bindings:0:Roles:1");
+        if(mismatch=="scope") settings["Auth:Grants:0:ScopeIds:0"]="other";
+        if(mismatch=="principal") {settings["Auth:Bindings:0:PrincipalId"]="principal-replacement";settings["Auth:Grants:0:PrincipalId"]="principal-replacement";}
+        if(mismatch=="oid") settings["Auth:Bindings:0:Oid"]="33333333-3333-4333-8333-333333333333";
+        if(mismatch=="disabled") settings["Auth:Bindings:0:Enabled"]="false";
+        provider=new AuthorityProvider(new PrimaryRepository(store),new ConfigurationBuilder().AddInMemoryCollection(settings).Build());
+        Assert.Null(await provider.PersonAsync(tenant,actor.PersonId,default));
+        Assert.Equal(403,(await Assert.ThrowsAsync<DomainException>(()=>provider.ClaimsAsync(tenant,oid,default))).Status);
+        Assert.Equal("AUTHORITY_REVOKED",(await Assert.ThrowsAsync<DomainException>(()=>provider.RequireAsync(original,default))).Code);
+    }
 }

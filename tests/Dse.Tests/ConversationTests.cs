@@ -33,7 +33,7 @@ public class ConversationTests
             if (fail) throw new IOException("lost acknowledgment");
         }
     }
-    private static ConversationService Service(IPrimaryRepository repo) => new(repo, new(), new IdentityResolver(new ConfigurationBuilder().Build()), TimeProvider.System);
+    private static ConversationService Service(IPrimaryRepository repo) => new(repo, new(), new IdentityResolver(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo"}).Build()), TimeProvider.System);
     private static async Task<(FaultStore Repo, ConversationService Service, string Sid)> Setup()
     {
         var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);

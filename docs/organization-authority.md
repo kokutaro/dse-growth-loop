@@ -27,6 +27,8 @@ catalogの同一tenant partitionに `authorityControl`、`department`、`personA
 
 終了済み部署の開始・終了日時は日時として比較する。同じUTC時刻の `Z` と `+00:00` の表記差は改称・後継ID訂正を妨げない。既存IDの開始日時変更、終了日時変更、終了後の再開は拒否する。
 
+設定が渡される認可境界では、`Data:Mode` 未指定もAzureとして正本とbinding・OID・role・scopeを照合する。設定からoperatorを削除しても正本の旧roleを使い続けず、不一致を拒否する。Demoでの設定照合省略は明示的な `Data:Mode=Demo` に限る。これはコードの拒否条件であり、実際の認可設定を変更するものではない。
+
 公開同意は元の参加者（退会者を含む）全員が対象、表示名は現在の参加者全員が対象で、混同しない。必要な元参加者が再同意できない場合は公開・分析を停止したままにする。
 
 要約のGETは `reviewedVersion` を返し、request-review/consent/approveで表示済みの同じ値を必須とする。要約版・scope・本文・発生部署snapshot・現authorityTokenに束縛したopaque hashであり、サーバーが新しい版へ黙って同意を付け替えない。旧公開原本の再レビューはdraftへ戻し、同意・承認・activeVersionを消してsource/access版を進める。公開の再承認には全員の新しい公開同意が必要で、分析利用は別の同意値である。

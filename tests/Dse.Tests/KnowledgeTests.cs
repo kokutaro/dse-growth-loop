@@ -163,7 +163,7 @@ public class KnowledgeTests
     public async Task Consent_revocation_and_membership_changes_block_AI_cache_and_existing_citations()
     {
         var s = await Create(); await Publish(s);
-        var guard = new SourceGuard(s.Repo,s.Config); var sourceUse = new SourceUseService(s.Repo, guard, new(s.Repo), new(new ConfigurationBuilder().Build()));
+        var guard = new SourceGuard(s.Repo,s.Config); var sourceUse = new SourceUseService(s.Repo, guard, new(s.Repo), new(s.Config));
         var units = await new MemoryProjectionRepository(s.Store).FindAsync(new([], [], ["引き継ぎ"]), Guest.Search, default);
         var source = await guard.RequireAsync(Guest, units.Single(x => x.EntityId == KnowledgeService.Id(s.Sid)), default);
         // A persisted AI citation in the same session must be hidden on the next authoritative history read.

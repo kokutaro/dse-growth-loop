@@ -4,14 +4,14 @@
   "realAcceptance": false,
   "baselineMain": "ca75ded43bd0a93a73ff58059633bc74ed21e8d4",
   "dotnet": {
-    "total": 637,
-    "passed": 637,
+    "total": 647,
+    "passed": 647,
     "failed": 0,
-    "standardRegression": 636,
+    "standardRegression": 646,
     "largeEvaluationFixture": 1,
-    "authorityTests": 40,
+    "authorityTests": 50,
     "filter": null,
-    "logSha256": "8cb2c80f443edd8c25f1c3b2ced0f65b6f64034c3a8b968323b0f44e21945171"
+    "logSha256": "4e0c1a8494b9c7bf97dfe661bf93adacb5b99e6c7fcb696af84e67d02fb7fe06"
   },
   "python": {
     "scripts": 241,
@@ -123,6 +123,24 @@
     "copilotFindingsAddressed": 1,
     "departmentEndFormatCases": 2,
     "scope": "admin department end timestamp comparison",
+    "contractAndBrowserEvidence": "thirdReviewFollowup"
+  },
+  "fourthReviewDotnet": {
+    "total": 637,
+    "passed": 637,
+    "failed": 0,
+    "standardRegression": 636,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 40,
+    "filter": null,
+    "logSha256": "8cb2c80f443edd8c25f1c3b2ced0f65b6f64034c3a8b968323b0f44e21945171"
+  },
+  "fifthReviewFollowup": {
+    "priorHead": "470928ddf241f0d04ec4e2a6dd69d4b8cd385bb2",
+    "copilotFindingsAddressed": 1,
+    "azureModeMismatchCases": 10,
+    "scope": "explicit and default Azure configuration mismatch rejection",
+    "humanSafetyReviewCompleted": false,
     "contractAndBrowserEvidence": "thirdReviewFollowup"
   }
 }

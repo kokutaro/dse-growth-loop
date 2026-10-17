@@ -28,7 +28,7 @@ public sealed class AuthorityProvider(IPrimaryRepository repository, IConfigurat
             row.Value.Text("personId") != person || row.Value["enabled"]?.GetValue<bool>() != true ||
             row.Value.Text("generation") != control.Value.Text("generation") || string.IsNullOrEmpty(row.Value.Text("accessEpoch"))) return null;
         var roles = row.Value.Strings("roles"); var scopes = row.Value.Strings("scopeIds");
-        if (configuration?["Data:Mode"] == "Azure")
+        if (configuration is not null && (configuration["Data:Mode"] ?? "Azure") == "Azure")
         {
             // Configuration can conservatively block a mismatched deployment, never grant authority.
             var configured = new IdentityResolver(configuration).ResolvePerson(tenant,person);

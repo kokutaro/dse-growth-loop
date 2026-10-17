@@ -47,7 +47,7 @@ public class SharedCommitTests
         var identities = new IdentityResolver(identityConfig);
         var actor = identities.ResolvePerson(Tenant, "person-0")!;
         var service = new SourceUseService(repo, guard, fence, identities);
-        var config = new ConfigurationBuilder().Build();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo"}).Build();
         var search = new NaturalSearchService(new MemoryProjectionRepository(store), repo, guard, fence, null!, new GroundedRanker(), config, TimeProvider.System);
         NaturalSearchResponse? found = null;
         await search.SearchAndConsumeAsync(new("引き継ぎ", new([], [], ["引き継ぎ"]), "knowledge"), actor,
