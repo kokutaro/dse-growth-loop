@@ -1,0 +1,23 @@
+{
+  "sourceHead": "743f22fd6a3efe585a60dbae36278a88c67ab011",
+  "retainedLocalEvidenceZipSha256": "28ce2f7c64f08cce61102f16c4c85f0cb5f1ca279caf5053b2dd368df4524e65",
+  "publicSourcePolicy": "Numerical observations only; no HAR, response body, private template, browser storage, or screenshots are published. Raw evidence remains local.",
+  "sources": [
+    {
+      "file": "summary.json",
+      "sha256": "1a1addeeee230bb402aa1360c609ae2ef56fad0aafbf6671e728e0b886ea2783"
+    },
+    {
+      "file": "measurements.csv",
+      "sha256": "66fbbcddd93de3457470d061e5bc4b0557b0be1ee4ff92d9a2042ee5e24a9045"
+    },
+    {
+      "file": "evidence-manifest.json",
+      "sha256": "2454f63add6c3655d513a51e5f528652907d1abaf47748c9715498fa0253ab40"
+    },
+    {
+      "file": "owner/window3/STOP-CONFIRMED-FINAL.json",
+      "sha256": "91c90d4228139d11b646332413e72f6c726a7268dbc987c982cd88f8516d172c"
+    }
+  ]
+}
