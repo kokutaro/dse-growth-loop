@@ -27,4 +27,4 @@ coldは「停止・再有効化後の初回検索」。先行するactivationや
 
 05:45:52 UTCのユーザー方針で作業台帳・試行数台帳を実行条件から外した。アプリの台帳・上限・認証・RBAC・ネットワーク設定は変更していない。最終cold03後の試行数・費用・pending/activeは未取得で、過去の値を現在値として示さない。初回遅延への追加計測・改善、台帳再照合、監視基盤改修は今回の継続作業に含めない。
 
-27観測の数値は [summary.json](summary.json) と [measurements.csv](measurements.csv)、ローカル原証跡の固定hashは [source-hashes.json](source-hashes.json) を参照。raw HAR、応答本文、private ARM snapshot、ブラウザ保存情報、画像は公開差分へ含めない。原証跡ZIP（画像26枚を含む）のSHA256は `28ce2f7c64f08cce61102f16c4c85f0cb5f1ca279caf5053b2dd368df4524e65`。原証跡のローカル再検証は27観測・26固有HAR・60根拠参照・全46actual0の整合で成功した。GitHubのCI成功と実サービス受入の未達は別判定。
+27観測の数値は [summary.json](summary.json) と [measurements.csv](measurements.csv)、ローカル原証跡と公開要約それぞれの固定hashは [source-hashes.json](source-hashes.json) を参照。`retainedLocalOriginals` は保存ZIP内の原本、`publicDerivedFiles` は公開Git blob（LF）のSHA256で、同名でも加工・改行正規化後の別ファイルとして照合する。raw HAR、応答本文、private ARM snapshot、ブラウザ保存情報、画像は公開差分へ含めない。原証跡ZIP（画像26枚を含む）のSHA256は `28ce2f7c64f08cce61102f16c4c85f0cb5f1ca279caf5053b2dd368df4524e65`。原証跡のローカル再検証は27観測・26固有HAR・60根拠参照・全46actual0の整合で成功した。GitHubのCI成功と実サービス受入の未達は別判定。
