@@ -101,12 +101,22 @@ public sealed partial class AnonymousWorkspaceService
     private async Task EnsureAliasesAsync(ActorAccess actor, StoredRecord map, JsonObject session, CancellationToken ct)
     {
         var aliases = map.Value["aliases"]!.AsArray(); var changed = false;
+        var control = await new AuthorityProvider(repository,config).ControlAsync(actor.TenantId,ct);
         foreach (var pid in session.Strings("originalParticipantIds").Concat(session.Strings("participantIds")).Distinct())
         {
             var prior = aliases.Select(x => x!.AsObject()).SingleOrDefault(x => x.Text("internalPersonId") == pid);
             // Historical authors keep their original alias; their later departure must not
             // prevent remaining participants from reading their own room.
             if (prior is not null && !session.Strings("participantIds").Contains(pid)) continue;
+            if (prior is not null && pid != actor.PersonId && RecordJson.IsId(prior.Text("internalPrincipalId")))
+            {
+                var historical = (await repository.ReadAsync(Catalog(actor),AuthorityProvider.PersonId(pid),ct))?.Value;
+                if (historical is not null && historical.Text("kind") == "personAuthority" && historical.Text("tenantId") == actor.TenantId &&
+                    historical.Text("personId") == pid && historical.Text("generation") == control.Value.Text("generation") &&
+                    (historical["enabled"]?.GetValue<bool>() == false ||
+                        historical.Text("accessEpoch").Length > 0 && historical.Text("accessEpoch") != session["participantEpochs"]?[pid]?.GetValue<string>()))
+                    continue; // Preserve the original author alias, never grant this peer current membership.
+            }
             var person = await Person(actor, pid, ct);
             if (person is null) throw new DomainException(409, "MEMBERSHIP_UNRESOLVED");
             if (!await BoundProfileAsync(actor,person,ct)) throw new DomainException(409,"SOURCE_REVOKED");
@@ -194,7 +204,10 @@ public sealed partial class AnonymousWorkspaceService
             await DecisionAuthorityAsync(actor,reference.Value.Text("id"),ct);
         }
         var people = map["aliases"]!.AsArray().Select(x => x!.AsObject()).Select(x => new AnonymousWorkspaceResolvedParticipant(x.Text("internalPersonId"),x.Text("internalPrincipalId"),x.Text("aliasId"),x.Text("aliasLabel"),false));
-        return new(map.Text("publicChallengeId"), AccessPolicy.CanRead(actor, session.Value) ? map.Text("id") : null,
+        var current = await new AuthorityProvider(repository,config).RequireAsync(actor,ct);
+        var member = AccessPolicy.CanRead(current,session.Value) && session.Value["participantEpochs"]?[actor.PersonId]?.GetValue<string>() == current.AccessEpoch;
+        if (session.Value.Text("ownerId") == actor.PrincipalId && !member) throw new DomainException(404,"NOT_FOUND");
+        return new(map.Text("publicChallengeId"), member ? map.Text("id") : null,
             await DisplayTextAsync(actor,challenge.Value.Text("title"),people,ct), await DisplayTextAsync(actor,challenge.Value.Text("summary"),people,ct), session.Value.Text("status"),
             challenge.Value.Text("ownerId") == actor.PrincipalId, challenge.ETag);
     }
@@ -301,8 +314,16 @@ public sealed partial class AnonymousWorkspaceService
             var own = await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, resolved.SessionId), ConversationService.ParticipationId(actor.PersonId), ct);
             if (own is not null) participation = await InvitationDtoAsync(actor, await EnsureInvitationMapAsync(actor, map.Value, own.Value, ct), map.Value, challenge, session, own, ct);
         }
+        List<AnonymousWorkspaceAlias> active = [];
+        foreach (var person in resolved.Participants)
+        {
+            var current = await Person(actor,person.PersonId,ct);
+            if (current is not null && current.HasRole("member") && AccessPolicy.InScope(current,session.Value) &&
+                current.PrincipalId == person.PrincipalId && session.Value["participantEpochs"]?[person.PersonId]?.GetValue<string>() == current.AccessEpoch)
+                active.Add(new(person.AliasId,person.AliasLabel,person.IsSelf));
+        }
         return new(resolved.PublicRoomId, await ChallengeDtoAsync(actor, challenge, session, map.Value,ct), session.Value.Text("status"), session.Value.Text("aiAssistance"),
-            resolved.IsOwner, resolved.Participants.Length, resolved.Participants.Select(p => new AnonymousWorkspaceAlias(p.AliasId, p.AliasLabel, p.IsSelf)).ToArray(), session.ETag, participation);
+            resolved.IsOwner, active.Count, active.ToArray(), session.ETag, participation);
     }
     public async Task<AnonymousWorkspacePage<AnonymousWorkspaceRoom>> RoomsUnderFenceAsync(ActorAccess actor, int size, string? cursor, CancellationToken ct)
     {
@@ -327,6 +348,7 @@ public sealed partial class AnonymousWorkspaceService
     {
         var resolved = await ResolveChallengeAsync(actor, challengeId, ct);
         if (resolved.Challenge.Value.Text("ownerId") != actor.PrincipalId) throw new DomainException(403, "FORBIDDEN");
+        await chat.SessionAsync(actor,resolved.Session.Value.Text("id"),ct);
         return await chat.LockedAsync<AnonymousWorkspacePage<AnonymousWorkspaceCandidate>>(actor, resolved.Session.Value.Text("id"), async () =>
         {
             resolved = await ResolveChallengeAsync(actor, challengeId, ct);
@@ -340,7 +362,8 @@ public sealed partial class AnonymousWorkspaceService
             {
                 var person = await Person(actor, candidate.EntityId, ct);
                 if (person is null || !person.HasRole("member") || !AccessPolicy.InScope(person, resolved.Session.Value) || !await BoundProfileAsync(actor,person,ct)) continue;
-                if (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, resolved.Session.Value.Text("id")), ConversationService.ParticipationId(candidate.EntityId), ct) is not null) continue;
+                var participation = await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, resolved.Session.Value.Text("id")), ConversationService.ParticipationId(candidate.EntityId), ct);
+                if (participation is not null && participation.Value.Text("accessEpoch") == person.AccessEpoch) continue;
                 var token = Opaque("awt-"); var row = Mapping(actor, token, "candidate", resolved.Session.Value.Text("id"));
                 row["boundPrincipalId"] = actor.PrincipalId; row["boundChallengeId"] = resolved.Challenge.Value.Text("id"); row["boundChallengeEtag"] = resolved.Challenge.ETag;
                 row["authorityToken"] = person.AuthorityToken; row["targetAccessEpoch"] = person.AccessEpoch;

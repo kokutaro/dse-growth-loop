@@ -110,8 +110,9 @@ public sealed class OrganizationService(IPrimaryRepository repository, AccessFen
             var response = new JsonObject { ["authorityToken"] = AuthorityProvider.Token(after), ["reconsentRequired"] = true, ["participationPreserved"] = true, ["applied"] = apply };
             if (!apply) return response;
             var audit = RecordJson.New("audit", "audit-org-" + Guid.NewGuid().ToString("N"), actor.TenantId, actor.PrincipalId, ["system"], clock.GetUtcNow());
-            audit["operation"] = "organization-" + type; audit["reason"] = reason; audit["previousHash"] = ConversationService.Hash(RecordJson.Canonical(before?.Value));
-            audit["resultHash"] = ConversationService.Hash(RecordJson.Canonical(value)); audit["authorityToken"] = AuthorityProvider.Token(after);
+            audit["operation"] = "organization-" + type; audit["reason"] = reason;
+            audit["previousHash"] = ConversationService.Hash(RecordJson.Canonical(before is null ? null : RecordJson.ToStorage(before.Value)));
+            audit["resultHash"] = ConversationService.Hash(RecordJson.Canonical(RecordJson.ToStorage(value))); audit["authorityToken"] = AuthorityProvider.Token(after);
             var saved = RecordJson.New("idempotency", receiptId, actor.TenantId, actor.PrincipalId, ["system"], clock.GetUtcNow()); saved["fingerprint"] = fingerprint;
             await repository.CommitAsync(partition, [new(value, before?.ETag), RecordWrite.Replace(after, control.ETag), RecordWrite.Create(audit), RecordWrite.Create(saved)], token);
             response["etag"] = (await authority.ControlAsync(actor.TenantId, token)).ETag; return response;

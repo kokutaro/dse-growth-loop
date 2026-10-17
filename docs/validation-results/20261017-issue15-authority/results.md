@@ -18,6 +18,14 @@
 - 停止下CLI：新規の隔離したローカルpathでbootstrap、inspect、dry-run、確定、同じキーの再送、generation resetを実プロセスで確認。復元後の一般利用者は無効のまま。[CLI結果](cli-summary.json)。
 - .NET solutionのRelease build、Linux x64のlocked restore、Bicep 0.47.16のローカルコンパイル、評価器fixture smoke、`git diff --check` を実行。AppHostの既存 `AspireUseCliBundle=false` によるASPIRE010は残る。
 
+## PRレビュー後の追加確認
+
+PR #43のCopilot指摘2件に対応し、無効化した協力者の保存済み別名を履歴用に保持する。残る参加者は課題・ルーム・会話履歴を開けるが、無効化本人の読取、表示名開示、AI共有は許可しない。再有効化しても旧epochの参加を現在の候補から除外せず、新しい候補取得→招待→承諾を要求する。承諾前にはroomIdを返さない。
+
+この2経路を匿名HTTP APIで追加検証した。設定だけのID置換やプロフィール所有者不一致に対する既存の拒否は維持している。部署変更と認可変更の監査hashは保存用に正規化してから計算し、新ETagが付いた保存内容との一致を2ケースで確認した。追加後の.NET Release全件試験は628件成功（通常回帰627件とLargeEvaluation fixture 1件、部署正本関連31件を含む）。実AI呼出しではない。対応するsummaryには初回検証と追加確認を区別して記録する。
+
+`workspace.spec.ts`・`workspace-anonymity.spec.ts`・`identity-disclosure.spec.ts` の画面試験21件も修正後にisolated実行し、全件成功した。前節の初回28件とは重複するため、合算した件数として扱わない。
+
 ## クラウド環境での再現条件
 
 SDK 10.0.400、Python 3.12.14、Node 24.19.0、npm 11.9.0を使用した。SDK/cache/CLI設定・展開先はworkspaceまたはtmpであり、ホームディレクトリーの書換えは要求しない。

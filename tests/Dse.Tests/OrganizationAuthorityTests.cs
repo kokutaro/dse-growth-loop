@@ -1,8 +1,13 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Net;
+using System.Net.Http.Json;
 using Dse.Domain;
 using Dse.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Dse.Tests;
@@ -24,11 +29,12 @@ public sealed class OrganizationAuthorityTests
     private sealed record Setup(IRecordStore Store,IPrimaryRepository Repo,AuthorityProvider Authority,OrganizationService Organization,
         ConversationService Chat,KnowledgeService Knowledge,IdentityDisclosureService Names,AnonymousWorkspaceService Workspace,
         BusinessAnalysisService Analysis,string Sid,string Room,string Challenge);
-    private static async Task<Setup> Create(IRecordStore? supplied = null)
+    private static async Task<Setup> Create(IRecordStore? supplied = null,bool analysisFixtures=true)
     {
         var store = supplied ?? new MemoryRecordStore(); var actors = new[]{Owner,Guest,IdentityResolver.DemoPerson("demo-person-03")!,Operator};
         await AuthorityProvider.InitializeAsync(store,"demo",actors.Select(a=>new IdentityBinding("demo","",a.PrincipalId,a.PersonId,a.Roles,true)).ToArray(),actors.Select(a=>new AccessGrant(a.PrincipalId,a.ScopeIds)).ToArray(),default);
-        await DemoRecords.SeedAsync(store,"demo",default); await BusinessAnalysisDemoFixtures.SeedAsync(store,default);
+        await DemoRecords.SeedAsync(store,"demo",default);
+        if(analysisFixtures) await BusinessAnalysisDemoFixtures.SeedAsync(store,default);
         var repo = new PrimaryRepository(store); var authority = new AuthorityProvider(repo); var fence = new AccessFence(repo);
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock",["AiUsage:Stopped"]="false"}).Build();
         var identities = new IdentityResolver(config); var chat = new ConversationService(repo,new(),identities,TimeProvider.System,fence); var fake = new Fake();
@@ -48,6 +54,20 @@ public sealed class OrganizationAuthorityTests
         foreach(var actor in new[]{Owner,Guest})
         { var view=await s.Names.ReadAsync(actor,s.Room,default); await s.Names.ChangeAsync(actor,s.Room,Key(),view.Etag,new(true,view.ReviewedVersion,view.FieldSet),default); }
         Assert.Equal("shared",(await s.Names.ReadAsync(Owner,s.Room,default)).State);
+    }
+    private static WebApplicationFactory<Program> Api(Setup s) => new WebApplicationFactory<Program>().WithWebHostBuilder(b=>
+    {
+        b.UseEnvironment("Development");b.UseSetting("Data:Mode","Demo");b.UseSetting("Ai:Mode","Mock");b.UseSetting("Ingestion:RunWorker","false");
+        b.ConfigureServices(services=>
+        {services.AddSingleton<IRecordStore>(s.Store);services.AddSingleton<IPrimaryRepository>(s.Repo);services.AddSingleton<IProjectionRepository>(new MemoryProjectionRepository(s.Store));});
+    });
+    private static async Task<JsonObject> Get(HttpClient client,string path)
+    {using var response=await client.GetAsync(path);response.EnsureSuccessStatusCode();return (await response.Content.ReadFromJsonAsync<JsonObject>())!;}
+    private static async Task<JsonObject> Post(HttpClient client,string path,object body,string etag,HttpMethod? method=null)
+    {
+        using var request=new HttpRequestMessage(method??HttpMethod.Post,path){Content=JsonContent.Create(body)};
+        request.Headers.TryAddWithoutValidation("If-Match",etag);request.Headers.TryAddWithoutValidation("Idempotency-Key",Key());
+        using var response=await client.SendAsync(request);response.EnsureSuccessStatusCode();return (await response.Content.ReadFromJsonAsync<JsonObject>())!;
     }
     private static async Task<JsonObject> Transfer(Setup s,string person = "demo-person-01",bool apply=true,string? key=null)
     {
@@ -185,6 +205,7 @@ public sealed class OrganizationAuthorityTests
     {
         private readonly MemoryRecordStore inner=new();
         public bool FailChange,AfterCommit,FailGeneration;
+        public List<string> AuditIds { get; } = [];
         public Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)=>inner.ReadAsync(p,id,ct);
         public Task<RecordPage> QueryAsync(RecordPartition p,string kind,string? field,string? parent,int size,string? cursor,CancellationToken ct)=>inner.QueryAsync(p,kind,field,parent,size,cursor,ct);
         public async Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite> writes,CancellationToken ct)
@@ -193,6 +214,7 @@ public sealed class OrganizationAuthorityTests
                 FailGeneration && writes.Any(w=>w.Value.Text("kind")=="authorityControl" && w.Value.Text("state")=="active");
             if(fail && !AfterCommit) throw new IOException("fixture batch failure");
             await inner.CommitAsync(p,writes,ct);
+            AuditIds.AddRange(writes.Where(w=>w.Value.Text("kind")=="audit").Select(w=>w.Value.Text("id")));
             if(fail) throw new IOException("fixture acknowledgement lost");
         }
     }
@@ -308,5 +330,75 @@ public sealed class OrganizationAuthorityTests
         Assert.Equal(control.ETag,(await s.Authority.ControlAsync("demo",default)).ETag);
         Assert.True(string.IsNullOrEmpty((await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!.Value.Text("holder")));
         await s.Chat.SessionAsync(Owner,s.Sid,default);
+    }
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Audit_hashes_match_saved_content_independently_of_the_new_storage_etag(bool accessChange)
+    {
+        var store=new FaultStore();var s=await Create(store);var person=accessChange?Guest.PersonId:Owner.PersonId;
+        var partition=RecordPartition.Catalog("demo");var id=AuthorityProvider.PersonId(person);
+        var before=(await s.Repo.ReadAsync(partition,id,default))!;
+        if(accessChange) await Access(s,false); else await Transfer(s);
+        var after=(await s.Repo.ReadAsync(partition,id,default))!;
+        Assert.NotEqual(before.ETag,after.ETag);
+        var audit=(await s.Repo.ReadAsync(partition,store.AuditIds.Last(),default))!.Value;
+        Assert.Equal(ConversationService.Hash(RecordJson.Canonical(RecordJson.ToStorage(before.Value))),audit.Text("previousHash"));
+        Assert.Equal(ConversationService.Hash(RecordJson.Canonical(RecordJson.ToStorage(after.Value))),audit.Text("resultHash"));
+    }
+    [Fact] public async Task Anonymous_http_history_remains_readable_after_peer_disable_without_disclosing_identity_or_sharing_AI()
+    {
+        var s=await Create(analysisFixtures:false);using var api=Api(s);using var owner=api.CreateClient();using var guest=api.CreateClient();
+        guest.DefaultRequestHeaders.Add("X-Demo-Person",Guest.PersonId);
+        var oldRoom=await Get(guest,"/api/v1/workspace/rooms/"+s.Room);
+        var oldAlias=oldRoom["participants"]!.AsArray().Single(p=>p!["isSelf"]!.GetValue<bool>())!["aliasId"]!.GetValue<string>();
+        var profile=(await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),Guest.PersonId,default))!.Value;
+        var session=await s.Chat.SessionAsync(Guest,s.Sid,default);
+        await s.Chat.SendAsync(Guest,s.Sid,Key(),session.ETag,new(Guid.NewGuid().ToString(),profile.Text("displayName")),default);
+        session=await s.Chat.SessionAsync(Owner,s.Sid,default);
+        await s.Chat.UpdateAsync(Owner,s.Sid,Key(),session.ETag,new("enabled","open"),default);
+        await Share(s);await Access(s,false);
+        var room=await Get(owner,"/api/v1/workspace/rooms/"+s.Room);Assert.Equal(1,room.Number("participantCount"));
+        Assert.Single(room["participants"]!.AsArray());
+        var messages=await Get(owner,"/api/v1/workspace/rooms/"+s.Room+"/messages");
+        var message=Assert.Single(messages["items"]!.AsArray())!.AsObject();Assert.Equal(oldAlias,message.Text("authorAliasId"));
+        Assert.Equal("識別情報を含むため表示できません。",message.Text("body"));
+        Assert.Single((await Get(owner,"/api/v1/workspace/challenges"))["items"]!.AsArray());
+        Assert.Single((await Get(owner,"/api/v1/workspace/rooms"))["items"]!.AsArray());
+        var names=await Get(owner,"/api/v1/workspace/rooms/"+s.Room+"/identity-consent");Assert.Equal("unavailable",names.Text("state"));
+        Assert.All(names["participants"]!.AsArray(),p=>Assert.Null(p!["sharedName"]));
+        Assert.Equal(HttpStatusCode.Forbidden,(await guest.GetAsync("/api/v1/workspace/rooms/"+s.Room)).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden,(await guest.GetAsync("/api/v1/workspace/rooms/"+s.Room+"/messages")).StatusCode);
+        var config=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo"}).Build();
+        var current=await s.Chat.SessionAsync(Owner,s.Sid,default);
+        var context=new AiContext(Owner,"fixture-chat-job","fixture-prompt",Retriever.TaxonomyVersion,1,[],[],s.Sid)
+            {ChatMembershipVersion=current.Value.Number("membershipVersion"),ChatLastSequence=current.Value.Number("lastSequence")};
+        Assert.Equal("SOURCE_REVOKED",(await Assert.ThrowsAsync<DomainException>(()=>new ChatAccess(s.Repo,new SourceGuard(s.Repo,config),new(config),config).RequireAsync(context,default))).Code);
+        var wire=room.ToJsonString()+messages.ToJsonString()+names.ToJsonString();
+        foreach(var hidden in new[]{Guest.PersonId,Guest.PrincipalId,profile.Text("displayName"),s.Sid}) Assert.DoesNotContain(hidden,wire);
+    }
+    [Fact] public async Task Anonymous_http_reenable_requires_a_new_candidate_invitation_and_acceptance()
+    {
+        var s=await Create(analysisFixtures:false);using var api=Api(s);using var owner=api.CreateClient();using var guest=api.CreateClient();
+        guest.DefaultRequestHeaders.Add("X-Demo-Person",Guest.PersonId);
+        var original=await Get(guest,"/api/v1/workspace/rooms/"+s.Room);await Share(s);
+        await Access(s,false);await Access(s,true);
+        Assert.Equal(HttpStatusCode.NotFound,(await guest.GetAsync("/api/v1/workspace/rooms/"+s.Room)).StatusCode);
+        var candidates=await Get(owner,"/api/v1/workspace/challenges/"+s.Challenge+"/candidates");string? candidate=null;
+        foreach(var row in candidates["items"]!.AsArray())
+        {
+            var token=row!.AsObject().Text("token");var stored=(await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),token,default))!.Value;
+            if(stored["unit"]!["entityId"]!.GetValue<string>()==Guest.PersonId) candidate=token;
+        }
+        Assert.NotNull(candidate);Assert.DoesNotContain(Guest.PersonId,candidates.ToJsonString());Assert.DoesNotContain(Guest.PrincipalId,candidates.ToJsonString());
+        var room=await Get(owner,"/api/v1/workspace/rooms/"+s.Room);Assert.Equal(1,room.Number("participantCount"));
+        var invitation=await Post(owner,"/api/v1/workspace/rooms/"+s.Room+"/invitations",new{candidateToken=candidate},room.Text("etag"));
+        Assert.Equal("requested",invitation.Text("status"));Assert.Null(invitation["roomId"]);
+        var pending=Assert.Single((await Get(guest,"/api/v1/workspace/invitations"))["items"]!.AsArray())!.AsObject();
+        Assert.Equal(invitation.Text("id"),pending.Text("id"));Assert.Null(pending["roomId"]);
+        Assert.Equal(HttpStatusCode.NotFound,(await guest.GetAsync("/api/v1/workspace/rooms/"+s.Room)).StatusCode);
+        var result=await Post(guest,"/api/v1/workspace/invitations/"+pending.Text("id"),new{decision="accepted"},pending.Text("etag"),HttpMethod.Patch);
+        Assert.Equal(s.Room,result.Text("roomId"));Assert.Equal(2,(await Get(guest,"/api/v1/workspace/rooms/"+s.Room)).Number("participantCount"));
+        var names=await Get(owner,"/api/v1/workspace/rooms/"+s.Room+"/identity-consent");Assert.Equal("pending",names.Text("state"));
+        Assert.All(names["participants"]!.AsArray(),p=>Assert.Null(p!["sharedName"]));
+        Assert.Empty((await Get(owner,"/api/v1/workspace/rooms/"+s.Room+"/knowledge"))["consents"]!.AsObject());
     }
 }

@@ -1,8 +1,9 @@
 {
-  "phase": "pre-PR local validation",
+  "phase": "post-Copilot local validation",
   "baselineMain": "ca75ded43bd0a93a73ff58059633bc74ed21e8d4",
   "files": {
     "Directory.Build.props": "a2ca8fa4be58f93b401108d4f8b4f383365c7df16f2a6274ebc058503dbc1878",
+    "docs/organization-authority.md": "27c0ddaa64d1ee2c282019f8776c36236fe2011cc506beccacb1354d7bfe36ce",
     "docs/specs/README.md": "76e4e1f360941aa25d0d1eb92ba0f9eb8d4a406456f56c542ea45de55c37d728",
     "docs/specs/contracts.schema.json": "c689022a9cde4b8b275cdf0c8c6f75b27b0869c047e8694f61aa29403628f861",
     "docs/specs/examples.json": "a7ae187e14c0b06426bdbd3d18ebdbe7287fcc1ed58a2cf607d90a8215effea9",
@@ -26,7 +27,7 @@
     "src/Dse.Infrastructure/AiService.cs": "109f953aecbda1909806f122cc5bfe0635dbf765e7527f21e1b35ba0ea59dbee",
     "src/Dse.Infrastructure/AiSmoke.cs": "bdbeddeb4b05a44eb9f1c349b42496271f48926c08a293f8df578e3439408eed",
     "src/Dse.Infrastructure/AnonymousWorkspaceKnowledge.cs": "76a07724b53fac535b1f024747c2623ed451bfb13827a581f3370d414202c10b",
-    "src/Dse.Infrastructure/AnonymousWorkspaceService.cs": "087b00b5a830710015782256e700b0cb4cb9008047767743cc9c61dd84e14fad",
+    "src/Dse.Infrastructure/AnonymousWorkspaceService.cs": "5545e1e14dee6f7b913cf20ea130f22ff56315f104455235c7e4a06b88041402",
     "src/Dse.Infrastructure/AuthorityProvider.cs": "9df83905c675e81d1c3e6d0af8ec0571a0c06efce6fa362bd7b1f1e4d6b8d7bf",
     "src/Dse.Infrastructure/BusinessAnalysisCommands.cs": "e4fa5419eafe395e8350b913e56b463c0ec78e4ee3c4e2c210e77cc15101a23a",
     "src/Dse.Infrastructure/BusinessAnalysisDemoFixtures.cs": "5eb5419530abe04c2719439d9779d730790406b90789f9da06651585e7244644",
@@ -40,8 +41,8 @@
     "src/Dse.Infrastructure/IdentityDisclosureService.cs": "593b25df7494e10bdb0afcbceef0c0ccc9e6f3820709ee6763e66ce8292fa78b",
     "src/Dse.Infrastructure/Knowledge.cs": "4707e7f4e051d17dcdcb370499bddd82195bf324d8ab6d196cfe66e88234370d",
     "src/Dse.Infrastructure/Mutations.cs": "58659b6248a330d25d2523faee947799d145e87d341392534dd1c36b13b82717",
-    "src/Dse.Infrastructure/OrganizationCommands.cs": "f1476d4f480f5d0092d6946dac207feca9975775b9ff16cd0977ddec849dfa1d",
-    "src/Dse.Infrastructure/OrganizationService.cs": "2acd401d3658dad9ca992b7c4a6ad2324c9b963e76fbcb9be2c0f04d8f679d90",
+    "src/Dse.Infrastructure/OrganizationCommands.cs": "b6abfd302d9d32aa313c1ff7d2ca1fa72dd27ec2efe3efb3df7dc89897b9b9a0",
+    "src/Dse.Infrastructure/OrganizationService.cs": "48904fec303f3728e1770a26070af3216ee66dbdc83c9112704f44cb40da5949",
     "src/Dse.Infrastructure/ProfilePipeline.cs": "6dd1d2bceed9b2c2c8bdfa88d6d8aa938a0fa6f9e0702086ca29f800603e249f",
     "src/Dse.Infrastructure/Projections.cs": "ee1862e8ca0c7eb82656e451c09e1246da428e7cabf3874c21691ef75a51f287",
     "src/Dse.Infrastructure/SourceUseService.cs": "d37e0d4ee139de5b3cdb75ebcbc782a8bee441d81228f0f8d3d9dc1246505528",
@@ -56,11 +57,12 @@
     "tests/Dse.Tests/ConversationTests.cs": "feb8d757d598d82763c65db6a816b28b665a8c824185873ea6ea74f379e476df",
     "tests/Dse.Tests/IdentityDisclosureTests.cs": "44abafecc928477a649df849bbbc4a02b49a4e4658602230195dce0a3928849b",
     "tests/Dse.Tests/KnowledgeTests.cs": "4f1b124e40138f88d9d0d9a119e682df17090acc40e2c776f929992878d5f6b3",
-    "tests/Dse.Tests/OrganizationAuthorityTests.cs": "dfb708ce39c2efbaebfebacfbc13bb385d9784cc4f98f57d2d0328038d032393",
+    "tests/Dse.Tests/OrganizationAuthorityTests.cs": "9c6b93fa9da1aed94340e2051fcfc275b4da06a74f2b799d33900cec5310458d",
     "tests/Dse.Tests/SharedCommitTests.cs": "9999a93a1a2b336dc4fdf50beee9721e630859aa44ac9f676e362db0a1f30da4",
     "web/package-lock.json": "0f160f36b143aa53bf5395e12a295cd740b34e1dab1b9abb2579e504c15ea3a5",
     "web/playwright.config.ts": "034fd3ad6b2eeb42f288d51f40c48274498e8bea518c37fd2fb05969190f44eb",
     "web/src/knowledge.tsx": "f6d0d688732286e1e967652e62b8aeb4f0862f5050d58201720fa6d8ca315012",
     "web/tests/workspace.spec.ts": "e9eb69ee620a07bab4fbcd82749a2f68336ef01eb730052863045e0cf34af6e5"
-  }
+  },
+  "priorHead": "23b2b9f46914b21d87e241962aff6efffb85fe6f"
 }

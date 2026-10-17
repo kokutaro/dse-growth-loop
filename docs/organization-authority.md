@@ -8,7 +8,7 @@ catalogの同一tenant partitionに `authorityControl`、`department`、`personA
 
 部署は安定したID、管理者用名称、有効期間、後継IDを持つ。改称は同じID、分割・統合は新IDとし、廃止済みIDの再開を拒否する。後継への権限継承はない。主部署履歴はUTCの半開区間 `[from,to)` で1人1つ、重複・不明部署・部署の有効期間外・未来日の確定を拒否する。所属不明はnullとして保持できる。
 
-部署・履歴変更は既存operatorのみ。期待Control ETag、期待authorityToken、冪等キー、理由が必要で、正本・Control・監査・receiptを1batchで更新する。dry-runではこれらを保存しない。管理要求の未知フィールドを拒否し、管理者が本人同意を代行するAPIはない。analyst/publisher/memberからoperatorへの自動昇格はない。
+部署・履歴変更は既存operatorのみ。期待Control ETag、期待authorityToken、冪等キー、理由が必要で、正本・Control・監査・receiptを1batchで更新する。監査の前後hashはETagを除いた保存内容を正規化して計算し、保存後の原本から再検証できる。dry-runではこれらを保存しない。管理要求の未知フィールドを拒否し、管理者が本人同意を代行するAPIはない。analyst/publisher/memberからoperatorへの自動昇格はない。
 
 ## 活動と同意の扱い
 

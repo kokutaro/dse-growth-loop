@@ -75,7 +75,7 @@ public static class OrganizationCommands
             if (people.ContinuationToken is not null || people.Items.Any(p => p.Value.Text("personId") != input.PersonId &&
                 (p.Value.Text("principalId") == input.PrincipalId || input.Oid.Length != 0 && string.Equals(p.Value.Text("oid"),input.Oid,StringComparison.OrdinalIgnoreCase)))) throw new ArgumentException("Duplicate identity");
             var row = await repo.ReadAsync(partition,AuthorityProvider.PersonId(input.PersonId),token) ?? throw new DomainException(404,"NOT_FOUND");
-            var before = ConversationService.Hash(RecordJson.Canonical(row.Value));
+            var before = ConversationService.Hash(RecordJson.Canonical(RecordJson.ToStorage(row.Value)));
             row.Value["principalId"] = input.PrincipalId; row.Value["oid"] = input.Oid; row.Value["enabled"] = input.Enabled;
             row.Value["roles"] = RecordJson.Array(input.Roles); row.Value["scopeIds"] = RecordJson.Array(input.ScopeIds);
             row.Value["accessEpoch"] = Guid.NewGuid().ToString("N"); row.Value["reason"] = input.Reason;
@@ -83,7 +83,7 @@ public static class OrganizationCommands
             control.Value["revision"] = checked(control.Value.Number("revision")+1);
             var audit = RecordJson.New("audit","audit-access-"+Guid.NewGuid().ToString("N"),actor.TenantId,actor.PrincipalId,["system"],DateTimeOffset.UtcNow);
             audit["operation"] = "authority-access-change"; audit["reason"] = input.Reason; audit["previousHash"] = before;
-            audit["resultHash"] = ConversationService.Hash(RecordJson.Canonical(row.Value)); audit["authorityToken"] = AuthorityProvider.Token(control.Value);
+            audit["resultHash"] = ConversationService.Hash(RecordJson.Canonical(RecordJson.ToStorage(row.Value))); audit["authorityToken"] = AuthorityProvider.Token(control.Value);
             var saved = RecordJson.New("idempotency",receiptId,actor.TenantId,actor.PrincipalId,["system"],DateTimeOffset.UtcNow); saved["fingerprint"] = fingerprint;
             await repo.CommitAsync(partition,[RecordWrite.Replace(row.Value,row.ETag),RecordWrite.Replace(control.Value,control.ETag),RecordWrite.Create(audit),RecordWrite.Create(saved)],token);
             return true;

@@ -4,12 +4,14 @@
   "realAcceptance": false,
   "baselineMain": "ca75ded43bd0a93a73ff58059633bc74ed21e8d4",
   "dotnet": {
-    "total": 623,
-    "passed": 623,
+    "total": 628,
+    "passed": 628,
     "failed": 0,
-    "authorityTests": 27,
-    "filter": "Category!=LargeEvaluation",
-    "trxSha256": "1e88815d2f94b4d8c87c46f8643fa5d0500642b3e1d6da15f4727eda43a7a626"
+    "standardRegression": 627,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 31,
+    "filter": null,
+    "logSha256": "a8928cbfd59ad0c0318d1004251b0179bd93ccd48753d083c1af72e981c7462a"
   },
   "python": {
     "scripts": 241,
@@ -37,5 +39,27 @@
     "real HR/Entra/Cosmos integration and multi-process acceptance pending",
     "live AI/Job/recovery acceptance pending",
     "unannounced whole-DB rollback requires an external generation anchor; not automatically detected"
-  ]
+  ],
+  "initialPrePrDotnet": {
+    "total": 623,
+    "passed": 623,
+    "failed": 0,
+    "authorityTests": 27,
+    "filter": "Category!=LargeEvaluation",
+    "trxSha256": "1e88815d2f94b4d8c87c46f8643fa5d0500642b3e1d6da15f4727eda43a7a626"
+  },
+  "reviewFollowup": {
+    "priorHead": "23b2b9f46914b21d87e241962aff6efffb85fe6f",
+    "copilotFindingsAddressed": 2,
+    "anonymousHttpRegressionTests": 2,
+    "auditHashRegressionCases": 2,
+    "targetedE2e": 21,
+    "targetedE2eFailed": 0,
+    "targetedE2eLogSha256": "ab3d033335f77cfc70a89bab8f2ef556a1ec09c158e245161684a9221ba656ee",
+    "suites": [
+      "workspace.spec.ts",
+      "workspace-anonymity.spec.ts",
+      "identity-disclosure.spec.ts"
+    ]
+  }
 }
