@@ -61,12 +61,21 @@ public class AiSmokeTests
     }
 
     [Fact]
-    public async Task Existing_basic_suite_keeps_two_calls_and_does_not_require_seed()
+    public async Task Basic_suite_requires_canonical_authority_without_a_retrieval_fixture()
     {
         var config = Config(); config["AiSmoke:Suite"] = "basic"; config["AiSmoke:Count"] = "2";
-        var store = new MemoryRecordStore(); var ports = new Ports(connections: false);
+        var store = new MemoryRecordStore(); await AuthorityFixture.InitializeAsync(store,config,Tenant); var ports = new Ports(connections: false);
         Assert.True(await AiSmoke.RunAsync(config, new(config), new PrimaryRepository(store), ports, ports, ports, new MemoryProjectionRepository(store), default));
         Assert.Equal(2, ports.Calls);
+    }
+
+    [Fact]
+    public async Task Basic_suite_rejects_config_only_identity_before_inference()
+    {
+        var config = Config(); config["AiSmoke:Suite"]="basic"; config["AiSmoke:Count"]="2";
+        var store=new MemoryRecordStore();var ports=new Ports(connections:false);
+        Assert.Equal("AUTHORITY_UNAVAILABLE",(await Assert.ThrowsAsync<DomainException>(()=>AiSmoke.RunAsync(config,new(config),new PrimaryRepository(store),ports,ports,ports,new MemoryProjectionRepository(store),default))).Code);
+        Assert.Equal(0,ports.Calls);
     }
 
     [Theory]
@@ -74,7 +83,7 @@ public class AiSmokeTests
     [InlineData(true)]
     public async Task Connections_suite_covers_noul_and_rerank_with_exact_approval_count(bool rankingFails)
     {
-        var config = Config(); var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, Tenant, default);
+        var config = Config(); var store = new MemoryRecordStore(); await AuthorityFixture.InitializeAsync(store,config,Tenant); await DemoRecords.SeedAsync(store, Tenant, default);
         var repository = new PrimaryRepository(store); var ports = new Ports(rankingFails);
         Assert.Equal(!rankingFails, await AiSmoke.RunAsync(config, new(config), repository, ports, ports, ports, new MemoryProjectionRepository(store), default));
         Assert.Equal(3, ports.Calls);
@@ -103,7 +112,7 @@ public class AiSmokeTests
         var config = Config(); var store = new MemoryRecordStore(); var partition = RecordPartition.Catalog(Tenant);
         if (state != "missing")
         {
-            await DemoRecords.SeedAsync(store, Tenant, default);
+            await AuthorityFixture.InitializeAsync(store,config,Tenant); await DemoRecords.SeedAsync(store, Tenant, default);
             var id = state == "changed" ? DemoData.Create(Tenant).First(x => x.EntityId == "demo-person-01").SourceRefs[0].Id : "demo-person-01";
             var row = (await store.ReadAsync(partition, id, default))!;
             if (state == "changed") row.Value["text"] = "Altered fixture must not be sent";

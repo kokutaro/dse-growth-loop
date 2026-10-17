@@ -425,7 +425,10 @@ test('新UIで双方の事例公開同意を必須にし、公開後の編集で
   const edited = await (await read(request, `/api/v1/workspace/rooms/${sid}/knowledge`, { headers: owner })).json();
   expect(edited.sourceVersion).toBe(published.sourceVersion + 1);
   expect(edited.analysisMetadata.resolution).toBe('partial');
-  expect(edited.analysisMetadata.departmentId).toBeNull();
+  // The source-backed occurrence department is authoritative; user metadata cannot replace it.
+  expect(edited.occurrenceDepartmentVerified).toBe(true);
+  expect(edited.analysisMetadata.departmentId).toMatch(/^awd-/);
+  expect(JSON.stringify(edited)).not.toContain('demo-department-a');
   expect(edited.sections.find((section: { field: string }) => section.field === 'challenge').basis).toBe('inference');
   expect(edited.sections.find((section: { field: string }) => section.field === 'challenge').evidenceIds).toHaveLength(1);
   expect(edited.consents).toEqual({});

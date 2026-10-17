@@ -527,10 +527,21 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "version",
+                  "reviewedVersion",
+                  "publication",
+                  "analysis"
+                ],
                 "properties": {
                   "version": {
                     "type": "integer",
                     "minimum": 1
+                  },
+                  "reviewedVersion": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
                   },
                   "publication": {
                     "type": "boolean"
@@ -538,17 +549,12 @@
                   "analysis": {
                     "type": "boolean"
                   }
-                },
-                "required": [
-                  "version",
-                  "publication",
-                  "analysis"
-                ],
-                "additionalProperties": false
+                }
               }
             }
           }
-        }
+        },
+        "description": "表示済みの対象版と部署正本の確認版を必須とし、新版への自動付替えは行わない。"
       }
     },
     "/api/v1/sessions/{sid}/knowledge/approve": {
@@ -612,20 +618,26 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "version",
+                  "reviewedVersion"
+                ],
                 "properties": {
                   "version": {
                     "type": "integer",
                     "minimum": 1
+                  },
+                  "reviewedVersion": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
                   }
-                },
-                "required": [
-                  "version"
-                ],
-                "additionalProperties": false
+                }
               }
             }
           }
-        }
+        },
+        "description": "表示済みの対象版と部署正本の確認版を必須とし、新版への自動付替えは行わない。"
       }
     },
     "/api/v1/sessions/{sid}/knowledge/request-review": {
@@ -689,20 +701,26 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "version",
+                  "reviewedVersion"
+                ],
                 "properties": {
                   "version": {
                     "type": "integer",
                     "minimum": 1
+                  },
+                  "reviewedVersion": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
                   }
-                },
-                "required": [
-                  "version"
-                ],
-                "additionalProperties": false
+                }
               }
             }
           }
-        }
+        },
+        "description": "表示済みの対象版と部署正本の確認版を必須とし、新版への自動付替えは行わない。"
       }
     },
     "/api/v1/sessions/{sid}/knowledge/withdraw": {

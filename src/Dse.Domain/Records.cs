@@ -20,7 +20,8 @@ public static partial class RecordJson
         ["searchUnit"] = "SearchUnit", ["challenge"] = "Challenge", ["participation"] = "Participation",
         ["session"] = "Session", ["message"] = "Message", ["outcome"] = "Outcome", ["feedback"] = "Feedback",
         ["knowledgeDraft"] = "KnowledgeDraft", ["knowledge"] = "Knowledge", ["opportunity"] = "Opportunity", ["retrievalRun"] = "RetrievalRun",
-        ["job"] = "Job", ["aiRun"] = "AiRun"
+        ["job"] = "Job", ["aiRun"] = "AiRun", ["authorityControl"] = "AuthorityControl",
+        ["department"] = "Department", ["personAuthority"] = "PersonAuthority"
     };
     public static string Text(this JsonObject value, string key) => value[key]?.GetValue<string>() ?? "";
     public static int Number(this JsonObject value, string key) => value[key]?.GetValue<int>() ?? 0;

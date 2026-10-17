@@ -1,0 +1,44 @@
+{
+  "dummyOnly": true,
+  "externalCalls": 0,
+  "generationChanged": true,
+  "membersDisabledAfterRestore": true,
+  "commands": [
+    {
+      "command": "--organization-bootstrap",
+      "exitCode": 0
+    },
+    {
+      "command": "--organization-inspect",
+      "exitCode": 0
+    },
+    {
+      "command": "--organization-validate",
+      "exitCode": 0
+    },
+    {
+      "command": "--organization-inspect",
+      "exitCode": 0
+    },
+    {
+      "command": "--organization-change",
+      "exitCode": 0
+    },
+    {
+      "command": "--organization-change",
+      "exitCode": 0
+    },
+    {
+      "command": "--organization-inspect",
+      "exitCode": 0
+    },
+    {
+      "command": "--organization-reset-generation",
+      "exitCode": 0
+    },
+    {
+      "command": "--organization-inspect",
+      "exitCode": 0
+    }
+  ]
+}

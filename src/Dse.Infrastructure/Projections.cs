@@ -160,12 +160,19 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
             unit.TaxonomyVersion != Retriever.TaxonomyVersion || unit.ProjectionState != "ready" || unit.SourceVersion is null ||
             unit.AccessVersion is null || unit.ProjectionVersion != unit.SourceVersion || unit.EvidenceRefs is not { Length: > 0 } ||
             !unit.ScopeIds.Intersect(actor.ScopeIds).Any()) return null;
+        actor = await new AuthorityProvider(repository,configuration).RequireAsync(actor, ct);
         var partition = RecordPartition.Catalog(actor.TenantId);
         var source = (await repository.ReadAsync(partition, unit.EntityId, ct))?.Value;
         if (source is null || source.Text("kind") != unit.EntityType || !AccessPolicy.CanUse(actor, source) ||
             source.Number("activeVersion") != unit.SourceVersion || source.Number("accessVersion") != unit.AccessVersion) return null;
+        if (source.Text("kind") == "person")
+        {
+            var person = await new AuthorityProvider(repository,configuration).PersonAsync(actor.TenantId,source.Text("id"),ct);
+            if (person is null || !person.HasRole("member") || person.PrincipalId != source.Text("ownerId")) return null;
+        }
         if (source.Text("kind") == "knowledge" && source.Text("contractVersion") == "knowledge-v1" &&
             await CurrentKnowledgeAuthorityAsync(actor, source, unit.SourceVersion.Value, ct) is null) return null;
+        if (source.Text("kind") == "knowledge" && !await new AuthorityProvider(repository,configuration).CurrentTokenAsync(actor.TenantId,source,ct)) return null;
         List<SourceSnapshot> snapshots = [Snapshot(source)];
         List<SourceRef> refs = [];
         foreach (var reference in unit.EvidenceRefs)
@@ -179,6 +186,7 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
     }
     public async Task<(JsonObject Span, JsonObject Document)?> EvidenceAsync(ActorAccess actor, EvidenceReference reference, CancellationToken ct)
     {
+        actor = await new AuthorityProvider(repository,configuration).RequireAsync(actor, ct);
         var partition = RecordPartition.Catalog(actor.TenantId);
         var span = (await repository.ReadAsync(partition, reference.Id, ct))?.Value;
         if (span?.Text("kind") == "knowledge" && span.Text("contractVersion") == "knowledge-v1")
@@ -201,10 +209,17 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
     }
     public async Task RequireSnapshotsAsync(ActorAccess actor, IEnumerable<SourceSnapshot> snapshots, CancellationToken ct)
     {
+        actor = await new AuthorityProvider(repository,configuration).RequireAsync(actor, ct);
         foreach (var snapshot in snapshots)
         {
             var current = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), snapshot.Id, ct))?.Value;
+            if (current?.Text("kind") == "person")
+            {
+                var person = await new AuthorityProvider(repository,configuration).PersonAsync(actor.TenantId,snapshot.Id,ct);
+                if (person is null || !person.HasRole("member") || person.PrincipalId != current.Text("ownerId")) throw new DomainException(409,"SOURCE_REVOKED");
+            }
             if (current is null || !AccessPolicy.CanUse(actor, current) || Snapshot(current) != snapshot ||
+                current.Text("kind") == "knowledge" && !await new AuthorityProvider(repository,configuration).CurrentTokenAsync(actor.TenantId,current,ct) ||
                 current.Text("kind") == "knowledge" && current.Text("contractVersion") == "knowledge-v1" &&
                 await CurrentKnowledgeAuthorityAsync(actor, current, snapshot.ActiveVersion, ct) is null)
                 throw new DomainException(409, "SOURCE_REVOKED");

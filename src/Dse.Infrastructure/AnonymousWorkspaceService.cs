@@ -54,8 +54,8 @@ public sealed partial class AnonymousWorkspaceService
     }
     private static string Index(string type, params string[] ids) => "aw-index-" + ConversationService.Hash(type + ":" + JsonSerializer.Serialize(ids));
     private static RecordPartition Catalog(ActorAccess actor) => RecordPartition.Catalog(actor.TenantId);
-    private ActorAccess? Person(ActorAccess actor, string person) => config["Data:Mode"] == "Demo"
-        ? IdentityResolver.DemoPerson(person) : new IdentityResolver(config).ResolvePerson(actor.TenantId, person);
+    private Task<ActorAccess?> Person(ActorAccess actor, string person, CancellationToken ct) =>
+        new AuthorityProvider(repository,config).PersonAsync(actor.TenantId, person, ct);
     private async Task<bool> BoundProfileAsync(ActorAccess actor,ActorAccess person,CancellationToken ct)
     {
         var profile = await repository.ReadAsync(Catalog(actor),person.PersonId,ct);
@@ -101,13 +101,23 @@ public sealed partial class AnonymousWorkspaceService
     private async Task EnsureAliasesAsync(ActorAccess actor, StoredRecord map, JsonObject session, CancellationToken ct)
     {
         var aliases = map.Value["aliases"]!.AsArray(); var changed = false;
+        var control = await new AuthorityProvider(repository,config).ControlAsync(actor.TenantId,ct);
         foreach (var pid in session.Strings("originalParticipantIds").Concat(session.Strings("participantIds")).Distinct())
         {
             var prior = aliases.Select(x => x!.AsObject()).SingleOrDefault(x => x.Text("internalPersonId") == pid);
             // Historical authors keep their original alias; their later departure must not
             // prevent remaining participants from reading their own room.
             if (prior is not null && !session.Strings("participantIds").Contains(pid)) continue;
-            var person = Person(actor, pid);
+            if (prior is not null && pid != actor.PersonId && RecordJson.IsId(prior.Text("internalPrincipalId")))
+            {
+                var historical = (await repository.ReadAsync(Catalog(actor),AuthorityProvider.PersonId(pid),ct))?.Value;
+                if (historical is not null && historical.Text("kind") == "personAuthority" && historical.Text("tenantId") == actor.TenantId &&
+                    historical.Text("personId") == pid && historical.Text("generation") == control.Value.Text("generation") &&
+                    (historical["enabled"]?.GetValue<bool>() == false ||
+                        historical.Text("accessEpoch").Length > 0 && historical.Text("accessEpoch") != session["participantEpochs"]?[pid]?.GetValue<string>()))
+                    continue; // Preserve the original author alias, never grant this peer current membership.
+            }
+            var person = await Person(actor, pid, ct);
             if (person is null) throw new DomainException(409, "MEMBERSHIP_UNRESOLVED");
             if (!await BoundProfileAsync(actor,person,ct)) throw new DomainException(409,"SOURCE_REVOKED");
             if (prior is not null)
@@ -149,7 +159,7 @@ public sealed partial class AnonymousWorkspaceService
     public async Task<AnonymousWorkspaceRoomResolution> ResolveIdentityConsentRoomAsync(ActorAccess actor,string publicRoomId,CancellationToken ct)
     {
         PublicId(publicRoomId,"awr-"); var map = await ReadMapping(actor,publicRoomId,"room",ct);
-        var current = Person(actor,actor.PersonId);
+        var current = await Person(actor,actor.PersonId,ct);
         if (current is null || current.PrincipalId != actor.PrincipalId || !current.HasRole("member")) throw new DomainException(404,"NOT_FOUND");
         var effective = current with { ScopeIds = current.ScopeIds.Intersect(actor.ScopeIds).ToArray() };
         var session = await chat.SessionAsync(effective,map.Value.Text("internalSessionId"),ct);
@@ -173,7 +183,7 @@ public sealed partial class AnonymousWorkspaceService
                 await consume(await ResolveRoomAsync(actor, roomId, token), token), token);
         }, ct);
     public Task<T> ConsumeAsync<T>(ActorAccess actor, Func<CancellationToken, Task<T>> consume, CancellationToken ct)
-    { Member(actor); return fence.RunAsync(actor.TenantId, consume, ct); }
+    { Member(actor); return fence.RunAsync(actor.TenantId, async token => { try { await new AuthorityProvider(repository,config).RequireAsync(actor,token); } catch (DomainException e) when (e.Status == 403) { throw new DomainException(404,"NOT_FOUND"); } return await consume(token); }, ct); }
     private async Task<(StoredRecord Challenge, StoredRecord Session, StoredRecord Map)> ResolveChallengeAsync(ActorAccess actor, string publicChallengeId, CancellationToken ct)
     {
         PublicId(publicChallengeId, "awc-"); var pointer = await ReadMapping(actor, publicChallengeId, "challenge", ct);
@@ -194,7 +204,10 @@ public sealed partial class AnonymousWorkspaceService
             await DecisionAuthorityAsync(actor,reference.Value.Text("id"),ct);
         }
         var people = map["aliases"]!.AsArray().Select(x => x!.AsObject()).Select(x => new AnonymousWorkspaceResolvedParticipant(x.Text("internalPersonId"),x.Text("internalPrincipalId"),x.Text("aliasId"),x.Text("aliasLabel"),false));
-        return new(map.Text("publicChallengeId"), AccessPolicy.CanRead(actor, session.Value) ? map.Text("id") : null,
+        var current = await new AuthorityProvider(repository,config).RequireAsync(actor,ct);
+        var member = AccessPolicy.CanRead(current,session.Value) && session.Value["participantEpochs"]?[actor.PersonId]?.GetValue<string>() == current.AccessEpoch;
+        if (session.Value.Text("ownerId") == actor.PrincipalId && !member) throw new DomainException(404,"NOT_FOUND");
+        return new(map.Text("publicChallengeId"), member ? map.Text("id") : null,
             await DisplayTextAsync(actor,challenge.Value.Text("title"),people,ct), await DisplayTextAsync(actor,challenge.Value.Text("summary"),people,ct), session.Value.Text("status"),
             challenge.Value.Text("ownerId") == actor.PrincipalId, challenge.ETag);
     }
@@ -217,6 +230,11 @@ public sealed partial class AnonymousWorkspaceService
             var sid = challenge.Value.Text("sessionId");
             await chat.LockedAsync(actor, sid, async () =>
             {
+                if (challenge.Value.Text("ownerId") == actor.PrincipalId)
+                {
+                    try { await chat.SessionAsync(actor,sid,ct); }
+                    catch (DomainException e) when (e.Status == 404) { return false; }
+                }
                 var current = await chat.ChallengeAsync(actor, challenge.Value.Text("id"), ct);
                 var session = (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, sid), sid, ct))!;
                 var map = await EnsureRoomMapAsync(actor, current.Value, session.Value, ct);
@@ -240,7 +258,7 @@ public sealed partial class AnonymousWorkspaceService
         if (index is not null) return await ReadMapping(actor, index.Value.Text("publicInvitationId"), "invitation", ct);
         var id = Opaque("awi-"); var value = Mapping(actor, id, "invitation", map.Text("internalSessionId"));
         value["publicRoomId"] = map.Text("id"); value["internalParticipationId"] = participation.Text("id"); value["internalPersonId"] = participation.Text("personId");
-        var recipient = Person(actor,participation.Text("personId"));
+        var recipient = await Person(actor,participation.Text("personId"),ct);
         if (recipient is null || !await BoundProfileAsync(actor,recipient,ct)) throw new DomainException(409,"SOURCE_REVOKED");
         value["recipientPrincipalId"] = recipient.PrincipalId;
         var pointer = Mapping(actor, idx, "invitation-index", map.Text("internalSessionId")); pointer["publicInvitationId"] = id;
@@ -257,7 +275,7 @@ public sealed partial class AnonymousWorkspaceService
         var aliases = map["aliases"]!.AsArray();
         if (!aliases.Any(x => x!.AsObject().Text("internalPersonId") == pid))
         {
-            var person = Person(actor, pid) ?? throw new DomainException(409, "MEMBERSHIP_UNRESOLVED");
+            var person = await Person(actor, pid, ct) ?? throw new DomainException(409, "MEMBERSHIP_UNRESOLVED");
             aliases.Add(new JsonObject { ["internalPersonId"] = pid, ["internalPrincipalId"] = person.PrincipalId,
                 ["aliasId"] = Opaque("awa-"), ["aliasLabel"] = "協力者" + (aliases.Count(x => x!.AsObject().Text("role") != "owner") + 1), ["role"] = "collaborator" });
             var row = await ReadMapping(actor, map.Text("id"), "room", ct);
@@ -276,6 +294,11 @@ public sealed partial class AnonymousWorkspaceService
             var sid = challenge.Value.Text("sessionId");
             await chat.LockedAsync(actor, sid, async () =>
             {
+                if (challenge.Value.Text("ownerId") == actor.PrincipalId)
+                {
+                    try { await chat.SessionAsync(actor,sid,ct); }
+                    catch (DomainException e) when (e.Status == 404) { return false; }
+                }
                 var current = await chat.ChallengeAsync(actor, challenge.Value.Text("id"), ct);
                 var session = (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, sid), sid, ct))!;
                 var map = await EnsureRoomMapAsync(actor, current.Value, session.Value, ct);
@@ -301,8 +324,16 @@ public sealed partial class AnonymousWorkspaceService
             var own = await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, resolved.SessionId), ConversationService.ParticipationId(actor.PersonId), ct);
             if (own is not null) participation = await InvitationDtoAsync(actor, await EnsureInvitationMapAsync(actor, map.Value, own.Value, ct), map.Value, challenge, session, own, ct);
         }
+        List<AnonymousWorkspaceAlias> active = [];
+        foreach (var person in resolved.Participants)
+        {
+            var current = await Person(actor,person.PersonId,ct);
+            if (current is not null && current.HasRole("member") && AccessPolicy.InScope(current,session.Value) &&
+                current.PrincipalId == person.PrincipalId && session.Value["participantEpochs"]?[person.PersonId]?.GetValue<string>() == current.AccessEpoch)
+                active.Add(new(person.AliasId,person.AliasLabel,person.IsSelf));
+        }
         return new(resolved.PublicRoomId, await ChallengeDtoAsync(actor, challenge, session, map.Value,ct), session.Value.Text("status"), session.Value.Text("aiAssistance"),
-            resolved.IsOwner, resolved.Participants.Length, resolved.Participants.Select(p => new AnonymousWorkspaceAlias(p.AliasId, p.AliasLabel, p.IsSelf)).ToArray(), session.ETag, participation);
+            resolved.IsOwner, active.Count, active.ToArray(), session.ETag, participation);
     }
     public async Task<AnonymousWorkspacePage<AnonymousWorkspaceRoom>> RoomsUnderFenceAsync(ActorAccess actor, int size, string? cursor, CancellationToken ct)
     {
@@ -327,6 +358,7 @@ public sealed partial class AnonymousWorkspaceService
     {
         var resolved = await ResolveChallengeAsync(actor, challengeId, ct);
         if (resolved.Challenge.Value.Text("ownerId") != actor.PrincipalId) throw new DomainException(403, "FORBIDDEN");
+        await chat.SessionAsync(actor,resolved.Session.Value.Text("id"),ct);
         return await chat.LockedAsync<AnonymousWorkspacePage<AnonymousWorkspaceCandidate>>(actor, resolved.Session.Value.Text("id"), async () =>
         {
             resolved = await ResolveChallengeAsync(actor, challengeId, ct);
@@ -338,11 +370,13 @@ public sealed partial class AnonymousWorkspaceService
             var candidates = Retriever.Search(allowed, request, actor.Search).Candidates.Take(10).ToArray(); List<AnonymousWorkspaceCandidate> response = [];
             foreach (var candidate in candidates)
             {
-                var person = Person(actor, candidate.EntityId);
+                var person = await Person(actor, candidate.EntityId, ct);
                 if (person is null || !person.HasRole("member") || !AccessPolicy.InScope(person, resolved.Session.Value) || !await BoundProfileAsync(actor,person,ct)) continue;
-                if (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, resolved.Session.Value.Text("id")), ConversationService.ParticipationId(candidate.EntityId), ct) is not null) continue;
+                var participation = await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, resolved.Session.Value.Text("id")), ConversationService.ParticipationId(candidate.EntityId), ct);
+                if (participation is not null && participation.Value.Text("accessEpoch") == person.AccessEpoch) continue;
                 var token = Opaque("awt-"); var row = Mapping(actor, token, "candidate", resolved.Session.Value.Text("id"));
                 row["boundPrincipalId"] = actor.PrincipalId; row["boundChallengeId"] = resolved.Challenge.Value.Text("id"); row["boundChallengeEtag"] = resolved.Challenge.ETag;
+                row["authorityToken"] = person.AuthorityToken; row["targetAccessEpoch"] = person.AccessEpoch;
                 row["unit"] = JsonSerializer.SerializeToNode(candidate.Units[0], Json); row["expiresAt"] = clock.GetUtcNow().AddMinutes(10);
                 await repository.CommitAsync(Catalog(actor), [RecordWrite.Create(row)], ct);
                 response.Add(new(token, "協力候補" + (response.Count + 1), candidate.Routes));
@@ -362,8 +396,9 @@ public sealed partial class AnonymousWorkspaceService
             if (candidate.Value.Text("boundChallengeId") != resolved.ChallengeId || candidate.Value.Text("boundChallengeEtag") != challenge.ETag) throw new DomainException(409, "SOURCE_REVOKED");
             var unit = candidate.Value["unit"]!.Deserialize<SearchUnit>(Json)!;
             await guard.RequireAsync(actor, unit, token);
-            var person = Person(actor,unit.EntityId);
-            if (person is null || !await BoundProfileAsync(actor,person,token)) throw new DomainException(409,"SOURCE_REVOKED");
+            var person = await Person(actor,unit.EntityId,token);
+            if (person is null || person.AuthorityToken != candidate.Value.Text("authorityToken") || person.AccessEpoch != candidate.Value.Text("targetAccessEpoch") ||
+                !await BoundProfileAsync(actor,person,token)) throw new DomainException(409,"SOURCE_REVOKED");
             await chat.InviteAsync(actor, resolved.SessionId, key, etag, new(unit.EntityId), config["Data:Mode"] == "Demo", token);
             // The saved invitation is re-read under the room lock for the public ack.
             return await chat.LockedAsync(actor, resolved.SessionId, async () =>
@@ -377,7 +412,7 @@ public sealed partial class AnonymousWorkspaceService
     {
         PublicId(invitationId, "awi-"); var reference = await ReadMapping(actor, invitationId, "invitation", ct);
         if (reference.Value.Text("internalPersonId") != actor.PersonId) throw new DomainException(404, "NOT_FOUND");
-        var target = Person(actor,actor.PersonId);
+        var target = await Person(actor,actor.PersonId,ct);
         var participation = await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId,reference.Value.Text("internalSessionId")),reference.Value.Text("internalParticipationId"),ct);
         var session = await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId,reference.Value.Text("internalSessionId")),reference.Value.Text("internalSessionId"),ct);
         var expectedRecipient = reference.Value.Text("recipientPrincipalId");
@@ -389,6 +424,7 @@ public sealed partial class AnonymousWorkspaceService
         }
         if (target is null || target.PrincipalId != actor.PrincipalId || expectedRecipient != actor.PrincipalId || !await BoundProfileAsync(actor,target,ct) ||
             session is null || participation is null || session.Value.Text("kind") != "session" || participation.Value.Text("kind") != "participation" ||
+            participation.Value.Text("accessEpoch") != target.AccessEpoch ||
             participation.Value.Text("personId") != actor.PersonId || participation.Value.Text("ownerId") != session.Value.Text("ownerId") ||
             !AccessPolicy.InScope(actor,session.Value) || !AccessPolicy.InScope(target,session.Value) || !AccessPolicy.InScope(actor,participation.Value))
             throw new DomainException(404,"NOT_FOUND");

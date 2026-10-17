@@ -1,0 +1,370 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DSE manual dummy organization authority",
+    "version": "organization-authority-v1",
+    "description": "部署正本は認可scopeと別。権限・binding・退職・世代更新は停止下のローカルダミーCLIのみ。実環境設定変更APIは提供しない。"
+  },
+  "paths": {
+    "/api/v1/admin/organization": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "現在状態または検証結果"
+          },
+          "400": {
+            "description": "不正な期間・存在しない部署・未知フィールド"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "operator必要"
+          },
+          "404": {
+            "description": "対象不明"
+          },
+          "409": {
+            "description": "部署ID再利用・利用中・冪等キー競合"
+          },
+          "412": {
+            "description": "古いETagまたはauthorityToken"
+          },
+          "503": {
+            "description": "正本不明・maintenance・フェンス閉鎖"
+          },
+          "422": {
+            "description": "ORGANIZATION_LIMIT：部署上限100件。新規追加を拒否し、既存更新と管理読取は維持する"
+          }
+        }
+      }
+    },
+    "/api/v1/me/organization": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "現在状態または検証結果"
+          },
+          "400": {
+            "description": "不正な期間・存在しない部署・未知フィールド"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "operator必要"
+          },
+          "404": {
+            "description": "対象不明"
+          },
+          "409": {
+            "description": "部署ID再利用・利用中・冪等キー競合"
+          },
+          "412": {
+            "description": "古いETagまたはauthorityToken"
+          },
+          "503": {
+            "description": "正本不明・maintenance・フェンス閉鎖"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/organization/validate": {
+      "post": {
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "現在状態または検証結果"
+          },
+          "400": {
+            "description": "不正な期間・存在しない部署・未知フィールド"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "operator必要"
+          },
+          "404": {
+            "description": "対象不明"
+          },
+          "409": {
+            "description": "部署ID再利用・利用中・冪等キー競合"
+          },
+          "412": {
+            "description": "古いETagまたはauthorityToken"
+          },
+          "503": {
+            "description": "正本不明・maintenance・フェンス閉鎖"
+          },
+          "422": {
+            "description": "ORGANIZATION_LIMIT：部署上限100件。新規追加を拒否し、既存更新と管理読取は維持する"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/organization/changes": {
+      "post": {
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "現在状態または検証結果"
+          },
+          "400": {
+            "description": "不正な期間・存在しない部署・未知フィールド"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "operator必要"
+          },
+          "404": {
+            "description": "対象不明"
+          },
+          "409": {
+            "description": "部署ID再利用・利用中・冪等キー競合"
+          },
+          "412": {
+            "description": "古いETagまたはauthorityToken"
+          },
+          "503": {
+            "description": "正本不明・maintenance・フェンス閉鎖"
+          },
+          "422": {
+            "description": "ORGANIZATION_LIMIT：部署上限100件。新規追加を拒否し、既存更新と管理読取は維持する"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "OrganizationChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "change"
+            ],
+            "properties": {
+              "type": {
+                "const": "department"
+              },
+              "change": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "name",
+                  "validFrom",
+                  "validTo",
+                  "successorIds",
+                  "reason",
+                  "expectedAuthorityToken"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "validFrom": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "validTo": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "successorIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                    },
+                    "uniqueItems": true,
+                    "maxItems": 20
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "expectedAuthorityToken": {
+                    "type": "string",
+                    "minLength": 34,
+                    "maxLength": 64
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "change"
+            ],
+            "properties": {
+              "type": {
+                "const": "membership"
+              },
+              "change": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "personId",
+                  "terms",
+                  "reason",
+                  "expectedAuthorityToken"
+                ],
+                "properties": {
+                  "personId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "terms": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "termId",
+                        "departmentId",
+                        "from",
+                        "to"
+                      ],
+                      "properties": {
+                        "termId": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                        },
+                        "departmentId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "from": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "to": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "maxItems": 100
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "expectedAuthorityToken": {
+                    "type": "string",
+                    "minLength": 34,
+                    "maxLength": 64
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

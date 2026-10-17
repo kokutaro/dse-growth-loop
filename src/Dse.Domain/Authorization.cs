@@ -4,6 +4,8 @@ namespace Dse.Domain;
 
 public sealed record ActorAccess(string TenantId, string PrincipalId, string PersonId, string[] Roles, string[] ScopeIds)
 {
+    public string? AuthorityToken { get; init; }
+    public string? AccessEpoch { get; init; }
     public bool HasRole(string role) => Roles.Contains(role, StringComparer.Ordinal);
     public SearchAccess Search => new(TenantId, ScopeIds);
 }

@@ -26,7 +26,8 @@ public static class AiSmoke
     {
         Validate(config);
         var tenant = config["Auth:TenantId"]!;
-        var actor = identities.ResolvePerson(tenant, config["AiSmoke:OperatorPersonId"]!) ?? throw new DomainException(403, "FORBIDDEN");
+        _ = identities.Configuration;
+        var actor = await new AuthorityProvider(repository,config).PersonAsync(tenant, config["AiSmoke:OperatorPersonId"]!,ct) ?? throw new DomainException(403, "FORBIDDEN");
         var connections = config["AiSmoke:Suite"] == "connections";
         SearchUnit? candidate = null;
         if (connections)

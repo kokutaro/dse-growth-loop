@@ -45,7 +45,7 @@ public sealed partial class AnonymousWorkspaceService
             labels,evidenceLabels,participantLabels,consents,state["canApprove"]?.GetValue<bool>() == true,state.Text("processingMode"),
             outcome is null ? null : new(outcome.Text("resolution"),await DisplayTextAsync(actor,outcome.Text("result"),room.Participants,ct)),feedback,
             job is null ? null : new(job.Text("status"),string.IsNullOrEmpty(job.Text("lastErrorCode")) ? null : job.Text("lastErrorCode")),
-            metadata);
+            metadata, state.Text("reviewedVersion"), state["occurrenceDepartmentVerified"]?.GetValue<bool>() == true);
     }
     private async Task<JsonObject> TranslateKnowledgeAsync(ActorAccess actor, AnonymousWorkspaceRoomResolution room, string operation, JsonObject input, CancellationToken ct)
     {

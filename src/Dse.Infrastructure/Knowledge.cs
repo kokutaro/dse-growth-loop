@@ -9,6 +9,24 @@ namespace Dse.Infrastructure;
 public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore store, ConversationService chat, AccessFence fence,
     IKnowledgeDrafter drafter, IDecisionProvider decisions, IdentityResolver identities, IConfiguration config, TimeProvider clock)
 {
+    private readonly AuthorityProvider authority = new(repository,config);
+    public static string ReviewedVersion(JsonObject state, string authorityToken) => ConversationService.Hash(
+        RecordJson.Canonical(new JsonObject { ["id"] = state.Text("id"), ["version"] = state.Number("sourceVersion"),
+            ["scopeIds"] = state["scopeIds"]?.DeepClone(), ["sections"] = state["sections"]?.DeepClone(),
+            ["departmentSnapshot"] = state["departmentSnapshot"]?.DeepClone(), ["authorityToken"] = authorityToken }));
+    private async Task<JsonObject?> DepartmentAsync(ActorAccess actor, JsonObject session, CancellationToken ct)
+    {
+        var challenge = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), session.Text("challengeId"), ct))?.Value;
+        if (challenge is null || string.IsNullOrEmpty(challenge.Text("creatorPersonId"))) return null;
+        return await authority.DepartmentSnapshotAsync(actor.TenantId, challenge.Text("creatorPersonId"),
+            challenge["createdAt"]!.GetValue<DateTimeOffset>(), ct);
+    }
+    private static void StampDepartment(JsonObject state, JsonObject? snapshot)
+    {
+        state["departmentSnapshot"] = snapshot?.DeepClone();
+        var metadata = state["analysisMetadata"] as JsonObject;
+        if (metadata is not null) metadata["departmentId"] = snapshot?.Text("departmentId");
+    }
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     private static JsonNode Node<T>(T value) => JsonSerializer.SerializeToNode(value, Json)!;
     public static string Id(string sid) => "knowledge-" + ConversationService.Hash(sid);
@@ -29,7 +47,15 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
         var session = await chat.SessionAsync(a, sid, ct);
         var state = (await repository.ReadAsync(RecordPartition.Conversation(a.TenantId, sid), Id(sid), ct))?.Value ?? NewState(a, session.Value, clock.GetUtcNow());
         var result = state.Copy(); if (state.Text("status") == "absent") result["etag"] = session.ETag;
-        result["sessionEtag"] = session.ETag; result["canApprove"] = a.HasRole("publisher");
+        var current = await authority.RequireAsync(a, ct);
+        var token = current.AuthorityToken!;
+        if (state.Text("authorityToken") != token && state.Text("status") != "absent")
+        { result["status"] = "draft"; result["consents"] = new JsonObject(); result["approvedBy"] = null; result["activeVersion"] = null; result["analysisConsent"] = "not_granted"; }
+        // A changed authority is visible before fresh consent, and is checked again on mutation.
+        StampDepartment(result, await DepartmentAsync(a, session.Value, ct));
+        result["occurrenceDepartmentVerified"] = result["departmentSnapshot"] is JsonObject;
+        result["reviewedVersion"] = ReviewedVersion(result, token);
+        result["sessionEtag"] = session.ETag; result["canApprove"] = current.HasRole("publisher");
         result["publicationJob"] = state.Number("sourceVersion") > 0 ? (await repository.ReadAsync(RecordPartition.Conversation(a.TenantId, sid), JobId(sid, state.Number("sourceVersion")), ct))?.Value.DeepClone() : null;
         result["outcome"] = (await repository.ReadAsync(RecordPartition.Conversation(a.TenantId, sid), sid + ":outcome", ct))?.Value.DeepClone();
         result["feedback"] = (await repository.QueryAsync(RecordPartition.Conversation(a.TenantId, sid), "feedback", null, null, 100, null, ct)).Items.Select(x => x.Value).Aggregate(new JsonArray(), (array, x) => { array.Add(x.DeepClone()); return array; });
@@ -83,6 +109,8 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
             value["processingMode"] = config["Ai:Mode"] == "Mock" ? "fixture" : "live";
             value["participantIds"] = RecordJson.Array(await OriginalParticipantsAsync(a, current.Value, token));
             value["title"] = "相談からの知識";
+            value["authorityToken"] = (await authority.RequireAsync(a, token)).AuthorityToken;
+            StampDepartment(value, await DepartmentAsync(a, current.Value, token));
             await repository.CommitAsync(partition, [RecordWrite.Create(value)], token);
             return (await repository.ReadAsync(partition, Id(sid), token))!.Value;
         }, token), ct);
@@ -96,18 +124,29 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
             var session = await chat.SessionAsync(a, sid, token); var partition = RecordPartition.Conversation(a.TenantId, sid);
             var row = await repository.ReadAsync(partition, Id(sid), token);
             var state = row?.Value.Copy() ?? NewState(a, session.Value, clock.GetUtcNow());
+            a = await authority.RequireAsync(a, token);
+            var authorityToken = a.AuthorityToken!;
+            var viewState = state.Copy(); StampDepartment(viewState, await DepartmentAsync(a, session.Value, token));
             var receiptId = "idempotency-" + ConversationService.Hash(JsonSerializer.Serialize(new[] { a.PrincipalId, operation, key }));
             var fingerprint = ConversationService.Hash(RecordJson.Canonical(input) + etag);
             var receipt = await repository.ReadAsync(partition, receiptId, token);
             if (receipt is not null)
             { if (receipt.Value.Text("fingerprint") != fingerprint) throw new DomainException(409, "IDEMPOTENCY_CONFLICT"); return await StateAsync(a, sid, token); }
             if ((row?.ETag ?? session.ETag) != etag) throw new DomainException(412, "STALE_VERSION");
+            if (operation is "consent" or "approve" or "request-review")
+            {
+                if (input.Text("reviewedVersion") != ReviewedVersion(viewState, authorityToken)) throw new DomainException(409, "STALE_APPROVAL");
+                if (operation != "request-review" && state.Text("authorityToken") != authorityToken) throw new DomainException(409, "STALE_APPROVAL");
+            }
             List<RecordWrite> writes = [];
+            var awaitSnapshot = await DepartmentAsync(a, session.Value, token);
             void Invalidate()
             {
                 state["sourceVersion"] = state.Number("sourceVersion") + 1; state["accessVersion"] = state.Number("accessVersion") + 1;
                 state["status"] = "draft"; state["approvedBy"] = null; state["activeVersion"] = null; state["consents"] = new JsonObject();
                 state["analysisConsent"] = "not_granted";
+                state["authorityToken"] = authorityToken;
+                StampDepartment(state, awaitSnapshot);
             }
             switch (operation)
             {
@@ -135,16 +174,20 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                     if (scopes.Length is < 1 or > 20 || scopes.Distinct().Count() != scopes.Length || scopes.Any(s => !session.Value.Strings("scopeIds").Contains(s) || !a.ScopeIds.Contains(s))) throw new DomainException(403, "FORBIDDEN");
                     Invalidate(); state["sections"] = Node(summary.Sections); state["scopeIds"] = RecordJson.Array(scopes);
                     if (input.ContainsKey("analysisMetadata")) state["analysisMetadata"] = JsonSerializer.SerializeToNode(BusinessAnalysisMetadataContract.Parse(input["analysisMetadata"]), Json);
+                    StampDepartment(state, awaitSnapshot);
                     break;
                 case "request-review":
-                    Owner(a, session.Value); Version(state, input); if (state.Text("status") != "draft") throw new DomainException(409, "INVALID_TRANSITION");
+                    Owner(a, session.Value); Version(state, input);
+                    if (state.Text("authorityToken") != authorityToken) Invalidate();
+                    state["authorityToken"] = authorityToken; StampDepartment(state, awaitSnapshot);
+                    if (state.Text("status") != "draft") throw new DomainException(409, "INVALID_TRANSITION");
                     state["status"] = "review_requested"; state["membershipVersion"] = session.Value.Number("membershipVersion");
                     state["participantIds"] = RecordJson.Array(await OriginalParticipantsAsync(a, session.Value, token)); break;
                 case "consent":
                     Version(state, input); if (state.Text("status") is not ("review_requested" or "published")) throw new DomainException(409, "INVALID_TRANSITION");
                     var publication = input["publication"]!.GetValue<bool>(); var analysis = input["analysis"]!.GetValue<bool>();
                     state["consents"]![a.PersonId] = new JsonObject { ["version"] = state.Number("sourceVersion"), ["scopeIds"] = state["scopeIds"]!.DeepClone(),
-                        ["publication"] = publication, ["analysis"] = analysis, ["principalId"] = a.PrincipalId, ["confirmedAt"] = clock.GetUtcNow() };
+                        ["publication"] = publication, ["analysis"] = analysis, ["authorityToken"] = authorityToken, ["accessEpoch"] = a.AccessEpoch, ["principalId"] = a.PrincipalId, ["confirmedAt"] = clock.GetUtcNow() };
                     state["analysisConsent"] = AllConsented(state, true) ? "granted" : "not_granted";
                     if (!publication && state.Text("status") == "published") { state["status"] = "withdrawn"; state["activeVersion"] = null; state["accessVersion"] = state.Number("accessVersion") + 1; }
                     break;
@@ -152,7 +195,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                     if (!a.HasRole("publisher")) throw new DomainException(403, "FORBIDDEN"); Version(state, input);
                     if (state.Text("status") == "published") break;
                     if (state.Text("status") != "review_requested" || state.Number("membershipVersion") != session.Value.Number("membershipVersion") || await CurrentConsentParticipantsAsync(repository,config,a.TenantId,state,false,token) is null) throw new DomainException(409, "CONSENT_REQUIRED");
-                    state["status"] = "published"; state["approvedBy"] = new JsonObject { ["id"] = a.PrincipalId, ["version"] = state.Number("sourceVersion"), ["at"] = clock.GetUtcNow() };
+                    state["status"] = "published"; state["approvedBy"] = new JsonObject { ["id"] = a.PrincipalId, ["version"] = state.Number("sourceVersion"), ["authorityToken"] = authorityToken, ["at"] = clock.GetUtcNow() };
                     state["activeVersion"] = state.Number("sourceVersion");
                     var job = Jobs.Create(state, "knowledgePublication", clock.GetUtcNow(), JobId(sid, state.Number("sourceVersion")));
                     job["container"] = "conversations"; job["sessionId"] = sid; job["notificationState"] = "pending";
@@ -176,7 +219,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
     public static void ValidateInput(string operation, JsonObject input)
     {
         var allowed = operation switch { "outcome" => new[] { "resolution", "result" }, "feedback" => ["value", "comment"], "edit" => ["sections", "scopeIds", "analysisMetadata"],
-            "request-review" or "approve" => ["version"], "consent" => ["version", "publication", "analysis"], "withdraw" => [], _ => throw new ArgumentException("Invalid operation") };
+            "request-review" or "approve" => ["version", "reviewedVersion"], "consent" => ["version", "reviewedVersion", "publication", "analysis"], "withdraw" => [], _ => throw new ArgumentException("Invalid operation") };
         var required = operation == "edit" ? new[] { "sections", "scopeIds" } : allowed;
         if (input.Any(p => !allowed.Contains(p.Key)) || operation != "feedback" && required.Any(k => input[k] is null)) throw new ArgumentException("Invalid input");
         try
@@ -192,7 +235,11 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                     if (input.ContainsKey("analysisMetadata")) _ = BusinessAnalysisMetadataContract.Parse(input["analysisMetadata"]);
                     break;
                 case "consent": _ = input["publication"]!.GetValue<bool>(); _ = input["analysis"]!.GetValue<bool>(); goto case "approve";
-                case "approve": case "request-review": if (input.Number("version") < 1) throw new ArgumentException("Invalid version"); break;
+                case "approve": case "request-review":
+                    if (input.Number("version") < 1) throw new ArgumentException("Invalid version");
+                    var reviewed = input.Text("reviewedVersion");
+                    if (reviewed.Length != 64 || reviewed.Any(c => !Uri.IsHexDigit(c))) throw new ArgumentException("Invalid reviewed version");
+                    break;
             }
         }
         catch (Exception e) when (e is InvalidOperationException or JsonException or FormatException) { throw new ArgumentException("Invalid input", e); }
@@ -205,12 +252,16 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
     internal static async Task<ConsentParticipant[]?> CurrentConsentParticipantsAsync(IPrimaryRepository repo,
         IConfiguration config, string tenant, JsonObject state, bool analysis, CancellationToken ct)
     {
+        var authority = new AuthorityProvider(repo,config);
+        if (!await authority.CurrentTokenAsync(tenant, state, ct)) return null;
         if (!AllConsented(state, false) || analysis && !AllConsented(state, true)) return null;
-        var resolver = config["Data:Mode"] == "Demo" ? null : new IdentityResolver(config);
+        _ = config["Data:Mode"];
         List<ConsentParticipant> participants = [];
         foreach (var pid in state.Strings("participantIds"))
         {
-            var identity = resolver is null ? IdentityResolver.DemoPerson(pid) : resolver.ResolvePerson(tenant, pid);
+            var identity = await authority.PersonAsync(tenant, pid, ct);
+            var consent = state["consents"]![pid]!.AsObject();
+            if (consent.Text("authorityToken") != state.Text("authorityToken") || consent.Text("accessEpoch") != identity?.AccessEpoch) return null;
             var pin = state["consents"]![pid]!.AsObject().Text("principalId");
             if (identity is null || identity.TenantId != tenant || !identity.HasRole("member") ||
                 identity.PrincipalId != pin || !AccessPolicy.InScope(identity, state)) return null;
@@ -225,7 +276,8 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
     {
         var p = RecordPartition.Conversation(tenant, sid); var state = (await repo.ReadAsync(p, Id(sid), ct))?.Value;
         var session = (await repo.ReadAsync(p, sid, ct))?.Value;
-        return state is not null && session is not null && state.Text("status") == "published" && state.Number("sourceVersion") == version &&
+        return state is not null && session is not null && await new AuthorityProvider(repo).CurrentTokenAsync(tenant, state, ct) &&
+            state["approvedBy"]?["authorityToken"]?.GetValue<string>() == state.Text("authorityToken") && state.Text("status") == "published" && state.Number("sourceVersion") == version &&
             state.Number("activeVersion") == version && state["approvedBy"]?["version"]?.GetValue<int>() == version && AllConsented(state, false) &&
             state.Number("membershipVersion") == session.Number("membershipVersion") ? state : null;
     }
@@ -249,7 +301,8 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
             }, ct);
             return;
         }
-        var actor = config["Data:Mode"] == "Demo" ? IdentityResolver.DemoPerson(state.Strings("participantIds")[0]) : identities.ResolvePerson(tenant, state.Strings("participantIds")[0]);
+        _ = identities.Configuration;
+        var actor = await authority.PersonAsync(tenant, state.Strings("participantIds")[0], ct);
         if (actor is null || !state.Strings("scopeIds").Intersect(actor.ScopeIds).Any()) throw new DomainException(409, "SOURCE_REVOKED");
         if (job.Value.Number("attempt") >= 3) throw new DomainException(409, "PUBLICATION_RETRY_EXHAUSTED");
         job.Value["attempt"] = job.Value.Number("attempt") + 1;
@@ -274,6 +327,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                 k["sourceVersion"] = version; k["activeVersion"] = version; k["accessVersion"] = state.Number("accessVersion"); k["approvedBy"] = state["approvedBy"]!.DeepClone(); k["status"] = "published";
                 k["processingMode"] = state.Text("processingMode");
                 k["analysisMetadata"] = state["analysisMetadata"]?.DeepClone();
+                k["authorityToken"] = state.Text("authorityToken"); k["departmentSnapshot"] = state["departmentSnapshot"]?.DeepClone();
                 var evidence = new[] { new EvidenceReference(id, id, version) };
                 var answer = classified.Value;
                 var unit = new SearchUnit(projectionId, id, "knowledge", tenant, id, k.Text("title"), k.Text("summary"), k.Strings("scopeIds"), "active", true, Retriever.TaxonomyVersion,

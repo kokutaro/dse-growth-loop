@@ -3,8 +3,7 @@ using Dse.Infrastructure;
 
 public static class IdentityDisclosureEndpoints
 {
-    private static ActorAccess Actor(HttpContext context, IConfiguration configuration) => configuration["Data:Mode"] == "Demo"
-        ? RecordEndpoints.Actor(context) : new IdentityResolver(configuration).Resolve(context.User);
+    private static ActorAccess Actor(HttpContext context, IConfiguration configuration) => RecordEndpoints.Actor(context);
     public static void MapIdentityDisclosure(this RouteGroupBuilder api)
     {
         api.MapGet("/workspace/rooms/{roomId}/identity-consent", (string roomId, HttpContext context, IdentityDisclosureService service, IConfiguration configuration) =>

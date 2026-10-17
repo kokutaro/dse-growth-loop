@@ -66,6 +66,8 @@ public sealed class FencedResult(AccessFence fence, string tenant, Func<Cancella
 {
     public Task ExecuteAsync(HttpContext context) => fence.RunAsync(tenant, async token =>
     {
+        if (context.Items[typeof(ActorAccess)] is ActorAccess actor)
+            await context.RequestServices.GetRequiredService<AuthorityProvider>().RequireAsync(actor, token);
         await (await build(token)).ExecuteAsync(context);
         return true;
     }, ct);

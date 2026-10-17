@@ -87,7 +87,9 @@ public sealed class BusinessAnalysisTests
     [Fact]
     public async Task Missing_public_metadata_is_unknown_and_does_not_pass_department_threshold()
     {
-        var s = await Create(); await ChangeSource(s, 3, (a, k) => { a.Remove("analysisMetadata"); k.Remove("analysisMetadata"); });
+        var s = await Create(); await ChangeSource(s, 3, (a, k) => { a.Remove("analysisMetadata"); k.Remove("analysisMetadata"); a["departmentSnapshot"] = null; k["departmentSnapshot"] = null; });
+        var person = (await s.Repo.ReadAsync(RecordPartition.Catalog("demo"),AuthorityProvider.PersonId("demo-person-02"),default))!;
+        person.Value["departmentTerms"] = new JsonArray(); await s.Repo.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(person.Value,person.ETag)],default);
         var result = await Start(s, Request()); Assert.Empty(result["groups"]!.AsArray()); Assert.Equal(0, s.Ai.Calls);
         var excluded = result["exclusions"]![0]!; Assert.Equal("DEPARTMENT_METADATA_MISSING", excluded["reason"]!.GetValue<string>());
         var metrics = excluded["metrics"]!; Assert.Null(metrics["reportedHours"]); Assert.Null(metrics["unresolvedRatio"]); Assert.Null(metrics["lowRatedChallenges"]);
@@ -243,7 +245,9 @@ public sealed class BusinessAnalysisTests
             var catalog = (await s.Repo.ReadAsync(RecordPartition.Catalog("demo"), KnowledgeService.Id(templateSid), default))!.Value.Copy();
             catalog["id"] = kid; catalog["sessionId"] = sid; catalog["summary"] = new KnowledgeSummary(sections).Text;
             await s.Repo.CommitAsync(partition, [RecordWrite.Create(session), RecordWrite.Create(authority)], default);
-            await s.Repo.CommitAsync(RecordPartition.Catalog("demo"), [RecordWrite.Create(catalog)], default);
+            var templateChallenge = (await s.Repo.ReadAsync(RecordPartition.Catalog("demo"), "demo-business-challenge-"+(i-3), default))!.Value.Copy();
+            templateChallenge["id"] = session.Text("challengeId"); templateChallenge["sessionId"] = sid;
+            await s.Repo.CommitAsync(RecordPartition.Catalog("demo"), [RecordWrite.Create(catalog),RecordWrite.Create(templateChallenge)], default);
         }
         var request = Request(); var result = await Start(s, request); Assert.Equal(2, result["groups"]!.AsArray().Count);
         var groupId = result["groups"]![0]!["id"]!.GetValue<string>(); var otherId = result["groups"]![1]!["id"]!.GetValue<string>();
@@ -411,7 +415,6 @@ public sealed class BusinessAnalysisTests
     {
         var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dse-analysis-fake-" + Guid.NewGuid().ToString("N"));
         IRecordStore store = new OperationMeasuredRecordStore(new LocalRecordStore(new LocalIngestionFiles(path))); var repo = new PrimaryRepository(store);
-        await BusinessAnalysisDemoFixtures.SeedAsync(store, default, LiveTenant);
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Data:Mode"] = "Azure", ["Ai:Mode"] = "Live", ["Auth:TenantId"] = LiveTenant, ["BusinessAnalysis:Enabled"] = "true",
@@ -431,6 +434,9 @@ public sealed class BusinessAnalysisTests
             config[$"Auth:Bindings:{i}:Roles:0"] = "member"; config[$"Auth:Bindings:{i}:Enabled"] = "true";
             config[$"Auth:Grants:{i}:PrincipalId"] = "principal-demo-"+suffix; config[$"Auth:Grants:{i}:ScopeIds:0"] = "demo";
         }
+        config["Auth:Bindings:0:Roles:1"] = "analyst";
+        await AuthorityFixture.InitializeAsync(store,config,LiveTenant);
+        await BusinessAnalysisDemoFixtures.SeedAsync(store, default, LiveTenant);
         var wire = new WireFake { Variation = variation }; var live = new BusinessAnalysisLiveDrafter(config, repo, new(store, TimeProvider.System), wire, TimeProvider.System);
         return new(path, store, repo, config, new(repo, store, new(repo), new BusinessAnalysisDrafter(config, live), config, TimeProvider.System), wire);
     }

@@ -24,7 +24,7 @@ public class SharedCommitTests
     [InlineData(false, false, false, "evidence-scope")]
     public async Task Shared_commit_is_atomic_deduplicated_and_checks_all_participants(bool missingScope, bool revoke, bool changeSession, string? evidenceChange)
     {
-        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, Tenant, default);
+        var store = new MemoryRecordStore();
         var repo = new PrimaryRepository(store); var fence = new AccessFence(repo); var guard = new SourceGuard(repo);
         var settings = new Dictionary<string, string?>();
         for (var i = 0; i < 2; i++)
@@ -38,10 +38,16 @@ public class SharedCommitTests
             settings[$"Auth:Grants:{i}:PrincipalId"] = $"principal-{i}";
             settings[$"Auth:Grants:{i}:ScopeIds:0"] = i == 1 && missingScope ? "private" : "demo";
         }
-        var identities = new IdentityResolver(new ConfigurationBuilder().AddInMemoryCollection(settings).Build());
+        var identityConfig = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
+        var dummy = Enumerable.Range(1,3).Select(i => IdentityResolver.DemoPerson($"demo-person-{i:D2}")!).ToArray();
+        await AuthorityProvider.InitializeAsync(store,Tenant,
+            dummy.Select(a => new IdentityBinding(Tenant,"",a.PrincipalId,a.PersonId,a.Roles,true)).Concat(identityConfig.GetSection("Auth:Bindings").Get<IdentityBinding[]>()!).ToArray(),
+            dummy.Select(a => new AccessGrant(a.PrincipalId,a.ScopeIds)).Concat(identityConfig.GetSection("Auth:Grants").Get<AccessGrant[]>()!).ToArray(),default);
+        await DemoRecords.SeedAsync(store,Tenant,default);
+        var identities = new IdentityResolver(identityConfig);
         var actor = identities.ResolvePerson(Tenant, "person-0")!;
         var service = new SourceUseService(repo, guard, fence, identities);
-        var config = new ConfigurationBuilder().Build();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo"}).Build();
         var search = new NaturalSearchService(new MemoryProjectionRepository(store), repo, guard, fence, null!, new GroundedRanker(), config, TimeProvider.System);
         NaturalSearchResponse? found = null;
         await search.SearchAndConsumeAsync(new("引き継ぎ", new([], [], ["引き継ぎ"]), "knowledge"), actor,
@@ -52,6 +58,8 @@ public class SharedCommitTests
         var source = await guard.RequireAsync(actor, unit, default);
         var session = PersistenceTests.Example("Session"); session["tenantId"] = Tenant;
         session["participantIds"] = RecordJson.Array(["person-0", "person-1"]);
+        var provider = new AuthorityProvider(repo); session["participantEpochs"] = new System.Text.Json.Nodes.JsonObject();
+        foreach (var pid in session.Strings("participantIds")) session["participantEpochs"]![pid] = (await provider.PersonAsync(Tenant,pid,default))!.AccessEpoch;
         var partition = RecordPartition.Conversation(Tenant, session.Text("id"));
         await repo.CommitAsync(partition, [RecordWrite.Create(session)], default);
         var saved = (await repo.ReadAsync(partition, session.Text("id"), default))!;

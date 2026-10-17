@@ -33,7 +33,7 @@ public class ConversationTests
             if (fail) throw new IOException("lost acknowledgment");
         }
     }
-    private static ConversationService Service(IPrimaryRepository repo) => new(repo, new(), new IdentityResolver(new ConfigurationBuilder().Build()), TimeProvider.System);
+    private static ConversationService Service(IPrimaryRepository repo) => new(repo, new(), new IdentityResolver(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo"}).Build()), TimeProvider.System);
     private static async Task<(FaultStore Repo, ConversationService Service, string Sid)> Setup()
     {
         var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store, "demo", default);
@@ -124,6 +124,10 @@ public class ConversationTests
         var error = await Assert.ThrowsAsync<DomainException>(() => service.SendAsync(Owner, sid, "send-message-0001", before.ETag, input, default));
         Assert.Equal("SAVE_FAILED", error.Code);
         repo.FailKind = null;
+        var fence = (await repo.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!;
+        Assert.False(string.IsNullOrEmpty(fence.Value.Text("holder")));
+        // The failed process is stopped; explicit local recovery precedes retry.
+        await new FenceRecovery(repo).RecoverAsync("demo",fence.ETag,[sid],default);
         // New service instance represents losing all in-memory connections and locks before notification.
         var restarted = Service(repo);
         var message = await restarted.SendAsync(Owner, sid, "send-message-0001", before.ETag, input, default);
@@ -134,9 +138,11 @@ public class ConversationTests
     [Fact]
     public async Task Initialization_recovers_between_catalog_and_conversations_without_resetting_history()
     {
-        var store = new MemoryRecordStore(); var repo = new FaultStore(store) { FailKind = "session" }; var service = Service(repo);
+        var store = new MemoryRecordStore(); await DemoRecords.SeedAsync(store,"demo",default); var repo = new FaultStore(store) { FailKind = "session" }; var service = Service(repo);
         await Assert.ThrowsAsync<IOException>(() => service.CreateAsync(Owner, "create-challenge-0001", new("架空", "相談"), default));
         repo.FailKind = null;
+        var held = (await repo.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!;
+        await new FenceRecovery(repo).RecoverAsync("demo",held.ETag,[],default);
         var resumed = Service(repo);
         var challenge = (await resumed.ChallengesAsync(Owner, 20, null, default)).Items.Single();
         var sid = challenge.Value.Text("sessionId");
@@ -165,7 +171,9 @@ public class ConversationTests
         var root = Path.Combine(Path.GetTempPath(), "dse-chat-" + Guid.NewGuid().ToString("N"));
         try
         {
-            var repository = new PrimaryRepository(new LocalRecordStore(new LocalIngestionFiles(root)));
+            var localStore = new LocalRecordStore(new LocalIngestionFiles(root));
+            await DemoRecords.SeedAsync(localStore,"demo",default);
+            var repository = new PrimaryRepository(localStore);
             var service = Service(repository);
             var challenge = await service.CreateAsync(Owner, "create-challenge-0001", new("架空", "永続化"), default);
             var sid = challenge.Text("sessionId"); var session = await service.SessionAsync(Owner, sid, default);

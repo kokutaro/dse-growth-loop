@@ -42,6 +42,7 @@ public class AiTests
     }
     private static AiService Service(IConfiguration config, IRecordStore store, HttpMessageHandler handler)
     {
+        AuthorityProvider.SeedDemoAsync(store,"demo",default).GetAwaiter().GetResult();
         var repo = new PrimaryRepository(store);
         return new(config, repo, new(repo), new(repo), new(store, TimeProvider.System), new AiHttpTransport(new HttpClient(handler), new Credentials(), TimeProvider.System, config), TimeProvider.System);
     }
@@ -521,7 +522,7 @@ public class AiTests
     [InlineData("duplicate-field")]
     public async Task Knowledge_draft_uses_authoritative_conversation_evidence_and_rejects_bad_sections(string mode)
     {
-        var store = new MemoryRecordStore(); var config = Config(); var repo = new PrimaryRepository(store);
+        var store = new MemoryRecordStore(); await AuthorityProvider.SeedDemoAsync(store,"demo",default); var config = Config(); var repo = new PrimaryRepository(store);
         var chat = new ConversationService(repo, new(), new(config), TimeProvider.System);
         var challenge = await chat.CreateAsync(IdentityResolver.Demo, "knowledge-draft-0001", new("架空", "ダミー"), default);
         var sid = challenge.Text("sessionId"); var session = await chat.SessionAsync(IdentityResolver.Demo, sid, default);

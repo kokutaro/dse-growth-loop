@@ -20,6 +20,8 @@ public sealed class ConversationLocks
 
 public sealed class ConversationService(IPrimaryRepository repository, ConversationLocks locks, IdentityResolver identities, TimeProvider clock, AccessFence? accessFence = null)
 {
+    private readonly AuthorityProvider authority = new(repository,identities.Configuration);
+    internal Microsoft.Extensions.Configuration.IConfiguration BootstrapConfiguration => identities.Configuration;
     public static string Hash(string value) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(value)));
     private static string HashParts(params string[] parts) => Hash(JsonSerializer.Serialize(parts));
     public static string MessageId(string sid, int sequence) => $"{sid}:message:{sequence:D10}";
@@ -31,7 +33,11 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
     private static void Open(JsonObject session) { if (session.Text("status") != "open") throw new DomainException(409, "INVALID_TRANSITION"); }
     private void Touch(JsonObject value) { value["sourceVersion"] = value.Number("sourceVersion") + 1; value["updatedAt"] = clock.GetUtcNow(); }
     private static RecordPartition Partition(ActorAccess actor, string session) { Id(session); return RecordPartition.Conversation(actor.TenantId, session); }
-    public Task<T> LockedAsync<T>(ActorAccess actor, string session, Func<Task<T>> action, CancellationToken ct) => locks.RunAsync(actor.TenantId + ":" + session, action, ct);
+    public Task<T> LockedAsync<T>(ActorAccess actor, string session, Func<Task<T>> action, CancellationToken ct) =>
+        locks.RunAsync(actor.TenantId + ":" + session, action, ct);
+    private Task<T> MutatingLockedAsync<T>(ActorAccess actor, string session, Func<Task<T>> action, CancellationToken ct) =>
+        (accessFence ?? new AccessFence(repository)).RunAsync(actor.TenantId,
+            token => locks.RunAsync(actor.TenantId + ":" + session, action, token), ct, nested: true);
 
     public async Task<StoredRecord> SessionAsync(ActorAccess actor, string sessionId, CancellationToken ct)
     {
@@ -39,6 +45,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         var row = await repository.ReadAsync(Partition(actor, sessionId), sessionId, ct);
         if (row is null || row.Value.Text("kind") != "session") throw new DomainException(404, "NOT_FOUND");
         AccessPolicy.RequireRead(actor, row.Value);
+        await authority.RequireSessionAsync(actor, row.Value, ct);
         return row;
     }
     // Invitation access deliberately does not grant conversation/history access.
@@ -47,9 +54,13 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         Member(actor);
         var session = await repository.ReadAsync(Partition(actor, id), id, ct);
         if (session is null || session.Value.Text("kind") != "session" || !AccessPolicy.InScope(actor, session.Value)) throw new DomainException(404, "NOT_FOUND");
+        var current = await authority.RequireAsync(actor, ct);
         var invitation = await repository.ReadAsync(Partition(actor, id), ParticipationId(actor.PersonId), ct);
         if (session.Value.Text("ownerId") != actor.PrincipalId &&
             (invitation is null || invitation.Value.Text("status") is not ("requested" or "accepted"))) throw new DomainException(404, "NOT_FOUND");
+        if (session.Value.Text("ownerId") == actor.PrincipalId)
+            await authority.RequireSessionAsync(current, session.Value, ct);
+        else if (invitation!.Value.Text("accessEpoch") != current.AccessEpoch) throw new DomainException(404, "NOT_FOUND");
         return session;
     }
 
@@ -57,8 +68,9 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
     {
         Member(actor); Text(input.Title, 300); Text(input.Summary, 8000); IdempotencyExecutor.ValidateHeaders(key, null, false);
         var id = "challenge-" + HashParts(actor.TenantId, actor.PrincipalId, key);
-        return LockedAsync(actor, id, async () =>
+        return MutatingLockedAsync(actor, id, async () =>
         {
+            actor = await authority.RequireAsync(actor, ct);
             var partition = RecordPartition.Catalog(actor.TenantId);
             var fingerprint = Hash(JsonSerializer.Serialize(input));
             var challenge = await repository.ReadAsync(partition, id, ct);
@@ -68,10 +80,11 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
                 var now = clock.GetUtcNow();
                 var value = RecordJson.New("challenge", id, actor.TenantId, actor.PrincipalId, actor.ScopeIds, now);
                 value["title"] = input.Title; value["summary"] = input.Summary; value["status"] = "open";
+                value["creatorPersonId"] = actor.PersonId;
                 value["sessionId"] = "session-" + Hash(id); value["analysisConsent"] = "not_granted";
                 value["consentedVersion"] = null; value["accessVersion"] = 1;
                 var job = Jobs.Create(value, "sessionInitialization", now, jobId);
-                job["requestHash"] = fingerprint; job["ownerPersonId"] = actor.PersonId;
+                job["requestHash"] = fingerprint; job["ownerPersonId"] = actor.PersonId; job["ownerAccessEpoch"] = actor.AccessEpoch;
                 await repository.CommitAsync(partition, [RecordWrite.Create(value), RecordWrite.Create(job)], ct);
                 challenge = (await repository.ReadAsync(partition, id, ct))!;
             }
@@ -85,6 +98,10 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
     // Catalog -> conversations is a resumable, deterministic saga, never a cross-container transaction.
     private async Task InitializeAsync(JsonObject challenge, StoredRecord job, CancellationToken ct)
     {
+        var owner = await authority.PersonAsync(challenge.Text("tenantId"), job.Value.Text("ownerPersonId"), ct);
+        if (owner is null || owner.PrincipalId != challenge.Text("ownerId") || !owner.HasRole("member") || !AccessPolicy.InScope(owner,challenge) ||
+            string.IsNullOrEmpty(job.Value.Text("ownerAccessEpoch")) || job.Value.Text("ownerAccessEpoch") != owner.AccessEpoch)
+            throw new DomainException(404,"NOT_FOUND");
         var sid = challenge.Text("sessionId");
         var partition = RecordPartition.Conversation(challenge.Text("tenantId"), sid);
         var existing = await repository.ReadAsync(partition, sid, ct);
@@ -94,6 +111,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
             var session = RecordJson.New("session", sid, challenge.Text("tenantId"), challenge.Text("ownerId"), challenge.Strings("scopeIds"), now);
             session["sessionId"] = sid; session["challengeId"] = challenge.Text("id");
             session["participantIds"] = RecordJson.Array([job.Value.Text("ownerPersonId")]);
+            session["participantEpochs"] = new JsonObject { [owner.PersonId] = job.Value.Text("ownerAccessEpoch") };
             session["originalParticipantIds"] = session["participantIds"]!.DeepClone();
             session["membershipVersion"] = 1; session["status"] = "open"; session["aiAssistance"] = "stopped"; session["lastSequence"] = 0;
             try { await repository.CommitAsync(partition, [RecordWrite.Create(session)], ct); }
@@ -146,7 +164,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         Func<StoredRecord, Task<(RecordWrite[] Writes, JsonObject Result)>> build, bool invitation, CancellationToken ct)
     {
         IdempotencyExecutor.ValidateHeaders(key, etag, true);
-        return await LockedAsync(actor, sid, async () =>
+        return await MutatingLockedAsync(actor, sid, async () =>
         {
             var session = invitation ? await InvitationSession(actor, sid, ct) : await SessionAsync(actor, sid, ct);
             var partition = Partition(actor, sid);
@@ -156,6 +174,8 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
             if (receipt is not null)
             {
                 if (receipt.Value.Text("fingerprint") != fingerprint) throw new DomainException(409, "IDEMPOTENCY_CONFLICT");
+                if (operation == "decision" && receipt.Value["result"]?.AsObject().Text("status") == "accepted")
+                    await authority.RequireSessionAsync(actor, session.Value, ct);
                 return receipt.Value["result"]!.DeepClone().AsObject();
             }
             var plan = await build(session);
@@ -174,20 +194,25 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         {
             if (session.Value.Text("ownerId") != actor.PrincipalId) throw new DomainException(403, "FORBIDDEN");
             Match(session, etag); Open(session.Value);
-            var target = demo ? IdentityResolver.DemoPerson(input.PersonId) : identities.ResolvePerson(actor.TenantId, input.PersonId);
+            var target = await authority.PersonAsync(actor.TenantId, input.PersonId, ct);
             var person = await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), input.PersonId, ct);
             if (target is null || person is null || !AccessPolicy.CanUse(actor, person.Value) || !AccessPolicy.InScope(target, session.Value) ||
                 !target.HasRole("member") || input.PersonId == actor.PersonId) throw new DomainException(404, "NOT_FOUND");
             var partition = Partition(actor, sid);
-            var invitations = await repository.QueryAsync(partition, "participation", null, null, 100, null, ct);
-            if (invitations.Items.Length >= 19 || invitations.ContinuationToken is not null) throw new DomainException(409, "PARTICIPANT_LIMIT");
             var id = ParticipationId(input.PersonId);
-            if (await repository.ReadAsync(partition, id, ct) is not null) throw new DomainException(409, "INVALID_TRANSITION");
+            var previous = await repository.ReadAsync(partition, id, ct);
+            if (previous is not null && previous.Value.Text("accessEpoch") == target.AccessEpoch) throw new DomainException(409, "INVALID_TRANSITION");
+            if (previous is null)
+            {
+                var invitations = await repository.QueryAsync(partition, "participation", null, null, 100, null, ct);
+                if (invitations.Items.Length >= 19 || invitations.ContinuationToken is not null) throw new DomainException(409, "PARTICIPANT_LIMIT");
+            }
             var participation = RecordJson.New("participation", id, actor.TenantId, actor.PrincipalId, session.Value.Strings("scopeIds"), clock.GetUtcNow());
             participation["sessionId"] = sid; participation["challengeId"] = session.Value.Text("challengeId");
             participation["personId"] = input.PersonId; participation["status"] = "requested"; participation["decidedBy"] = null;
+            participation["accessEpoch"] = target.AccessEpoch;
             Touch(session.Value);
-            return ([RecordWrite.Replace(session.Value, session.ETag), RecordWrite.Create(participation)], participation);
+            return ([RecordWrite.Replace(session.Value, session.ETag), new(participation, previous?.ETag)], participation);
         }, false, ct);
     }
     public Task<JsonObject> DecideAsync(ActorAccess actor, string sid, string key, string etag, ParticipationDecision input, CancellationToken ct)
@@ -196,6 +221,8 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         return (accessFence ?? new AccessFence(repository)).RunAsync(actor.TenantId, token => Mutate(actor, sid, "decision", key, etag, new() { ["decision"] = input.Decision }, async session =>
         {
             var row = await repository.ReadAsync(Partition(actor, sid), ParticipationId(actor.PersonId), ct) ?? throw new DomainException(404, "NOT_FOUND");
+            var current = await authority.RequireAsync(actor, ct);
+            if (row.Value.Text("accessEpoch") != current.AccessEpoch) throw new DomainException(409, "STALE_PARTICIPATION");
             Match(row, etag); Open(session.Value);
             if (input.Decision == "left" ? row.Value.Text("status") != "accepted" : row.Value.Text("status") != "requested") throw new DomainException(409, "INVALID_TRANSITION");
             row.Value["status"] = input.Decision; row.Value["decidedBy"] = new JsonObject { ["type"] = "principal", ["id"] = actor.PrincipalId };
@@ -209,6 +236,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
                     session.Value["originalParticipantIds"] = RecordJson.Array(session.Value.Strings("originalParticipantIds").Concat(participants).Distinct());
                 }
                 session.Value["participantIds"] = RecordJson.Array(participants);
+                (session.Value["participantEpochs"] ??= new JsonObject())[actor.PersonId] = input.Decision == "accepted" ? current.AccessEpoch : null;
                 session.Value["membershipVersion"] = session.Value.Number("membershipVersion") + 1;
             }
             return ([RecordWrite.Replace(row.Value, row.ETag), RecordWrite.Replace(session.Value, session.ETag)], row.Value);
@@ -230,7 +258,7 @@ public sealed class ConversationService(IPrimaryRepository repository, Conversat
         Id(input.ClientMessageId); Text(input.Body, 8000); IdempotencyExecutor.ValidateHeaders(key, etag, true);
         try
         {
-            return await LockedAsync(actor, sid, async () =>
+            return await MutatingLockedAsync(actor, sid, async () =>
             {
                 var session = await SessionAsync(actor, sid, ct);
                 var partition = Partition(actor, sid);

@@ -78,7 +78,9 @@ public sealed class IdentityDisclosureTests
             settings[$"Auth:Grants:{i}:ScopeIds:0"] = "demo";
         }
         var config = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
-        var store = supplied ?? new MemoryRecordStore(); await DemoRecords.SeedAsync(store, tenant, default);
+        var store = supplied ?? new MemoryRecordStore();
+        if (azure) await AuthorityFixture.InitializeAsync(store,config,tenant);
+        await DemoRecords.SeedAsync(store, tenant, default);
         var repo = new PrimaryRepository(store); var fence = new AccessFence(repo); var identities = new IdentityResolver(config);
         // All fixture people have the same owner as their binding; never rely on a relaxed Demo owner check.
         for (var i = 1; i <= 3; i++)
@@ -220,7 +222,8 @@ public sealed class IdentityDisclosureTests
         var s = await Create(true); await Share(s);
         s.Config["Auth:Bindings:1:Oid"] = "44444444-4444-4444-8444-444444444444";
         var current = await s.Service.ReadAsync(s.Owner, s.RoomId, default);
-        Assert.Equal("pending", current.State); Assert.False(current.SelfConsent);
+        // Config-only rebinding is now a deployment mismatch; canonical authority must be changed offline.
+        Assert.Equal("unavailable", current.State); Assert.False(current.SelfConsent);
         Assert.All(current.Participants, p => Assert.Null(p.SharedName));
     }
     [Fact]
@@ -382,6 +385,9 @@ public sealed class IdentityDisclosureTests
             b.ConfigureServices(s =>
             {
                 var memory = new MemoryRecordStore();
+                AuthorityProvider.InitializeAsync(memory,Tenant,
+                    [new(Tenant,oid,"principal-demo-01","demo-person-01",["member"],true)],
+                    [new("principal-demo-01",["demo"])],default).GetAwaiter().GetResult();
                 DemoRecords.SeedAsync(memory, Tenant, default).GetAwaiter().GetResult();
                 var profile = memory.ReadAsync(RecordPartition.Catalog(Tenant), "demo-person-01", default).GetAwaiter().GetResult()!;
                 profile.Value["displayName"] = "private-fixture-name-only"; profile.Value["departmentId"] = "private-fixture-department";

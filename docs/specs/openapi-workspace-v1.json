@@ -3044,7 +3044,9 @@
           "outcome",
           "feedback",
           "publicationJob",
-          "analysisMetadata"
+          "analysisMetadata",
+          "reviewedVersion",
+          "occurrenceDepartmentVerified"
         ],
         "properties": {
           "etag": {
@@ -3159,8 +3161,16 @@
                 "type": "null"
               }
             ]
+          },
+          "reviewedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "occurrenceDepartmentVerified": {
+            "type": "boolean"
           }
-        }
+        },
+        "description": "内部部署IDを返さず、課題作成時点の所属履歴の確認状態とroom局所参照を返す。同意はsourceVersionとreviewedVersionに固定する。"
       },
       "PublishedSection": {
         "type": "object",
@@ -3355,12 +3365,17 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "version"
+          "version",
+          "reviewedVersion"
         ],
         "properties": {
           "version": {
             "type": "integer",
             "minimum": 1
+          },
+          "reviewedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
           }
         }
       },
@@ -3370,7 +3385,8 @@
         "required": [
           "version",
           "publication",
-          "analysis"
+          "analysis",
+          "reviewedVersion"
         ],
         "properties": {
           "version": {
@@ -3382,6 +3398,10 @@
           },
           "analysis": {
             "type": "boolean"
+          },
+          "reviewedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
           }
         }
       },

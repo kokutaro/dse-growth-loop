@@ -55,7 +55,8 @@ public sealed class ChatAssistanceService(IPrimaryRepository repository, Natural
                 session.Value.Number("membershipVersion") != e.MembershipVersion || session.Value.Number("aiPostCount") >= r.SessionLimit ||
                 session.Value["lastAiPostAt"] is not null && clock.GetUtcNow() < session.Value["lastAiPostAt"]!.Deserialize<DateTimeOffset>() + TimeSpan.FromSeconds(r.CooldownSeconds))
                 return await Finish(job, partition, "skipped", ct);
-            var actor = config["Data:Mode"] == "Demo" ? IdentityResolver.DemoPerson(session.Value.Strings("participantIds").FirstOrDefault() ?? "") : identities.ResolvePerson(e.TenantId, session.Value.Strings("participantIds").FirstOrDefault() ?? "");
+            _ = identities.Configuration;
+            var actor = await new AuthorityProvider(repository,config).PersonAsync(e.TenantId,session.Value.Strings("participantIds").FirstOrDefault() ?? "",ct);
             if (actor is null) return await Finish(job, partition, "skipped", ct);
             List<JsonObject> human = [];
             for (int i = session.Value.Number("lastSequence"); i > 0 && human.Count < r.ContextMessages; i--)

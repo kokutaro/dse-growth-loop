@@ -132,6 +132,8 @@ public static class InfrastructureRegistration
         services.AddSingleton<ValidatedCatalog>();
         services.AddSingleton<ICatalog>(sp => sp.GetRequiredService<ValidatedCatalog>());
         services.AddSingleton<IdentityResolver>();
+        services.AddSingleton<AuthorityProvider>();
+        services.AddSingleton<OrganizationService>();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IdempotencyExecutor>();
         services.AddSingleton<ProfileService>();

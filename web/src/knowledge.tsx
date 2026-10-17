@@ -4,7 +4,7 @@ import { friendlyError, WorkspaceError } from './workspace-api';
 type Api = <T>(path: string, method?: string, body?: unknown, key?: string, etag?: string) => Promise<T>;
 type Section = { field: string; text: string; basis: string; evidenceIds: string[] };
 type AnalysisMetadata = { departmentId: string | null; resolution: string | null; reportedHours: number | null; recurrences: number | null; feedback: number | null };
-type State = { etag: string; sessionEtag: string; status: string; sourceVersion: number; sections: Section[]; scopeIds: string[]; evidenceIds?: string[];
+type State = { occurrenceDepartmentVerified: boolean; reviewedVersion: string; etag: string; sessionEtag: string; status: string; sourceVersion: number; sections: Section[]; scopeIds: string[]; evidenceIds?: string[];
   publicationJob?: { status: string; lastErrorCode?: string }; canApprove: boolean; processingMode?: string; consents: Record<string, { publication: boolean; analysis: boolean }>;
   analysisMetadata?: AnalysisMetadata | null; outcome?: { resolution: string; result: string }; feedback: { evaluatorId: string; value: number | null }[]; participantLabels?: Record<string, string>; scopeLabels?: Record<string, string>; evidenceLabels?: Record<string, string> };
 const names: Record<string, string> = { challenge: '課題の要約', assumptions: '前提', attempts: '試したこと', result: '結果の要約', reuseConditions: '再利用条件', unresolvedPoints: '未解決点' };
@@ -36,7 +36,9 @@ export function Knowledge({ api, sid, owner, sessionEtag, onChanged, participant
   async function act(operation: string, body: unknown = {}) {
     if (dirty && ['consent', 'approve', 'request-review'].includes(operation)) { setError('未保存の編集があります。保存した版を双方で確認してから同意・承認してください。'); return; }
     if (operation === 'edit' && missingEvidence) { setError('参加者の報告・推測には、この活動の確認記録を選んでください。根拠がない場合は情報源を「不明」にしてください。'); return; }
-    if (!state) return; setBusy(true); setError('');
+    if (!state) return;
+    if (['consent', 'approve', 'request-review'].includes(operation)) body = { ...(body as object), reviewedVersion: state.reviewedVersion };
+    setBusy(true); setError('');
     try {
       const current = state.status === 'absent' ? await api<State>(path) : state;
       await api(`${operation === 'recover' ? `${anonymous ? "/workspace/rooms" : "/sessions"}/${sid}/knowledge-recovery` : `${path}/${operation}`}`, 'POST', body, crypto.randomUUID(), operation === 'draft' ? current.sessionEtag : current.etag);
@@ -80,7 +82,8 @@ export function Knowledge({ api, sid, owner, sessionEtag, onChanged, participant
           <small>根拠：{anonymous ? (section.evidenceIds.length ? "この活動の確認済み記録" : "なし（不明）") : section.evidenceIds.join(", ") || "なし（不明）"}</small>
         </div>)}
         <fieldset><legend>公開・分析に使う申告情報（任意）</legend><p>この情報も公開先と要約の版に含めて双方が確認します。空欄は不明として扱います。氏名・実際の部署名を入力しないでください。</p>
-          {anonymous ? <><p>部署区分：{metadata.departmentId ? '保存した部署区分あり（値は表示しません）' : '未登録・不明'}</p><p>現在、新しい部署区分は登録できません。氏名・部署名を自由入力で登録しないでください。</p>{owner && metadata.departmentId && <button type="button" disabled={busy} onClick={() => setMetadata(m => ({ ...m, departmentId: null }))}>部署区分を要約から外す</button>}</> : <><label>公開用部署コード<input maxLength={128} pattern="[A-Za-z0-9][A-Za-z0-9_.:\-]{0,127}" value={metadata.departmentId ?? ''} readOnly={!owner || busy} onChange={e => setMetadata(m => ({ ...m, departmentId: e.target.value.trim() || null }))} /></label><small>英数字で始まる公開用コードを使います。氏名・実際の部署名は入力しません。</small></>}
+          <p>発生部署：{state.occurrenceDepartmentVerified ? '課題作成時点の主部署をダミー正本で確認済み' : '所属履歴が不足しているため不明'}。現在の異動先へ過去の課題を付け替えません。</p>
+          {!anonymous && <label>確認済み部署コード<input readOnly value={metadata.departmentId ?? ''} /></label>}
           <label>集計に公開する結果区分<select value={metadata.resolution ?? ''} disabled={!owner || busy} onChange={e => setMetadata(m => ({ ...m, resolution: e.target.value || null }))}><option value="">不明</option><option value="resolved">解決</option><option value="partial">部分解決</option><option value="unresolved">未解決</option></select></label>
           <label>申告工数（時間）<input type="number" min="0" max="100000" step="0.01" readOnly={!owner || busy} value={metadata.reportedHours ?? ''} onChange={e => setMetadata(m => ({ ...m, reportedHours: e.target.value === '' ? null : Number(e.target.value) }))} /></label>
           <label>申告した発生回数<input type="number" min="1" max="10000" step="1" readOnly={!owner || busy} value={metadata.recurrences ?? ''} onChange={e => setMetadata(m => ({ ...m, recurrences: e.target.value === '' ? null : Number(e.target.value) }))} /></label>
@@ -94,7 +97,7 @@ export function Knowledge({ api, sid, owner, sessionEtag, onChanged, participant
       {['review_requested', 'published'].includes(state.status) && <>
         <label><input type="checkbox" disabled={busy || dirty} checked={publication} onChange={e => setPublication(e.target.checked)} />この版と公開先を確認して公開に同意</label>
         <label><input type="checkbox" disabled={busy || dirty} checked={analysis} onChange={e => setAnalysis(e.target.checked)} />この版の要約を事業分析に使うことに同意</label>
-        <p>分析同意には、この版に保存した部署コード・解決状態・申告工数・発生回数・申告評価が含まれます。申告情報だけを編集した場合も、同意と承認を取り消し、双方で再確認します。</p>
+        <p>分析同意には、課題作成時点の確認済み主部署と、この版の解決状態・申告工数・発生回数・申告評価が含まれます。申告情報だけを編集した場合も、同意と承認を取り消し、双方で再確認します。</p>
         <button disabled={busy || dirty} onClick={() => void act('consent', { version: state.sourceVersion, publication, analysis })}>同意を保存</button>
         <p data-testid="knowledge-consents">版ごとの確認：{Object.entries(state.consents).map(([person, c]) => `${label(person)} 公開${c.publication ? '同意' : '不同意'}・分析${c.analysis ? '同意' : '不同意'}`).join(' / ') || '確認待ち'}</p>
       </>}

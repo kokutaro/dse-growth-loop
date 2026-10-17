@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-17",
+  "evidenceKind": "local_dummy_tests",
+  "realAcceptance": false,
+  "baselineMain": "ca75ded43bd0a93a73ff58059633bc74ed21e8d4",
+  "dotnet": {
+    "total": 647,
+    "passed": 647,
+    "failed": 0,
+    "standardRegression": 646,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 50,
+    "filter": null,
+    "logSha256": "4e0c1a8494b9c7bf97dfe661bf93adacb5b99e6c7fcb696af84e67d02fb7fe06"
+  },
+  "python": {
+    "scripts": 241,
+    "contracts": 20,
+    "evaluationFixtures": 5,
+    "contractRulesCoveragePercent": 100
+  },
+  "web": {
+    "authTests": 7,
+    "build": "passed",
+    "coreE2e": 12,
+    "workspaceE2e": 16,
+    "browser": "Chromium 154.0.8037.57",
+    "pinnedBrowserDownload": "403; local executable override only; CI unchanged"
+  },
+  "cliSmoke": "cli-summary.json",
+  "linuxLockedRestore": "passed",
+  "macLockChanged": false,
+  "solutionBuild": "passed; existing ASPIRE010 warning",
+  "azureDeployments": 0,
+  "realPermissionChanges": 0,
+  "paidModelCalls": 0,
+  "issue15Complete": false,
+  "limitations": [
+    "real HR/Entra/Cosmos integration and multi-process acceptance pending",
+    "live AI/Job/recovery acceptance pending",
+    "unannounced whole-DB rollback requires an external generation anchor; not automatically detected"
+  ],
+  "initialPrePrDotnet": {
+    "total": 623,
+    "passed": 623,
+    "failed": 0,
+    "authorityTests": 27,
+    "filter": "Category!=LargeEvaluation",
+    "trxSha256": "1e88815d2f94b4d8c87c46f8643fa5d0500642b3e1d6da15f4727eda43a7a626"
+  },
+  "reviewFollowup": {
+    "priorHead": "23b2b9f46914b21d87e241962aff6efffb85fe6f",
+    "copilotFindingsAddressed": 2,
+    "anonymousHttpRegressionTests": 2,
+    "auditHashRegressionCases": 2,
+    "targetedE2e": 21,
+    "targetedE2eFailed": 0,
+    "targetedE2eLogSha256": "ab3d033335f77cfc70a89bab8f2ef556a1ec09c158e245161684a9221ba656ee",
+    "suites": [
+      "workspace.spec.ts",
+      "workspace-anonymity.spec.ts",
+      "identity-disclosure.spec.ts"
+    ]
+  },
+  "firstReviewDotnet": {
+    "total": 628,
+    "passed": 628,
+    "failed": 0,
+    "standardRegression": 627,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 31,
+    "filter": null,
+    "logSha256": "a8928cbfd59ad0c0318d1004251b0179bd93ccd48753d083c1af72e981c7462a"
+  },
+  "secondReviewFollowup": {
+    "priorHead": "660c6811fa5e455326ce1d7c3cca14870b554e01",
+    "copilotFindingsAddressed": 3,
+    "newRegressionCases": 5,
+    "contracts": 20,
+    "targetedE2e": 19,
+    "targetedE2eFailed": 0,
+    "targetedE2eLogSha256": "7be2e4c6390c2048f884d33913e1ceeef329c46208a48b6ff140ecc69ef31303",
+    "suites": [
+      "workspace.spec.ts",
+      "workspace-anonymity.spec.ts"
+    ]
+  },
+  "secondReviewDotnet": {
+    "total": 633,
+    "passed": 633,
+    "failed": 0,
+    "standardRegression": 632,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 36,
+    "filter": null,
+    "logSha256": "852c1d2b3a24ab92a9bfcc96d9edb63a88a3a93fc0f18676ece934365180b4ba"
+  },
+  "thirdReviewFollowup": {
+    "priorHead": "c3ce32b70b0a8764ff347fa74864ea9e9594a41b",
+    "copilotFindingsAddressed": 2,
+    "newDepartmentLimitCases": 2,
+    "ownerHttpTestCoversAllInitialLoadApis": true,
+    "contracts": 20,
+    "targetedE2e": 16,
+    "targetedE2eFailed": 0,
+    "targetedE2eLogSha256": "61f02989cea8e428a32c0c4e8bc9a8f79c4219bf7272ca2e9facb1a9de43ac33",
+    "suites": [
+      "workspace.spec.ts"
+    ]
+  },
+  "thirdReviewDotnet": {
+    "total": 635,
+    "passed": 635,
+    "failed": 0,
+    "standardRegression": 634,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 38,
+    "filter": null,
+    "logSha256": "d94efd00bea464bd9c70c259e8d8803c967352bd8c347e8b94124a9e0f5c98b9"
+  },
+  "fourthReviewFollowup": {
+    "priorHead": "649961edfc134b8dea3dbc19b00f79d911786667",
+    "copilotFindingsAddressed": 1,
+    "departmentEndFormatCases": 2,
+    "scope": "admin department end timestamp comparison",
+    "contractAndBrowserEvidence": "thirdReviewFollowup"
+  },
+  "fourthReviewDotnet": {
+    "total": 637,
+    "passed": 637,
+    "failed": 0,
+    "standardRegression": 636,
+    "largeEvaluationFixture": 1,
+    "authorityTests": 40,
+    "filter": null,
+    "logSha256": "8cb2c80f443edd8c25f1c3b2ced0f65b6f64034c3a8b968323b0f44e21945171"
+  },
+  "fifthReviewFollowup": {
+    "priorHead": "470928ddf241f0d04ec4e2a6dd69d4b8cd385bb2",
+    "copilotFindingsAddressed": 1,
+    "azureModeMismatchCases": 10,
+    "scope": "explicit and default Azure configuration mismatch rejection",
+    "humanSafetyReviewCompleted": false,
+    "contractAndBrowserEvidence": "thirdReviewFollowup"
+  }
+}
