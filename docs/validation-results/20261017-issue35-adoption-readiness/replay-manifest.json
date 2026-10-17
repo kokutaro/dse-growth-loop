@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "issue35-replay-manifest-v1",
+  "evidenceKind": "offline-replay-not-live-acceptance",
+  "files": [
+    {
+      "path": "scripts/issue35_adoption_packet.py",
+      "sha256": "09abf42738ad0e7b2b03d2b63f6babae2678d5e08b57ee305eac5b5d513d606a"
+    },
+    {
+      "path": "scripts/issue34_saved_measurements.py",
+      "sha256": "cf6063507720a226e2d96e3e53c915b4a04be23a8353835f5dc55e09c75d65ce"
+    },
+    {
+      "path": "docs/evaluation/issue-35/adoption-packet.schema.json",
+      "sha256": "3f3d21d6baea4e59a736f9371a489a944de4648552a074fe7f09ffb503111c4b"
+    },
+    {
+      "path": "docs/validation-results/20261017-issue35-adoption-readiness/manifest.json",
+      "sha256": "1642c02a8f48fd98875226d22e1f6a43b9d054f17d228c7c8d451eefa959fc7b"
+    },
+    {
+      "path": "docs/validation-results/20261017-issue35-adoption-readiness/adoption-packet.json",
+      "sha256": "17113da70b0103d749f2afe1b1f3ba6450aaf6b280b2683407a756cf13b20079"
+    }
+  ],
+  "byteIdenticalReplayConfirmed": true,
+  "schemaValidated": true,
+  "realAcceptance": "pending",
+  "productionApplicationAllowed": false
+}

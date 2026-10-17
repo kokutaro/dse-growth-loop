@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Issue35 unresolved adoption packet invariants",
+  "description": "Inventory only. Not a production approval, price-validation, or release contract. Detailed source validation is performed by the compiler.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "evidenceKind",
+    "decision",
+    "adoptionStatus",
+    "productionApplicationAllowed",
+    "candidate",
+    "dependencies",
+    "monthly",
+    "blockingConditions",
+    "evidence",
+    "limitations"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "issue35-adoption-packet-v1"
+    },
+    "evidenceKind": {
+      "const": "offline_inventory"
+    },
+    "decision": {
+      "const": "pending-human-decision"
+    },
+    "adoptionStatus": {
+      "const": "not_adopted"
+    },
+    "productionApplicationAllowed": {
+      "const": false
+    },
+    "candidate": {
+      "type": "object",
+      "required": [
+        "sourceCommit",
+        "datasetSha256",
+        "configurationDocumentSha256",
+        "unknownSettingSlots",
+        "effectiveConfigurationVerified"
+      ],
+      "properties": {
+        "sourceCommit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "datasetSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "configurationDocumentSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "unknownSettingSlots": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "effectiveConfigurationVerified": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "dependencies": {
+      "type": "object",
+      "required": [
+        "30",
+        "31",
+        "32",
+        "33",
+        "34"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "30": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "pending",
+                "failed"
+              ]
+            }
+          }
+        },
+        "31": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "pending",
+                "failed"
+              ]
+            }
+          }
+        },
+        "32": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "pending",
+                "failed"
+              ]
+            }
+          }
+        },
+        "33": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "pending",
+                "failed"
+              ]
+            }
+          }
+        },
+        "34": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "pending",
+                "failed"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "monthly": {
+      "type": "object",
+      "required": [
+        "searchAssumption",
+        "approvedBudgetJpy",
+        "estimatedTotalJpy",
+        "invoiceActualJpy",
+        "gate",
+        "unknownComponents"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "searchAssumption": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approvedBudgetJpy": {
+          "const": 8000
+        },
+        "estimatedTotalJpy": {
+          "type": "null"
+        },
+        "invoiceActualJpy": {
+          "type": "null"
+        },
+        "gate": {
+          "const": "pending"
+        },
+        "unknownComponents": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "blockingConditions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": [
+          "role",
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "enum": [
+              "candidate",
+              "issue30",
+              "issue31",
+              "issue32",
+              "issue33",
+              "issue34"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

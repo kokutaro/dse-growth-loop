@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "issue35-adoption-input-v1",
+  "artifacts": {
+    "candidate": {
+      "path": "docs/evaluation/issue-35/candidate-settings-20261017.json",
+      "sha256": "f6b94453037e4ba546cfdcded9c839d92340b160adb752acdd908d3da2edac3d"
+    },
+    "issue30": {
+      "path": "docs/validation-results/20261017-issue34-saved-evidence/capture.json",
+      "sha256": "631620ca61c7cb9d62fded9e64566c67a8979c2459d36d7e71cc17309f9e5b3d"
+    },
+    "issue31": {
+      "path": "docs/validation-results/20261011-offline-quality/rerank-current/report.json",
+      "sha256": "a5aaf56b1b52178fed968d59545b74768e98bd76dae508ca24f119faceceb5ab"
+    },
+    "issue32": {
+      "path": "docs/validation-results/20261011-offline-quality/semantic-readiness/report.json",
+      "sha256": "b687f624ea4ae3fbf38367c1604ad565f66879838f778aeb132196dcf9ff5d3e"
+    },
+    "issue33": {
+      "path": "docs/validation-results/20261017-issue35-adoption-readiness/issue33-local-receipt.json",
+      "sha256": "6476604590d4555201779592a55cd8cd6feda64f74ac5b1ea138d4b4c701561f"
+    },
+    "issue34": {
+      "path": "docs/validation-results/20261017-issue34-saved-evidence/measurement-record.json",
+      "sha256": "264a93261dc520b3decf211a9c73b7b338458d9e353b6430215062c4554fa8bb"
+    }
+  }
+}
