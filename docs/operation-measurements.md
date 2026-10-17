@@ -1,5 +1,9 @@
 # Issue #34 の同run操作収集器
 
+## 2026-10-17：保存観測のオフライン変換
+
+[保存27観測の変換結果](validation-results/20261017-issue34-saved-evidence/results.md)と `scripts/issue34_saved_measurements.py` を追加した。固定warm24/実検索22を初回込みで再集計し、両p95は15秒未達。cold02欠落を保持し、cold HTTPは2/3件・p50/p95=null。RU・全AI・保存量・総月額・請求は未取得のまま、state=incomplete/monthlyGate=pendingを返す。collector/監視/段階別計測、Azure追加稼働・実AI・台帳照合は行わない。以下の収集器の実装履歴と、今回の保存応答再集計を区別する。
+
 2026-10-11。`OperationMeasurements` は `AsyncLocal` を使い、同じHTTP要求・処理内のストア操作を同runにまとめる。並列要求は別run、同要求内の並列読取は同run。operation ID、run/request/correlation IDは収集器が生成するランダム識別子で、社員・原本・テナントのIDではない。
 
 ## 実装した収集範囲

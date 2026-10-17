@@ -1,0 +1,12 @@
+{
+  "evidenceKind": "offline_replay",
+  "sourceReference": "https://github.com/kokutaro/dse-growth-loop/blob/79286fdca1207a08c4453d5204907840b9aee6da/docs/validation-results/20261017-issue30-measurement-summary/summary.json",
+  "inputCaptureSha256": "631620ca61c7cb9d62fded9e64566c67a8979c2459d36d7e71cc17309f9e5b3d",
+  "datasetSha256": "1e0f23a34180237ae437056997c97e1c9c238c7b7ba8f0f567764c88cde88e84",
+  "generatorSha256": "cf6063507720a226e2d96e3e53c915b4a04be23a8353835f5dc55e09c75d65ce",
+  "outputRecordSha256": "264a93261dc520b3decf211a9c73b7b338458d9e353b6430215062c4554fa8bb",
+  "externalCalls": 0,
+  "inferenceCalls": 0,
+  "ledgerReads": 0,
+  "observationsAreNewServiceMeasurements": false
+}
