@@ -1,0 +1,42 @@
+{
+  "schema": "analysis-reader-authority-local-v1",
+  "date": "2026-10-17",
+  "baseCommit": "528e11793081ac6386061e94d50ba5aae89f6c91",
+  "localDotnet": {
+    "passed": 726,
+    "failed": 0,
+    "skipped": 0,
+    "includesLargeEvaluationFixture": 1
+  },
+  "newRegressionCases": 21,
+  "preFixCasesReproduced": 20,
+  "configMismatchTypes": [
+    "roles",
+    "scope",
+    "principal",
+    "oid",
+    "disabled"
+  ],
+  "paths": [
+    "result consumption",
+    "source consumption",
+    "decision creation",
+    "decision receipt replay"
+  ],
+  "azureOperationsThisTask": 0,
+  "externalModelCallsThisTask": 0,
+  "humanSafetyReviewClaimedComplete": false,
+  "fullIssueAcceptance": {
+    "15": false,
+    "16": false
+  },
+  "issuesToRemainOpen": [
+    15,
+    16
+  ],
+  "workerBuild": {
+    "succeeded": true,
+    "warnings": 0,
+    "errors": 0
+  }
+}

@@ -104,6 +104,8 @@ Worker入口に加えて復旧service自身も、現在のPersonAuthorityと設�
 
 正本初期化や復元後にoperatorだけを残した状態では、復旧用analyst権限を自動追加しない。別途確認した管理主体・権限と停止証跡が必要である。[2026-10-17のローカル回帰と受入の残範囲](validation-results/20261017-analysis-recovery-authority/results.md)を参照。
 
+保存済み結果・承認済み根拠の取得・判断の新規保存/receipt再読込でも、設定を持つ同じAuthorityProviderで分析主体の現在の正本とbinding/role/scope/OIDを照合する。根拠取得・判断は保存行を読む前にも検査する。資料の同意者だけを調べて分析主体を見落とさず、本文消費callbackへ渡す前に拒否する。偽principalは正本認可で `AUTHORITY_REVOKED`、現在も認可された別所有者は `NOT_FOUND`。設定不一致による拒否で保存済み分析・判断receipt・正本を書き換えたりAIを再送したりしない。[非参加者の分析主体を使った回帰](validation-results/20261017-analysis-reader-authority/results.md)を参照。
+
 fake輸送とLocalRecordStoreのテストは、Liveモード設定・共有台帳・再起動時再送禁止・不正応答・入力上限・予算停止・timeout保守保持・オフライン復旧のコード契約を確認するためのもの。実AI共通課題判定、事業仮説の品質、実認証とAzureの費用/停止は合格と呼ばない。
 
 識別子検査は許可公開正本に既にあるparticipant/owner/承認者/scope/部署/根拠参照と必要なsession/challenge link、呼出者のIDに限定し、既知literal・email/GUID/内部ID prefix形状を入力/titleと生成本文で拒否する。検査のためにpersonやprivate profile、原チャット、非同意者の資料を追加照会しない。既知でない人名・職務記述による間接特定などの意味的匿名化は保証しない。実社員の匿名ワークスペースを開ける前に、これを別の品質・プライバシー受入条件として検証する。

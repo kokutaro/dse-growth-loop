@@ -1,0 +1,169 @@
+  Dse.Domain -> /workspace/dse-growth-loop/src/Dse.Domain/bin/Release/net10.0/Dse.Domain.dll
+  Dse.Evaluation -> /workspace/dse-growth-loop/src/Dse.Evaluation/bin/Release/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /workspace/dse-growth-loop/src/Dse.Infrastructure/bin/Release/net10.0/Dse.Infrastructure.dll
+  Dse.Api -> /workspace/dse-growth-loop/src/Dse.Api/bin/Release/net10.0/Dse.Api.dll
+  Dse.Tests -> /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll
+Test run for /workspace/dse-growth-loop/tests/Dse.Tests/bin/Release/net10.0/Dse.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:01.06]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "principal", action: "decision_receipt") [FAIL]
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "principal", action: "decision_receipt") [683 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:01.60]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "disabled", action: "decision_receipt") [FAIL]
+[xUnit.net 00:00:02.11]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "principal", action: "source") [FAIL]
+[xUnit.net 00:00:02.59]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "roles", action: "decision") [FAIL]
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "disabled", action: "decision_receipt") [538 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "principal", action: "source") [506 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "roles", action: "decision") [473 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:03.01]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "disabled", action: "source") [FAIL]
+[xUnit.net 00:00:03.43]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "roles", action: "decision_receipt") [FAIL]
+[xUnit.net 00:00:03.78]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "scope", action: "source") [FAIL]
+[xUnit.net 00:00:04.14]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "scope", action: "decision_receipt") [FAIL]
+[xUnit.net 00:00:04.40]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "roles", action: "result") [FAIL]
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "disabled", action: "source") [427 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "roles", action: "decision_receipt") [412 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "scope", action: "source") [346 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "scope", action: "decision_receipt") [363 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "roles", action: "result") [256 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:04.65]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "oid", action: "result") [FAIL]
+[xUnit.net 00:00:04.94]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "principal", action: "decision") [FAIL]
+[xUnit.net 00:00:05.19]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "scope", action: "result") [FAIL]
+[xUnit.net 00:00:05.43]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "scope", action: "decision") [FAIL]
+[xUnit.net 00:00:05.69]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "principal", action: "result") [FAIL]
+[xUnit.net 00:00:05.93]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "disabled", action: "decision") [FAIL]
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "oid", action: "result") [252 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "principal", action: "decision") [286 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "scope", action: "result") [242 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "scope", action: "decision") [243 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "principal", action: "result") [252 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "disabled", action: "decision") [243 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:06.17]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "oid", action: "source") [FAIL]
+[xUnit.net 00:00:06.37]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "disabled", action: "result") [FAIL]
+[xUnit.net 00:00:06.57]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "oid", action: "decision_receipt") [FAIL]
+[xUnit.net 00:00:06.74]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "roles", action: "source") [FAIL]
+[xUnit.net 00:00:06.94]     Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "oid", action: "decision") [FAIL]
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "oid", action: "source") [236 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "disabled", action: "result") [198 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "oid", action: "decision_receipt") [203 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "roles", action: "source") [166 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+  Failed Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(change: "oid", action: "decision") [195 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Dse.Domain.DomainException)
+  Stack Trace:
+     at Dse.Tests.BusinessAnalysisTests.Saved_analysis_reader_rejects_config_mismatch_when_not_a_source_participant(String change, String action) in /workspace/dse-growth-loop/tests/Dse.Tests/BusinessAnalysisTests.cs:line 950
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:    20, Passed:     0, Skipped:     0, Total:    20, Duration: 6 s - Dse.Tests.dll (net10.0)
