@@ -1,5 +1,9 @@
 # 初期実装の状況
 
+## 2026-10-17：事業分析の復旧時認可と競合検知
+
+既存オフライン復旧serviceを強化した。現在の管理者正本と設定を入口・inspect/receipt出力前・保存前に照合し、control/管理者PersonAuthority/access fenceのETagも既存復旧batchへ固定する。失効後の復旧や別処理のfence取得との競合では、run/slot/予約の更新を一括拒否する。元の停止証拠・払い戻し禁止・他run保護を維持し、HTTP復旧APIや実権限の追加はない。[回帰と受入照合](validation-results/20261017-analysis-recovery-authority/results.md)を参照。コードとローカル試験の完了は、実Job/復旧・人の安全レビュー・Issue15/16全体の受入完了を意味しない。
+
 ## 2026-10-17：Issue15の手動ダミー部署正本・履歴・失効
 
 部署マスタと有効期間付き主部署、authority generation/revision、参加accessEpochを追加した。通常異動は参加を維持し公開・分析・表示名同意を再確認する。退職・認可変更・復元後に旧参加資格や同意を自動復活させない。発生部署は課題作成時点の履歴から解決し、本人申告で部署数を増やさない。

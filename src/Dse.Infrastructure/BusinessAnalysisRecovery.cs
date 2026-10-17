@@ -21,6 +21,26 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
         if (config["Data:Mode"] is not ("Demo" or "Azure") || config["AiUsage:Stopped"] != "true" || config["AiUsage:LiveOptIn"] != "false")
             throw new DomainException(409, "RECOVERY_REQUIRES_AI_STOP");
     }
+    private sealed record AuthoritySnapshot(ActorAccess Actor, StoredRecord Control, StoredRecord Person);
+    private async Task<AuthoritySnapshot> AuthorityAsync(ActorAccess actor, CancellationToken ct)
+    {
+        Role(actor); Stopped();
+        var provider=new AuthorityProvider(new PrimaryRepository(store),config);
+        var control=await provider.ControlAsync(actor.TenantId,ct);
+        var person=await store.ReadAsync(RecordPartition.Catalog(actor.TenantId),AuthorityProvider.PersonId(actor.PersonId),ct)
+            ?? throw new DomainException(403,"AUTHORITY_REVOKED");
+        var current=await provider.RequireAsync(actor,ct);
+        Role(current); // A caller's roles cannot supply a missing canonical operator/analyst grant.
+        if(current.AuthorityToken!=AuthorityProvider.Token(control.Value) || current.AccessEpoch!=person.Value.Text("accessEpoch"))
+            throw new DomainException(412,"STALE_AUTHORITY");
+        return new(current,control,person);
+    }
+    private async Task CurrentAuthorityAsync(AuthoritySnapshot snapshot,CancellationToken ct)
+    {
+        var current=await AuthorityAsync(snapshot.Actor,ct);
+        if(current.Control.ETag!=snapshot.Control.ETag || current.Person.ETag!=snapshot.Person.ETag)
+            throw new DomainException(412,"STALE_AUTHORITY");
+    }
     private static string StorageId(string owner, string runId) => BusinessAnalysisService.StorageId(owner, runId);
     private sealed record PendingLedger(StoredRecord[] Reservations, StoredRecord? Gate);
     private static DomainException Inconsistent() => new(503, "RECOVERY_LEDGER_INCONSISTENT");
@@ -85,7 +105,7 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
     }
     public async Task<JsonObject> InspectAsync(ActorAccess actor, string ownerPrincipalId, string runId, CancellationToken ct)
     {
-        Role(actor); Stopped();
+        var authority=await AuthorityAsync(actor,ct); actor=authority.Actor;
         if (!RecordJson.IsId(ownerPrincipalId) || !RecordJson.IsId(runId)) throw new ArgumentException("Invalid recovery identifier");
         var p = RecordPartition.Catalog(actor.TenantId); var id = StorageId(ownerPrincipalId, runId);
         var run = await store.ReadAsync(p, id, ct) ?? throw new DomainException(404, "NOT_FOUND");
@@ -93,16 +113,17 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
         var slot = await store.ReadAsync(p, "business-analysis-slot", ct) ?? throw new DomainException(404, "NOT_FOUND");
         var ledger = await PendingAsync(actor.TenantId, id, run.Value.Text("processingMode") == "fixture", ct);
         var pending = ledger.Reservations;
+        await CurrentAuthorityAsync(authority,ct); Stopped();
         return new JsonObject { ["runId"] = runId, ["runEtag"] = run.ETag, ["slotEtag"] = slot.ETag, ["runStatus"] = run.Value.Text("analysisStatus"),
             ["slotStatus"] = slot.Value.Text("status"), ["slotMatchesRun"] = slot.Value.Text("analysisRunId") == id,
             ["pendingReservationIds"] = RecordJson.Array(pending.Select(r => r.Value.Text("id"))) };
     }
     public async Task<JsonObject> RecoverAsync(ActorAccess actor, BusinessAnalysisRecoveryRequest request, CancellationToken ct)
     {
-        Role(actor); Stopped();
+        var authority=await AuthorityAsync(actor,ct); actor=authority.Actor;
         if (!request.ApiStopped || !request.WorkerStopped || !request.ProvidersStopped || !RecordJson.IsId(request.RunId) || !RecordJson.IsId(request.OwnerPrincipalId) ||
             !RecordJson.IsId(request.ApprovalReference) || !RecordJson.IsId(request.StopEvidenceReference) ||
-            !Regex.IsMatch(request.StopEvidenceSha256 ?? "", "^[a-fA-F0-9]{64}$") || request.PendingReservationIds is null || request.PendingReservationIds.Length > 64 ||
+            !Regex.IsMatch(request.StopEvidenceSha256 ?? "", "\\A[a-fA-F0-9]{64}\\z") || request.PendingReservationIds is null || request.PendingReservationIds.Length > 64 ||
             request.PendingReservationIds.Distinct().Count() != request.PendingReservationIds.Length || request.PendingReservationIds.Any(x => !RecordJson.IsId(x)))
             throw new ArgumentException("Reviewed stop evidence and explicit approval are required");
         IdempotencyExecutor.ValidateHeaders("recovery-validation", request.RunETag, true);
@@ -115,6 +136,7 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
         {
             if (!AccessPolicy.InScope(actor, prior.Value)) throw new DomainException(404, "NOT_FOUND");
             if (prior.Value.Text("fingerprint") != fingerprint) throw new DomainException(409, "RECOVERY_REQUEST_CONFLICT");
+            await CurrentAuthorityAsync(authority,ct); Stopped();
             return prior.Value["result"]!.DeepClone().AsObject();
         }
         var run = await store.ReadAsync(p, id, ct) ?? throw new DomainException(404, "NOT_FOUND");
@@ -127,7 +149,11 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
         if (!pending.Select(r => r.Value.Text("id")).ToHashSet().SetEquals(request.PendingReservationIds)) throw new DomainException(409, "RECOVERY_RESERVATION_MISMATCH");
         var gate = ledger.Gate;
         var fence = await store.ReadAsync(p, "system-access-fence", ct);
-        if (fence?.Value.Text("holder") is { Length: > 0 }) throw new DomainException(409, "RECOVERY_REQUIRES_FENCE_RECOVERY");
+        if(fence is null || fence.Value.Text("kind")!="accessFence" || fence.Value.Text("tenantId")!=actor.TenantId ||
+            !fence.Value.ContainsKey("holder") || fence.Value["holder"] is JsonNode holder &&
+            (holder is not JsonValue value || !value.TryGetValue<string>(out _)))
+            throw new DomainException(503,"RECOVERY_FENCE_INCONSISTENT");
+        if (fence.Value.Text("holder") is { Length: > 0 }) throw new DomainException(409, "RECOVERY_REQUIRES_FENCE_RECOVERY");
         var result = new JsonObject { ["runId"] = request.RunId, ["status"] = "aborted", ["pendingReservationsMarkedUncertain"] = pending.Length,
             ["refundedJpy"] = 0m, ["approvalReference"] = request.ApprovalReference, ["stopEvidenceReference"] = request.StopEvidenceReference,
             ["stopEvidenceSha256"] = request.StopEvidenceSha256!.ToLowerInvariant(), ["receiptId"] = receiptId };
@@ -149,6 +175,12 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
             gate.Value["active"] = RecordJson.Array(gate.Value.Strings("active").Where(r => !owned.Contains(r)));
             writes.Add(RecordWrite.Replace(gate.Value, gate.ETag));
         }
+        await CurrentAuthorityAsync(authority,ct);
+        // Unchanged values serve as CAS guards. A concurrent revocation or fence acquisition
+        // rejects the entire recovery, without restoring old grants or clearing another holder.
+        writes.Add(RecordWrite.Replace(authority.Control.Value,authority.Control.ETag));
+        writes.Add(RecordWrite.Replace(authority.Person.Value,authority.Person.ETag));
+        writes.Add(RecordWrite.Replace(fence.Value,fence.ETag));
         // One catalog batch: no partial refund, no other run's slot release, no automatic inference retry.
         Stopped();
         await store.CommitAsync(p, writes, ct);

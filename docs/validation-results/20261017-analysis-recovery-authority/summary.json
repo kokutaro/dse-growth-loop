@@ -1,0 +1,38 @@
+{
+  "schema": "analysis-recovery-authority-local-v1",
+  "date": "2026-10-17",
+  "baseCommit": "2f780b1c0921aed775d57bf6cd5c908a4a68ebfb",
+  "localDotnet": {
+    "passed": 705,
+    "failed": 0,
+    "skipped": 0,
+    "includesLargeEvaluationFixture": 1
+  },
+  "newRegressionCases": 28,
+  "preFixReproductions": {
+    "authorityAndRaceCases": 6,
+    "digestBoundaryCases": 2
+  },
+  "workerBuild": {
+    "succeeded": true,
+    "warnings": 0,
+    "errors": 0
+  },
+  "azureOperationsThisTask": 0,
+  "externalModelCallsThisTask": 0,
+  "humanSafetyReviewClaimedComplete": false,
+  "fullIssueAcceptance": {
+    "15": false,
+    "16": false
+  },
+  "issuesToRemainOpen": [
+    15,
+    16
+  ],
+  "currentFixScope": [
+    "canonical recovery administrator checks",
+    "revalidation before inspect/receipt/commit",
+    "atomic authority and fence ETag guards",
+    "strict stop evidence digest format"
+  ]
+}

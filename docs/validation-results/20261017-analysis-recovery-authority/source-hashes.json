@@ -1,0 +1,6 @@
+{
+  "src/Dse.Infrastructure/BusinessAnalysisRecovery.cs": "c7a7b2bda5d4656c0597c72d302a421fa49af739a01c0d80ef9ba31d3510e961",
+  "src/Dse.Infrastructure/BusinessAnalysisCommands.cs": "51c300a3a42a459e6c7366c73bf255d538341981bbd0b14d8e1a079f3d95ef45",
+  "tests/Dse.Tests/BusinessAnalysisTests.cs": "552edbd907555566060713099b706bb8a6251a34f4a406fc5afa270cc278d91f",
+  "tests/Dse.Tests/BusinessAnalysisCommandTests.cs": "dee3d3976ac899e9da28871df1cd0fc11fd805c9d0aaaa687cf8f424877e7ff9"
+}

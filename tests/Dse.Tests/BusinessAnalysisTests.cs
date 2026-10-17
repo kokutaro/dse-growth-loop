@@ -13,6 +13,7 @@ namespace Dse.Tests;
 public sealed class BusinessAnalysisTests
 {
     private static readonly ActorAccess Analyst = IdentityResolver.Demo with { Roles = ["member", "analyst", "publisher"] };
+    private static readonly ActorAccess Operator = new("demo","principal-dummy-operator","dummy-operator",["operator","analyst"],["demo"]);
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     private sealed class Fake : IBusinessHypothesisDrafter
     {
@@ -25,9 +26,16 @@ public sealed class BusinessAnalysisTests
         }
     }
     private sealed record Setup(IRecordStore Store, IPrimaryRepository Repo, BusinessAnalysisService Service, Fake Ai);
-    private static async Task<Setup> Create(Dictionary<string, string?>? options = null)
+    private static async Task<Setup> Create(Dictionary<string, string?>? options = null, bool recoveryOperator = false)
     {
-        var store = new MemoryRecordStore(); var repo = new PrimaryRepository(store); await BusinessAnalysisDemoFixtures.SeedAsync(store, default);
+        var store = new MemoryRecordStore(); var repo = new PrimaryRepository(store);
+        if (recoveryOperator)
+        {
+            var actors=Enumerable.Range(1,3).Select(i=>IdentityResolver.DemoPerson($"demo-person-{i:D2}")!).Append(Operator).ToArray();
+            await AuthorityProvider.InitializeAsync(store,"demo",actors.Select(a=>new IdentityBinding("demo","",a.PrincipalId,a.PersonId,a.Roles,true)).ToArray(),
+                actors.Select(a=>new AccessGrant(a.PrincipalId,a.ScopeIds)).ToArray(),default);
+        }
+        await BusinessAnalysisDemoFixtures.SeedAsync(store, default);
         options ??= []; options.TryAdd("AiUsage:Stopped","false"); options["Data:Mode"] = "Demo"; options["Ai:Mode"] = "Mock";
         var config = new ConfigurationBuilder().AddInMemoryCollection(options).Build(); var fake = new Fake();
         return new(store, repo, new(repo, store, new(repo), fake, config, TimeProvider.System), fake);
@@ -406,12 +414,12 @@ public sealed class BusinessAnalysisTests
     }
     private const string LiveTenant = "11111111-1111-4111-8111-111111111111";
     private static readonly ActorAccess LiveAnalyst = Analyst with { TenantId = LiveTenant };
-    private static readonly ActorAccess LiveOperator = LiveAnalyst with { Roles = ["member","analyst","operator"] };
+    private static readonly ActorAccess LiveOperator = Operator with { TenantId = LiveTenant };
     private sealed record LiveSetup(string Path, IRecordStore Store, IPrimaryRepository Repo, IConfigurationRoot Config, BusinessAnalysisService Service, WireFake Wire) : IDisposable
     {
         public void Dispose() { if (Directory.Exists(Path)) Directory.Delete(Path, true); }
     }
-    private static async Task<LiveSetup> CreateLive(string variation = "success")
+    private static async Task<LiveSetup> CreateLive(string variation = "success", bool recoveryOperator = false)
     {
         var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dse-analysis-fake-" + Guid.NewGuid().ToString("N"));
         IRecordStore store = new OperationMeasuredRecordStore(new LocalRecordStore(new LocalIngestionFiles(path))); var repo = new PrimaryRepository(store);
@@ -435,6 +443,13 @@ public sealed class BusinessAnalysisTests
             config[$"Auth:Grants:{i}:PrincipalId"] = "principal-demo-"+suffix; config[$"Auth:Grants:{i}:ScopeIds:0"] = "demo";
         }
         config["Auth:Bindings:0:Roles:1"] = "analyst";
+        if(recoveryOperator)
+        {
+            config["Auth:Bindings:2:TenantId"]=LiveTenant;config["Auth:Bindings:2:Oid"]="33333333-3333-4333-8333-000000000003";
+            config["Auth:Bindings:2:PrincipalId"]=LiveOperator.PrincipalId;config["Auth:Bindings:2:PersonId"]=LiveOperator.PersonId;
+            config["Auth:Bindings:2:Enabled"]="true";config["Auth:Bindings:2:Roles:0"]="operator";config["Auth:Bindings:2:Roles:1"]="analyst";
+            config["Auth:Grants:2:PrincipalId"]=LiveOperator.PrincipalId;config["Auth:Grants:2:ScopeIds:0"]="demo";
+        }
         await AuthorityFixture.InitializeAsync(store,config,LiveTenant);
         await BusinessAnalysisDemoFixtures.SeedAsync(store, default, LiveTenant);
         var wire = new WireFake { Variation = variation }; var live = new BusinessAnalysisLiveDrafter(config, repo, new(store, TimeProvider.System), wire, TimeProvider.System);
@@ -546,13 +561,12 @@ public sealed class BusinessAnalysisTests
         await StartLive(s, LiveRequest()); var result = await StartLive(s, LiveRequest());
         Assert.Equal("partial_failure", result.Text("status")); Assert.Equal(1, s.Wire.Calls); Assert.Single((await Rows(s, "aiReservation")).Items);
     }
-    private static readonly ActorAccess Operator = Analyst with { Roles = ["member", "analyst", "operator"] };
     private static BusinessAnalysisRecoveryRequest RecoveryRequest(JsonObject inspection, string runId) => new(runId, Analyst.PrincipalId, inspection.Text("runEtag"), inspection.Text("slotEtag"),
         "approval-local-fake", true, true, true, "stop-evidence-local-fake", new string('a', 64), inspection.Strings("pendingReservationIds"));
     [Fact]
     public async Task Timeout_retains_pending_cost_and_slot_until_evidence_based_offline_recovery_without_retry()
     {
-        using var s = await CreateLive(); s.Config["AiUsage:TimeoutSeconds"] = "1";
+        using var s = await CreateLive(recoveryOperator:true); s.Config["AiUsage:TimeoutSeconds"] = "1";
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         s.Wire.During = async () => { entered.SetResult(); await release.Task; }; // Ignores cancellation, just like an uncertain remote request.
         var request = LiveRequest(); var task = StartLive(s, request); await entered.Task; var result = await task;
@@ -581,7 +595,7 @@ public sealed class BusinessAnalysisTests
     [Fact]
     public async Task Offline_recovery_never_releases_another_run_and_requires_explicit_stop()
     {
-        var s = await Create(new() { ["BusinessAnalysis:TimeoutSeconds"] = "1" });
+        var s = await Create(new() { ["BusinessAnalysis:TimeoutSeconds"] = "1" },recoveryOperator:true);
         var stalled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); s.Ai.During = () => stalled.Task;
         var request = Request(); await Start(s, request); stalled.SetResult();
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Data:Mode"] = "Demo", ["AiUsage:Stopped"] = "true", ["AiUsage:LiveOptIn"] = "false" }).Build();
@@ -631,10 +645,30 @@ public sealed class BusinessAnalysisTests
     private sealed class RecoveryStore(IRecordStore inner) : IRecordStore
     {
         public string? MissingId; public bool ChangeGateBeforeRecovery;
+        public string? ChangeGuardBeforeRecovery;
+        public bool MismatchedFenceTenant;
+        public Func<Task>? AfterTargetReservationQuery;
+        public Func<Task>? AfterRecoveryReceiptRead;
         public List<(string Kind, string? Field, string? Parent)> Queries = [];
-        public Task<StoredRecord?> ReadAsync(RecordPartition p, string id, CancellationToken ct) => id == MissingId ? Task.FromResult<StoredRecord?>(null) : inner.ReadAsync(p, id, ct);
+        public async Task<StoredRecord?> ReadAsync(RecordPartition p, string id, CancellationToken ct)
+        {
+            var row=id==MissingId?null:await inner.ReadAsync(p,id,ct);
+            if(row is not null && id=="system-access-fence" && MismatchedFenceTenant)row.Value["tenantId"]="other-tenant";
+            if(row is not null && id.StartsWith("analysis-recovery-",StringComparison.Ordinal) && AfterRecoveryReceiptRead is { } change)
+            {AfterRecoveryReceiptRead=null;await change();}
+            return row;
+        }
         public async Task CommitAsync(RecordPartition p, IReadOnlyList<RecordWrite> writes, CancellationToken ct)
         {
+            if(ChangeGuardBeforeRecovery is { } guardId && writes.Any(w=>w.Value.Text("operation")=="businessAnalysisOfflineRecovery"))
+            {
+                ChangeGuardBeforeRecovery=null;
+                var row=(await inner.ReadAsync(p,guardId,ct))!;
+                if(guardId==AuthorityProvider.ControlId)row.Value["revision"]=row.Value.Number("revision")+1;
+                else if(guardId=="system-access-fence")row.Value["holder"]="another-active-operation";
+                else {row.Value["enabled"]=false;row.Value["accessEpoch"]=Guid.NewGuid().ToString("N");}
+                await inner.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],ct);
+            }
             if (ChangeGateBeforeRecovery && writes.Any(w => w.Value.Text("operation") == "businessAnalysisOfflineRecovery"))
             {
                 ChangeGateBeforeRecovery = false;
@@ -643,16 +677,19 @@ public sealed class BusinessAnalysisTests
             }
             await inner.CommitAsync(p, writes, ct);
         }
-        public Task<RecordPage> QueryAsync(RecordPartition p, string kind, string? field, string? parent, int size, string? token, CancellationToken ct)
+        public async Task<RecordPage> QueryAsync(RecordPartition p, string kind, string? field, string? parent, int size, string? token, CancellationToken ct)
         {
             Queries.Add((kind, field, parent));
             if (kind == "aiReservation" && field != "runId") throw new InvalidOperationException("Tenant-wide reservation scan is forbidden in this regression");
-            return inner.QueryAsync(p, kind, field, parent, size, token, ct);
+            var page=await inner.QueryAsync(p, kind, field, parent, size, token, ct);
+            if(kind=="aiReservation" && parent==RecoveryTargetAi && AfterTargetReservationQuery is { } change)
+            {AfterTargetReservationQuery=null;await change();}
+            return page;
         }
     }
     private static async Task<(Setup Setup, BusinessAnalysisRequest Run, RecoveryStore Guard, BusinessAnalysisRecovery Recovery)> RecoveryFixture(int history = 0)
     {
-        var s = await Create(); var request = Request(); await Start(s, request); var p = RecordPartition.Catalog("demo");
+        var s = await Create(recoveryOperator:true); var request = Request(); await Start(s, request); var p = RecordPartition.Catalog("demo");
         var id = BusinessAnalysisService.StorageId(Analyst.PrincipalId, request.RunId);
         var run = (await s.Store.ReadAsync(p, id, default))!; run.Value["analysisStatus"] = "partial_failure"; run.Value["recoveryRequired"] = true;
         var slot = (await s.Store.ReadAsync(p, "business-analysis-slot", default))!; slot.Value["status"] = "blocked"; slot.Value["analysisRunId"] = id;
@@ -726,6 +763,151 @@ public sealed class BusinessAnalysisTests
         Assert.Equal("pending", (await s.Store.ReadAsync(p, RecoveryTargetReservation, default))!.Value.Text("state"));
         Assert.Equal("blocked", (await s.Store.ReadAsync(p, "business-analysis-slot", default))!.Value.Text("status"));
         Assert.Equal("partial_failure", (await s.Store.ReadAsync(p, BusinessAnalysisService.StorageId(Analyst.PrincipalId, run.RunId), default))!.Value.Text("analysisStatus"));
+    }
+
+    private static async Task<Dictionary<string,StoredRecord>> RecoveryState(Setup s,string runId)
+    {
+        var p=RecordPartition.Catalog("demo");var snapshot=new Dictionary<string,StoredRecord>();
+        foreach(var id in new[]{BusinessAnalysisService.StorageId(Analyst.PrincipalId,runId),"business-analysis-slot",RecoveryTargetReservation,RecoveryOtherReservation,"system-ai-gate","ai-day-recovery-fixture"})
+            snapshot[id]=(await s.Store.ReadAsync(p,id,default))!;
+        return snapshot;
+    }
+    private static async Task RecoveryUnchanged(Setup s,Dictionary<string,StoredRecord> snapshot)
+    {
+        foreach(var(id,before) in snapshot)
+        {
+            var after=(await s.Store.ReadAsync(RecordPartition.Catalog("demo"),id,default))!;
+            Assert.Equal(before.ETag,after.ETag);Assert.True(JsonNode.DeepEquals(before.Value,after.Value));
+        }
+    }
+    private static async Task RevokeRecoveryOperator(Setup s)
+    {
+        var p=RecordPartition.Catalog("demo");var person=(await s.Store.ReadAsync(p,AuthorityProvider.PersonId(Operator.PersonId),default))!;
+        var control=(await s.Store.ReadAsync(p,AuthorityProvider.ControlId,default))!;
+        person.Value["enabled"]=false;person.Value["accessEpoch"]=Guid.NewGuid().ToString("N");control.Value["revision"]=control.Value.Number("revision")+1;
+        await s.Store.CommitAsync(p,[RecordWrite.Replace(person.Value,person.ETag),RecordWrite.Replace(control.Value,control.ETag)],default);
+    }
+    [Fact] public async Task Recovery_rejects_forged_operator_claims_without_canonical_operator_role()
+    {
+        var(s,run,_,recovery)=await RecoveryFixture();var inspection=await recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default);
+        var forged=Analyst with{Roles=["operator","analyst"]};var before=await RecoveryState(s,run.RunId);
+        Assert.Equal("FORBIDDEN",(await Assert.ThrowsAsync<DomainException>(()=>recovery.InspectAsync(forged,Analyst.PrincipalId,run.RunId,default))).Code);
+        Assert.Equal("FORBIDDEN",(await Assert.ThrowsAsync<DomainException>(()=>recovery.RecoverAsync(forged,RecoveryRequest(inspection,run.RunId),default))).Code);
+        await RecoveryUnchanged(s,before);
+    }
+    [Theory][InlineData(false)][InlineData(true)]
+    public async Task Recovery_rechecks_operator_revocation_during_ledger_scan(bool inspect)
+    {
+        var(s,run,guard,recovery)=await RecoveryFixture();var inspection=await recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default);
+        var before=await RecoveryState(s,run.RunId);guard.AfterTargetReservationQuery=()=>RevokeRecoveryOperator(s);
+        Assert.Equal("AUTHORITY_REVOKED",(await Assert.ThrowsAsync<DomainException>(()=>inspect
+            ?recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default)
+            :recovery.RecoverAsync(Operator,RecoveryRequest(inspection,run.RunId),default))).Code);
+        await RecoveryUnchanged(s,before);
+    }
+    [Theory][InlineData("control")][InlineData("person")][InlineData("fence")]
+    public async Task Recovery_guards_authority_and_fence_changes_after_final_validation_in_the_batch(string race)
+    {
+        var(s,run,guard,recovery)=await RecoveryFixture();var inspection=await recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default);
+        var before=await RecoveryState(s,run.RunId);
+        guard.ChangeGuardBeforeRecovery=race=="control"?AuthorityProvider.ControlId:race=="person"?AuthorityProvider.PersonId(Operator.PersonId):"system-access-fence";
+        await Assert.ThrowsAsync<StoreConflictException>(()=>recovery.RecoverAsync(Operator,RecoveryRequest(inspection,run.RunId),default));
+        await RecoveryUnchanged(s,before);
+        if(race=="fence")Assert.Equal("another-active-operation",(await s.Store.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!.Value.Text("holder"));
+    }
+    [Theory]
+    [InlineData("disabled",false)][InlineData("operator_role",false)][InlineData("analyst_role",false)][InlineData("principal",false)][InlineData("scope",false)]
+    [InlineData("disabled",true)][InlineData("operator_role",true)][InlineData("analyst_role",true)][InlineData("principal",true)][InlineData("scope",true)]
+    public async Task Recovery_checks_current_grants_before_inspection_apply_and_completed_receipt_replay(string change,bool replay)
+    {
+        var(s,run,_,recovery)=await RecoveryFixture();var p=RecordPartition.Catalog("demo");
+        var inspection=await recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default);var input=RecoveryRequest(inspection,run.RunId);
+        if(replay)await recovery.RecoverAsync(Operator,input,default);
+        var before=await RecoveryState(s,run.RunId);var person=(await s.Store.ReadAsync(p,AuthorityProvider.PersonId(Operator.PersonId),default))!;
+        if(change=="disabled")person.Value["enabled"]=false;
+        else if(change=="principal")person.Value["principalId"]="principal-replacement-operator";
+        else if(change=="scope")person.Value["scopeIds"]=RecordJson.Array(["outside"]);
+        else person.Value["roles"]=RecordJson.Array(change=="operator_role"?["analyst"]:["operator"]);
+        await s.Store.CommitAsync(p,[RecordWrite.Replace(person.Value,person.ETag)],default);
+        var expected=change=="scope"?"NOT_FOUND":change.EndsWith("_role",StringComparison.Ordinal)?"FORBIDDEN":"AUTHORITY_REVOKED";
+        Assert.Equal(expected,(await Assert.ThrowsAsync<DomainException>(()=>recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default))).Code);
+        Assert.Equal(expected,(await Assert.ThrowsAsync<DomainException>(()=>recovery.RecoverAsync(Operator,input,default))).Code);
+        await RecoveryUnchanged(s,before);
+    }
+    [Fact] public async Task Recovery_rejects_the_old_operator_epoch_even_after_grants_are_restored()
+    {
+        var(s,run,_,recovery)=await RecoveryFixture();var p=RecordPartition.Catalog("demo");var provider=new AuthorityProvider(s.Repo);
+        var old=(await provider.PersonAsync("demo",Operator.PersonId,default))!;var inspection=await recovery.InspectAsync(old,Analyst.PrincipalId,run.RunId,default);
+        var before=await RecoveryState(s,run.RunId);await RevokeRecoveryOperator(s);
+        var person=(await s.Store.ReadAsync(p,AuthorityProvider.PersonId(Operator.PersonId),default))!;
+        person.Value["enabled"]=true;person.Value["accessEpoch"]=Guid.NewGuid().ToString("N");await s.Store.CommitAsync(p,[RecordWrite.Replace(person.Value,person.ETag)],default);
+        Assert.Equal("AUTHORITY_REVOKED",(await Assert.ThrowsAsync<DomainException>(()=>recovery.InspectAsync(old,Analyst.PrincipalId,run.RunId,default))).Code);
+        Assert.Equal("AUTHORITY_REVOKED",(await Assert.ThrowsAsync<DomainException>(()=>recovery.RecoverAsync(old,RecoveryRequest(inspection,run.RunId),default))).Code);
+        var current=(await provider.PersonAsync("demo",Operator.PersonId,default))!;
+        await recovery.InspectAsync(current,Analyst.PrincipalId,run.RunId,default);await RecoveryUnchanged(s,before);
+    }
+    [Theory][InlineData("missing")][InlineData("kind")][InlineData("tenant")][InlineData("holder_missing")][InlineData("holder_nonstring")][InlineData("held")]
+    public async Task Recovery_requires_a_known_empty_fence_and_never_releases_an_existing_holder(string damage)
+    {
+        var(s,run,guard,recovery)=await RecoveryFixture();var p=RecordPartition.Catalog("demo");
+        var inspection=await recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default);var before=await RecoveryState(s,run.RunId);
+        if(damage=="missing")guard.MissingId="system-access-fence";
+        else if(damage=="tenant")guard.MismatchedFenceTenant=true;
+        else
+        {
+            var row=(await s.Store.ReadAsync(p,"system-access-fence",default))!;
+            if(damage=="kind")row.Value["kind"]="job";
+            else if(damage=="holder_missing")row.Value.Remove("holder");
+            else row.Value["holder"]=damage=="held"?JsonValue.Create("stopped-holder-needs-separate-recovery"):JsonValue.Create(true);
+            await s.Store.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],default);
+        }
+        Assert.Equal(damage=="held"?"RECOVERY_REQUIRES_FENCE_RECOVERY":"RECOVERY_FENCE_INCONSISTENT",
+            (await Assert.ThrowsAsync<DomainException>(()=>recovery.RecoverAsync(Operator,RecoveryRequest(inspection,run.RunId),default))).Code);
+        await RecoveryUnchanged(s,before);
+        if(damage=="held")Assert.Equal("stopped-holder-needs-separate-recovery",(await s.Store.ReadAsync(p,"system-access-fence",default))!.Value.Text("holder"));
+    }
+    [Fact] public async Task Recovery_receipt_read_rechecks_a_revocation_before_returning_the_saved_result()
+    {
+        var(s,run,guard,recovery)=await RecoveryFixture();var inspection=await recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default);
+        var input=RecoveryRequest(inspection,run.RunId);await recovery.RecoverAsync(Operator,input,default);
+        var before=await RecoveryState(s,run.RunId);guard.AfterRecoveryReceiptRead=()=>RevokeRecoveryOperator(s);
+        Assert.Equal("AUTHORITY_REVOKED",(await Assert.ThrowsAsync<DomainException>(()=>recovery.RecoverAsync(Operator,input,default))).Code);
+        await RecoveryUnchanged(s,before);
+    }
+    [Fact] public async Task Recovery_guard_writes_preserve_authority_values_and_read_only_paths_preserve_ETags()
+    {
+        var(s,run,_,recovery)=await RecoveryFixture();var p=RecordPartition.Catalog("demo");
+        var ids=new[]{AuthorityProvider.ControlId,AuthorityProvider.PersonId(Operator.PersonId),"system-access-fence"};
+        var before=new Dictionary<string,StoredRecord>();foreach(var id in ids)before[id]=(await s.Store.ReadAsync(p,id,default))!;
+        var inspection=await recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default);
+        foreach(var id in ids)Assert.Equal(before[id].ETag,(await s.Store.ReadAsync(p,id,default))!.ETag);
+        var input=RecoveryRequest(inspection,run.RunId);await recovery.RecoverAsync(Operator,input,default);
+        var after=new Dictionary<string,StoredRecord>();
+        foreach(var id in ids)
+        {
+            after[id]=(await s.Store.ReadAsync(p,id,default))!;Assert.NotEqual(before[id].ETag,after[id].ETag);
+            Assert.True(JsonNode.DeepEquals(RecordJson.ToStorage(before[id].Value),RecordJson.ToStorage(after[id].Value)));
+        }
+        await recovery.RecoverAsync(Operator,input,default);
+        foreach(var id in ids)Assert.Equal(after[id].ETag,(await s.Store.ReadAsync(p,id,default))!.ETag);
+    }
+    [Fact] public async Task Recovery_rejects_an_Azure_binding_config_change_at_the_service_boundary()
+    {
+        using var s=await CreateLive(recoveryOperator:true);var run=LiveRequest();await StartLive(s,run);
+        s.Config["AiUsage:Stopped"]="true";s.Config["AiUsage:LiveOptIn"]="false";
+        var recovery=new BusinessAnalysisRecovery(s.Store,s.Config,TimeProvider.System);
+        var inspection=await recovery.InspectAsync(LiveOperator,Analyst.PrincipalId,run.RunId,default);
+        s.Config["Auth:Bindings:2:Roles:0"]="member";
+        Assert.Equal("AUTHORITY_REVOKED",(await Assert.ThrowsAsync<DomainException>(()=>recovery.InspectAsync(LiveOperator,Analyst.PrincipalId,run.RunId,default))).Code);
+        Assert.Equal("AUTHORITY_REVOKED",(await Assert.ThrowsAsync<DomainException>(()=>recovery.RecoverAsync(LiveOperator,RecoveryRequest(inspection,run.RunId),default))).Code);
+        Assert.Equal(1,s.Wire.Calls);
+    }
+    [Fact] public async Task Recovery_rejects_a_stop_digest_with_a_trailing_newline_without_writes()
+    {
+        var(s,run,_,recovery)=await RecoveryFixture();var inspection=await recovery.InspectAsync(Operator,Analyst.PrincipalId,run.RunId,default);
+        var before=await RecoveryState(s,run.RunId);var input=RecoveryRequest(inspection,run.RunId);
+        await Assert.ThrowsAsync<ArgumentException>(()=>recovery.RecoverAsync(Operator,input with{StopEvidenceSha256=input.StopEvidenceSha256+"\n"},default));
+        await RecoveryUnchanged(s,before);
     }
 
 }

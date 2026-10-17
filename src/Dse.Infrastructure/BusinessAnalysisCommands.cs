@@ -38,7 +38,7 @@ public static class BusinessAnalysisCommands
         var request = RecoveryRequest(config);
         if (!request.ApiStopped || !request.WorkerStopped || !request.ProvidersStopped ||
             !RecordJson.IsId(request.ApprovalReference) || !RecordJson.IsId(request.StopEvidenceReference) ||
-            !Regex.IsMatch(request.StopEvidenceSha256, "^[a-fA-F0-9]{64}$") || request.PendingReservationIds.Length > 64 ||
+            !Regex.IsMatch(request.StopEvidenceSha256, "\\A[a-fA-F0-9]{64}\\z") || request.PendingReservationIds.Length > 64 ||
             request.PendingReservationIds.Distinct().Count() != request.PendingReservationIds.Length ||
             request.PendingReservationIds.Any(id => !RecordJson.IsId(id)))
             throw new ArgumentException("Reviewed stop evidence and reservation list are required");
