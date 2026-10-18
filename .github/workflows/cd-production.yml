@@ -1,0 +1,107 @@
+name: Production delivery
+on:
+  workflow_run:
+    workflows: [verify]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  DSE_CD_ENABLED: ${{ vars.DSE_CD_ENABLED }}
+jobs:
+  plan:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: read
+    outputs:
+      enabled: ${{ steps.plan.outputs.enabled }}
+      sha: ${{ steps.plan.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/delivery.py plan --mode production --event "$GITHUB_EVENT_PATH" --output "$GITHUB_OUTPUT"
+  build:
+    needs: plan
+    if: needs.plan.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          persist-credentials: false
+      - name: Build verified merged source without Azure credentials
+        env:
+          HEAD_SHA: ${{ needs.plan.outputs.sha }}
+          REPOSITORY_ID: ${{ github.repository_id }}
+        run: |
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          mkdir -p "$RUNNER_TEMP/images"
+          docker build --platform linux/amd64 --tag "dse-api:$HEAD_SHA" --label "org.opencontainers.image.revision=$HEAD_SHA" --label "dse.repository-id=$REPOSITORY_ID" --file src/Dse.Api/Dockerfile .
+          docker save --output "$RUNNER_TEMP/images/api.tar" "dse-api:$HEAD_SHA"
+          docker build --platform linux/amd64 --tag "dse-worker:$HEAD_SHA" --label "org.opencontainers.image.revision=$HEAD_SHA" --label "dse.repository-id=$REPOSITORY_ID" --file src/Dse.Worker/Dockerfile .
+          docker save --output "$RUNNER_TEMP/images/worker.tar" "dse-worker:$HEAD_SHA"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: production-images-${{ needs.plan.outputs.sha }}
+          path: ${{ runner.temp }}/images/*.tar
+          retention-days: 1
+          if-no-files-found: error
+  deliver:
+    needs: [plan, build]
+    if: needs.plan.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: dse-production-1379060968
+      cancel-in-progress: false
+      queue: max
+    environment:
+      name: production
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: read
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      HEAD_SHA: ${{ needs.plan.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - id: preflight
+        run: python3 scripts/delivery.py preflight --mode production --sha "$HEAD_SHA" --wait --output "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        if: steps.preflight.outputs.operation == 'production'
+        with:
+          name: production-images-${{ needs.plan.outputs.sha }}
+          path: ${{ runner.temp }}/images
+      - name: Validate images before Azure login
+        if: steps.preflight.outputs.operation == 'production'
+        run: python3 scripts/delivery.py prepare --mode production --sha "$HEAD_SHA" --artifacts "$RUNNER_TEMP/images" --file "$RUNNER_TEMP/loaded.json"
+      - uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2
+        if: steps.preflight.outputs.operation == 'production'
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - id: publish
+        if: steps.preflight.outputs.operation == 'production'
+        run: python3 scripts/delivery.py publish --mode production --sha "$HEAD_SHA" --file "$RUNNER_TEMP/loaded.json" --output "$GITHUB_OUTPUT"
+      - id: apply
+        if: steps.publish.outputs.operation == 'production'
+        run: python3 scripts/delivery.py apply --mode production --sha "$HEAD_SHA" --file "$RUNNER_TEMP/images.json" --output "$GITHUB_OUTPUT"

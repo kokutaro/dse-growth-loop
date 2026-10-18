@@ -1,0 +1,81 @@
+name: Preview orphan reconciliation
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  DSE_CD_ENABLED: ${{ vars.DSE_CD_ENABLED }}
+jobs:
+  inventory:
+    if: vars.DSE_CD_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: pr-preview
+    concurrency:
+      group: dse-preview-inventory-1379060968
+      cancel-in-progress: false
+      queue: max
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: read
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      DSE_PREVIEW_PULL_IDENTITY_ID: ${{ vars.DSE_PREVIEW_PULL_IDENTITY_ID }}
+    outputs:
+      closed: ${{ steps.inventory.outputs.closed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - run: python3 scripts/delivery.py preflight --mode audit
+      - uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - id: inventory
+        run: python3 scripts/delivery.py inventory --mode audit --output "$GITHUB_OUTPUT"
+  cleanup:
+    needs: inventory
+    if: needs.inventory.outputs.closed != '' && needs.inventory.outputs.closed != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        pr: ${{ fromJSON(needs.inventory.outputs.closed) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: pr-preview
+    concurrency:
+      group: dse-preview-1379060968-${{ matrix.pr }}
+      cancel-in-progress: false
+      queue: max
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: read
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      DSE_PREVIEW_PULL_IDENTITY_ID: ${{ vars.DSE_PREVIEW_PULL_IDENTITY_ID }}
+      PR: ${{ matrix.pr }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - run: python3 scripts/delivery.py preflight --mode cleanup --pr "$PR"
+      - uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: python3 scripts/delivery.py apply --mode cleanup --pr "$PR"

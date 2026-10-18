@@ -72,6 +72,8 @@ MSALがアクセストークンを取得してメモリに保持する。APIは�
 
 ## 展開順序
 
+PR専用の再作成可能な環境とmainマージ後のイメージ更新は、[継続的デリバリー](continuous-delivery.md)を参照。自動化は未有効化で、OIDC・限定RBAC・専用PR基盤の準備と実ライフサイクル受入が残る。既存の本番設定を維持し、PRアプリだけを削除対象とする。
+
 承認額 `APPROVED_MONTHLY_BUDGET_JPY`、通知先 `AZURE_BUDGET_EMAILS`、月初の `AZURE_BUDGET_START_DATE` を設定する。月1万円は申請案で、未承認の既定値は0。詳細は[オンデマンド実行と費用ガード](development-cost-controls.md)。ローカルbuildはDockerとベースイメージ／依存パッケージ取得の通信が必要。pushする実行者には対象ACRへのAcrPush権限が必要。
 
 以下は利用者がAzureへ展開する際の手順。本実装作業ではクラウドへの操作を実行していない。

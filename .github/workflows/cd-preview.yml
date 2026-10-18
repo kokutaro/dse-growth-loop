@@ -1,0 +1,91 @@
+name: PR preview delivery
+on:
+  workflow_run:
+    workflows: [preview-build]
+    types: [completed]
+permissions:
+  contents: read
+env:
+  DSE_CD_ENABLED: ${{ vars.DSE_CD_ENABLED }}
+jobs:
+  plan:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: read
+    outputs:
+      enabled: ${{ steps.plan.outputs.enabled }}
+      pr: ${{ steps.plan.outputs.pr }}
+      sha: ${{ steps.plan.outputs.sha }}
+      run_id: ${{ steps.plan.outputs.run_id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/delivery.py plan --mode preview --event "$GITHUB_EVENT_PATH" --output "$GITHUB_OUTPUT"
+  deliver:
+    needs: plan
+    if: needs.plan.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: dse-preview-1379060968-${{ needs.plan.outputs.pr }}
+      cancel-in-progress: false
+      queue: max
+    environment:
+      name: pr-preview
+      url: ${{ steps.apply.outputs.url }}
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: read
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      DSE_PREVIEW_PULL_IDENTITY_ID: ${{ vars.DSE_PREVIEW_PULL_IDENTITY_ID }}
+      PR: ${{ needs.plan.outputs.pr }}
+      HEAD_SHA: ${{ needs.plan.outputs.sha }}
+      BUILD_RUN: ${{ needs.plan.outputs.run_id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - id: preflight
+        run: python3 scripts/delivery.py preflight --mode preview --pr "$PR" --sha "$HEAD_SHA" --run-id "$BUILD_RUN" --wait --output "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        if: steps.preflight.outputs.operation == 'preview'
+        with:
+          name: preview-api-${{ needs.plan.outputs.sha }}
+          path: ${{ runner.temp }}/images
+          run-id: ${{ needs.plan.outputs.run_id }}
+          github-token: ${{ github.token }}
+      - name: Validate image before Azure login
+        if: steps.preflight.outputs.operation == 'preview'
+        run: python3 scripts/delivery.py prepare --mode preview --pr "$PR" --sha "$HEAD_SHA" --artifacts "$RUNNER_TEMP/images" --file "$RUNNER_TEMP/loaded.json"
+      - uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2
+        if: steps.preflight.outputs.operation == 'preview' || steps.preflight.outputs.operation == 'cleanup'
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Install pinned local IaC compiler
+        if: steps.preflight.outputs.operation == 'preview'
+        run: az bicep install --version v0.47.16
+      - id: publish
+        if: steps.preflight.outputs.operation == 'preview'
+        run: python3 scripts/delivery.py publish --mode preview --pr "$PR" --sha "$HEAD_SHA" --run-id "$BUILD_RUN" --file "$RUNNER_TEMP/loaded.json" --output "$GITHUB_OUTPUT"
+      - id: apply
+        if: steps.preflight.outputs.operation == 'cleanup' || steps.publish.outputs.operation == 'preview' || steps.publish.outputs.operation == 'cleanup'
+        env:
+          MODE: ${{ steps.preflight.outputs.operation == 'cleanup' && 'cleanup' || steps.publish.outputs.operation }}
+        run: python3 scripts/delivery.py apply --mode "$MODE" --pr "$PR" --sha "$HEAD_SHA" --run-id "$BUILD_RUN" --file "$RUNNER_TEMP/images.json" --output "$GITHUB_OUTPUT"
