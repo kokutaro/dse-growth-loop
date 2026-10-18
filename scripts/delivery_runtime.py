@@ -206,8 +206,10 @@ class Azure:
             rows.append({'name':name,'active':revision['properties']['active'],'replicas':len(replicas['value'])})
         return rows
 
-    def patch_production(self, component, template):
+    def patch_production(self, component, template, expected_image):
         current=self.production(component)
+        image_ref(expected_image,'dse-'+component)
+        require(current['properties']['template']['containers'][0]['image']==expected_image,'PRODUCTION_IMAGE_DRIFT')
         require(current['properties']['provisioningState'] in ('Succeeded','Failed','Canceled'),'PRODUCTION_OPERATION_IN_FLIGHT')
         require(current['properties']['runningStatus']==('Running' if component=='api' else 'Stopped'),'PRODUCTION_RUNNING_STATE_CHANGED')
         candidate=copy.deepcopy(current);candidate['properties']['template']=template

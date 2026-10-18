@@ -213,11 +213,12 @@ def production_operation(settings, sha, images, az, gh):
             require(current['properties']['provisioningState']=='Succeeded','PRODUCTION_OPERATION_IN_FLIGHT')
             require(current['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
             require(preserved(current)==preserved(original[name]),'PRODUCTION_SETTINGS_DRIFT')
+            require(current['properties']['template']['containers'][0]['image']==original[name]['properties']['template']['containers'][0]['image'],'PRODUCTION_IMAGE_DRIFT')
             template=copy.deepcopy(current['properties']['template'])
             template['containers'][0]['image']=images[name];template['revisionSuffix']=revision_suffix(sha,'cd')
             if current['properties']['template']['containers'][0]['image']!=images[name]:
                 changed.append(name)  # An accepted but timed-out PATCH is still an unknown write.
-                az.patch_production(name,template)
+                az.patch_production(name,template,current['properties']['template']['containers'][0]['image'])
             final=az.wait_production(name,images[name])
             require(preserved(final)==preserved(original[name]),'PRODUCTION_SETTINGS_DRIFT')
             require(final['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
@@ -241,7 +242,7 @@ def production_operation(settings, sha, images, az, gh):
                     template=copy.deepcopy(current['properties']['template'])
                     template['containers'][0]['image']=original[name]['properties']['template']['containers'][0]['image']
                     template['revisionSuffix']=revision_suffix(sha,'rb')
-                    az.patch_production(name,template)
+                    az.patch_production(name,template,images[name])
                     az.wait_production(name,template['containers'][0]['image'])
             except Exception:failures.append(name)
         if failures:raise DeliveryError('ROLLBACK_RECONCILIATION_REQUIRED_'+('_'.join(failures)).upper()) from original_error

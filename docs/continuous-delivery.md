@@ -29,7 +29,7 @@ closed runの `pull_requests` が空の場合は、GitHubのcommit→PR正本を
 
 ## 本番の保全と復帰
 
-本番は `dse-growth-loop-rg / dse-environment` の `dse-api` と `dse-worker` に固定し、`infra/main.bicep` 全体を再適用しない。環境変数、AI設定、認証、Identity、ネットワーク、scale、コマンド、タグを保存前後で照合する。PATCHはtemplateのimageとrevisionSuffixだけを変える。送信直前にもアダプターが現在設定を再読取し、操作者の変更を上書きしない。
+本番は `dse-growth-loop-rg / dse-environment` の `dse-api` と `dse-worker` に固定し、`infra/main.bicep` 全体を再適用しない。環境変数、AI設定、認証、Identity、ネットワーク、scale、コマンド、タグを保存前後で照合する。PATCHはtemplateのimageとrevisionSuffixだけを変える。更新と復帰の両方で期待する更新前digestをアダプターへ渡し、送信直前の再読取で設定とdigestの変化を拒否する。Azureの読取とPATCHは別要求であり、その間の外部変更を原子的に防ぐ保証はない。配備中の手動image更新は避け、ドリフトや復帰未確認は操作者が確認する。
 
 安全な現在の運用に合わせ、APIがRunning、WorkerがStopped・全リビジョン無効・実レプリカ0・`/bin/sleep infinity`、旧イメージもdigest固定であることを前提にする。条件が変わった場合は自動反映を止める。APIを勝手に起動したり、Workerをキュー処理へ戻したりはしない。新しいWorkerリビジョンも停止・無効化し、APIの新リビジョンとlive/readyを確認する。
 

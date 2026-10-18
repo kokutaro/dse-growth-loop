@@ -159,7 +159,8 @@ class ProductionAzure:
         self.fail_once=None;self.drift=None;self.on_patch=None
     def production(self,name):return copy.deepcopy(self.apps[name])
     def worker_revisions(self):return self.revisions
-    def patch_production(self,name,template):
+    def patch_production(self,name,template,expected_image):
+        d.require(self.apps[name]['properties']['template']['containers'][0]['image']==expected_image,'PRODUCTION_IMAGE_DRIFT')
         self.actions.append((name,copy.deepcopy(template)));self.apps[name]['properties']['template']=copy.deepcopy(template)
         if self.on_patch:self.on_patch(name)
     def wait_production(self,name,image):
@@ -212,6 +213,15 @@ class ProductionDeliveryTests(unittest.TestCase):
         with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,gh)
         self.assertEqual([a[0] for a in az.actions],['worker','worker'])
 
+    def test_operator_api_image_change_during_worker_delivery_is_preserved(self):
+        az=ProductionAzure();other=d.REGISTRY+'/dse-api@sha256:'+'f'*64
+        def changed(name):
+            if name=='worker':az.apps['api']['properties']['template']['containers'][0]['image']=other
+        az.on_patch=changed
+        with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
+        self.assertEqual(az.apps['api']['properties']['template']['containers'][0]['image'],other)
+        self.assertEqual([a[0] for a in az.actions],['worker','worker'])
+
     def test_in_flight_resource_is_not_overwritten(self):
         az=ProductionAzure();az.apps['api']['properties']['provisioningState']='InProgress'
         with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
@@ -240,10 +250,10 @@ class ProductionDeliveryTests(unittest.TestCase):
 
     def test_dispatch_retry_after_rollback_never_reuses_an_immutable_revision_name(self):
         az=ProductionAzure();az.fail_once='api';original=az.patch_production;used={'api':set(),'worker':set()}
-        def immutable(name,template):
+        def immutable(name,template,expected_image):
             suffix=template['revisionSuffix']
             if suffix in used[name]:raise d.DeliveryError('REVISION_ALREADY_EXISTS')
-            used[name].add(suffix);return original(name,template)
+            used[name].add(suffix);return original(name,template,expected_image)
         az.patch_production=immutable
         with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
         self.assertEqual(d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())['status'],'ready')

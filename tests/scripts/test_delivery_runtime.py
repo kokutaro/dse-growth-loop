@@ -135,7 +135,7 @@ class AzureAdapterTests(unittest.TestCase):
             path=Path(args[args.index('--body')+1][1:]);seen.append(path)
             self.assertEqual(path.stat().st_mode&0o777,0o600)
             self.assertEqual(json.loads(path.read_text()),{'properties':{'template':template}})
-        az.call=call;az.patch_production('api',template);self.assertFalse(seen[0].exists())
+        az.call=call;az.patch_production('api',template,current['properties']['template']['containers'][0]['image']);self.assertFalse(seen[0].exists())
 
     def test_adapter_itself_rejects_production_delete_and_cross_group_operations(self):
         az=r.Azure(SETTINGS);az.call=MagicMock(return_value={})
@@ -149,8 +149,42 @@ class AzureAdapterTests(unittest.TestCase):
         template['containers'][0]['image']=d.REGISTRY+'/dse-api@sha256:'+'e'*64
         latest=copy.deepcopy(before);latest['properties']['template']['containers'][0]['env'][0]['value']='operator-change'
         az.get_app=MagicMock(return_value=latest);az.rest=MagicMock()
-        with self.assertRaises(d.DeliveryError):az.patch_production('api',template)
+        with self.assertRaises(d.DeliveryError):az.patch_production('api',template,before['properties']['template']['containers'][0]['image'])
         az.rest.assert_not_called()
+
+    def test_image_change_between_controller_and_adapter_is_not_overwritten(self):
+        for component in ('api','worker'):
+            with self.subTest(component=component):
+                az=r.Azure(SETTINGS);before=production_app(component)
+                template=copy.deepcopy(before['properties']['template'])
+                template['containers'][0]['image']=d.REGISTRY+'/dse-'+component+'@sha256:'+'e'*64
+                latest=copy.deepcopy(before)
+                latest['properties']['template']['containers'][0]['image']=d.REGISTRY+'/dse-'+component+'@sha256:'+'f'*64
+                az.get_app=MagicMock(return_value=latest);az.rest=MagicMock()
+                with self.assertRaises(d.DeliveryError):az.patch_production(component,template,before['properties']['template']['containers'][0]['image'])
+                az.rest.assert_not_called()
+
+    def test_deploy_and_rollback_recheck_expected_image_at_the_adapter_boundary(self):
+        for component in ('api','worker'):
+            for phase in ('deploy','rollback'):
+                with self.subTest(component=component,phase=phase):
+                    state=ProductionAzure();adapter=r.Azure(SETTINGS);adapter.production=state.production
+                    original=state.patch_production;old={n:state.apps[n]['properties']['template']['containers'][0]['image'] for n in ('api','worker')}
+                    images={n:d.REGISTRY+'/dse-'+n+'@sha256:'+'e'*64 for n in ('api','worker')}
+                    other=d.REGISTRY+'/dse-'+component+'@sha256:'+'f'*64
+                    if phase=='rollback':state.fail_once='api'
+                    def rest(method,resource,body):
+                        name='api' if resource.endswith('/dse-api') else 'worker'
+                        original(name,body['properties']['template'],state.apps[name]['properties']['template']['containers'][0]['image'])
+                    adapter.rest=rest
+                    def raced(name,template,expected_image):
+                        rollback=template['containers'][0]['image']==old[name]
+                        if name==component and rollback==(phase=='rollback'):
+                            state.apps[name]['properties']['template']['containers'][0]['image']=other
+                        adapter.patch_production(name,template,expected_image)
+                    state.patch_production=raced
+                    with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,images,state,Hub())
+                    self.assertEqual(state.apps[component]['properties']['template']['containers'][0]['image'],other)
 
     def test_deployment_uses_only_trusted_incremental_template_and_owned_group(self):
         az=r.Azure(SETTINGS,Hub());az.preview=MagicMock(return_value=None)
