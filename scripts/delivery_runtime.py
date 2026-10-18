@@ -56,6 +56,11 @@ class GitHub:
         return any(p.get('merged_at') and p.get('merge_commit_sha')==sha and p['base']['ref']=='main' and p['base']['repo']['id']==REPO_ID
             for p in self.get('/commits/'+sha+'/pulls?per_page=100'))
 
+    def associated_pulls(self, sha):
+        commit(sha);rows=self.get('/commits/'+sha+'/pulls?per_page=100')
+        require(len(rows)<100,'PULL_REQUEST_LOOKUP_INCOMPLETE')
+        return rows
+
     def environment_guard(self, name):
         require(name in ('pr-preview','production'),'INVALID_GITHUB_ENVIRONMENT')
         env=self.get('/environments/'+name)
@@ -78,8 +83,14 @@ def run_plan(gh, run_id, kind):
         sha=commit(run['head_sha']);require(gh.main_sha()==sha and gh.merged_main(sha),'NOT_LATEST_MERGED_MAIN')
         return {'operation':'production','sha':sha,'run_id':run_id}
     require(kind=='preview' and run['event']=='pull_request','WRONG_BUILD_EVENT')
-    require(len(run['pull_requests'])==1,'AMBIGUOUS_PULL_REQUEST')
-    number=run['pull_requests'][0]['number'];p=trusted_pull(gh,number)
+    related=run['pull_requests']
+    if not related:
+        related=[p for p in gh.associated_pulls(commit(run['head_sha']))
+            if p['base']['repo']['id']==REPO_ID and p['base']['ref']=='main' and p['head'].get('repo',{}).get('id')==REPO_ID and
+            (p['head']['sha']==run['head_sha'] or p['head']['ref']==run['head_branch'] or
+                (p.get('merged_at') and p.get('merge_commit_sha')==run['head_sha']))]
+    require(len(related)==1,'AMBIGUOUS_PULL_REQUEST')
+    number=related[0]['number'];p=trusted_pull(gh,number)
     if p['state']=='closed':return {'operation':'cleanup','pr':number,'sha':p['head']['sha'],'run_id':run_id}
     sha=commit(run['head_sha']);trusted_pull(gh,number,sha)
     return {'operation':'preview','pr':number,'sha':sha,'run_id':run_id}
@@ -141,7 +152,7 @@ class Azure:
         # Only this resource is declared. Incremental mode cannot remove other resources.
         params={'repositoryId':REPO_ID,'prNumber':number,'headSha':sha,'apiImage':image,
             'environmentId':self.settings.environment(),'pullIdentityId':self.settings.pull_identity,
-            'expiresAt':expected['tags']['expires-at']}
+            'expiresAt':expected['tags']['expires-at'],'revisionSuffix':expected['properties']['template']['revisionSuffix']}
         with tempfile.TemporaryDirectory(prefix='dse-preview-') as folder:
             path=Path(folder)/'parameters.json';path.write_text(json.dumps({'parameters':{k:{'value':v} for k,v in params.items()}}));path.chmod(0o600)
             try:self.call('deployment','group','create','--resource-group',PREVIEW_RG,'--name',preview_name(number),
@@ -150,14 +161,14 @@ class Azure:
                 if str(error)!='AZURE_TIMEOUT':raise
                 # Accepted writes can outlive the client. Reconcile instead of resubmitting.
 
-    def wait_preview(self, number, sha):
+    def wait_preview(self, number, sha, image):
         deadline=time.monotonic()+300
         while time.monotonic()<deadline:
             value=self.preview(number)
             if value:
                 require(owned_preview(self.settings,value,number),'PREVIEW_INVARIANT_FAILED')
                 require(value['properties']['provisioningState'] not in ('Failed','Canceled'),'PREVIEW_PROVISIONING_FAILED')
-                if value['tags']['head-sha']==sha and value['properties']['provisioningState']=='Succeeded':
+                if value['tags']['head-sha']==sha and value['properties']['template']['containers'][0]['image']==image and value['properties']['provisioningState']=='Succeeded':
                     name=value['properties'].get('latestRevisionName')
                     if name and value['properties'].get('latestReadyRevisionName')==name:
                         health('https://'+value['properties']['configuration']['ingress']['fqdn']);return value
@@ -257,7 +268,7 @@ def load_images(folder, sha, number=None):
 
 def publish_images(az, loaded, sha, number=None):
     commit(sha);result={}
-    token=az.call('acr','login','--name',REGISTRY.split('.')[0],'--expose-token')
+    token=az.call('acr','login','--name',REGISTRY.split('.')[0],'--resource-group',PRODUCTION_RG,'--expose-token')
     require(token['loginServer']==REGISTRY,'WRONG_REGISTRY')
     with tempfile.TemporaryDirectory(prefix='dse-cd-docker-') as folder:
         Path(folder).chmod(0o700)
@@ -274,6 +285,12 @@ def publish_images(az, loaded, sha, number=None):
             remote=REGISTRY+'/'+repository+':'+tag
             subprocess.run(['docker','tag',local,remote],check=True,timeout=30)
             subprocess.run(['docker','--config',folder,'push',remote],check=True,timeout=600)
-            metadata=az.call('acr','repository','show','--name',REGISTRY.split('.')[0],'--image',repository+':'+tag)
-            result[component]=image_ref(REGISTRY+'/'+repository+'@'+metadata['digest'],repository)
+            # The successful push records the repository digest on this local image.
+            # Do not rediscover the ACR through subscription-wide ARM enumeration or
+            # resolve a mutable remote tag that another publisher could replace.
+            published=json.loads(subprocess.check_output(['docker','image','inspect',remote],text=True))[0]
+            require(published['Id']==info['imageId'],'PUBLISHED_IMAGE_CHANGED')
+            digests=[value for value in published.get('RepoDigests',[]) if value.startswith(REGISTRY+'/'+repository+'@')]
+            require(len(digests)==1,'PUBLISHED_DIGEST_UNCONFIRMED')
+            result[component]=image_ref(digests[0],repository)
     return result

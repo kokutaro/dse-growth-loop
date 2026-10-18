@@ -25,6 +25,11 @@ def commit(value):
     require(isinstance(value,str) and re.fullmatch('[0-9a-f]{40}',value), 'INVALID_COMMIT')
     return value
 
+def revision_suffix(sha, prefix):
+    commit(sha)
+    require(prefix in ('pr','cd','rb'),'INVALID_REVISION_PREFIX')
+    return prefix+'-'+sha[:8]+'-'+uuid.uuid4().hex[:16]
+
 def preview_name(number):
     require(type(number) is int and 1 <= number <= 999999999, 'INVALID_PR_NUMBER')
     return f'dse-pr-{REPO_ID}-{number}'
@@ -79,7 +84,7 @@ def preview_resource(settings, number, sha, image):
                 'ingress':{'external':True,'targetPort':8080,'transport':'auto','allowInsecure':False},
                 'registries':[{'server':REGISTRY,'identity':settings.pull_identity}],
                 'identitySettings':[{'identity':settings.pull_identity,'lifecycle':'None'}]},
-            'template':{'revisionSuffix':'s'+sha[:12],
+            'template':{'revisionSuffix':revision_suffix(sha,'pr'),
                 'containers':[{'name':'api','image':image,'resources':{'cpu':0.5,'memory':'1Gi'},
                     'env':[{'name':k,'value':v} for k,v in preview_env(number).items()],
                     'probes':[{'type':'Startup','httpGet':{'path':'/health/live','port':8080},'periodSeconds':5,'failureThreshold':60},
@@ -95,10 +100,11 @@ def owned_preview(settings, resource, number):
         require(all(tags.get(k)==v for k,v in {'managed-by':CONTROLLER,'repository-id':str(REPO_ID),'pull-request':str(number)}.items()),'FOREIGN_OWNER')
         commit(tags['head-sha'])
         require((p.get('managedEnvironmentId') or p.get('environmentId','')).lower()==settings.environment().lower(),'FOREIGN_ENVIRONMENT')
-        require(identity['type']=='UserAssigned' and set(identity['userAssignedIdentities'])=={settings.pull_identity},'RUNTIME_IDENTITY')
-        require(cfg['identitySettings']==[{'identity':settings.pull_identity,'lifecycle':'None'}],'RUNTIME_IDENTITY')
+        require(identity['type']=='UserAssigned' and {k.lower() for k in identity['userAssignedIdentities']}=={settings.pull_identity.lower()},'RUNTIME_IDENTITY')
+        identity_settings=cfg['identitySettings']
+        require(len(identity_settings)==1 and identity_settings[0]['identity'].lower()==settings.pull_identity.lower() and identity_settings[0]['lifecycle']=='None','RUNTIME_IDENTITY')
         registries=cfg['registries']
-        require(len(registries)==1 and registries[0].get('server')==REGISTRY and registries[0].get('identity')==settings.pull_identity and
+        require(len(registries)==1 and registries[0].get('server')==REGISTRY and registries[0].get('identity','').lower()==settings.pull_identity.lower() and
             not registries[0].get('username') and not registries[0].get('passwordSecretRef') and
             set(registries[0])<=set(('server','identity','username','passwordSecretRef')),'FOREIGN_REGISTRY')
         require(not cfg.get('secrets') and not cfg.get('ingress',{}).get('customDomains'),'FOREIGN_CONFIGURATION')
@@ -145,7 +151,7 @@ def deploy_preview(settings, number, sha, image, az, gh):
     trusted_pull(gh,number,sha)
     unchanged=existing and existing['tags']['head-sha']==sha and existing['properties']['template']['containers'][0]['image']==image
     if not unchanged:az.deploy_preview(number,sha,image)
-    deployed=az.wait_preview(number,sha)
+    deployed=az.wait_preview(number,sha,image)
     require(owned_preview(settings,deployed,number),'PREVIEW_INVARIANT_FAILED')
     p=trusted_pull(gh,number)
     if p['state']=='closed':
@@ -208,7 +214,7 @@ def production_operation(settings, sha, images, az, gh):
             require(current['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
             require(preserved(current)==preserved(original[name]),'PRODUCTION_SETTINGS_DRIFT')
             template=copy.deepcopy(current['properties']['template'])
-            template['containers'][0]['image']=images[name];template['revisionSuffix']='cd-'+sha[:12]
+            template['containers'][0]['image']=images[name];template['revisionSuffix']=revision_suffix(sha,'cd')
             if current['properties']['template']['containers'][0]['image']!=images[name]:
                 changed.append(name)  # An accepted but timed-out PATCH is still an unknown write.
                 az.patch_production(name,template)
@@ -219,6 +225,7 @@ def production_operation(settings, sha, images, az, gh):
             final=az.production(name)
             require(preserved(final)==preserved(original[name]),'PRODUCTION_SETTINGS_DRIFT')
             require(final['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
+            require(final['properties']['template']['containers'][0]['image']==images[name],'PRODUCTION_IMAGE_DRIFT')
         require(all(not r['active'] and r['replicas']==0 for r in az.worker_revisions()),'WORKER_NOT_STOPPED')
         return {'status':'ready','sha':sha,'images':images,
             'rollbackImages':{n:original[n]['properties']['template']['containers'][0]['image'] for n in original}}
@@ -233,7 +240,7 @@ def production_operation(settings, sha, images, az, gh):
                 if current['properties']['template']['containers'][0]['image']==images[name]:
                     template=copy.deepcopy(current['properties']['template'])
                     template['containers'][0]['image']=original[name]['properties']['template']['containers'][0]['image']
-                    template['revisionSuffix']='rb-'+sha[:8]+'-'+dt.datetime.now(dt.timezone.utc).strftime('%H%M%S')
+                    template['revisionSuffix']=revision_suffix(sha,'rb')
                     az.patch_production(name,template)
                     az.wait_production(name,template['containers'][0]['image'])
             except Exception:failures.append(name)

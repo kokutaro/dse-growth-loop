@@ -22,6 +22,7 @@ class Hub(PolicyHub):
     def run(self,number):return copy.deepcopy(self.record)
     def merged_main(self,sha):return True
     def environment_guard(self,name):pass
+    def associated_pulls(self,sha):return []
 
 def context(mode):
     return {'DSE_CD_ENABLED':'true','GITHUB_REPOSITORY_ID':str(d.REPO_ID),'GITHUB_REF':'refs/heads/main',
@@ -45,6 +46,32 @@ class RunAndPermissionTests(unittest.TestCase):
         with self.assertRaises(d.DeliveryError):r.run_plan(gh,8,'production')
         gh.main=SHA;gh.merged_main=lambda sha:False
         with self.assertRaises(d.DeliveryError):r.run_plan(gh,8,'production')
+
+    def test_closed_run_with_empty_pull_array_uses_verified_commit_association(self):
+        gh=Hub(pr(state='closed'));gh.record['pull_requests']=[]
+        gh.associated_pulls=MagicMock(return_value=[gh.value])
+        self.assertEqual(r.run_plan(gh,8,'preview')['operation'],'cleanup')
+        gh.associated_pulls.return_value=[gh.value,dict(gh.value,number=8)]
+        with self.assertRaises(d.DeliveryError):r.run_plan(gh,8,'preview')
+        gh.associated_pulls.return_value=[pr(state='closed',repo=999)]
+        with self.assertRaises(d.DeliveryError):r.run_plan(gh,8,'preview')
+
+    def test_empty_pull_array_resolves_closed_head_branch_or_merge_commit_but_rejects_stale_open(self):
+        for merged in (False,True):
+            with self.subTest(merged=merged):
+                gh=Hub(pr(state='closed',sha=NEW));gh.record['pull_requests']=[]
+                if merged:
+                    gh.record['head_branch']='main'
+                    gh.value.update(merged_at='fixture',merge_commit_sha=SHA)
+                gh.associated_pulls=MagicMock(return_value=[gh.value])
+                self.assertEqual(r.run_plan(gh,8,'preview')['operation'],'cleanup')
+        gh=Hub(pr(sha=NEW));gh.record['pull_requests']=[]
+        gh.associated_pulls=MagicMock(return_value=[gh.value])
+        with self.assertRaises(d.DeliveryError):r.run_plan(gh,8,'preview')
+
+    def test_commit_association_refuses_truncated_results(self):
+        gh=r.GitHub('dummy');gh.get=MagicMock(return_value=[pr()]*100)
+        with self.assertRaisesRegex(d.DeliveryError,'LOOKUP_INCOMPLETE'):gh.associated_pulls(SHA)
 
     def test_github_requests_keep_token_in_headers_and_never_echo_error_bodies(self):
         gh=r.GitHub('DO_NOT_ECHO_TOKEN');response=MagicMock();response.__enter__.return_value.read.return_value=b'{"ok":true}'
@@ -175,10 +202,12 @@ class AzureAdapterTests(unittest.TestCase):
         az=r.Azure(SETTINGS);value=d.preview_resource(SETTINGS,7,SHA,IMAGE)
         value['properties'].update(provisioningState='Succeeded',latestRevisionName='new',latestReadyRevisionName='new')
         value['properties']['configuration']['ingress']['fqdn']='dummy.azurecontainerapps.io'
-        az.preview=MagicMock(side_effect=[None,value])
-        with patch.object(r.time,'sleep'),patch.object(r,'health'):self.assertEqual(az.wait_preview(7,SHA),value)
+        old=copy.deepcopy(value);old['properties']['template']['containers'][0]['image']=IMAGE.replace('c'*64,'e'*64)
+        az.preview=MagicMock(side_effect=[old,value]);az.rest=MagicMock(return_value={'properties':{'template':value['properties']['template']}})
+        with patch.object(r.time,'sleep'),patch.object(r,'health') as health:
+            self.assertEqual(az.wait_preview(7,SHA,IMAGE),value);health.assert_called_once()
         az.preview=MagicMock(return_value=None)
-        with patch.object(r.time,'monotonic',side_effect=[0,301]),self.assertRaises(d.DeliveryError):az.wait_preview(7,SHA)
+        with patch.object(r.time,'monotonic',side_effect=[0,301]),self.assertRaises(d.DeliveryError):az.wait_preview(7,SHA,IMAGE)
 
     def test_health_urls_and_requests_never_include_credentials(self):
         response=MagicMock();response.__enter__.return_value.status=200
@@ -199,10 +228,22 @@ class ImageAndCliTests(unittest.TestCase):
                 self.assertEqual(loaded['api']['imageId'],'sha256:dummy')
                 metadata['Architecture']='arm64'
                 with self.assertRaises(d.DeliveryError):r.load_images(folder,SHA,7)
-        az=MagicMock();az.call.side_effect=[{'loginServer':d.REGISTRY,'accessToken':'SECRET_TOKEN'},{'digest':'sha256:'+'c'*64}]
-        with patch.object(r.subprocess,'run') as run,patch.object(r.subprocess,'check_output',return_value=json.dumps([{'Id':'sha256:dummy'}])):
+        az=MagicMock();az.call.return_value={'loginServer':d.REGISTRY,'accessToken':'SECRET_TOKEN'}
+        metadata={'Id':'sha256:dummy','RepoDigests':[IMAGE]}
+        with patch.object(r.subprocess,'run') as run,patch.object(r.subprocess,'check_output',return_value=json.dumps([metadata])):
             self.assertEqual(r.publish_images(az,loaded,SHA,7),{'api':IMAGE})
+            az.call.assert_called_once_with('acr','login','--name',d.REGISTRY.split('.')[0],'--resource-group',d.PRODUCTION_RG,'--expose-token')
             config=Path(run.call_args_list[0].args[0][2]);self.assertFalse(config.exists())
+
+    def test_published_digest_must_match_the_pushed_local_image_and_repository(self):
+        loaded={'api':{'local':'dse-api:'+SHA,'imageId':'sha256:dummy'}}
+        for remote in ({'Id':'different','RepoDigests':[IMAGE]}, {'Id':'sha256:dummy','RepoDigests':[]},
+                {'Id':'sha256:dummy','RepoDigests':[IMAGE.replace('dse-preview-api','dse-api')]},
+                {'Id':'sha256:dummy','RepoDigests':[IMAGE,IMAGE.replace('c'*64,'e'*64)]}):
+            with self.subTest(remote=remote):
+                az=MagicMock();az.call.return_value={'loginServer':d.REGISTRY,'accessToken':'SECRET_TOKEN'}
+                with patch.object(r.subprocess,'run'),patch.object(r.subprocess,'check_output',side_effect=[json.dumps([{'Id':'sha256:dummy'}]),json.dumps([remote])]),self.assertRaises(d.DeliveryError):
+                    r.publish_images(az,loaded,SHA,7)
 
     def test_disabled_repo_never_constructs_github_or_azure_clients(self):
         with patch.dict(os.environ,{},clear=True),patch.object(r,'GitHub') as gh,patch.object(r,'Azure') as az,redirect_stdout(io.StringIO()):

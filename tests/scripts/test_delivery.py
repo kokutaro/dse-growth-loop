@@ -32,7 +32,7 @@ class Azure:
     def deploy_preview(self, number, sha, image):
         self.actions.append(('deploy',number,sha));self.value=d.preview_resource(SETTINGS,number,sha,image)
         if self.after_deploy:self.after_deploy()
-    def wait_preview(self, number, sha): return copy.deepcopy(self.value)
+    def wait_preview(self, number, sha, image): return copy.deepcopy(self.value)
     def delete_preview(self, number): self.actions.append(('delete',number));self.value=None
     def previews(self): return [] if self.value is None else [copy.deepcopy(self.value)]
 
@@ -124,6 +124,18 @@ class PreviewDeliveryTests(unittest.TestCase):
         registry['passwordSecretRef']='unexpected-credential'
         self.assertFalse(d.owned_preview(SETTINGS,value,7))
 
+    def test_azure_resource_identity_casing_does_not_change_ownership(self):
+        value=d.preview_resource(SETTINGS,7,SHA,IMAGE);identity=value['identity']['userAssignedIdentities']
+        identity[SETTINGS.pull_identity.upper()]=identity.pop(SETTINGS.pull_identity)
+        value['properties']['configuration']['identitySettings'][0]['identity']=SETTINGS.pull_identity.upper()
+        value['properties']['configuration']['registries'][0]['identity']=SETTINGS.pull_identity.upper()
+        self.assertTrue(d.owned_preview(SETTINGS,value,7))
+
+    def test_same_head_rebuild_gets_a_fresh_revision_suffix(self):
+        first=d.preview_resource(SETTINGS,7,SHA,IMAGE)
+        second=d.preview_resource(SETTINGS,7,SHA,IMAGE.replace('c'*64,'e'*64))
+        self.assertNotEqual(first['properties']['template']['revisionSuffix'],second['properties']['template']['revisionSuffix'])
+
     def test_identical_image_is_not_declared_ready_without_waiting_for_provider_health(self):
         az=Azure();az.value=d.preview_resource(SETTINGS,7,SHA,IMAGE)
         def failed(*args):raise d.DeliveryError('PROVIDER_NOT_READY')
@@ -213,5 +225,27 @@ class ProductionDeliveryTests(unittest.TestCase):
         az.production=read
         with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
         self.assertEqual([a[0] for a in az.actions],['worker','api','worker'])
+
+    def test_operator_image_change_at_final_check_is_not_reported_as_deployed_or_overwritten(self):
+        for component in ('api','worker'):
+            with self.subTest(component=component):
+                az=ProductionAzure();wait=az.wait_production;other=d.REGISTRY+'/dse-'+component+'@sha256:'+'f'*64
+                def changed(name,image):
+                    result=wait(name,image)
+                    if name=='api':az.apps[component]['properties']['template']['containers'][0]['image']=other
+                    return result
+                az.wait_production=changed
+                with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
+                self.assertEqual(az.apps[component]['properties']['template']['containers'][0]['image'],other)
+
+    def test_dispatch_retry_after_rollback_never_reuses_an_immutable_revision_name(self):
+        az=ProductionAzure();az.fail_once='api';original=az.patch_production;used={'api':set(),'worker':set()}
+        def immutable(name,template):
+            suffix=template['revisionSuffix']
+            if suffix in used[name]:raise d.DeliveryError('REVISION_ALREADY_EXISTS')
+            used[name].add(suffix);return original(name,template)
+        az.patch_production=immutable
+        with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
+        self.assertEqual(d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())['status'],'ready')
 
 if __name__=='__main__':unittest.main()

@@ -25,6 +25,8 @@
 
 更新と削除の排他キーは両ワークフロー共通の `dse-preview-1379060968-<PR番号>`、`cancel-in-progress=false`。待機順序だけを信用せず、変異直前と作成完了後にもPRを読み直す。途中closeは同じ所有範囲を回収し、reopenは削除を拒否する。手動キャンセルやARM要求のタイムアウトは処理が残る可能性があり、更新要求を盲目的に再送しない。毎時のreconcileがclosedの取り残しを回収する。GitHubの404/通信失敗をclosedと解釈しない。openの期限切れは報告だけで、期限を理由に利用中の環境を消さない。
 
+closed runの `pull_requests` が空の場合は、GitHubのcommit→PR正本を照合して候補を解決する。別repository・fork・別baseや曖昧な複数候補は採用しない。同じheadを再ビルドしてdigestが変わる場合にも、作成要求ごとに一意なrevision suffixを渡す。正常性はSHAと期待digestの両方で照合し、更新前の正常なリビジョンを成功証跡として使わない。
+
 ## 本番の保全と復帰
 
 本番は `dse-growth-loop-rg / dse-environment` の `dse-api` と `dse-worker` に固定し、`infra/main.bicep` 全体を再適用しない。環境変数、AI設定、認証、Identity、ネットワーク、scale、コマンド、タグを保存前後で照合する。PATCHはtemplateのimageとrevisionSuffixだけを変える。送信直前にもアダプターが現在設定を再読取し、操作者の変更を上書きしない。
@@ -35,31 +37,37 @@
 
 再実行は最新のmain/PR headとCIを再確認する。同じイメージでも正常性を確認する。PRの再試行は最新headに対応する `preview-build` を再実行する。本番は `Production delivery` のworkflow_dispatchで最新のCI成功済みマージコミットを再適用できる。reconcileのforeign/unknownは所有・GitHub状態を確認するまで削除しない。ワークフローの完了表示を、実AI品質・全体E2EやIssue #16の受入完了へ置き換えない。
 
+本番更新とimage復帰も毎回一意なsuffixを使い、失敗後に同じcommitを再実行しても既存のimmutable revision名と衝突しない。API待機中にWorkerのimageが変更された場合を含め、両方の最終digestも確認する。操作者が指定した別imageを復帰処理で上書きしない。
+
 ## 有効化前に必要な変更（未承認・未実行）
 
 現状はGitHub Secret/Variableが0件、CD用Environmentはなく、OIDC subjectはdefaultのimmutable方式である。`DSE_CD_ENABLED` が未設定/falseなら全コマンドは無効状態を返し、Azureクライアントを生成しない。以下は**別途確認後の設定内容**で、このPRの実装作業では実行しない。
 
 1. 専用RG `dse-growth-loop-preview-rg` と共有PR環境、pull専用Identityを作る。既存の `dse-environment` や本番データには接続しない。
-2. CD用のAzure主体をpreview/productionで分ける。長期client secretを作らずGitHub OIDCを使う。GitHub Environments `pr-preview` と `production` を作り、deployment branch policyはcustomの **main 1本だけ** に限定する。
-3. GitHubのOIDC subjectに `repository_id`・`context`・`workflow_ref` を含めるcustom templateを設定し、Azure側は下記のmain上のワークフローに完全一致する信頼だけを追加する。現在のimmutable repository IDを維持し、既存のOIDC利用先への影響も確認する。subject形式はOIDC claim確認後に確定し、ワイルドカードやPR refを許可しない。[GitHub OIDC reference](https://docs.github.com/en/actions/reference/security/oidc)、[Azure OIDC設定](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)。
+2. CD用のAzure主体をpreview/productionで分ける。計画名は専用preview RGの `dse-cd-preview` と本番RGの `dse-cd-production`（いずれも新規User-assigned Managed Identity）。既存の実行用 `dse-api-identity`／`dse-worker-identity` は変更・流用しない。新主体のclient/principal IDは作成前のため未確定。長期client secretを作らずGitHub OIDCを使う。GitHub Environments `pr-preview` と `production` を作り、deployment branch policyはcustomの **main 1本だけ** に限定する。
+3. GitHubのOIDC subjectに `repo`・`repository_id`・`context`・`workflow_ref` をこの順で含めるcustom templateを設定し、Azure側は下記のmain上のワークフローに完全一致する信頼だけを追加する。現在の `use_immutable_subject=true` を維持し、`repo` 部分にはowner IDとrepository IDを含める。既存のOIDC利用先への影響も確認する。subject形式はOIDC claim確認後に確定し、ワイルドカードやPR refを許可しない。[GitHub OIDC reference](https://docs.github.com/en/actions/reference/security/oidc)、[Azure OIDC設定](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)。
+
+Repository subject templateの変更案は `{"use_default":false,"include_claim_keys":["repo","repository_id","context","workflow_ref"]}`。既存のimmutable設定を無効化する変更は含めない。issuer・audience・完全なsubjectをAzureのFederated Identity Credentialへそれぞれ登録する。
 
 | Azure主体 | 許可するsubject（custom templateの想定値） |
 |---|---|
-| preview | `repository_id:1379060968:environment:pr-preview:workflow_ref:kokutaro/dse-growth-loop/.github/workflows/cd-preview.yml@refs/heads/main` |
-| preview | `repository_id:1379060968:environment:pr-preview:workflow_ref:kokutaro/dse-growth-loop/.github/workflows/cd-preview-reconcile.yml@refs/heads/main` |
-| production | `repository_id:1379060968:environment:production:workflow_ref:kokutaro/dse-growth-loop/.github/workflows/cd-production.yml@refs/heads/main` |
+| preview | `repo:kokutaro@4447283/dse-growth-loop@1379060968:repository_id:1379060968:environment:pr-preview:workflow_ref:kokutaro/dse-growth-loop/.github/workflows/cd-preview.yml@refs/heads/main` |
+| preview | `repo:kokutaro@4447283/dse-growth-loop@1379060968:repository_id:1379060968:environment:pr-preview:workflow_ref:kokutaro/dse-growth-loop/.github/workflows/cd-preview-reconcile.yml@refs/heads/main` |
+| production | `repo:kokutaro@4447283/dse-growth-loop@1379060968:repository_id:1379060968:environment:production:workflow_ref:kokutaro/dse-growth-loop/.github/workflows/cd-production.yml@refs/heads/main` |
 
 issuerは `https://token.actions.githubusercontent.com`、audienceは `api://AzureADTokenExchange`。workflow refを固定することで、PR側がワークフローを改変してEnvironment名を名乗ってもAzureへ認証できない。subject検証が終わるまでCDを有効化しない。
 
 | 対象/スコープ | 必要な権限 |
 |---|---|
-| preview主体／専用preview RGのみ | Container Apps read/write/delete、managedEnvironments read/join、ARM deployments read/write・operation読取。RG削除・RBAC変更権限は不要 |
+| preview主体／専用preview RGのみ | Container Apps read/write/delete、managedEnvironments read/join、RG read、ARM deployments read/write/validate・operation読取。RG削除・RBAC変更権限は不要 |
 | preview主体／`dse-preview-pull`のみ | Managed Identityのread/assign |
 | pull Identity／既存ACRのみ | AcrPull。Storage/Cosmos/Key Vault/AIへの権限なし |
 | production主体／既存 `dse-api` と `dse-worker` の各resourceのみ | Container Apps read/write、revisions read/deactivate、replicas read。delete・RBAC変更権限は不要 |
-| 各配備主体／既存ACR | AcrPush。現在のACRはLegacyRegistryPermissionsなのでregistry単位の権限になる。制御コードはpreview用repositoryと本番repositoryを区別する |
+| 各配備主体／既存ACR resourceのみ | AcrPushと `Microsoft.ContainerRegistry/registries/read`。AcrPush自体にはARMのregistry読取が含まれない。現在のACRはLegacyRegistryPermissionsなのでregistry単位の権限になる。制御コードはpreview用repositoryと本番repositoryを区別する |
 
 本番に既存のAPI/Worker IdentityをCI主体として流用しない。ACR権限をrepository単位へ細分化したい場合、既存レジストリのABAC方式変更や専用レジストリが別の検討対象になる。今回はいずれも変更しない。
+
+ACR認証では本番RGを明示し、subscription全体のresource探索を必要としない。配備digestはDocker push成功後の対象image IDとrepository digestから確定し、別publisherが変更できるremote tagの後読みへ依存しない。上記は必要権限の設定案であり、新主体による実操作での検証は未実施。
 
 Repository Variablesは `AZURE_SUBSCRIPTION_ID`、`AZURE_TENANT_ID`、`DSE_PREVIEW_PULL_IDENTITY_ID`。各EnvironmentのVariable `AZURE_CLIENT_ID` は対応するCD主体。値はIDのみで、Secretは不要。権限・信頼・基盤・branch policyの確認後に最後にRepository Variable `DSE_CD_ENABLED=true` を設定する。無効化はfalseへ戻すことで新規処理を停止し、既存の取り残しは所有範囲を確認して回収する。
 

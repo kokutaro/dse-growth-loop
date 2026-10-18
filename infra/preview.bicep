@@ -12,6 +12,9 @@ param apiImage string
 param environmentId string
 param pullIdentityId string
 param expiresAt string
+@minLength(1)
+@maxLength(28)
+param revisionSuffix string
 
 var name = 'dse-pr-${repositoryId}-${prNumber}'
 
@@ -38,7 +41,7 @@ resource preview 'Microsoft.App/containerApps@2025-07-01' = {
       identitySettings: [{ identity: pullIdentityId, lifecycle: 'None' }]
     }
     template: {
-      revisionSuffix: 's${substring(headSha, 0, 12)}'
+      revisionSuffix: revisionSuffix
       containers: [{
         name: 'api'
         image: apiImage
