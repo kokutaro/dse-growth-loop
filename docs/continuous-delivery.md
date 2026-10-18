@@ -25,7 +25,7 @@
 
 更新と削除の排他キーは両ワークフロー共通の `dse-preview-1379060968-<PR番号>`、`cancel-in-progress=false`、`queue=max`。本番の共通キーも同じqueue方式を使う。後着の古いbuildやcleanupが最新headの待機ジョブを置き換えない。GitHubの待機上限はgroupごとに100件で、満杯による取消は確認し、最新headの配備を再実行する。到着順だけを信用せず、変異直前と作成完了後にもPRを読み直す。途中closeは同じ所有範囲を回収し、reopenは削除を拒否する。手動キャンセルやARM要求のタイムアウトは処理が残る可能性があり、更新要求を盲目的に再送しない。毎時のreconcileがclosedの取り残しを回収する。GitHubの404/通信失敗をclosedと解釈しない。openの期限切れは報告だけで、期限を理由に利用中の環境を消さない。[GitHub concurrency仕様](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)。
 
-closed runの `pull_requests` が空の場合は、GitHubのcommit→PR正本を照合して候補を解決する。別repository・fork・別baseや曖昧な複数候補は採用しない。同じheadを再ビルドしてdigestが変わる場合にも、作成要求ごとに一意なrevision suffixを渡す。正常性はSHAと期待digestの両方で照合し、更新前の正常なリビジョンを成功証跡として使わない。
+closed runの `pull_requests` が空の場合は、GitHubのcommit→PR正本を照合して候補を解決する。このAPIは未マージでclosedのPRを返さないことがあるため、候補0件の場合だけ `state=all` のhead branch照会へ進む。この経路はrepository・base・head branch・head SHAが一致する候補に限定し、個別PRの再読取でもheadを照合する。同じPR番号の重複は1件として数え、別repository・fork・別baseや異なるPRの複数候補は採用しない。候補0件は `PULL_REQUEST_NOT_RESOLVED`、異なるPRが複数なら `AMBIGUOUS_PULL_REQUEST` として停止する。100件上限へ到達した照会も、不完全な一覧から対象を選ばず停止する。同じheadを再ビルドしてdigestが変わる場合にも、作成要求ごとに一意なrevision suffixを渡す。正常性はSHAと期待digestの両方で照合し、更新前の正常なリビジョンを成功証跡として使わない。
 
 ## 本番の保全と復帰
 

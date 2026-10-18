@@ -61,6 +61,15 @@ class GitHub:
         require(len(rows)<100,'PULL_REQUEST_LOOKUP_INCOMPLETE')
         return rows
 
+    def branch_pulls(self, branch):
+        require(isinstance(branch,str) and bool(branch),'INVALID_HEAD_BRANCH')
+        # Commit association excludes unmerged closed PRs. Query all states,
+        # then let the caller require the exact repository, branch and SHA.
+        query=urllib.parse.urlencode({'state':'all','base':'main','head':REPO.split('/')[0]+':'+branch,'per_page':100})
+        rows=self.get('/pulls?'+query)
+        require(len(rows)<100,'PULL_REQUEST_LOOKUP_INCOMPLETE')
+        return rows
+
     def environment_guard(self, name):
         require(name in ('pr-preview','production'),'INVALID_GITHUB_ENVIRONMENT')
         env=self.get('/environments/'+name)
@@ -84,13 +93,25 @@ def run_plan(gh, run_id, kind):
         return {'operation':'production','sha':sha,'run_id':run_id}
     require(kind=='preview' and run['event']=='pull_request','WRONG_BUILD_EVENT')
     related=run['pull_requests']
+    branch_fallback=False
     if not related:
         related=[p for p in gh.associated_pulls(commit(run['head_sha']))
             if p['base']['repo']['id']==REPO_ID and p['base']['ref']=='main' and p['head'].get('repo',{}).get('id')==REPO_ID and
             (p['head']['sha']==run['head_sha'] or p['head']['ref']==run['head_branch'] or
                 (p.get('merged_at') and p.get('merge_commit_sha')==run['head_sha']))]
-    require(len(related)==1,'AMBIGUOUS_PULL_REQUEST')
-    number=related[0]['number'];p=trusted_pull(gh,number)
+    if not related:
+        branch_fallback=True
+        related=[p for p in gh.branch_pulls(run['head_branch'])
+            if p['base']['repo']['id']==REPO_ID and p['base']['ref']=='main' and p['head'].get('repo',{}).get('id')==REPO_ID
+            and p['head']['sha']==run['head_sha'] and p['head']['ref']==run['head_branch']]
+    numbers=set()
+    for candidate in related:
+        preview_name(candidate['number']);numbers.add(candidate['number'])
+    require(bool(numbers),'PULL_REQUEST_NOT_RESOLVED')
+    require(len(numbers)==1,'AMBIGUOUS_PULL_REQUEST')
+    number=next(iter(numbers));p=trusted_pull(gh,number)
+    if branch_fallback:
+        require(p['head']['sha']==run['head_sha'] and p['head']['ref']==run['head_branch'],'STALE_PULL_REQUEST')
     if p['state']=='closed':return {'operation':'cleanup','pr':number,'sha':p['head']['sha'],'run_id':run_id}
     sha=commit(run['head_sha']);trusted_pull(gh,number,sha)
     return {'operation':'preview','pr':number,'sha':sha,'run_id':run_id}
