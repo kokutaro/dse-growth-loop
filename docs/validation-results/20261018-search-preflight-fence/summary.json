@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-18",
+  "environment": "Mac mini local",
+  "baseCommit": "1242fe18230674b8197fa3e761fb19a8b24f8cb9",
+  "dotnet": {
+    "passed": 777,
+    "failed": 0,
+    "filter": "Category!=LargeEvaluation"
+  },
+  "searchPlaywright": {
+    "passed": 15,
+    "failed": 0
+  },
+  "cliCases": 3,
+  "webBuild": "passed",
+  "workerBuild": "passed",
+  "azureMutations": 0,
+  "realAiCalls": 0,
+  "productionAcceptance": "not_evaluated",
+  "incidentInitialCause": "not_established",
+  "coverage": [
+    {
+      "name": "Dse.Infrastructure.AccessFence",
+      "filename": "Dse.Infrastructure/AccessFence.cs",
+      "line-rate": "1",
+      "branch-rate": "0.9285"
+    },
+    {
+      "name": "Dse.Infrastructure.AccessFence/Lease",
+      "filename": "Dse.Infrastructure/AccessFence.cs",
+      "line-rate": "1",
+      "branch-rate": "0.75"
+    },
+    {
+      "name": "Dse.Infrastructure.AccessFence/<ReleaseAsync>d__6",
+      "filename": "Dse.Infrastructure/AccessFence.cs",
+      "line-rate": "1",
+      "branch-rate": "1"
+    },
+    {
+      "name": "Dse.Infrastructure.AccessFence/<RunAsync>d__4`1",
+      "filename": "Dse.Infrastructure/AccessFence.cs",
+      "line-rate": "0.9642000000000001",
+      "branch-rate": "0.9642000000000001"
+    },
+    {
+      "name": "Dse.Infrastructure.AiSearchPreflightIssue",
+      "filename": "Dse.Infrastructure/AiSearchPreflight.cs",
+      "line-rate": "1",
+      "branch-rate": "1"
+    },
+    {
+      "name": "Dse.Infrastructure.AiSearchPreflightReport",
+      "filename": "Dse.Infrastructure/AiSearchPreflight.cs",
+      "line-rate": "1",
+      "branch-rate": "1"
+    },
+    {
+      "name": "Dse.Infrastructure.AiSearchPreflight",
+      "filename": "Dse.Infrastructure/AiSearchPreflight.cs",
+      "line-rate": "1",
+      "branch-rate": "0.9666"
+    },
+    {
+      "name": "Dse.Infrastructure.SearchClassification",
+      "filename": "Dse.Infrastructure/SearchClassification.cs",
+      "line-rate": "1",
+      "branch-rate": "1"
+    }
+  ],
+  "sourceSha256": {
+    "src/Dse.Infrastructure/AccessFence.cs": "c01c21c5e14fd97b0f9f8779a72780640a595adb4910a0a301e92ed1162d3cdc",
+    "src/Dse.Infrastructure/AiCodecs.cs": "2949725393d62d91906b1bcf105dcef9b2bde877dca5ef6a80c5c52df0d0f609",
+    "src/Dse.Infrastructure/AiService.cs": "36a3ad6adcc0ea4a58aa549978aacde147f9eeddf17082455d5dad8f23d0af3f",
+    "src/Dse.Infrastructure/AiSearchPreflight.cs": "547d18164a1758a6edb10c228b5922808e85788afaf31890e94e7087b74372cd",
+    "src/Dse.Infrastructure/SearchClassification.cs": "62a9f03b483066744e03a5dd8b405c841d079fe99e12c0f337d5b7c46faa1dfa",
+    "src/Dse.Infrastructure/NaturalSearchService.cs": "716873d0d1c8cf372a94aea0057d2183ecc662d5290bc23d50135d3d54e6c4b8",
+    "src/Dse.Worker/Program.cs": "72c92d33058215d4d1ac57bc8a04dc0ff873e63f7ec23963c81b994195c06914",
+    "tests/Dse.Tests/AiSearchPreflightTests.cs": "f89c85f88955403c1bbc3a324ef298f54946d067ae60a8198d9293451763c604",
+    "tests/Dse.Tests/ConsistencyTests.cs": "c8c0f78c61632ad757cb0b2b3a385fb6f30a5f2414de3c421188cca6f04cc3ac",
+    "tests/Dse.Tests/SearchBoundaryIntegrationTests.cs": "ac8fff3af7e6c9a85f88142974091738eaf8e976e3727750121b86a3424eed30",
+    "web/src/validation-entry.tsx": "e6dccc2123f6b30f246352cf71806797caeef2c2ba18fdcd3b11fd3caa23696a",
+    "web/tests/search.spec.ts": "f74336d72958fb6ccfe32c40f30578dc3be2f84ff9c8477d18beb32777a1c843"
+  }
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "case": "ready-invalid-cosmos",
+    "exitCode": 0,
+    "report": {
+      "ready": true,
+      "requiredClassificationOutput": 2160,
+      "externalStateChecked": false,
+      "issues": []
+    }
+  },
+  {
+    "case": "all-missing",
+    "exitCode": 1,
+    "report": {
+      "ready": false,
+      "requiredClassificationOutput": 2160,
+      "externalStateChecked": false,
+      "issues": [
+        {
+          "code": "CLASSIFICATION_OUTPUT_TOO_SMALL",
+          "settings": [
+            "AiUsage:MaxOutputTokens"
+          ]
+        },
+        {
+          "code": "AI_RUNTIME_NOT_CONFIGURED",
+          "settings": [
+            "AiUsage:DailyTokenLimit",
+            "AiUsage:BudgetPeriod",
+            "AiUsage:DailyCallLimit",
+            "AiUsage:DailyEstimatedJpyLimit",
+            "AiUsage:WeeklyCallLimit",
+            "AiUsage:WeeklyTotalJpyLimit",
+            "AiUsage:UsdToJpy",
+            "AiUsage:PriceVersion",
+            "AiUsage:FxVersion"
+          ]
+        },
+        {
+          "code": "JEV_MODEL_INVALID",
+          "settings": [
+            "Jev"
+          ]
+        },
+        {
+          "code": "FOUNDRY_MODEL_INVALID",
+          "settings": [
+            "Foundry"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case": "malformed",
+    "exitCode": 1,
+    "report": {
+      "ready": false,
+      "requiredClassificationOutput": 2160,
+      "externalStateChecked": false,
+      "issues": [
+        {
+          "code": "AI_LIMITS_INVALID",
+          "settings": [
+            "AiUsage"
+          ]
+        }
+      ]
+    }
+  }
+]

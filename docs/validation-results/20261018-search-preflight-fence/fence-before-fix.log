@@ -1,0 +1,25 @@
+  Dse.Domain -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Domain/bin/Debug/net10.0/Dse.Domain.dll
+  Dse.Evaluation -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Evaluation/bin/Debug/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Infrastructure/bin/Debug/net10.0/Dse.Infrastructure.dll
+  Dse.Api -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Api/bin/Debug/net10.0/Dse.Api.dll
+  Dse.Tests -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll
+/Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll (.NETCoreApp,Version=v10.0) のテスト実行
+合計 1 個のテスト ファイルが指定されたパターンと一致しました。
+  失敗 Dse.Tests.ConsistencyTests.Rejected_acquisition_does_not_poison_the_outer_fence(nestedBoundary: False) [9 ms]
+  エラー メッセージ:
+   Dse.Domain.DomainException : ACCESS_BUSY
+  スタック トレース:
+     at Dse.Infrastructure.AccessFence.RunAsync[T](String tenant, Func`2 action, CancellationToken ct, Boolean nested) in /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Infrastructure/AccessFence.cs:line 36
+   at Dse.Tests.ConsistencyTests.Rejected_acquisition_does_not_poison_the_outer_fence(Boolean nestedBoundary) in /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/ConsistencyTests.cs:line 60
+--- End of stack trace from previous location ---
+  失敗 Dse.Tests.ConsistencyTests.Rejected_acquisition_does_not_poison_the_outer_fence(nestedBoundary: True) [< 1 ms]
+  エラー メッセージ:
+   Dse.Domain.DomainException : ACCESS_BUSY
+  スタック トレース:
+     at Dse.Infrastructure.AccessFence.RunAsync[T](String tenant, Func`2 action, CancellationToken ct, Boolean nested) in /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Infrastructure/AccessFence.cs:line 36
+   at Dse.Tests.ConsistencyTests.Rejected_acquisition_does_not_poison_the_outer_fence(Boolean nestedBoundary) in /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/ConsistencyTests.cs:line 60
+--- End of stack trace from previous location ---
+
+失敗!   -失敗:     2、合格:     0、スキップ:     0、合計:     2、期間: 20 ms - Dse.Tests.dll (net10.0)
+[xUnit.net 00:00:00.30]     Dse.Tests.ConsistencyTests.Rejected_acquisition_does_not_poison_the_outer_fence(nestedBoundary: False) [FAIL]
+[xUnit.net 00:00:00.30]     Dse.Tests.ConsistencyTests.Rejected_acquisition_does_not_poison_the_outer_fence(nestedBoundary: True) [FAIL]
