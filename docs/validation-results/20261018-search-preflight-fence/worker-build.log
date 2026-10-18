@@ -1,0 +1,9 @@
+  Dse.Domain -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Domain/bin/Debug/net10.0/Dse.Domain.dll
+  Dse.Infrastructure -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Infrastructure/bin/Debug/net10.0/Dse.Infrastructure.dll
+  Dse.Worker -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Worker/bin/Debug/net10.0/Dse.Worker.dll
+
+ビルドに成功しました。
+    0 個の警告
+    0 エラー
+
+経過時間 00:00:00.43

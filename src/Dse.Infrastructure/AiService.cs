@@ -203,8 +203,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                 if (operation == "decide")
                 {
                     // Jev has no max-output parameter. Bound its fixed-shape response before sending.
-                    var outputBound = 256 + choices.Sum(q => 256 + Encoding.UTF8.GetByteCount(q.Id) +
-                        q.Options.Keys.Sum(k => 64 + 2 * Encoding.UTF8.GetByteCount(k))) + nouls.Count(x => x.HasEvidence) * 192;
+                    var outputBound = AiCodecs.JevOutputBound(choices, nouls);
                     if (outputBound > limits.OutputTokens) throw new AiException(AiFailure.OutputLimit);
                 }
                 var key = Hash(inputHash + RecordJson.Canonical(AiCodecs.Node(model)) + actor.TenantId + ":" + actor.PrincipalId + ":" + context.SessionId);

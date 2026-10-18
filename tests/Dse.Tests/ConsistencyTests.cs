@@ -44,6 +44,50 @@ public class ConsistencyTests
         Assert.Equal(1, await fence.RunAsync("demo", _ => Task.FromResult(1), default));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Rejected_acquisition_does_not_poison_the_outer_fence(bool nestedBoundary)
+    {
+        var repo = new PrimaryRepository(new MemoryRecordStore()); var fence = new AccessFence(repo);
+        var callbackEntered = false;
+        Task<bool> Rejected(CancellationToken ct) => new AccessFence(repo).RunAsync("demo", _ =>
+        { callbackEntered = true; return Task.FromResult(true); }, ct);
+        var error = await Assert.ThrowsAsync<DomainException>(() => fence.RunAsync("demo", ct =>
+            nestedBoundary ? fence.RunAsync("demo", Rejected, ct, nested: true) : Rejected(ct), default));
+        Assert.Equal("ACCESS_BUSY", error.Code); Assert.Equal(503, error.Status);
+        Assert.False(callbackEntered);
+        Assert.True(await new AccessFence(repo).RunAsync("demo", _ => Task.FromResult(true), default));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Dependency_failure_or_cancellation_still_requires_offline_recovery(bool cancelled)
+    {
+        var repo = new PrimaryRepository(new MemoryRecordStore()); var fence = new AccessFence(repo);
+        await Assert.ThrowsAnyAsync<Exception>(() => fence.RunAsync<bool>("demo", _ =>
+            throw (cancelled ? (Exception)new OperationCanceledException() : new DomainException(503, "DEPENDENCY_UNAVAILABLE")), default));
+        var error = await Assert.ThrowsAsync<DomainException>(() => new AccessFence(repo).RunAsync("demo", _ => Task.FromResult(true), default));
+        Assert.Equal("ACCESS_BUSY", error.Code);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Caught_nested_dependency_failure_or_cancellation_still_poison_the_outer_lease(bool cancelled)
+    {
+        var repo = new PrimaryRepository(new MemoryRecordStore()); var fence = new AccessFence(repo);
+        await fence.RunAsync("demo", async ct =>
+        {
+            await Assert.ThrowsAnyAsync<Exception>(() => fence.RunAsync<bool>("demo", _ =>
+                throw (cancelled ? (Exception)new OperationCanceledException() : new IOException("unknown commit")), ct, nested: true));
+            return true;
+        }, default);
+        Assert.Equal("ACCESS_BUSY", (await Assert.ThrowsAsync<DomainException>(() =>
+            fence.RunAsync("demo", _ => Task.FromResult(true), default))).Code);
+    }
+
     [Fact]
     public async Task Readiness_queries_once_per_cache_window_even_for_concurrent_requests()
     {

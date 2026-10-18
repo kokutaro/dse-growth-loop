@@ -79,6 +79,42 @@ public class ApiTests
         Assert.Equal("not_configured", result.RerankingStatus);
     }
 
+    [Theory]
+    [InlineData(true, "/api/v2/search")]
+    [InlineData(true, "/api/v2/search/conditions")]
+    [InlineData(false, "/api/v2/search")]
+    [InlineData(false, "/api/v2/search/conditions")]
+    public async Task Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(bool demo, string path)
+    {
+        // Keep the real AI registrations. Missing Demo persistence/Azure MI used to throw
+        // during DI before the configuration response could be returned. No AI transport fake.
+        using var factory = Factory(demo).WithWebHostBuilder(b =>
+        {
+            b.UseSetting("Ai:Mode", "Live"); b.UseSetting("AiUsage:Stopped", "true");
+            // This validation-only legacy route requires a dummy operator as well as member.
+            if (!demo) b.UseSetting("Auth:Bindings:0:Roles:1", "operator");
+        });
+        using var client = factory.CreateClient();
+        if (!demo) client.DefaultRequestHeaders.Authorization = new("Bearer", Token());
+        using var response = await client.PostAsJsonAsync(path, new { query = "引き継ぎを改善したい" });
+        if (path.EndsWith("/conditions"))
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var conversion = (await response.Content.ReadFromJsonAsync<QueryConversion>())!;
+            Assert.Equal("manual_required:configuration", conversion.Status); Assert.Null(conversion.Conditions);
+        }
+        else
+        {
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+            Assert.Contains("AI_SEARCH_CONFIGURATION_INVALID", await response.Content.ReadAsStringAsync());
+        }
+        var repo = factory.Services.GetRequiredService<IPrimaryRepository>();
+        var partition = RecordPartition.Catalog(demo ? "demo" : Tenant);
+        Assert.Empty((await repo.QueryAsync(partition, "aiRun", null, null, 100, null, default)).Items);
+        var fence = await repo.ReadAsync(partition, "system-access-fence", default);
+        Assert.True(string.IsNullOrEmpty(fence?.Value.Text("holder")));
+    }
+
     [Fact]
     public async Task Invalid_input_unknown_route_and_rate_limit_are_distinct()
     {

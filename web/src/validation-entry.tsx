@@ -94,7 +94,9 @@ function App() {
         setConversionStatus("条件を生成しました。複数分野・技術要素・経験条件を編集できます。");
       } else {
         setCategoryIds(""); setSignalIds(""); setTerms("");
-        setConversionStatus(value.status === "manual_required:unknown"
+        setConversionStatus(value.status === "manual_required:configuration"
+          ? "検索のAI設定が整っていません。運用者による設定確認後に再実行してください。"
+          : value.status === "manual_required:unknown"
           ? "自動検索の対象分野を判断できませんでした。検索は実行していません。必要な条件を手動で入力できます。"
           : "分類できませんでした。手動で条件を入力してください。");
       }
@@ -133,6 +135,8 @@ function App() {
           setStage("自動検索対象外");
           return;
         }
+        if (failure.code === "AI_SEARCH_CONFIGURATION_INVALID")
+          throw new Error("検索のAI設定が整っていません。運用者による設定確認後に再実行してください。");
         throw new Error("自動分類を利用できません。手動で条件を編集して検索してください。");
       }
       if (!response.ok)

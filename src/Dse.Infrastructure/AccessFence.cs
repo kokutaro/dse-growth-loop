@@ -28,7 +28,7 @@ public sealed class AccessFence(IPrimaryRepository repository)
         {
             var faulted = false;
             try { return await action(ct); }
-            catch (Exception e) { faulted = e is not ArgumentException and not StoreConflictException && (e is not DomainException de || de.Status >= 500); throw; }
+            catch (Exception e) { faulted = !KnownRejection(e); throw; }
             finally { parent.Exit(faulted); }
         }
         var partition = RecordPartition.Catalog(tenant);
@@ -45,9 +45,7 @@ public sealed class AccessFence(IPrimaryRepository repository)
         var previous = Current.Value;
         var lease = new Lease(repository, tenant);
         try { Current.Value = lease; var result = await action(ct); release = true; return result; }
-        catch (ArgumentException) { release = true; throw; }
-        catch (StoreConflictException) { release = true; throw; }
-        catch (DomainException e) when (e.Status < 500 || e.Code == "SEARCH_LIMIT_EXCEEDED") { release = true; throw; }
+        catch (Exception e) when (KnownRejection(e)) { release = true; throw; }
         finally
         {
             Current.Value = previous;
@@ -55,6 +53,10 @@ public sealed class AccessFence(IPrimaryRepository repository)
             if (release && !lease.Faulted) await ReleaseAsync(partition, held);
         }
     }
+    // ACCESS_BUSY is raised before entering the rejected acquisition's callback. It must not
+    // poison an already-owned outer lease. Unknown dependency failures/cancellation stay closed.
+    private static bool KnownRejection(Exception error) => error is ArgumentException or StoreConflictException ||
+        error is DomainException d && (d.Status < 500 || d.Code == "SEARCH_LIMIT_EXCEEDED" || d.Status == 503 && d.Code == "ACCESS_BUSY");
     private async Task ReleaseAsync(RecordPartition partition, StoredRecord held)
     {
         var released = held.Value.Copy();

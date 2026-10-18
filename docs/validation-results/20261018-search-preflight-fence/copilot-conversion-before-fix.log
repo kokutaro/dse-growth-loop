@@ -1,0 +1,47 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e
+> node scripts/test-e2e.mjs tests/search.spec.ts --grep 条件生成の設定不備 --workers=1
+
+
+[isolated 1/1] 条件生成の設定不備は運用者の確認を案内し、前回条件を消す
+[WebServer] (node:87993) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:87995) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/search.spec.ts:72:1 › 条件生成の設定不備は運用者の確認を案内し、前回条件を消す
+  1) tests/search.spec.ts:72:1 › 条件生成の設定不備は運用者の確認を案内し、前回条件を消す ──────────────────────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('検索のAI設定が整っていません。運用者による設定確認後に再実行してください。', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('検索のAI設定が整っていません。運用者による設定確認後に再実行してください。', { exact: true }) with timeout 5000ms
+      - waiting for getByText('検索のAI設定が整っていません。運用者による設定確認後に再実行してください。', { exact: true })
+
+
+      78 |   await page.getByLabel("複数分野・技術要素の分類ID").fill("software");
+      79 |   await page.getByRole("button", { name: "自然文から条件を生成" }).click();
+    > 80 |   await expect(page.getByText("検索のAI設定が整っていません。運用者による設定確認後に再実行してください。", { exact: true })).toBeVisible();
+         |                                                                                           ^
+      81 |   await expect(page.getByText("分類できませんでした。手動で条件を入力してください。", { exact: true })).toHaveCount(0);
+      82 |   await expect(page.getByLabel("複数分野・技術要素の分類ID")).toHaveValue("");
+      83 | });
+        at /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/web/tests/search.spec.ts:80:91
+
+    Error Context: test-results/isolated/1/search-条件生成の設定不備は運用者の確認を案内し、前回条件を消す/error-context.md
+
+
+  1 failed
+    tests/search.spec.ts:72:1 › 条件生成の設定不備は運用者の確認を案内し、前回条件を消す ───────────────────────────────────────
+
+Isolated E2E: 0 passed, 1 failed (1 tests).

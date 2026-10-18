@@ -1,0 +1,45 @@
+  Dse.Domain -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Domain/bin/Debug/net10.0/Dse.Domain.dll
+  Dse.Evaluation -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Evaluation/bin/Debug/net10.0/Dse.Evaluation.dll
+  Dse.Infrastructure -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Infrastructure/bin/Debug/net10.0/Dse.Infrastructure.dll
+  Dse.Api -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/src/Dse.Api/bin/Debug/net10.0/Dse.Api.dll
+  Dse.Tests -> /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll
+/Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/bin/Debug/net10.0/Dse.Tests.dll (.NETCoreApp,Version=v10.0) のテスト実行
+合計 1 個のテスト ファイルが指定されたパターンと一致しました。
+[xUnit.net 00:00:00.79]     Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(demo: True, path: "/api/v2/search") [FAIL]
+[xUnit.net 00:00:01.05]     Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(demo: False, path: "/api/v2/search") [FAIL]
+[xUnit.net 00:00:01.17]     Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(demo: False, path: "/api/v2/search/conditions") [FAIL]
+[xUnit.net 00:00:01.29]     Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(demo: True, path: "/api/v2/search/conditions") [FAIL]
+  失敗 Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(demo: True, path: "/api/v2/search") [490 ms]
+  エラー メッセージ:
+   Assert.Equal() Failure: Values differ
+Expected: UnprocessableEntity
+Actual:   ServiceUnavailable
+  スタック トレース:
+     at Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(Boolean demo, String path) in /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/ApiTests.cs:line 108
+--- End of stack trace from previous location ---
+  失敗 Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(demo: False, path: "/api/v2/search") [257 ms]
+  エラー メッセージ:
+   Assert.Equal() Failure: Values differ
+Expected: UnprocessableEntity
+Actual:   ServiceUnavailable
+  スタック トレース:
+     at Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(Boolean demo, String path) in /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/ApiTests.cs:line 108
+--- End of stack trace from previous location ---
+  失敗 Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(demo: False, path: "/api/v2/search/conditions") [125 ms]
+  エラー メッセージ:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   ServiceUnavailable
+  スタック トレース:
+     at Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(Boolean demo, String path) in /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/ApiTests.cs:line 102
+--- End of stack trace from previous location ---
+  失敗 Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(demo: True, path: "/api/v2/search/conditions") [112 ms]
+  エラー メッセージ:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   ServiceUnavailable
+  スタック トレース:
+     at Dse.Tests.ApiTests.Invalid_live_configuration_is_reported_before_real_AI_dependency_resolution(Boolean demo, String path) in /Users/nyanpass/Documents/Codex/2026-10-12/task/issue16-ai-preflight-fence/tests/Dse.Tests/ApiTests.cs:line 102
+--- End of stack trace from previous location ---
+
+失敗!   -失敗:     4、合格:     0、スキップ:     0、合計:     4、期間: 992 ms - Dse.Tests.dll (net10.0)

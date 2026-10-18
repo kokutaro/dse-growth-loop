@@ -2,6 +2,14 @@ using Dse.Infrastructure;
 using Dse.Domain;
 
 var command = args.Length == 0 ? "--consume" : args[0];
+if (args.Length == 1 && command == "--ai-search-preflight")
+{
+    var local = Host.CreateApplicationBuilder([]);
+    var report = AiSearchPreflight.Check(local.Configuration);
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(report, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web)));
+    Environment.ExitCode = report.Ready ? 0 : 1;
+    return;
+}
 if (args.Length == 1 && command is "--dummy-authority-plan" or "--dummy-authority-apply")
 {
     var bootstrap = Host.CreateApplicationBuilder([]);
