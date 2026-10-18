@@ -140,7 +140,12 @@ public static class InfrastructureRegistration
         services.AddSingleton<DocumentAcceptance>();
         services.AddSingleton<ProjectionActivation>();
         services.AddSingleton<SourceUseService>();
-        services.AddSingleton<NaturalSearchService>();
+        // Resolve AI only after the search's pure configuration check. Invalid Live persistence
+        // or MI settings must not throw from transport construction before the dedicated response.
+        services.AddSingleton(sp => new NaturalSearchService(sp.GetRequiredService<IProjectionRepository>(),
+            sp.GetRequiredService<IPrimaryRepository>(), sp.GetRequiredService<SourceGuard>(), sp.GetRequiredService<AccessFence>(),
+            () => sp.GetRequiredService<IDecisionProvider>(), () => sp.GetRequiredService<IReranker>(),
+            configuration, sp.GetRequiredService<TimeProvider>()));
         services.AddAi(configuration);
         if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
         {

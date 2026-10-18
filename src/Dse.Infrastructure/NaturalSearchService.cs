@@ -6,8 +6,12 @@ using Microsoft.Extensions.Configuration;
 namespace Dse.Infrastructure;
 
 public sealed class NaturalSearchService(IProjectionRepository projections, IPrimaryRepository repository,
-    SourceGuard guard, AccessFence fence, IDecisionProvider decisions, IReranker reranker, IConfiguration config, TimeProvider clock)
+    SourceGuard guard, AccessFence fence, Func<IDecisionProvider> decisions, Func<IReranker> reranker, IConfiguration config, TimeProvider clock)
 {
+    public NaturalSearchService(IProjectionRepository projections, IPrimaryRepository repository,
+        SourceGuard guard, AccessFence fence, IDecisionProvider decisions, IReranker reranker, IConfiguration config, TimeProvider clock)
+        : this(projections, repository, guard, fence, () => decisions, () => reranker, config, clock) { }
+
     public RetrievalRules Rules()
     {
         var rules = config.GetSection("Retrieval").Get<RetrievalRules>() ?? new();
@@ -22,7 +26,7 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
         RequireMember(actor); request.Validate(); var rules = Rules();
         if (config["Ai:Mode"] == "Live" && !AiSearchPreflight.Check(config).Ready)
             return new(null, [], "manual_required:configuration", null, rules);
-        var result = await decisions.DecideAsync(shared is null ? new(actor, "query-" + Guid.NewGuid().ToString("N"), "search-query-v2", Retriever.TaxonomyVersion, 1, [], []) : shared with { PromptVersion = "search-query-v2" }, request.Query,
+        var result = await decisions().DecideAsync(shared is null ? new(actor, "query-" + Guid.NewGuid().ToString("N"), "search-query-v2", Retriever.TaxonomyVersion, 1, [], []) : shared with { PromptVersion = "search-query-v2" }, request.Query,
             SearchClassification.Choices(), SearchClassification.Nouls(), ct);
         if (result.Status != AiStatus.Succeeded || result.Value is null)
             return new(null, [], "manual_required:" + (result.Failure?.ToString().ToLowerInvariant() ?? "failed"), result.RunId, rules);
@@ -72,7 +76,7 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
         {
             if (inputs.Length > 0)
             {
-                ranked = await reranker.RerankAsync((shared is null ? new AiContext(actor, runId, "search-rerank-v2", Retriever.TaxonomyVersion, inputVersion, [], inputs) : shared with { PromptVersion = "search-rerank-v2", Candidates = inputs })
+                ranked = await reranker().RerankAsync((shared is null ? new AiContext(actor, runId, "search-rerank-v2", Retriever.TaxonomyVersion, inputVersion, [], inputs) : shared with { PromptVersion = "search-rerank-v2", Candidates = inputs })
                     with { EvidenceBytesPerCandidate = rules.EvidenceBytesPerCandidate }, request.Query, ct);
                 status = ranked.Status == AiStatus.Succeeded ? ranked.Value?.Items.Length == 0 ? "all_unsuitable" : "succeeded" :
                     ranked.Failure switch { AiFailure.Refused => "refused", AiFailure.Truncated => "truncated", AiFailure.Budget => "budget_stopped", AiFailure.Stopped => "stopped", _ => "not_performed:" + ranked.Failure?.ToString().ToLowerInvariant() };

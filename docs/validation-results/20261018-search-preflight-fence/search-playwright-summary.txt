@@ -1,1 +1,1 @@
-Isolated E2E: 15 passed, 0 failed (15 tests).
+Isolated E2E: 16 passed, 0 failed (16 tests).
