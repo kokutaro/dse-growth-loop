@@ -214,11 +214,16 @@ def production_operation(settings, sha, images, az, gh):
             require(current['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
             require(preserved(current)==preserved(original[name]),'PRODUCTION_SETTINGS_DRIFT')
             require(current['properties']['template']['containers'][0]['image']==original[name]['properties']['template']['containers'][0]['image'],'PRODUCTION_IMAGE_DRIFT')
+            require(current['properties']['template'].get('revisionSuffix')==original[name]['properties']['template'].get('revisionSuffix'),'PRODUCTION_REVISION_DRIFT')
             template=copy.deepcopy(current['properties']['template'])
             template['containers'][0]['image']=images[name];template['revisionSuffix']=revision_suffix(sha,'cd')
             if current['properties']['template']['containers'][0]['image']!=images[name]:
-                changed.append(name)  # An accepted but timed-out PATCH is still an unknown write.
-                az.patch_production(name,template,current['properties']['template']['containers'][0]['image'])
+                def submitted(component=name, suffix=template['revisionSuffix']):
+                    # The adapter calls this only after its final preconditions pass.
+                    # Keep the receipt even if the request's response is lost.
+                    changed.append((component,suffix))
+                az.patch_production(name,template,current['properties']['template']['containers'][0]['image'],
+                    current['properties']['template'].get('revisionSuffix'),on_submit=submitted)
             final=az.wait_production(name,images[name])
             require(preserved(final)==preserved(original[name]),'PRODUCTION_SETTINGS_DRIFT')
             require(final['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
@@ -233,16 +238,17 @@ def production_operation(settings, sha, images, az, gh):
     except Exception as original_error:
         # Roll back only the image. Never replay an old env/auth/scale snapshot over operator changes.
         failures=[]
-        for name in reversed(changed):
+        for name,written_suffix in reversed(changed):
             try:
                 current=az.production(name)
                 require(preserved(current)==preserved(original[name]),'ROLLBACK_SETTINGS_DRIFT')
                 require(current['properties']['provisioningState'] in ('Succeeded','Failed','Canceled'),'ROLLBACK_OPERATION_IN_FLIGHT')
                 if current['properties']['template']['containers'][0]['image']==images[name]:
+                    require(current['properties']['template'].get('revisionSuffix')==written_suffix,'ROLLBACK_REVISION_CHANGED')
                     template=copy.deepcopy(current['properties']['template'])
                     template['containers'][0]['image']=original[name]['properties']['template']['containers'][0]['image']
                     template['revisionSuffix']=revision_suffix(sha,'rb')
-                    az.patch_production(name,template,images[name])
+                    az.patch_production(name,template,images[name],written_suffix)
                     az.wait_production(name,template['containers'][0]['image'])
             except Exception:failures.append(name)
         if failures:raise DeliveryError('ROLLBACK_RECONCILIATION_REQUIRED_'+('_'.join(failures)).upper()) from original_error

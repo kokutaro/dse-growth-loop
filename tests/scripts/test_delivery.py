@@ -159,8 +159,10 @@ class ProductionAzure:
         self.fail_once=None;self.drift=None;self.on_patch=None
     def production(self,name):return copy.deepcopy(self.apps[name])
     def worker_revisions(self):return self.revisions
-    def patch_production(self,name,template,expected_image):
+    def patch_production(self,name,template,expected_image,expected_revision,on_submit=None):
         d.require(self.apps[name]['properties']['template']['containers'][0]['image']==expected_image,'PRODUCTION_IMAGE_DRIFT')
+        d.require(self.apps[name]['properties']['template'].get('revisionSuffix')==expected_revision,'PRODUCTION_REVISION_DRIFT')
+        if on_submit:on_submit()
         self.actions.append((name,copy.deepcopy(template)));self.apps[name]['properties']['template']=copy.deepcopy(template)
         if self.on_patch:self.on_patch(name)
     def wait_production(self,name,image):
@@ -222,6 +224,50 @@ class ProductionDeliveryTests(unittest.TestCase):
         self.assertEqual(az.apps['api']['properties']['template']['containers'][0]['image'],other)
         self.assertEqual([a[0] for a in az.actions],['worker','worker'])
 
+    def test_rejected_write_cannot_roll_back_an_operator_installing_the_requested_digest(self):
+        for component in ('api','worker'):
+            with self.subTest(component=component):
+                az=ProductionAzure();original=az.patch_production;images=self.images();intervened=False
+                def raced(name,template,expected_image,expected_revision,on_submit=None):
+                    nonlocal intervened
+                    if name==component and not intervened:
+                        intervened=True
+                        az.apps[name]['properties']['template']['containers'][0]['image']=images[name]
+                        az.apps[name]['properties']['template']['revisionSuffix']='operator-release'
+                        raise d.DeliveryError('PRODUCTION_IMAGE_DRIFT')
+                    return original(name,template,expected_image,expected_revision,on_submit=on_submit)
+                az.patch_production=raced
+                with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,images,az,GitHub())
+                self.assertEqual(az.apps[component]['properties']['template']['containers'][0]['image'],images[component])
+                self.assertEqual(az.apps[component]['properties']['template']['revisionSuffix'],'operator-release')
+
+    def test_submitted_write_with_lost_response_still_recovers_its_own_revision(self):
+        az=ProductionAzure();original=az.patch_production;lost=False
+        before=az.apps['worker']['properties']['template']['containers'][0]['image']
+        def accepted(name,template,expected_image,expected_revision,on_submit=None):
+            nonlocal lost
+            original(name,template,expected_image,expected_revision,on_submit=on_submit)
+            if name=='worker' and not lost:
+                lost=True
+                raise d.DeliveryError('PATCH_RESPONSE_LOST')
+        az.patch_production=accepted
+        with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
+        self.assertEqual(az.apps['worker']['properties']['template']['containers'][0]['image'],before)
+        self.assertEqual([a[0] for a in az.actions],['worker','worker'])
+
+    def test_rollback_refuses_an_operator_revision_even_when_its_image_matches(self):
+        az=ProductionAzure();wait=az.wait_production;images=self.images()
+        def failed(name,image):
+            if name=='api' and image==images['api']:
+                az.apps['worker']['properties']['template']['revisionSuffix']='operator-release'
+                raise d.DeliveryError('PROVIDER_FAILED')
+            return wait(name,image)
+        az.wait_production=failed
+        with self.assertRaisesRegex(d.DeliveryError,'ROLLBACK_RECONCILIATION_REQUIRED_WORKER'):
+            d.production_operation(SETTINGS,SHA,images,az,GitHub())
+        self.assertEqual(az.apps['worker']['properties']['template']['containers'][0]['image'],images['worker'])
+        self.assertEqual(az.apps['worker']['properties']['template']['revisionSuffix'],'operator-release')
+
     def test_in_flight_resource_is_not_overwritten(self):
         az=ProductionAzure();az.apps['api']['properties']['provisioningState']='InProgress'
         with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
@@ -250,10 +296,10 @@ class ProductionDeliveryTests(unittest.TestCase):
 
     def test_dispatch_retry_after_rollback_never_reuses_an_immutable_revision_name(self):
         az=ProductionAzure();az.fail_once='api';original=az.patch_production;used={'api':set(),'worker':set()}
-        def immutable(name,template,expected_image):
+        def immutable(name,template,expected_image,expected_revision,on_submit=None):
             suffix=template['revisionSuffix']
             if suffix in used[name]:raise d.DeliveryError('REVISION_ALREADY_EXISTS')
-            used[name].add(suffix);return original(name,template,expected_image)
+            used[name].add(suffix);return original(name,template,expected_image,expected_revision,on_submit=on_submit)
         az.patch_production=immutable
         with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
         self.assertEqual(d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())['status'],'ready')

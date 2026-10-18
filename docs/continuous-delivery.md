@@ -33,7 +33,7 @@ closed runの `pull_requests` が空の場合は、GitHubのcommit→PR正本を
 
 安全な現在の運用に合わせ、APIがRunning、WorkerがStopped・全リビジョン無効・実レプリカ0・`/bin/sleep infinity`、旧イメージもdigest固定であることを前提にする。条件が変わった場合は自動反映を止める。APIを勝手に起動したり、Workerをキュー処理へ戻したりはしない。新しいWorkerリビジョンも停止・無効化し、APIの新リビジョンとlive/readyを確認する。
 
-失敗時は設定が一致し、対象イメージのままであるコンポーネントだけ旧イメージへ戻す。現在のenv/auth/scaleを古いスナップショットで復元しない。片側の読取・復帰が失敗しても、もう片側の安全な復帰を試みる。設定ドリフトや進行中のARM操作は `ROLLBACK_RECONCILIATION_REQUIRED_*` として停止し、操作者の判断を求める。既存の失効フェンスの自動解除やデータの巻き戻しは行わない。
+失敗時はアダプターの最終照合を通過して送信段階へ進んだ要求だけを復帰対象として記録する。応答が失われてもこの記録を保持する。設定・対象imageに加えて要求固有のrevision suffixが現在値と一致する場合だけ旧imageへ戻す。操作者が同じdigestを選んだ場合も、送信前に拒否された要求や別revisionを自分の更新として扱わない。復帰のアダプター再読取でも期待revisionを照合する。現在のenv/auth/scaleを古いスナップショットで復元しない。片側の読取・復帰が失敗しても、もう片側の安全な復帰を試みる。設定ドリフトや進行中のARM操作は `ROLLBACK_RECONCILIATION_REQUIRED_*` として停止し、操作者の判断を求める。既存の失効フェンスの自動解除やデータの巻き戻しは行わない。
 
 再実行は最新のmain/PR headとCIを再確認する。同じイメージでも正常性を確認する。PRの再試行は最新headに対応する `preview-build` を再実行する。本番は `Production delivery` のworkflow_dispatchで最新のCI成功済みマージコミットを再適用できる。reconcileのforeign/unknownは所有・GitHub状態を確認するまで削除しない。ワークフローの完了表示を、実AI品質・全体E2EやIssue #16の受入完了へ置き換えない。
 
@@ -56,6 +56,8 @@ Repository subject templateの変更案は `{"use_default":false,"include_claim_
 | production | `repo:kokutaro@4447283/dse-growth-loop@1379060968:repository_id:1379060968:environment:production:workflow_ref:kokutaro/dse-growth-loop/.github/workflows/cd-production.yml@refs/heads/main` |
 
 issuerは `https://token.actions.githubusercontent.com`、audienceは `api://AzureADTokenExchange`。workflow refを固定することで、PR側がワークフローを改変してEnvironment名を名乗ってもAzureへ認証できない。subject検証が終わるまでCDを有効化しない。
+
+2026-10-18の読取調査では、main `558ec3a` のworkflow 1本に既存OIDC利用はなく、対象subscriptionのManaged Identity 2件と対象tenantのApp Registration 7件のFederated Credentialを参照できた範囲に、当該repositoryの既存信頼は見つからなかった。subject変更はrepository全体へ適用されるため、別subscription/tenantやAzure以外の信頼先まで不存在と保証するものではない。設定変更前に未申告の利用先がないことも確認する。
 
 | 対象/スコープ | 必要な権限 |
 |---|---|

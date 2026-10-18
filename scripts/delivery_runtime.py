@@ -206,15 +206,17 @@ class Azure:
             rows.append({'name':name,'active':revision['properties']['active'],'replicas':len(replicas['value'])})
         return rows
 
-    def patch_production(self, component, template, expected_image):
+    def patch_production(self, component, template, expected_image, expected_revision, on_submit=None):
         current=self.production(component)
         image_ref(expected_image,'dse-'+component)
         require(current['properties']['template']['containers'][0]['image']==expected_image,'PRODUCTION_IMAGE_DRIFT')
+        require(current['properties']['template'].get('revisionSuffix')==expected_revision,'PRODUCTION_REVISION_DRIFT')
         require(current['properties']['provisioningState'] in ('Succeeded','Failed','Canceled'),'PRODUCTION_OPERATION_IN_FLIGHT')
         require(current['properties']['runningStatus']==('Running' if component=='api' else 'Stopped'),'PRODUCTION_RUNNING_STATE_CHANGED')
         candidate=copy.deepcopy(current);candidate['properties']['template']=template
         require(preserved(candidate)==preserved(current),'PRODUCTION_SETTINGS_DRIFT')
         image_ref(template['containers'][0]['image'],'dse-'+component)
+        if on_submit:on_submit()
         try:self.rest('patch',self.settings.app_id('dse-'+component,False),{'properties':{'template':template}})
         except AzureError as error:
             if str(error)!='AZURE_TIMEOUT':raise
