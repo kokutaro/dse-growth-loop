@@ -23,6 +23,7 @@ class Hub(PolicyHub):
     def merged_main(self,sha):return True
     def environment_guard(self,name):pass
     def associated_pulls(self,sha):return []
+    def branch_pulls(self,branch):return []
 
 def context(mode):
     return {'DSE_CD_ENABLED':'true','GITHUB_REPOSITORY_ID':str(d.REPO_ID),'GITHUB_REF':'refs/heads/main',
@@ -72,6 +73,84 @@ class RunAndPermissionTests(unittest.TestCase):
     def test_commit_association_refuses_truncated_results(self):
         gh=r.GitHub('dummy');gh.get=MagicMock(return_value=[pr()]*100)
         with self.assertRaisesRegex(d.DeliveryError,'LOOKUP_INCOMPLETE'):gh.associated_pulls(SHA)
+
+    def test_unmerged_close_without_commit_association_resolves_exact_branch_and_head(self):
+        gh=Hub(pr(state='closed'));gh.record['pull_requests']=[]
+        gh.branch_pulls=MagicMock(return_value=[gh.value])
+        plan=r.run_plan(gh,8,'preview')
+        self.assertEqual(plan,{'operation':'cleanup','pr':7,'sha':SHA,'run_id':8})
+        gh.branch_pulls.assert_called_once_with('feature')
+
+    def test_branch_fallback_never_guesses_another_sha_branch_repository_or_base(self):
+        for change in ('sha','branch','fork','base','repository'):
+            with self.subTest(change=change):
+                gh=Hub(pr(state='closed'));gh.record['pull_requests']=[]
+                candidate=copy.deepcopy(gh.value)
+                if change=='sha':candidate['head']['sha']=NEW
+                if change=='branch':candidate['head']['ref']='another'
+                if change=='fork':candidate['head']['repo']['id']=999
+                if change=='base':candidate['base']['ref']='another'
+                if change=='repository':candidate['base']['repo']['id']=999
+                gh.branch_pulls=MagicMock(return_value=[candidate])
+                with self.assertRaisesRegex(d.DeliveryError,'PULL_REQUEST_NOT_RESOLVED'):
+                    r.run_plan(gh,8,'preview')
+
+    def test_branch_fallback_rechecks_canonical_head_before_cleanup(self):
+        for field in ('sha','ref'):
+            with self.subTest(field=field):
+                gh=Hub(pr(state='closed'));gh.record['pull_requests']=[]
+                gh.value['head'][field]=NEW if field=='sha' else 'another'
+                gh.branch_pulls=MagicMock(return_value=[pr(state='closed')])
+                with self.assertRaisesRegex(d.DeliveryError,'STALE_PULL_REQUEST'):
+                    r.run_plan(gh,8,'preview')
+
+    def test_branch_fallback_does_not_delete_a_pr_reopened_after_listing(self):
+        gh=Hub();gh.record['pull_requests']=[]
+        gh.branch_pulls=MagicMock(return_value=[pr(state='closed')])
+        self.assertEqual(r.run_plan(gh,8,'preview')['operation'],'preview')
+
+    def test_branch_lookup_failure_cannot_be_treated_as_an_empty_or_closed_pr(self):
+        gh=Hub();gh.record['pull_requests']=[]
+        gh.branch_pulls=MagicMock(side_effect=d.DeliveryError('GITHUB_UNAVAILABLE'))
+        with self.assertRaisesRegex(d.DeliveryError,'GITHUB_UNAVAILABLE'):
+            r.run_plan(gh,8,'preview')
+
+    def test_ambiguous_commit_association_cannot_be_narrowed_by_branch_fallback(self):
+        gh=Hub();gh.record['pull_requests']=[]
+        gh.associated_pulls=MagicMock(return_value=[gh.value,dict(gh.value,number=8)])
+        gh.branch_pulls=MagicMock(return_value=[gh.value])
+        with self.assertRaisesRegex(d.DeliveryError,'AMBIGUOUS_PULL_REQUEST'):
+            r.run_plan(gh,8,'preview')
+        gh.branch_pulls.assert_not_called()
+
+    def test_zero_unique_and_ambiguous_pr_numbers_are_distinguished(self):
+        gh=Hub();gh.record['pull_requests']=[]
+        with self.assertRaisesRegex(d.DeliveryError,'PULL_REQUEST_NOT_RESOLVED'):
+            r.run_plan(gh,8,'preview')
+        for source in ('run','association','branch'):
+            with self.subTest(source=source):
+                gh=Hub(pr(state='closed'));gh.record['pull_requests']=[]
+                one=copy.deepcopy(gh.value)
+                rows=[one,copy.deepcopy(one)]
+                if source=='run':gh.record['pull_requests']=rows
+                elif source=='association':gh.associated_pulls=MagicMock(return_value=rows)
+                else:gh.branch_pulls=MagicMock(return_value=rows)
+                self.assertEqual(r.run_plan(gh,8,'preview')['pr'],7)
+                rows.append(dict(one,number=8))
+                with self.assertRaisesRegex(d.DeliveryError,'AMBIGUOUS_PULL_REQUEST'):
+                    r.run_plan(gh,8,'preview')
+
+    def test_branch_lookup_uses_encoded_head_and_all_states_with_bounded_results(self):
+        gh=r.GitHub('dummy');gh.get=MagicMock(return_value=[pr(state='closed')])
+        branch='feature/close&state=open'
+        self.assertEqual(gh.branch_pulls(branch),[pr(state='closed')])
+        path=gh.get.call_args.args[0]
+        params=r.urllib.parse.parse_qs(r.urllib.parse.urlparse(path).query)
+        self.assertEqual(params,{'state':['all'],'base':['main'],'head':['kokutaro:'+branch],'per_page':['100']})
+        gh.get.return_value=[pr()]*100
+        with self.assertRaisesRegex(d.DeliveryError,'LOOKUP_INCOMPLETE'):gh.branch_pulls('feature')
+        for invalid in ('',None):
+            with self.subTest(invalid=invalid),self.assertRaises(d.DeliveryError):gh.branch_pulls(invalid)
 
     def test_github_requests_keep_token_in_headers_and_never_echo_error_bodies(self):
         gh=r.GitHub('DO_NOT_ECHO_TOKEN');response=MagicMock();response.__enter__.return_value.read.return_value=b'{"ok":true}'
@@ -318,6 +397,18 @@ class AzureAdapterTests(unittest.TestCase):
         with patch.object(r.urllib.request,'urlopen',side_effect=urllib.error.URLError('secret')),self.assertRaises(d.DeliveryError):r.health('https://dummy.azurecontainerapps.io')
 
 class ImageAndCliTests(unittest.TestCase):
+    def test_unmerged_close_plan_uses_verified_branch_lookup_without_azure(self):
+        gh=Hub(pr(state='closed'));gh.record['pull_requests']=[]
+        gh.branch_pulls=MagicMock(return_value=[gh.value])
+        with tempfile.TemporaryDirectory() as folder:
+            event=Path(folder)/'event.json';outputs=Path(folder)/'outputs'
+            event.write_text(json.dumps({'repository':{'id':d.REPO_ID},'workflow_run':{'id':8}}))
+            with patch.dict(os.environ,context('preview'),clear=True),patch.object(r,'GitHub',return_value=gh),patch.object(r,'Azure') as az,redirect_stdout(io.StringIO()) as stdout:
+                self.assertEqual(d.main(['plan','--event',str(event),'--output',str(outputs)]),0)
+            self.assertEqual(json.loads(stdout.getvalue())['operation'],'cleanup')
+            self.assertIn('pr=7\n',outputs.read_text());self.assertIn('enabled=true\n',outputs.read_text())
+            az.assert_not_called()
+
     def test_image_labels_platform_and_local_identity_are_checked_before_publish(self):
         metadata={'Id':'sha256:dummy','Architecture':'amd64','Os':'linux','Config':{'Labels':{'org.opencontainers.image.revision':SHA,
             'dse.repository-id':str(d.REPO_ID),'dse.pull-request':'7'}}}
