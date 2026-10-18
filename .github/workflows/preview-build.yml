@@ -1,0 +1,36 @@
+name: preview-build
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review, closed]
+permissions:
+  contents: read
+jobs:
+  event:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Preview lifecycle event recorded; no Azure credentials in this workflow.'
+  build:
+    if: vars.DSE_CD_ENABLED == 'true' && github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Build without deployment credentials
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPOSITORY_ID: ${{ github.repository_id }}
+        run: |
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ && "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          docker build --platform linux/amd64 --tag "dse-api:$HEAD_SHA" --label "org.opencontainers.image.revision=$HEAD_SHA" --label "dse.repository-id=$REPOSITORY_ID" --label "dse.pull-request=$PR_NUMBER" --file src/Dse.Api/Dockerfile .
+          docker save --output "$RUNNER_TEMP/api.tar" "dse-api:$HEAD_SHA"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: preview-api-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/api.tar
+          retention-days: 1
+          if-no-files-found: error
