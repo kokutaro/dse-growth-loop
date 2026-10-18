@@ -159,13 +159,15 @@ class ProductionAzure:
         self.fail_once=None;self.drift=None;self.on_patch=None
     def production(self,name):return copy.deepcopy(self.apps[name])
     def worker_revisions(self):return self.revisions
-    def patch_production(self,name,template,expected_image,expected_revision,on_submit=None):
+    def patch_production(self,name,template,expected_image,expected_revision,*,expected_settings,on_submit=None):
         d.require(self.apps[name]['properties']['template']['containers'][0]['image']==expected_image,'PRODUCTION_IMAGE_DRIFT')
         d.require(self.apps[name]['properties']['template'].get('revisionSuffix')==expected_revision,'PRODUCTION_REVISION_DRIFT')
+        d.require(d.preserved(self.apps[name])==expected_settings,'PRODUCTION_SETTINGS_DRIFT')
         if on_submit:on_submit()
         self.actions.append((name,copy.deepcopy(template)));self.apps[name]['properties']['template']=copy.deepcopy(template)
         if self.on_patch:self.on_patch(name)
-    def wait_production(self,name,image):
+    def wait_production(self,name,image,owned_revision=None):
+        if owned_revision is not None:d.require(self.apps[name]['properties']['template'].get('revisionSuffix')==owned_revision,'PRODUCTION_REVISION_DRIFT')
         if self.drift==name:self.apps[name]['properties']['template']['containers'][0]['env'][0]['value']='operator-change'
         if self.fail_once==name:self.fail_once=None;raise d.DeliveryError('PROVIDER_FAILED')
         return self.production(name)
@@ -198,6 +200,15 @@ class ProductionDeliveryTests(unittest.TestCase):
             else:gh.ci=False
             with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,gh)
             self.assertEqual(az.actions,[])
+
+    def test_unchanged_worker_has_no_revision_mutation_authority(self):
+        az=ProductionAzure();images={n:v['properties']['template']['containers'][0]['image'] for n,v in az.apps.items()}
+        def unexpected_activation(name,image,owned_revision=None):
+            self.assertIsNone(owned_revision)
+            raise d.DeliveryError('EXISTING_WORKER_REVISION_ACTIVATED')
+        az.wait_production=unexpected_activation
+        with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,images,az,GitHub())
+        self.assertEqual(az.actions,[])
     def test_failure_rolls_back_only_the_images_and_preserves_configuration(self):
         az=ProductionAzure();original=copy.deepcopy(az.apps);az.fail_once='api'
         with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
@@ -228,14 +239,14 @@ class ProductionDeliveryTests(unittest.TestCase):
         for component in ('api','worker'):
             with self.subTest(component=component):
                 az=ProductionAzure();original=az.patch_production;images=self.images();intervened=False
-                def raced(name,template,expected_image,expected_revision,on_submit=None):
+                def raced(name,template,expected_image,expected_revision,*,expected_settings,on_submit=None):
                     nonlocal intervened
                     if name==component and not intervened:
                         intervened=True
                         az.apps[name]['properties']['template']['containers'][0]['image']=images[name]
                         az.apps[name]['properties']['template']['revisionSuffix']='operator-release'
                         raise d.DeliveryError('PRODUCTION_IMAGE_DRIFT')
-                    return original(name,template,expected_image,expected_revision,on_submit=on_submit)
+                    return original(name,template,expected_image,expected_revision,expected_settings=expected_settings,on_submit=on_submit)
                 az.patch_production=raced
                 with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,images,az,GitHub())
                 self.assertEqual(az.apps[component]['properties']['template']['containers'][0]['image'],images[component])
@@ -244,9 +255,9 @@ class ProductionDeliveryTests(unittest.TestCase):
     def test_submitted_write_with_lost_response_still_recovers_its_own_revision(self):
         az=ProductionAzure();original=az.patch_production;lost=False
         before=az.apps['worker']['properties']['template']['containers'][0]['image']
-        def accepted(name,template,expected_image,expected_revision,on_submit=None):
+        def accepted(name,template,expected_image,expected_revision,*,expected_settings,on_submit=None):
             nonlocal lost
-            original(name,template,expected_image,expected_revision,on_submit=on_submit)
+            original(name,template,expected_image,expected_revision,expected_settings=expected_settings,on_submit=on_submit)
             if name=='worker' and not lost:
                 lost=True
                 raise d.DeliveryError('PATCH_RESPONSE_LOST')
@@ -257,11 +268,11 @@ class ProductionDeliveryTests(unittest.TestCase):
 
     def test_rollback_refuses_an_operator_revision_even_when_its_image_matches(self):
         az=ProductionAzure();wait=az.wait_production;images=self.images()
-        def failed(name,image):
+        def failed(name,image,owned_revision=None):
             if name=='api' and image==images['api']:
                 az.apps['worker']['properties']['template']['revisionSuffix']='operator-release'
                 raise d.DeliveryError('PROVIDER_FAILED')
-            return wait(name,image)
+            return wait(name,image,owned_revision)
         az.wait_production=failed
         with self.assertRaisesRegex(d.DeliveryError,'ROLLBACK_RECONCILIATION_REQUIRED_WORKER'):
             d.production_operation(SETTINGS,SHA,images,az,GitHub())
@@ -286,8 +297,8 @@ class ProductionDeliveryTests(unittest.TestCase):
         for component in ('api','worker'):
             with self.subTest(component=component):
                 az=ProductionAzure();wait=az.wait_production;other=d.REGISTRY+'/dse-'+component+'@sha256:'+'f'*64
-                def changed(name,image):
-                    result=wait(name,image)
+                def changed(name,image,owned_revision=None):
+                    result=wait(name,image,owned_revision)
                     if name=='api':az.apps[component]['properties']['template']['containers'][0]['image']=other
                     return result
                 az.wait_production=changed
@@ -296,10 +307,10 @@ class ProductionDeliveryTests(unittest.TestCase):
 
     def test_dispatch_retry_after_rollback_never_reuses_an_immutable_revision_name(self):
         az=ProductionAzure();az.fail_once='api';original=az.patch_production;used={'api':set(),'worker':set()}
-        def immutable(name,template,expected_image,expected_revision,on_submit=None):
+        def immutable(name,template,expected_image,expected_revision,*,expected_settings,on_submit=None):
             suffix=template['revisionSuffix']
             if suffix in used[name]:raise d.DeliveryError('REVISION_ALREADY_EXISTS')
-            used[name].add(suffix);return original(name,template,expected_image,expected_revision,on_submit=on_submit)
+            used[name].add(suffix);return original(name,template,expected_image,expected_revision,expected_settings=expected_settings,on_submit=on_submit)
         az.patch_production=immutable
         with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
         self.assertEqual(d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())['status'],'ready')

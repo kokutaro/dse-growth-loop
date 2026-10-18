@@ -65,6 +65,7 @@ jobs:
     concurrency:
       group: dse-production-1379060968
       cancel-in-progress: false
+      queue: max
     environment:
       name: production
     permissions:

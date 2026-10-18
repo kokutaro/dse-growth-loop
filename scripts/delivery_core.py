@@ -206,6 +206,7 @@ def production_operation(settings, sha, images, az, gh):
     require(wc.get('command')==['/bin/sleep'] and wc.get('args')==['infinity'],'WORKER_NON_EXECUTION_GUARD_REQUIRED')
     require(all(not r['active'] and r['replicas']==0 for r in az.worker_revisions()),'WORKER_NOT_STOPPED')
     changed=[]
+    expected_revisions={n:v['properties']['template'].get('revisionSuffix') for n,v in original.items()}
     try:
         for name in ('worker','api'):
             require(gh.main_sha()==sha,'MAIN_ADVANCED')
@@ -222,9 +223,10 @@ def production_operation(settings, sha, images, az, gh):
                     # The adapter calls this only after its final preconditions pass.
                     # Keep the receipt even if the request's response is lost.
                     changed.append((component,suffix))
+                    expected_revisions[component]=suffix
                 az.patch_production(name,template,current['properties']['template']['containers'][0]['image'],
-                    current['properties']['template'].get('revisionSuffix'),on_submit=submitted)
-            final=az.wait_production(name,images[name])
+                    current['properties']['template'].get('revisionSuffix'),expected_settings=preserved(current),on_submit=submitted)
+            final=az.wait_production(name,images[name],dict(changed).get(name))
             require(preserved(final)==preserved(original[name]),'PRODUCTION_SETTINGS_DRIFT')
             require(final['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
         for name in ('api','worker'):
@@ -232,6 +234,7 @@ def production_operation(settings, sha, images, az, gh):
             require(preserved(final)==preserved(original[name]),'PRODUCTION_SETTINGS_DRIFT')
             require(final['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
             require(final['properties']['template']['containers'][0]['image']==images[name],'PRODUCTION_IMAGE_DRIFT')
+            require(final['properties']['template'].get('revisionSuffix')==expected_revisions[name],'PRODUCTION_REVISION_DRIFT')
         require(all(not r['active'] and r['replicas']==0 for r in az.worker_revisions()),'WORKER_NOT_STOPPED')
         return {'status':'ready','sha':sha,'images':images,
             'rollbackImages':{n:original[n]['properties']['template']['containers'][0]['image'] for n in original}}
@@ -248,8 +251,8 @@ def production_operation(settings, sha, images, az, gh):
                     template=copy.deepcopy(current['properties']['template'])
                     template['containers'][0]['image']=original[name]['properties']['template']['containers'][0]['image']
                     template['revisionSuffix']=revision_suffix(sha,'rb')
-                    az.patch_production(name,template,images[name],written_suffix)
-                    az.wait_production(name,template['containers'][0]['image'])
+                    az.patch_production(name,template,images[name],written_suffix,expected_settings=preserved(current))
+                    az.wait_production(name,template['containers'][0]['image'],template['revisionSuffix'])
             except Exception:failures.append(name)
         if failures:raise DeliveryError('ROLLBACK_RECONCILIATION_REQUIRED_'+('_'.join(failures)).upper()) from original_error
         raise

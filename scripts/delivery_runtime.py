@@ -206,11 +206,12 @@ class Azure:
             rows.append({'name':name,'active':revision['properties']['active'],'replicas':len(replicas['value'])})
         return rows
 
-    def patch_production(self, component, template, expected_image, expected_revision, on_submit=None):
+    def patch_production(self, component, template, expected_image, expected_revision, *, expected_settings, on_submit=None):
         current=self.production(component)
         image_ref(expected_image,'dse-'+component)
         require(current['properties']['template']['containers'][0]['image']==expected_image,'PRODUCTION_IMAGE_DRIFT')
         require(current['properties']['template'].get('revisionSuffix')==expected_revision,'PRODUCTION_REVISION_DRIFT')
+        require(preserved(current)==expected_settings,'PRODUCTION_SETTINGS_DRIFT')
         require(current['properties']['provisioningState'] in ('Succeeded','Failed','Canceled'),'PRODUCTION_OPERATION_IN_FLIGHT')
         require(current['properties']['runningStatus']==('Running' if component=='api' else 'Stopped'),'PRODUCTION_RUNNING_STATE_CHANGED')
         candidate=copy.deepcopy(current);candidate['properties']['template']=template
@@ -221,12 +222,14 @@ class Azure:
         except AzureError as error:
             if str(error)!='AZURE_TIMEOUT':raise
 
-    def wait_production(self, component, image):
+    def wait_production(self, component, image, owned_revision=None):
         deadline=time.monotonic()+300
         while time.monotonic()<deadline:
             value=self.get_app('dse-'+component,False);require(value is not None,'PRODUCTION_RESOURCE_MISSING')
             p=value['properties'];require(p['provisioningState'] not in ('Failed','Canceled'),'PRODUCTION_PROVISIONING_FAILED')
             if p['template']['containers'][0]['image']==image and p['provisioningState']=='Succeeded':
+                if owned_revision is not None:
+                    require(p['template'].get('revisionSuffix')==owned_revision and p.get('latestRevisionName')=='dse-'+component+'--'+owned_revision,'PRODUCTION_REVISION_DRIFT')
                 if component=='worker':
                     require(p['runningStatus']=='Stopped','PRODUCTION_RUNNING_STATE_CHANGED')
                     container=p['template']['containers'][0]
@@ -235,7 +238,7 @@ class Azure:
                     for revision in self.worker_revisions():
                         require(revision['replicas']==0,'WORKER_NOT_STOPPED')
                         if revision['active']:
-                            require(revision['name']==latest,'EXISTING_WORKER_REVISION_ACTIVATED')
+                            require(owned_revision is not None and revision['name']==latest=='dse-worker--'+owned_revision,'EXISTING_WORKER_REVISION_ACTIVATED')
                             self.rest('post',self.settings.app_id('dse-worker',False)+'/revisions/'+latest+'/deactivate')
                     require(all(not r['active'] and r['replicas']==0 for r in self.worker_revisions()),'WORKER_NOT_STOPPED')
                     return self.get_app('dse-worker',False)

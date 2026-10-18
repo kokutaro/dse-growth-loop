@@ -31,13 +31,13 @@ jobs:
       - run: az bicep install --version v0.47.16
       - run: python3 scripts/deploy.py validate
       - run: python3 -m coverage run --source=scripts -m unittest discover -s tests/scripts
-      - run: python3 -m coverage report --include="*/delivery*.py" --fail-under=80
+      - run: python3 -m coverage report --include="*/delivery*.py,*/check_action_workflows.py" --fail-under=80
       - name: Validate Actions workflows
         run: |
           curl --fail --location --silent --show-error https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz --output "$RUNNER_TEMP/actionlint.tar.gz"
           echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
-          "$RUNNER_TEMP/actionlint"
+          python3 scripts/check_action_workflows.py --actionlint "$RUNNER_TEMP/actionlint"
       - run: git diff --check
   browser-tests:
     runs-on: ubuntu-latest

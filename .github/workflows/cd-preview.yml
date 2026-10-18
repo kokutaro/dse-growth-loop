@@ -38,6 +38,7 @@ jobs:
     concurrency:
       group: dse-preview-1379060968-${{ needs.plan.outputs.pr }}
       cancel-in-progress: false
+      queue: max
     environment:
       name: pr-preview
       url: ${{ steps.apply.outputs.url }}

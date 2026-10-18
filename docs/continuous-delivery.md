@@ -23,15 +23,17 @@
 
 削除前にGitHubのclosed、固定subscription/RG・型・正確な名前、所有タグ、専用環境、Demo/Mock設定、pull専用Identity、preview専用イメージを再読取する。アダプター自体も本番DELETE・対象外の型・RGを拒否する。RG、共有基盤、既存のAPI/Worker、保存データ、ACRのイメージは削除しない。ARMの配備履歴とACRのビルド成果物は意図して保持し、削除範囲に含めない。
 
-更新と削除の排他キーは両ワークフロー共通の `dse-preview-1379060968-<PR番号>`、`cancel-in-progress=false`。待機順序だけを信用せず、変異直前と作成完了後にもPRを読み直す。途中closeは同じ所有範囲を回収し、reopenは削除を拒否する。手動キャンセルやARM要求のタイムアウトは処理が残る可能性があり、更新要求を盲目的に再送しない。毎時のreconcileがclosedの取り残しを回収する。GitHubの404/通信失敗をclosedと解釈しない。openの期限切れは報告だけで、期限を理由に利用中の環境を消さない。
+更新と削除の排他キーは両ワークフロー共通の `dse-preview-1379060968-<PR番号>`、`cancel-in-progress=false`、`queue=max`。本番の共通キーも同じqueue方式を使う。後着の古いbuildやcleanupが最新headの待機ジョブを置き換えない。GitHubの待機上限はgroupごとに100件で、満杯による取消は確認し、最新headの配備を再実行する。到着順だけを信用せず、変異直前と作成完了後にもPRを読み直す。途中closeは同じ所有範囲を回収し、reopenは削除を拒否する。手動キャンセルやARM要求のタイムアウトは処理が残る可能性があり、更新要求を盲目的に再送しない。毎時のreconcileがclosedの取り残しを回収する。GitHubの404/通信失敗をclosedと解釈しない。openの期限切れは報告だけで、期限を理由に利用中の環境を消さない。[GitHub concurrency仕様](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)。
 
 closed runの `pull_requests` が空の場合は、GitHubのcommit→PR正本を照合して候補を解決する。別repository・fork・別baseや曖昧な複数候補は採用しない。同じheadを再ビルドしてdigestが変わる場合にも、作成要求ごとに一意なrevision suffixを渡す。正常性はSHAと期待digestの両方で照合し、更新前の正常なリビジョンを成功証跡として使わない。
 
 ## 本番の保全と復帰
 
-本番は `dse-growth-loop-rg / dse-environment` の `dse-api` と `dse-worker` に固定し、`infra/main.bicep` 全体を再適用しない。環境変数、AI設定、認証、Identity、ネットワーク、scale、コマンド、タグを保存前後で照合する。PATCHはtemplateのimageとrevisionSuffixだけを変える。更新と復帰の両方で期待する更新前digestをアダプターへ渡し、送信直前の再読取で設定とdigestの変化を拒否する。Azureの読取とPATCHは別要求であり、その間の外部変更を原子的に防ぐ保証はない。配備中の手動image更新は避け、ドリフトや復帰未確認は操作者が確認する。
+本番は `dse-growth-loop-rg / dse-environment` の `dse-api` と `dse-worker` に固定し、`infra/main.bicep` 全体を再適用しない。環境変数、AI設定、認証、Identity、ネットワーク、scale、コマンド、タグを保存前後で照合する。PATCHはtemplateのimageとrevisionSuffixだけを変える。更新と復帰の両方で期待する更新前digest・revision・設定全体の基準をアダプターへ渡し、送信直前の再読取でtemplate外のconfiguration/Identity/tagを含む変化を拒否する。Azureの読取とPATCHは別要求であり、その間の外部変更を原子的に防ぐ保証はない。配備中の手動image更新は避け、ドリフトや復帰未確認は操作者が確認する。
 
 安全な現在の運用に合わせ、APIがRunning、WorkerがStopped・全リビジョン無効・実レプリカ0・`/bin/sleep infinity`、旧イメージもdigest固定であることを前提にする。条件が変わった場合は自動反映を止める。APIを勝手に起動したり、Workerをキュー処理へ戻したりはしない。新しいWorkerリビジョンも停止・無効化し、APIの新リビジョンとlive/readyを確認する。
+
+Workerの無効化はこの配備/復帰が送信した正確なrevision名だけに許可する。同じdigestでも別suffixのrevisionは操作しない。image更新が不要で要求を送信していない経路では、想定外のactive revisionを見つけたら変更せず失敗とする。
 
 失敗時はアダプターの最終照合を通過して送信段階へ進んだ要求だけを復帰対象として記録する。応答が失われてもこの記録を保持する。設定・対象imageに加えて要求固有のrevision suffixが現在値と一致する場合だけ旧imageへ戻す。操作者が同じdigestを選んだ場合も、送信前に拒否された要求や別revisionを自分の更新として扱わない。復帰のアダプター再読取でも期待revisionを照合する。現在のenv/auth/scaleを古いスナップショットで復元しない。片側の読取・復帰が失敗しても、もう片側の安全な復帰を試みる。設定ドリフトや進行中のARM操作は `ROLLBACK_RECONCILIATION_REQUIRED_*` として停止し、操作者の判断を求める。既存の失効フェンスの自動解除やデータの巻き戻しは行わない。
 
@@ -47,7 +49,7 @@ closed runの `pull_requests` が空の場合は、GitHubのcommit→PR正本を
 2. CD用のAzure主体をpreview/productionで分ける。計画名は専用preview RGの `dse-cd-preview` と本番RGの `dse-cd-production`（いずれも新規User-assigned Managed Identity）。既存の実行用 `dse-api-identity`／`dse-worker-identity` は変更・流用しない。新主体のclient/principal IDは作成前のため未確定。長期client secretを作らずGitHub OIDCを使う。GitHub Environments `pr-preview` と `production` を作り、deployment branch policyはcustomの **main 1本だけ** に限定する。
 3. GitHubのOIDC subjectに `repo`・`repository_id`・`context`・`workflow_ref` をこの順で含めるcustom templateを設定し、Azure側は下記のmain上のワークフローに完全一致する信頼だけを追加する。現在の `use_immutable_subject=true` を維持し、`repo` 部分にはowner IDとrepository IDを含める。既存のOIDC利用先への影響も確認する。subject形式はOIDC claim確認後に確定し、ワイルドカードやPR refを許可しない。[GitHub OIDC reference](https://docs.github.com/en/actions/reference/security/oidc)、[Azure OIDC設定](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)。
 
-Repository subject templateの変更案は `{"use_default":false,"include_claim_keys":["repo","repository_id","context","workflow_ref"]}`。既存のimmutable設定を無効化する変更は含めない。issuer・audience・完全なsubjectをAzureのFederated Identity Credentialへそれぞれ登録する。
+Repository subject templateの変更案は `{"use_default":false,"use_immutable_subject":true,"include_claim_keys":["repo","repository_id","context","workflow_ref"]}`。DSEのrepository APIだけを対象とし、organization全体のtemplateや別repositoryは変更しない。issuer・audience・完全なsubjectをAzureのFederated Identity Credentialへそれぞれ登録する。
 
 | Azure主体 | 許可するsubject（custom templateの想定値） |
 |---|---|
@@ -78,3 +80,5 @@ Repository Variablesは `AZURE_SUBSCRIPTION_ID`、`AZURE_TENANT_ID`、`DSE_PREVI
 費用が増える要因はPRアプリのCPU/メモリ実行量、起動・HTTP通信、ACRイメージ保持、ActionsでのDockerビルド・artifact保存/転送。共有PR環境は専用のConsumption基盤で、アプリは0〜1、artifact保持は1日。新しいCosmos/Storage/Log Analytics/AI配置は定義しない。ACR成果物は保持されるため、増加分は別途確認する。追加の費用/試行作業台帳や都度の予算承認ゲートは作らない。
 
 ローカルでは所有範囲・データ/キュー分離・fork拒否・古いhead/CIの拒否・close/reopen競合・取り残し検出・本番設定保全・失敗時復帰とアダプターの禁止操作をfakeで検証する。実際のGitHub→Azure OIDC、PR環境の作成→更新→close→削除、マージ後の本番自動反映、キャンセル中のARM要求とreconcileは、上記設定後の受入試験として残る。
+
+workflow lintは `python3 scripts/check_action_workflows.py --actionlint <実行ファイル>`。固定版actionlint 1.7.12が未対応の `concurrency.queue` は値・競合設定・配置形式を検証してからその行だけを空行へ置き換え、それ以外の元ソースをactionlintへ渡す。構文/式チェック全体を無効にするignoreは使わない。行番号と不正な式が実際のlintへ残ることも確認する。

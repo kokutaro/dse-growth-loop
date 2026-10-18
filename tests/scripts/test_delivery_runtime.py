@@ -135,7 +135,7 @@ class AzureAdapterTests(unittest.TestCase):
             path=Path(args[args.index('--body')+1][1:]);seen.append(path)
             self.assertEqual(path.stat().st_mode&0o777,0o600)
             self.assertEqual(json.loads(path.read_text()),{'properties':{'template':template}})
-        az.call=call;az.patch_production('api',template,current['properties']['template']['containers'][0]['image'],current['properties']['template'].get('revisionSuffix'));self.assertFalse(seen[0].exists())
+        az.call=call;az.patch_production('api',template,current['properties']['template']['containers'][0]['image'],current['properties']['template'].get('revisionSuffix'),expected_settings=d.preserved(current));self.assertFalse(seen[0].exists())
 
     def test_adapter_itself_rejects_production_delete_and_cross_group_operations(self):
         az=r.Azure(SETTINGS);az.call=MagicMock(return_value={})
@@ -149,8 +149,21 @@ class AzureAdapterTests(unittest.TestCase):
         template['containers'][0]['image']=d.REGISTRY+'/dse-api@sha256:'+'e'*64
         latest=copy.deepcopy(before);latest['properties']['template']['containers'][0]['env'][0]['value']='operator-change'
         az.get_app=MagicMock(return_value=latest);az.rest=MagicMock()
-        with self.assertRaises(d.DeliveryError):az.patch_production('api',template,before['properties']['template']['containers'][0]['image'],before['properties']['template'].get('revisionSuffix'))
+        with self.assertRaises(d.DeliveryError):az.patch_production('api',template,before['properties']['template']['containers'][0]['image'],before['properties']['template'].get('revisionSuffix'),expected_settings=d.preserved(before))
         az.rest.assert_not_called()
+
+    def test_non_template_drift_between_controller_and_adapter_blocks_submission(self):
+        for field in ('configuration','identity','tags','environment'):
+            with self.subTest(field=field):
+                az=r.Azure(SETTINGS);before=production_app('api');template=copy.deepcopy(before['properties']['template'])
+                template['containers'][0]['image']=d.REGISTRY+'/dse-api@sha256:'+'e'*64
+                latest=copy.deepcopy(before)
+                if field=='configuration':latest['properties']['configuration']['ingress']={'external':False}
+                elif field=='environment':latest['properties']['managedEnvironmentId']=SETTINGS.environment()
+                else:latest[field]={'operator':'changed'}
+                az.production=MagicMock(return_value=latest);az.rest=MagicMock();submitted=MagicMock()
+                with self.assertRaises(d.DeliveryError):az.patch_production('api',template,before['properties']['template']['containers'][0]['image'],None,expected_settings=d.preserved(before),on_submit=submitted)
+                az.rest.assert_not_called();submitted.assert_not_called()
 
     def test_image_change_between_controller_and_adapter_is_not_overwritten(self):
         for component in ('api','worker'):
@@ -162,7 +175,7 @@ class AzureAdapterTests(unittest.TestCase):
                 latest['properties']['template']['containers'][0]['image']=d.REGISTRY+'/dse-'+component+'@sha256:'+'f'*64
                 az.get_app=MagicMock(return_value=latest);az.rest=MagicMock()
                 submitted=MagicMock()
-                with self.assertRaises(d.DeliveryError):az.patch_production(component,template,before['properties']['template']['containers'][0]['image'],before['properties']['template'].get('revisionSuffix'),on_submit=submitted)
+                with self.assertRaises(d.DeliveryError):az.patch_production(component,template,before['properties']['template']['containers'][0]['image'],before['properties']['template'].get('revisionSuffix'),expected_settings=d.preserved(before),on_submit=submitted)
                 az.rest.assert_not_called()
                 submitted.assert_not_called()
 
@@ -171,7 +184,7 @@ class AzureAdapterTests(unittest.TestCase):
         template=copy.deepcopy(before['properties']['template']);template['revisionSuffix']='next'
         latest=copy.deepcopy(before);latest['properties']['template']['revisionSuffix']='operator-release'
         az.get_app=MagicMock(return_value=latest);az.rest=MagicMock()
-        with self.assertRaises(d.DeliveryError):az.patch_production('api',template,before['properties']['template']['containers'][0]['image'],'before')
+        with self.assertRaises(d.DeliveryError):az.patch_production('api',template,before['properties']['template']['containers'][0]['image'],'before',expected_settings=d.preserved(before))
         az.rest.assert_not_called()
 
     def test_submission_receipt_survives_accepted_request_timeout(self):
@@ -182,7 +195,7 @@ class AzureAdapterTests(unittest.TestCase):
             submitted.assert_called_once()
             raise r.AzureError('AZURE_TIMEOUT')
         az.rest=MagicMock(side_effect=timeout)
-        az.patch_production('worker',template,before['properties']['template']['containers'][0]['image'],None,on_submit=submitted)
+        az.patch_production('worker',template,before['properties']['template']['containers'][0]['image'],None,expected_settings=d.preserved(before),on_submit=submitted)
         submitted.assert_called_once();az.rest.assert_called_once()
 
     def test_deploy_and_rollback_recheck_expected_image_at_the_adapter_boundary(self):
@@ -196,16 +209,37 @@ class AzureAdapterTests(unittest.TestCase):
                     if phase=='rollback':state.fail_once='api'
                     def rest(method,resource,body):
                         name='api' if resource.endswith('/dse-api') else 'worker'
-                        original(name,body['properties']['template'],state.apps[name]['properties']['template']['containers'][0]['image'],state.apps[name]['properties']['template'].get('revisionSuffix'))
+                        original(name,body['properties']['template'],state.apps[name]['properties']['template']['containers'][0]['image'],state.apps[name]['properties']['template'].get('revisionSuffix'),expected_settings=d.preserved(state.apps[name]))
                     adapter.rest=rest
-                    def raced(name,template,expected_image,expected_revision,on_submit=None):
+                    def raced(name,template,expected_image,expected_revision,*,expected_settings,on_submit=None):
                         rollback=template['containers'][0]['image']==old[name]
                         if name==component and rollback==(phase=='rollback'):
                             state.apps[name]['properties']['template']['containers'][0]['image']=other
-                        adapter.patch_production(name,template,expected_image,expected_revision,on_submit=on_submit)
+                        adapter.patch_production(name,template,expected_image,expected_revision,expected_settings=expected_settings,on_submit=on_submit)
                     state.patch_production=raced
                     with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,images,state,Hub())
                     self.assertEqual(state.apps[component]['properties']['template']['containers'][0]['image'],other)
+
+    def test_deploy_and_rollback_detect_configuration_drift_at_the_adapter_boundary(self):
+        for phase in ('deploy','rollback'):
+            with self.subTest(phase=phase):
+                state=ProductionAzure();adapter=r.Azure(SETTINGS);adapter.production=state.production;original=state.patch_production
+                old=state.apps['api']['properties']['template']['containers'][0]['image']
+                images={n:d.REGISTRY+'/dse-'+n+'@sha256:'+'e'*64 for n in ('api','worker')}
+                if phase=='rollback':state.fail_once='api'
+                def rest(method,resource,body):
+                    name='api' if resource.endswith('/dse-api') else 'worker';value=state.apps[name]
+                    original(name,body['properties']['template'],value['properties']['template']['containers'][0]['image'],value['properties']['template'].get('revisionSuffix'),expected_settings=d.preserved(value))
+                adapter.rest=rest
+                def raced(name,template,expected_image,expected_revision,*,expected_settings,on_submit=None):
+                    rollback=template['containers'][0]['image']==old
+                    if name=='api' and rollback==(phase=='rollback'):
+                        state.apps[name]['properties']['configuration']['ingress']={'operator':'changed'}
+                    adapter.patch_production(name,template,expected_image,expected_revision,expected_settings=expected_settings,on_submit=on_submit)
+                state.patch_production=raced
+                with self.assertRaises(d.DeliveryError):d.production_operation(SETTINGS,SHA,images,state,Hub())
+                self.assertEqual(state.apps['api']['properties']['configuration']['ingress'],{'operator':'changed'})
+                self.assertEqual(state.apps['api']['properties']['template']['containers'][0]['image'],old if phase=='deploy' else images['api'])
 
     def test_deployment_uses_only_trusted_incremental_template_and_owned_group(self):
         az=r.Azure(SETTINGS,Hub());az.preview=MagicMock(return_value=None)
@@ -238,9 +272,10 @@ class AzureAdapterTests(unittest.TestCase):
 
     def test_worker_wait_deactivates_only_new_revision_and_api_health_is_read_only(self):
         az=r.Azure(SETTINGS);worker=production_app('worker');p=worker['properties'];p.update(latestRevisionName='dse-worker--cd-test')
+        p['template']['revisionSuffix']='cd-test'
         image=worker['properties']['template']['containers'][0]['image'];az.get_app=MagicMock(return_value=worker)
         az.worker_revisions=MagicMock(side_effect=[[{'name':p['latestRevisionName'],'active':True,'replicas':0}],[{'active':False,'replicas':0}]])
-        az.rest=MagicMock();self.assertEqual(az.wait_production('worker',image),worker)
+        az.rest=MagicMock();self.assertEqual(az.wait_production('worker',image,'cd-test'),worker)
         self.assertIn('/deactivate',az.rest.call_args.args[1])
         api=production_app('api');api['properties'].update(latestRevisionName='new',latestReadyRevisionName='new')
         api['properties']['configuration']['ingress']['fqdn']='dummy.azurecontainerapps.io'
@@ -252,6 +287,16 @@ class AzureAdapterTests(unittest.TestCase):
         az.get_app.return_value=None
         with self.assertRaises(d.DeliveryError):az.production('worker')
         az.call=MagicMock(return_value=[]);self.assertEqual(az.previews(),[])
+
+    def test_worker_wait_cannot_deactivate_a_foreign_or_unsubmitted_revision_with_same_image(self):
+        for owned in (None,'mine'):
+            with self.subTest(owned=owned):
+                az=r.Azure(SETTINGS);value=production_app('worker');p=value['properties']
+                p['latestRevisionName']='dse-worker--operator';p['template']['revisionSuffix']='operator'
+                az.get_app=MagicMock(return_value=value);az.rest=MagicMock()
+                az.worker_revisions=MagicMock(side_effect=[[{'name':p['latestRevisionName'],'active':True,'replicas':0}],[{'active':False,'replicas':0}]])
+                with self.assertRaises(d.DeliveryError):az.wait_production('worker',p['template']['containers'][0]['image'],owned)
+                az.rest.assert_not_called()
 
     def test_preview_wait_reconciles_stale_reads_and_checks_health(self):
         az=r.Azure(SETTINGS);value=d.preview_resource(SETTINGS,7,SHA,IMAGE)

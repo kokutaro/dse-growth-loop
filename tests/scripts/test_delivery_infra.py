@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+import yaml
 from test_delivery import SETTINGS, SHA, IMAGE
 import delivery as d
 
@@ -49,5 +50,12 @@ class DeliveryInfrastructureTests(unittest.TestCase):
         unprivileged=(ROOT/'.github/workflows/preview-build.yml').read_text()
         self.assertNotIn('id-token: write',unprivileged);self.assertNotIn('azure/login',unprivileged)
         self.assertNotIn('secrets.',unprivileged)
+
+    def test_out_of_order_builds_and_close_reopen_jobs_keep_all_pending_deliveries(self):
+        for workflow,job in [('cd-production.yml','deliver'),('cd-preview.yml','deliver'),('cd-preview-reconcile.yml','cleanup')]:
+            with self.subTest(workflow=workflow):
+                concurrency=yaml.safe_load((ROOT/'.github/workflows'/workflow).read_text())['jobs'][job]['concurrency']
+                self.assertEqual(concurrency['queue'],'max')
+                self.assertIs(concurrency['cancel-in-progress'],False)
 
 if __name__=='__main__':unittest.main()

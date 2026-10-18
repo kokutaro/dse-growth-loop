@@ -16,6 +16,7 @@ jobs:
     concurrency:
       group: dse-preview-inventory-1379060968
       cancel-in-progress: false
+      queue: max
     permissions:
       contents: read
       actions: read
@@ -54,6 +55,7 @@ jobs:
     concurrency:
       group: dse-preview-1379060968-${{ matrix.pr }}
       cancel-in-progress: false
+      queue: max
     permissions:
       contents: read
       actions: read
