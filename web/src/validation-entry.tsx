@@ -133,6 +133,8 @@ function App() {
           setStage("自動検索対象外");
           return;
         }
+        if (failure.code === "AI_SEARCH_CONFIGURATION_INVALID")
+          throw new Error("検索のAI設定が整っていません。運用者による設定確認後に再実行してください。");
         throw new Error("自動分類を利用できません。手動で条件を編集して検索してください。");
       }
       if (!response.ok)

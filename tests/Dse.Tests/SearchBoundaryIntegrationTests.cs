@@ -69,6 +69,9 @@ public class SearchBoundaryIntegrationTests
     {
         // Live executor branches are tested with an injected in-process transport;
         // no external transport is constructed and this config is never persisted.
+        // Satisfy offline Live configuration checks; injected stores/transports never use these references.
+        ["Data:LocalPath"] = Path.Combine(Path.GetTempPath(), "dse-search-boundary-" + Guid.NewGuid().ToString("N")),
+        ["KeyVault:Uri"] = "https://dummy.vault.azure.net/", ["Jev:SecretVersion"] = new string('a', 32),
         ["Data:Mode"] = "Demo", ["Ai:Mode"] = "Live", ["AiUsage:Stopped"] = "false", ["AiUsage:LiveOptIn"] = "true",
         ["AiUsage:DailyTokenLimit"] = "300000", ["AiUsage:DailyCallLimit"] = "10", ["AiUsage:DailyEstimatedJpyLimit"] = "100",
         ["AiUsage:UsdToJpy"] = "150", ["AiUsage:PriceVersion"] = "dummy-test-price", ["AiUsage:FxVersion"] = "dummy-test-fx",

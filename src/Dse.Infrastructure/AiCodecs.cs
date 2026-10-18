@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text;
 using System.Text.Json.Nodes;
 using Dse.Domain;
 
@@ -6,6 +7,10 @@ namespace Dse.Infrastructure;
 
 internal static class AiCodecs
 {
+    // Jev has no max-output parameter. Share this fixed-shape bound with offline preflight.
+    internal static int JevOutputBound(ChoiceQuestion[] choices, NoulQuestion[] nouls) =>
+        256 + choices.Sum(q => 256 + Encoding.UTF8.GetByteCount(q.Id) +
+            q.Options.Keys.Sum(k => 64 + 2 * Encoding.UTF8.GetByteCount(k))) + nouls.Count(x => x.HasEvidence) * 192;
     internal static string SerializeRequest(JsonObject body) => body["response_format"]?["json_schema"]?["name"]?.GetValue<string>() == "rerank"
         ? SearchRerankBudget.Serialize(body) : body.ToJsonString();
     internal static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);

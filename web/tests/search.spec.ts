@@ -122,7 +122,7 @@ for (const types of [["knowledge", "person", "knowledge", "person"], ["person"],
   });
 }
 
-for (const code of ["CLASSIFICATION_OUT_OF_SCOPE", "CLASSIFICATION_MANUAL_REQUIRED"]) {
+for (const code of ["CLASSIFICATION_OUT_OF_SCOPE", "CLASSIFICATION_MANUAL_REQUIRED", "AI_SEARCH_CONFIGURATION_INVALID"]) {
   test(`分類対象外と障害を分け、前の条件を再送しない: ${code}`, async ({ page }) => {
     const bodies: Record<string, unknown>[] = [];
     await page.route("**/api/v2/search", route => {
@@ -139,7 +139,7 @@ for (const code of ["CLASSIFICATION_OUT_OF_SCOPE", "CLASSIFICATION_MANUAL_REQUIR
         await expect(page.getByText("自動検索対象外", { exact: false })).toBeVisible();
         await expect(page.getByText("検索は実行していません。", { exact: false })).toBeVisible();
         await expect(page.getByRole("region", { name: "相談候補と参考事例", exact: true }).getByRole("alert")).toHaveCount(0);
-      } else await expect(page.getByRole("region", { name: "相談候補と参考事例", exact: true }).getByRole("alert")).toContainText("自動分類を利用できません");
+      } else await expect(page.getByRole("region", { name: "相談候補と参考事例", exact: true }).getByRole("alert")).toContainText(code === "AI_SEARCH_CONFIGURATION_INVALID" ? "運用者による設定確認" : "自動分類を利用できません");
       await expect(page.getByRole("button", { name: "相談候補を探す" })).toBeEnabled();
     }
     expect(bodies).toHaveLength(2);
