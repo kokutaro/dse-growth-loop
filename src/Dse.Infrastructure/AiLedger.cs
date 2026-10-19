@@ -131,20 +131,17 @@ public sealed partial class AiLedger(IRecordStore store, TimeProvider clock)
         var partition = RecordPartition.Catalog(tenant);
         var row = await store.ReadAsync(partition, reservationId, ct) ?? throw new ArgumentException("Unknown reservation");
         if (row.Value.Text("kind") is not ("aiReservation" or "aiExecution")) throw new ArgumentException("Invalid reservation");
-        if (row.Value.Text("kind") == "aiExecution" && (evidence is null || !evidence.ApiStopped || !evidence.WorkerStopped || !evidence.ProvidersStopped ||
+        if (evidence is null || !evidence.ApiStopped || !evidence.WorkerStopped || !evidence.ProvidersStopped ||
             !RecordJson.IsId(evidence.ApprovalReference) || !RecordJson.IsId(evidence.StopEvidenceReference) ||
-            !System.Text.RegularExpressions.Regex.IsMatch(evidence.StopEvidenceSha256 ?? "", "\\A[a-fA-F0-9]{64}\\z")))
+            !System.Text.RegularExpressions.Regex.IsMatch(evidence.StopEvidenceSha256 ?? "", "\\A[a-fA-F0-9]{64}\\z"))
             throw new ArgumentException("Execution recovery requires API/Worker/provider quiescence and reviewed stop evidence");
         if (row.Value.Text("state") != "pending") return;
         var gate = (await store.ReadAsync(partition, GateId, ct))!;
         gate.Value["active"] = RecordJson.Array(gate.Value.Strings("active").Where(x => x != reservationId));
         row.Value["state"] = "uncertain";
-        if (row.Value.Text("kind") == "aiExecution")
-        {
-            row.Value["recoveryApprovalReference"] = evidence!.ApprovalReference;
-            row.Value["stopEvidenceReference"] = evidence.StopEvidenceReference;
-            row.Value["stopEvidenceSha256"] = evidence.StopEvidenceSha256!.ToLowerInvariant();
-        }
+        row.Value["recoveryApprovalReference"] = evidence.ApprovalReference;
+        row.Value["stopEvidenceReference"] = evidence.StopEvidenceReference;
+        row.Value["stopEvidenceSha256"] = evidence.StopEvidenceSha256!.ToLowerInvariant();
         await store.CommitAsync(partition, [RecordWrite.Replace(row.Value, row.ETag), RecordWrite.Replace(gate.Value, gate.ETag)], ct);
     }
 }

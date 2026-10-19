@@ -225,14 +225,14 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         trace["attemptCount"] = attempts; trace["retryCount"] = attempts - 1;
                         AiUsage? usage = null;
                         AiException? retry = null;
-                        var requestSent = false; var responseReceived = false;
+                        var requestSent = false; var responseReceived = false; var uncertain = false;
                         try
                         {
                             await Save(deadline.Token);
                             requestSent = true;
                             var request = (mock ? MockAiTransport.Instance : transport).SendAsync(model, body, limits.OutputTokens * 16 + 4096, deadline.Token);
                             _ = request.ContinueWith(t => { _ = t.Exception; }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-                            var response = limits.AccountingEnabled ? await request : await request.WaitAsync(deadline.Token);
+                            var response = await request.WaitAsync(deadline.Token);
                             responseReceived = true;
                             if (response.RequestId is not null) trace["providerRequestIds"]!.AsArray().Add(response.RequestId);
                             usage = response.Usage;
@@ -260,7 +260,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         finally
                         {
                             using var settlement = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                            var uncertain = !limits.AccountingEnabled && requestSent && !responseReceived &&
+                            uncertain = requestSent && !responseReceived &&
                                 (deadline.IsCancellationRequested || retry?.ProviderRejected != true && (retry?.Failure is AiFailure.Unavailable or AiFailure.OutputLimit));
                             if (reservation is not null && !uncertain) await ledger.SettleAsync(reservation, usage, model, limits, settlement.Token);
                             var charged = mock ? new AiUsage(0, 0, false) : usage ?? new(limits.InputTokens, limits.OutputTokens, true);
@@ -270,6 +270,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                             trace["usageEstimated"] = trace["usageEstimated"]!.GetValue<bool>() || charged.Estimated;
                             await Save(settlement.Token);
                         }
+                        if (uncertain && retry is not null) throw retry;
                         if (retry is null) break;
                         if (!retry.Retryable || attempt == limits.Attempts) throw retry;
                         var delay = retry.RetryAfter ?? TimeSpan.FromSeconds(Math.Pow(2, attempt - 1));

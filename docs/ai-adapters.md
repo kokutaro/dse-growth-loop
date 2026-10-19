@@ -114,3 +114,5 @@ Disabledでは `MaxAttempts=1`、`MaxConcurrency=1` を必須とし、停止ス�
 timeout・通信結果不明では実行スロットを自動開放せず、自動再試行しない。既存の停止・提供元終了確認を伴うオフライン復旧でのみ開放する。業務分析復旧は各runに記録したaccountingModeから会計予約／実行状態を区別し、古い予約や別runを変更しない。Unknown mode、複数試行・同時実行設定はfail closedとする。
 
 Disabledの `--recover-ai-slot` には `Recovery__ProcessesStopped=true` に加え、`Recovery__ApiStopped` / `WorkerStopped` / `ProvidersStopped` の明示確認、`Recovery__ApprovalReference`、`StopEvidenceReference`、64桁SHA-256の `StopEvidenceSha256` が必要。API/Workerの停止だけでは、timeout後の提供元処理の終了確認に代えられない。復旧はこれらの証跡参照を実行状態に残す。確定したHTTP拒否では通常AIゲートと業務分析スロットを解放するが、同じ処理の自動再送は行わない。
+
+共有ゲートを使用するLedger/Disabledの両モードで、送信後のキャンセル・timeout・結果不明の通信失敗はpendingを保持し、自動再試行しない。明確な拒否以外の5xxも結果不明として扱う。単独slot復旧の提供元終了・停止証跡は両モードで必須であり、モード切替だけでpendingを解放できない。

@@ -253,8 +253,8 @@ public partial class AiTests
     [InlineData(401, 1, AiFailure.Unauthorized)]
     [InlineData(403, 1, AiFailure.Unauthorized)]
     [InlineData(429, 2, AiFailure.RateLimited)]
-    [InlineData(500, 2, AiFailure.Unavailable)]
-    [InlineData(529, 2, AiFailure.Unavailable)]
+    [InlineData(500, 1, AiFailure.Unavailable)]
+    [InlineData(529, 1, AiFailure.Unavailable)]
     public async Task Http_errors_are_bounded_and_each_retry_reserves_spend(int status, int expectedCalls, AiFailure failure)
     {
         var store = new MemoryRecordStore();
@@ -391,7 +391,8 @@ public partial class AiTests
             var restarted = Ledger();
             await Assert.ThrowsAsync<AiException>(() => restarted.ReserveAsync("demo", "run-new", model, limits, 8000, 1000, default));
             await Assert.ThrowsAsync<ArgumentException>(() => restarted.RecoverSlotAsync("demo", reserved.Id, false, default));
-            await restarted.RecoverSlotAsync("demo", reserved.Id, true, default);
+            await Assert.ThrowsAsync<ArgumentException>(()=>restarted.RecoverSlotAsync("demo",reserved.Id,true,default));
+            await restarted.RecoverSlotAsync("demo", reserved.Id, true, default,new(true,true,true,"reviewed-approval","provider-stop-proof",new string('a',64)));
             var strict = limits with { DailyTokens = 9000 };
             Assert.Equal(AiFailure.Budget, (await Assert.ThrowsAsync<AiException>(() => restarted.ReserveAsync("demo", "run-next", model, strict, 8000, 1000, default))).Failure);
             clock.Now = clock.Now.AddDays(1);
@@ -438,15 +439,25 @@ public partial class AiTests
     }
 
     [Fact]
-    public async Task Caller_cancellation_records_failure_and_releases_slot()
+    public async Task Ledger_cancellation_retains_shared_slot_until_provider_quiescence_before_disabled_admission()
     {
-        using var cancel = new CancellationTokenSource();
-        var handler = new Handler(async (_, ct) => { cancel.Cancel(); await Task.Delay(Timeout.Infinite, ct); return Response(""); });
-        var store = new MemoryRecordStore(); using var service = Service(Config(), store, handler);
-        var result = await Decide(service, ct: cancel.Token);
-        Assert.Equal(AiFailure.Cancelled, result.Failure);
-        var gate = (await store.ReadAsync(RecordPartition.Catalog("demo"), "system-ai-gate", default))!;
-        Assert.Empty(gate.Value.Strings("active"));
+        using var cancel=new CancellationTokenSource();
+        var pending=new TaskCompletionSource<HttpResponseMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var handler=new Handler((_,_)=>{cancel.Cancel();return pending.Task;});
+        var store=new MemoryRecordStore();using var service=Service(Config(),store,handler);
+        try
+        {
+            var result=await Decide(service,ct:cancel.Token).WaitAsync(TimeSpan.FromSeconds(5));Assert.Equal(AiFailure.Cancelled,result.Failure);Assert.Equal(1,handler.Calls);
+            var gate=(await store.ReadAsync(RecordPartition.Catalog("demo"),"system-ai-gate",default))!;var id=Assert.Single(gate.Value.Strings("active"));
+            var ledger=new AiLedger(store,TimeProvider.System);var disabled=AiLimits.Read(AccountingOff());var model=AiModel.Read(AccountingOff(),"Jev",1000);
+            Assert.Equal(AiFailure.Busy,(await Assert.ThrowsAsync<AiException>(()=>ledger.ReserveAsync("demo","new-mode-call",model,disabled,100,100,default))).Failure);
+            await Assert.ThrowsAsync<ArgumentException>(()=>ledger.RecoverSlotAsync("demo",id,true,default));
+            pending.TrySetResult(Response(Fixture("choice"))); // Provider completion is independently confirmed before recovery.
+            await ledger.RecoverSlotAsync("demo",id,true,default,new(true,true,true,"offline-reviewed","provider-stop-proof",new string('a',64)));
+            var next=await ledger.ReserveAsync("demo","new-mode-call",model,disabled,100,100,default);Assert.True(next.AccountingDisabled);
+            await ledger.SettleAsync(next,new(90,90,false),model,disabled,default);Assert.Equal(1,handler.Calls);
+        }
+        finally {pending.TrySetResult(Response(Fixture("choice")));}
     }
 
     [Theory]
