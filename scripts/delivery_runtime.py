@@ -234,7 +234,8 @@ class Azure:
         require(current['properties']['template'].get('revisionSuffix')==expected_revision,'PRODUCTION_REVISION_DRIFT')
         require(preserved(current)==expected_settings,'PRODUCTION_SETTINGS_DRIFT')
         require(current['properties']['provisioningState'] in ('Succeeded','Failed','Canceled'),'PRODUCTION_OPERATION_IN_FLIGHT')
-        require(current['properties']['runningStatus']==('Running' if component=='api' else 'Stopped'),'PRODUCTION_RUNNING_STATE_CHANGED')
+        if component=='worker':production_worker_state(current)
+        else:require(current['properties']['runningStatus']=='Running','PRODUCTION_RUNNING_STATE_CHANGED')
         candidate=copy.deepcopy(current);candidate['properties']['template']=template
         require(preserved(candidate)==preserved(current),'PRODUCTION_SETTINGS_DRIFT')
         image_ref(template['containers'][0]['image'],'dse-'+component)
@@ -252,9 +253,21 @@ class Azure:
                 if owned_revision is not None:
                     require(p['template'].get('revisionSuffix')==owned_revision and p.get('latestRevisionName')=='dse-'+component+'--'+owned_revision,'PRODUCTION_REVISION_DRIFT')
                 if component=='worker':
-                    require(p['runningStatus']=='Stopped','PRODUCTION_RUNNING_STATE_CHANGED')
-                    container=p['template']['containers'][0]
-                    require(container.get('command')==['/bin/sleep'] and container.get('args')==['infinity'],'WORKER_NON_EXECUTION_GUARD_REQUIRED')
+                    if production_worker_state(value)=='Running':
+                        latest=p.get('latestRevisionName')
+                        require(isinstance(latest,str) and re.fullmatch('dse-worker--[a-z0-9-]+',latest),'INVALID_REVISION_NAME')
+                        if p.get('latestReadyRevisionName')==latest:
+                            base=self.settings.app_id('dse-worker',False)+'/revisions/'+latest
+                            revision=self.rest('get',base)['properties']
+                            require(revision.get('active') is True,'PRODUCTION_WORKER_REVISION_INACTIVE')
+                            if revision.get('healthState')=='Healthy':
+                                replicas=self.rest('get',base+'/replicas')
+                                require(not replicas.get('nextLink'),'REPLICA_LIST_INCOMPLETE')
+                                if any(replica['properties'].get('runningState')=='Running' and
+                                    replica['properties'].get('containers') and all(
+                                        container.get('ready') is True and container.get('runningState')=='Running'
+                                        for container in replica['properties']['containers']) for replica in replicas['value']):return value
+                        time.sleep(5);continue
                     latest=p['latestRevisionName']
                     for revision in self.worker_revisions():
                         require(revision['replicas']==0,'WORKER_NOT_STOPPED')

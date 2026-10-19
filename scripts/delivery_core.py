@@ -184,10 +184,19 @@ def inventory(settings, az, gh):
 
 def preserved(resource):
     value=copy.deepcopy(resource)
-    p=value['properties'];p={k:p.get(k) for k in ('configuration','template','managedEnvironmentId','environmentId','workloadProfileName')}
+    p=value['properties'];p={k:p.get(k) for k in ('configuration','template','managedEnvironmentId','environmentId','workloadProfileName','runningStatus')}
     p['template'].pop('revisionSuffix',None)
     for container in p['template']['containers']:container.pop('image',None)
     return {'properties':p,'identity':value.get('identity'),'tags':value.get('tags'),'location':value.get('location')}
+
+def production_worker_state(value):
+    p=value['properties'];container=p['template']['containers'][0];state=p['runningStatus']
+    require(state in ('Running','Stopped'),'PRODUCTION_RUNNING_STATE_CHANGED')
+    if state=='Stopped':
+        require(container.get('command')==['/bin/sleep'] and container.get('args')==['infinity'],'WORKER_NON_EXECUTION_GUARD_REQUIRED')
+    else:
+        require(not container.get('command') and container.get('args') in (None,[],['--consume']),'WORKER_CONSUMER_COMMAND_REQUIRED')
+    return state
 
 def production_operation(settings, sha, images, az, gh):
     commit(sha);require(set(images)=={'api','worker'},'BOTH_IMAGES_REQUIRED')
@@ -199,12 +208,12 @@ def production_operation(settings, sha, images, az, gh):
         p=value['properties']
         require(p['provisioningState']=='Succeeded','PRODUCTION_OPERATION_IN_FLIGHT')
         require(p.get('managedEnvironmentId',p.get('environmentId','')).lower()==settings.environment(False).lower(),'PRODUCTION_ENVIRONMENT_MISMATCH')
-        require(p['runningStatus']==('Running' if name=='api' else 'Stopped'),'PRODUCTION_RUNNING_STATE_CHANGED')
+        require(p['runningStatus'] in (('Running',) if name=='api' else ('Running','Stopped')),'PRODUCTION_RUNNING_STATE_CHANGED')
         require(len(p['template']['containers'])==1,'PRODUCTION_CONTAINER_COUNT')
         image_ref(p['template']['containers'][0]['image'],'dse-'+name)
-    wc=original['worker']['properties']['template']['containers'][0]
-    require(wc.get('command')==['/bin/sleep'] and wc.get('args')==['infinity'],'WORKER_NON_EXECUTION_GUARD_REQUIRED')
-    require(all(not r['active'] and r['replicas']==0 for r in az.worker_revisions()),'WORKER_NOT_STOPPED')
+    worker_state=production_worker_state(original['worker'])
+    if worker_state=='Stopped':
+        require(all(not r['active'] and r['replicas']==0 for r in az.worker_revisions()),'WORKER_NOT_STOPPED')
     changed=[]
     expected_revisions={n:v['properties']['template'].get('revisionSuffix') for n,v in original.items()}
     try:
@@ -235,7 +244,8 @@ def production_operation(settings, sha, images, az, gh):
             require(final['properties']['runningStatus']==original[name]['properties']['runningStatus'],'PRODUCTION_RUNNING_STATE_CHANGED')
             require(final['properties']['template']['containers'][0]['image']==images[name],'PRODUCTION_IMAGE_DRIFT')
             require(final['properties']['template'].get('revisionSuffix')==expected_revisions[name],'PRODUCTION_REVISION_DRIFT')
-        require(all(not r['active'] and r['replicas']==0 for r in az.worker_revisions()),'WORKER_NOT_STOPPED')
+        if worker_state=='Stopped':
+            require(all(not r['active'] and r['replicas']==0 for r in az.worker_revisions()),'WORKER_NOT_STOPPED')
         return {'status':'ready','sha':sha,'images':images,
             'rollbackImages':{n:original[n]['properties']['template']['containers'][0]['image'] for n in original}}
     except Exception as original_error:
