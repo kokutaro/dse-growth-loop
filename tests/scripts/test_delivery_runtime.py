@@ -349,6 +349,31 @@ class AzureAdapterTests(unittest.TestCase):
         az.rest=MagicMock(return_value={'value':[dict(row,name='../bad')]})
         with self.assertRaises(d.DeliveryError):az.worker_revisions()
 
+    def test_running_worker_wait_is_read_only_and_requires_a_ready_latest_revision(self):
+        az=r.Azure(SETTINGS);worker=production_app('worker');p=worker['properties'];p['runningStatus']='Running'
+        p['template']['containers'][0].update(command=None,args=None)
+        p.update(latestRevisionName='dse-worker--cd-test',latestReadyRevisionName='dse-worker--cd-test')
+        p['template']['revisionSuffix']='cd-test'
+        pending=copy.deepcopy(worker);pending['properties']['latestReadyRevisionName']='old'
+        az.get_app=MagicMock(side_effect=[pending,worker]);az.rest=MagicMock()
+        with patch.object(r.time,'sleep'):
+            self.assertEqual(az.wait_production('worker',p['template']['containers'][0]['image'],'cd-test'),worker)
+        az.rest.assert_not_called()
+
+    def test_running_worker_patch_preserves_live_configuration(self):
+        az=r.Azure(SETTINGS);worker=production_app('worker');p=worker['properties'];p['runningStatus']='Running'
+        p['template']['containers'][0].update(command=None,args=None)
+        az.production=MagicMock(return_value=worker);az.rest=MagicMock()
+        template=copy.deepcopy(p['template']);template['containers'][0]['image']=d.REGISTRY+'/dse-worker@sha256:'+'e'*64
+        az.patch_production('worker',template,p['template']['containers'][0]['image'],None,expected_settings=d.preserved(worker))
+        self.assertEqual(az.rest.call_args.args[0],'patch')
+
+    def test_running_state_drift_is_rejected_at_adapter_boundary(self):
+        az=r.Azure(SETTINGS);worker=production_app('worker');before=copy.deepcopy(worker)
+        worker['properties']['runningStatus']='Running';az.production=MagicMock(return_value=worker);az.rest=MagicMock()
+        with self.assertRaises(d.DeliveryError):az.patch_production('worker',before['properties']['template'],before['properties']['template']['containers'][0]['image'],None,expected_settings=d.preserved(before))
+        az.rest.assert_not_called()
+
     def test_worker_wait_deactivates_only_new_revision_and_api_health_is_read_only(self):
         az=r.Azure(SETTINGS);worker=production_app('worker');p=worker['properties'];p.update(latestRevisionName='dse-worker--cd-test')
         p['template']['revisionSuffix']='cd-test'

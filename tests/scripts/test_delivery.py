@@ -174,6 +174,20 @@ class ProductionAzure:
 
 class ProductionDeliveryTests(unittest.TestCase):
     def images(self):return {n:d.REGISTRY+'/dse-'+n+'@sha256:'+'e'*64 for n in ['api','worker']}
+    def test_running_worker_and_live_ai_are_preserved_on_deploy_and_rollback(self):
+        for failure in (None,'api'):
+            with self.subTest(failure=failure):
+                az=ProductionAzure();worker=az.apps['worker']['properties'];worker['runningStatus']='Running'
+                worker['template']['containers'][0].update(command=None,args=None)
+                worker['template']['scale']['minReplicas']=1;az.revisions=[{'active':True,'replicas':1}]
+                original=copy.deepcopy(az.apps);az.fail_once=failure
+                if failure:
+                    with self.assertRaisesRegex(d.DeliveryError,'PROVIDER_FAILED'):d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())
+                else:self.assertEqual(d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())['status'],'ready')
+                for name in ('api','worker'):
+                    self.assertEqual(d.preserved(az.apps[name]),d.preserved(original[name]))
+                    self.assertEqual(az.apps[name]['properties']['runningStatus'],'Running')
+                    if failure:self.assertEqual(az.apps[name]['properties']['template']['containers'][0]['image'],original[name]['properties']['template']['containers'][0]['image'])
     def test_only_images_and_suffix_change_and_existing_live_settings_are_preserved(self):
         az=ProductionAzure();original=copy.deepcopy(az.apps)
         result=d.production_operation(SETTINGS,SHA,self.images(),az,GitHub())

@@ -234,7 +234,8 @@ class Azure:
         require(current['properties']['template'].get('revisionSuffix')==expected_revision,'PRODUCTION_REVISION_DRIFT')
         require(preserved(current)==expected_settings,'PRODUCTION_SETTINGS_DRIFT')
         require(current['properties']['provisioningState'] in ('Succeeded','Failed','Canceled'),'PRODUCTION_OPERATION_IN_FLIGHT')
-        require(current['properties']['runningStatus']==('Running' if component=='api' else 'Stopped'),'PRODUCTION_RUNNING_STATE_CHANGED')
+        if component=='worker':production_worker_state(current)
+        else:require(current['properties']['runningStatus']=='Running','PRODUCTION_RUNNING_STATE_CHANGED')
         candidate=copy.deepcopy(current);candidate['properties']['template']=template
         require(preserved(candidate)==preserved(current),'PRODUCTION_SETTINGS_DRIFT')
         image_ref(template['containers'][0]['image'],'dse-'+component)
@@ -252,9 +253,9 @@ class Azure:
                 if owned_revision is not None:
                     require(p['template'].get('revisionSuffix')==owned_revision and p.get('latestRevisionName')=='dse-'+component+'--'+owned_revision,'PRODUCTION_REVISION_DRIFT')
                 if component=='worker':
-                    require(p['runningStatus']=='Stopped','PRODUCTION_RUNNING_STATE_CHANGED')
-                    container=p['template']['containers'][0]
-                    require(container.get('command')==['/bin/sleep'] and container.get('args')==['infinity'],'WORKER_NON_EXECUTION_GUARD_REQUIRED')
+                    if production_worker_state(value)=='Running':
+                        if p.get('latestReadyRevisionName')==p.get('latestRevisionName'):return value
+                        time.sleep(5);continue
                     latest=p['latestRevisionName']
                     for revision in self.worker_revisions():
                         require(revision['replicas']==0,'WORKER_NOT_STOPPED')
