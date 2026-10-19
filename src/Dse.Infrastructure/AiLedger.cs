@@ -15,6 +15,7 @@ public sealed class AiException(AiFailure failure, bool retryable = false, TimeS
     public AiFailure Failure { get; } = failure;
     public AiValidationIssue? ValidationIssue { get; } = validationIssue;
     public bool Retryable { get; } = retryable;
+    public bool ProviderRejected { get; init; }
     public TimeSpan? RetryAfter { get; } = retryAfter;
     public string? RequestId { get; } = requestId;
 }

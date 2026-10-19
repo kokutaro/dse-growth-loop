@@ -261,7 +261,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         {
                             using var settlement = new CancellationTokenSource(TimeSpan.FromSeconds(10));
                             var uncertain = !limits.AccountingEnabled && requestSent && !responseReceived &&
-                                (deadline.IsCancellationRequested || retry?.Failure is AiFailure.Unavailable or AiFailure.OutputLimit);
+                                (deadline.IsCancellationRequested || retry?.ProviderRejected != true && (retry?.Failure is AiFailure.Unavailable or AiFailure.OutputLimit));
                             if (reservation is not null && !uncertain) await ledger.SettleAsync(reservation, usage, model, limits, settlement.Token);
                             var charged = mock ? new AiUsage(0, 0, false) : usage ?? new(limits.InputTokens, limits.OutputTokens, true);
                             trace["inputTokens"] = trace["inputTokens"]!.GetValue<long>() + charged.Input;

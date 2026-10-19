@@ -24,6 +24,23 @@ class CostControlsTests(unittest.TestCase):
                         {'name': 'Foundry__ApiKey', 'secretRef': 'dummy-reference'},
                         {'name': 'BusinessAnalysis__RunId', 'value': 'stale-run'}]}]}}}
 
+    def test_disabled_accounting_parameters_keep_safety_without_budget_or_fx(self):
+        from cost_config import parameters
+        env = {'AiUsage__AccountingMode': 'Disabled', 'AI_STOPPED': 'false', 'Ai__Mode': 'Live',
+               'AiUsage__LiveOptIn': 'true', 'AI_BUDGET_PERIOD': 'Weekly'}
+        value = parameters(env)
+        runtime = {e['name']: e['value'] for e in value['runtimeSettings']}
+        self.assertEqual(runtime['AiUsage__AccountingMode'], 'Disabled')
+        self.assertEqual(runtime['AiUsage__MaxAttempts'], '1')
+        self.assertEqual(runtime['AiUsage__MaxConcurrency'], '1')
+        self.assertEqual(runtime['AiUsage__Stopped'], 'false')
+        self.assertEqual(runtime['AiUsage__LiveOptIn'], 'true')
+        self.assertEqual(value['approvedMonthlyBudgetJpy'], 0)
+        self.assertFalse(value['deployIngestionWorker'])
+        for override in ({'AiUsage__AccountingMode': 'unknown'}, {'AiUsage__MaxAttempts': '2'}, {'AiUsage__MaxConcurrency': '2'}):
+            with self.subTest(override=override), self.assertRaises(ValueError):
+                parameters({**env, **override})
+
     def test_analysis_plan_preserves_runtime_and_secret_references_and_replaces_per_run_values(self):
         snapshot = self.analysis_snapshot(); before = copy.deepcopy(snapshot)
         template = deploy.analysis_execution_template(snapshot, 'person-review', 'run-review', '2026-10-11T10:00:00+09:00')

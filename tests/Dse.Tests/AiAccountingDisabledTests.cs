@@ -16,6 +16,16 @@ public partial class AiTests
         c["AiUsage:PriceVersion"] = ""; c["AiUsage:FxVersion"] = ""; c["AiUsage:BudgetPeriod"] = "Weekly";
         return c;
     }
+    [Fact]
+    public void Disabled_accounting_smoke_needs_explicit_bounded_dummy_approval_but_no_budget()
+    {
+        var c=AccountingOff();c["Data:Mode"]="Azure";
+        c["AiSmoke:Approved"]="true";c["AiSmoke:DummyOnly"]="true";c["AiSmoke:OperatorPersonId"]="demo-person-01";
+        c["AiSmoke:ApprovalReference"]="approved-dummy-check";c["AiSmoke:Count"]="2";
+        c["AiSmoke:MaxInputTokens"]="8000";c["AiSmoke:MaxOutputTokens"]="1000";
+        AiSmoke.Validate(c);
+        c["AiSmoke:DummyOnly"]="false";Assert.Throws<InvalidOperationException>(()=>AiSmoke.Validate(c));
+    }
     private sealed class AccountingProbe(MemoryRecordStore inner) : IRecordStore
     {
         public List<string> ReadIds = []; public List<string> WrittenKinds = [];
@@ -73,12 +83,12 @@ public partial class AiTests
     [Theory] [InlineData("AiUsage:MaxAttempts","2")] [InlineData("AiUsage:MaxConcurrency","2")] [InlineData("AiUsage:AccountingMode","unknown")]
     public void Disabled_accounting_rejects_unbounded_or_ambiguous_runtime_settings(string key,string value)
     {var c=AccountingOff();c[key]=value;Assert.Throws<InvalidOperationException>(()=>AiLimits.Read(c));}
-    [Fact]
-    public async Task Disabled_accounting_live_success_and_provider_rejection_do_not_create_accounting_rows_or_retry()
+    [Theory] [InlineData(200)] [InlineData(400)] [InlineData(404)] [InlineData(429)]
+    public async Task Disabled_accounting_live_success_and_provider_rejection_do_not_create_accounting_rows_or_retry(int status)
     {
-        foreach(var rejected in new[]{false,true})
+        var rejected = status != 200;
         {
-            var c=AccountingOff();var memory=new MemoryRecordStore();var probe=new AccountingProbe(memory);var wire=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"),rejected?HttpStatusCode.TooManyRequests:HttpStatusCode.OK)));
+            var c=AccountingOff();var memory=new MemoryRecordStore();var probe=new AccountingProbe(memory);var wire=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"),(HttpStatusCode)status)));
             using var service=Service(c,probe,wire);var result=await Decide(service);
             Assert.Equal(rejected?AiStatus.Failed:AiStatus.Succeeded,result.Status);Assert.Equal(1,wire.Calls);
             Assert.DoesNotContain(probe.WrittenKinds,kind=>kind is "aiUsageDay" or "aiUsageWeek" or "aiReservation");
@@ -86,6 +96,11 @@ public partial class AiTests
             Assert.Equal("completed",execution.Value.Text("state"));
             var run=Assert.Single((await memory.QueryAsync(RecordPartition.Catalog("demo"),"aiRun",null,null,100,null,default)).Items);
             Assert.Null(run.Value["trace"]!["estimatedCostJpy"]);
+            if (rejected)
+            {
+                Assert.NotEqual(AiFailure.Busy,(await Decide(service,Context() with {JobId="corrected-job"})).Failure);
+                Assert.Equal(2,wire.Calls);
+            }
             if (!rejected)
             {
                 var output=Path.Combine(Root,"tests/Dse.Tests/TestResults");Directory.CreateDirectory(output);

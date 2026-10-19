@@ -71,7 +71,7 @@ public sealed class AiHttpTransport(HttpClient http, IAiCredentials credentials,
             var retry = response.Headers.RetryAfter?.Delta ?? (response.Headers.RetryAfter?.Date - clock.GetUtcNow());
             if (retry < TimeSpan.Zero) retry = TimeSpan.Zero;
             throw new AiException(status is 401 or 403 ? AiFailure.Unauthorized : status == 429 ? AiFailure.RateLimited : AiFailure.Unavailable,
-                status == 429 || status >= 500, retry, requestId);
+                status == 429 || status >= 500, retry, requestId) { ProviderRejected = status is >= 400 and < 500 and not 408 };
         }
         var bytes = await ReadBoundedAsync(response, maxResponseBytes, ct);
         try

@@ -269,6 +269,14 @@ class ContractsTests(unittest.TestCase):
             broken["trace"].update(accountingMode=mode, estimatedCostJpy=cost)
             self.assertFalse(self.validator("AiRun").is_valid(broken))
 
+    def test_business_analysis_traces_match_both_accounting_modes(self):
+        for mode in ("disabled", "ledger"):
+            value = json.loads((ROOT / f"tests/Dse.Tests/TestResults/business-ai-run-{mode}.json").read_text())
+            self.validator("RunTrace").validate(value["trace"])
+            self.assertEqual(value["trace"]["accountingMode"], mode.title())
+            if mode == "disabled":
+                self.assertIsNone(value["trace"]["estimatedCostJpy"])
+
     def test_fixture_compatibility_uses_actual_domain_serialization(self):
         # Exported by FixtureContractTests; no second hand-copied fixture.
         fixture_path = ROOT / "tests/Dse.Tests/TestResults/contract-fixture.json"

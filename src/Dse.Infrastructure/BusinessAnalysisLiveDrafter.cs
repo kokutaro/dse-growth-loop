@@ -85,7 +85,7 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
             if (hypothesis is not null && BusinessAnalysisLivePrivacy.HypothesisText(hypothesis).Any(text => AnonymousWorkspaceKnownIdentifiers.Contains(text, currentInput.Known))) throw new AiException(AiFailure.SchemaMismatch);
             status = hypothesis is null ? AiStatus.NotEvaluated : AiStatus.Succeeded;
         }
-        catch (AiException e) { failure = e.Failure; uncertainExecution |= sent && !responseReceived && e.Failure is AiFailure.Unavailable or AiFailure.OutputLimit; if (e.RequestId is not null && RecordJson.IsId(e.RequestId)) trace["providerRequestIds"]!.AsArray().Add(e.RequestId); }
+        catch (AiException e) { failure = e.Failure; uncertainExecution |= sent && !responseReceived && !e.ProviderRejected && (e.Failure is AiFailure.Unavailable or AiFailure.OutputLimit); if (e.RequestId is not null && RecordJson.IsId(e.RequestId)) trace["providerRequestIds"]!.AsArray().Add(e.RequestId); }
         catch (DomainException e) when (e.Status < 500) { failure = e.Code == "SOURCE_REVOKED" ? AiFailure.InventedId : e.Code == "AI_BUDGET_STOPPED" ? AiFailure.Stopped : AiFailure.Configuration; }
         catch (OperationCanceledException) { uncertainExecution = sent; failure = ct.IsCancellationRequested ? AiFailure.Cancelled : AiFailure.Timeout; }
         catch (Exception e) when (e is HttpRequestException or IOException) { uncertainExecution = sent && !responseReceived; failure = AiFailure.Unavailable; }
