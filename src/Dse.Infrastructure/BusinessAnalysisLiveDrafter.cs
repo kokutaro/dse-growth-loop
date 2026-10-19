@@ -48,8 +48,8 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
             ["inputHash"] = ConversationService.Hash(RecordJson.Canonical(body) + RecordJson.Canonical(AiCodecs.Node(snapshots))),
             ["evidenceIds"] = RecordJson.Array(sources.Select(s => s.KnowledgeId).Order()), ["inputTokens"] = 0L, ["outputTokens"] = 0L,
             ["inputByteBound"] = inputBytes, ["requestUnits"] = null, ["requestUnitsStatus"] = "not_collected", ["retryCount"] = 0, ["attemptCount"] = 0,
-            ["estimatedCostJpy"] = 0m, ["pricingVersion"] = limits.PriceVersion, ["fxVersion"] = limits.FxVersion,
-            ["usageEstimated"] = false, ["durationMs"] = 0L, ["providerRequestIds"] = new JsonArray()
+            ["estimatedCostJpy"] = limits.AccountingEnabled ? JsonValue.Create(0m) : null, ["pricingVersion"] = limits.PriceVersion, ["fxVersion"] = limits.FxVersion,
+            ["accountingMode"] = limits.AccountingEnabled ? "Ledger" : "Disabled", ["usageEstimated"] = false, ["durationMs"] = 0L, ["providerRequestIds"] = new JsonArray()
         };
         var audit = RecordJson.New("aiRun", runId, actor.TenantId, actor.PrincipalId, actor.ScopeIds, clock.GetUtcNow());
         audit["jobId"] = jobId; audit["container"] = "catalog"; audit["sessionId"] = null; audit["operation"] = PromptVersion;
@@ -101,7 +101,7 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
                 if (!uncertainExecution) await ledger.SettleAsync(reservation, usage, model, limits, finalize.Token);
                 var charged = usage ?? new AiUsage(reservation.Input, reservation.Output, true);
                 trace["inputTokens"] = charged.Input; trace["outputTokens"] = charged.Output;
-                trace["estimatedCostJpy"] = model.Cost(charged.Input, charged.Output, limits); trace["usageEstimated"] = charged.Estimated;
+                trace["estimatedCostJpy"] = limits.AccountingEnabled ? model.Cost(charged.Input, charged.Output, limits) : null; trace["usageEstimated"] = charged.Estimated;
             }
             if (failure is not null)
             {

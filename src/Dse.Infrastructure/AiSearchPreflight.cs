@@ -29,11 +29,11 @@ public static class AiSearchPreflight
             if (limits.Stopped) Add("AI_STOPPED", "AiUsage:Stopped");
             if (!limits.LiveOptIn) Add("LIVE_OPT_IN_REQUIRED", "AiUsage:LiveOptIn");
             if (limits.OutputTokens < requiredOutput) Add("CLASSIFICATION_OUTPUT_TOO_SMALL", "AiUsage:MaxOutputTokens");
-            if (limits.DailyTokens <= 0 || limits.UsdToJpy <= 0 ||
+            if (limits.AccountingEnabled && (limits.DailyTokens <= 0 || limits.UsdToJpy <= 0 ||
                 (!limits.Weekly && (limits.DailyCalls <= 0 || limits.DailyJpy <= 0)) ||
                 (limits.Weekly && (limits.WeeklyCalls <= 0 || limits.WeeklyTotalJpy <= 0)) ||
                 string.IsNullOrWhiteSpace(limits.PriceVersion) || limits.PriceVersion == "unapproved" ||
-                string.IsNullOrWhiteSpace(limits.FxVersion) || limits.FxVersion == "unapproved")
+                string.IsNullOrWhiteSpace(limits.FxVersion) || limits.FxVersion == "unapproved"))
                 Add("AI_RUNTIME_NOT_CONFIGURED", "AiUsage:DailyTokenLimit", "AiUsage:BudgetPeriod",
                     "AiUsage:DailyCallLimit", "AiUsage:DailyEstimatedJpyLimit", "AiUsage:WeeklyCallLimit",
                     "AiUsage:WeeklyTotalJpyLimit", "AiUsage:UsdToJpy", "AiUsage:PriceVersion", "AiUsage:FxVersion");

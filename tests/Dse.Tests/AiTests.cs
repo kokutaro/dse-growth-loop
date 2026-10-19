@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Dse.Tests;
 
-public class AiTests
+public partial class AiTests
 {
     private static string Root => FindRoot();
     private static string FindRoot()

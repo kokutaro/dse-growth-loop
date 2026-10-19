@@ -566,16 +566,18 @@ public sealed class BusinessAnalysisTests
     }
     private static BusinessAnalysisRecoveryRequest RecoveryRequest(JsonObject inspection, string runId) => new(runId, Analyst.PrincipalId, inspection.Text("runEtag"), inspection.Text("slotEtag"),
         "approval-local-fake", true, true, true, "stop-evidence-local-fake", new string('a', 64), inspection.Strings("pendingReservationIds"));
-    [Fact]
-    public async Task Timeout_retains_pending_cost_and_slot_until_evidence_based_offline_recovery_without_retry()
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Timeout_retains_pending_cost_or_execution_slot_until_evidence_based_offline_recovery_without_retry(bool accountingDisabled)
     {
         using var s = await CreateLive(recoveryOperator:true); s.Config["AiUsage:TimeoutSeconds"] = "1";
+        if (accountingDisabled) { s.Config["AiUsage:AccountingMode"] = "Disabled"; s.Config["AiUsage:MaxAttempts"] = "1"; }
+        var reservationKind = accountingDisabled ? "aiExecution" : "aiReservation";
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         s.Wire.During = async () => { entered.SetResult(); await release.Task; }; // Ignores cancellation, just like an uncertain remote request.
         var request = LiveRequest(); var task = StartLive(s, request); await entered.Task; var result = await task;
         Assert.Equal("partial_failure", result.Text("status")); Assert.True(result["recoveryRequired"]!.GetValue<bool>());
         Assert.Equal("ANALYSIS_RECOVERY_REQUIRED", (await Assert.ThrowsAsync<DomainException>(() => StartLive(s, LiveRequest()))).Code);
-        Assert.Equal(1, s.Wire.Calls); var pending = Assert.Single((await Rows(s, "aiReservation")).Items); Assert.Equal("pending", pending.Value.Text("state"));
+        Assert.Equal(1, s.Wire.Calls); var pending = Assert.Single((await Rows(s, reservationKind)).Items); Assert.Equal("pending", pending.Value.Text("state"));
         var gate = (await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "system-ai-gate", default))!; Assert.Contains(pending.Value.Text("id"), gate.Value.Strings("active"));
         release.SetResult(); await s.Wire.Finished.Task; // Tests terminate their fake; real offline termination requires independently reviewed evidence.
         s.Config["AiUsage:Stopped"] = "true"; s.Config["AiUsage:LiveOptIn"] = "false";
@@ -586,9 +588,10 @@ public sealed class BusinessAnalysisTests
         await Assert.ThrowsAsync<ArgumentException>(() => recovery.RecoverAsync(LiveOperator, input with { StopEvidenceSha256 = "invalid" }, default));
         Assert.Equal("STALE_VERSION", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(LiveOperator, input with { SlotETag = "\"stale-version\"" }, default))).Code);
         Assert.Equal("RECOVERY_RESERVATION_MISMATCH", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(LiveOperator, input with { PendingReservationIds = [] }, default))).Code);
-        var dayBefore = (await Day(s)).Value.ToJsonString();
+        var dayBefore = accountingDisabled ? null : (await Day(s)).Value.ToJsonString();
         var recovered = await recovery.RecoverAsync(LiveOperator, input, default); Assert.Equal("aborted", recovered.Text("status")); Assert.Equal(0m, recovered["refundedJpy"]!.GetValue<decimal>());
-        Assert.Equal(dayBefore, (await Day(s)).Value.ToJsonString()); Assert.Equal("uncertain", Assert.Single((await Rows(s, "aiReservation")).Items).Value.Text("state"));
+        if (!accountingDisabled) Assert.Equal(dayBefore, (await Day(s)).Value.ToJsonString());
+        else { Assert.Empty((await Rows(s,"aiReservation")).Items); Assert.Null(await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant),"ai-day-"+DateTimeOffset.UtcNow.ToString("yyyy-MM-dd"),default)); } Assert.Equal("uncertain", Assert.Single((await Rows(s, reservationKind)).Items).Value.Text("state"));
         Assert.Empty((await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "system-ai-gate", default))!.Value.Strings("active"));
         Assert.Equal("ready", (await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "business-analysis-slot", default))!.Value.Text("status"));
         var saved = (await s.Service.GetAsync(LiveAnalyst, request.RunId, default)); Assert.Equal("aborted", saved.Text("status")); Assert.Empty(saved["groups"]!.AsArray()); Assert.Null(saved["sourceCount"]);
