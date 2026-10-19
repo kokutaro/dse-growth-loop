@@ -31,7 +31,7 @@ closed runの `pull_requests` が空の場合は、GitHubのcommit→PR正本を
 
 本番は `dse-growth-loop-rg / dse-environment` の `dse-api` と `dse-worker` に固定し、`infra/main.bicep` 全体を再適用しない。環境変数、AI設定、認証、Identity、ネットワーク、scale、コマンド、タグを保存前後で照合する。PATCHはtemplateのimageとrevisionSuffixだけを変える。更新と復帰の両方で期待する更新前digest・revision・設定全体の基準をアダプターへ渡し、送信直前の再読取でtemplate外のconfiguration/Identity/tagを含む変化を拒否する。Azureの読取とPATCHは別要求であり、その間の外部変更を原子的に防ぐ保証はない。配備中の手動image更新は避け、ドリフトや復帰未確認は操作者が確認する。
 
-2026-10-19の運用変更では、Workerを通常ConsumerでRunning、API/Workerの実AIをLive・停止解除・opt-in有効のまま維持する。Workerの常駐はminReplicas=1、maxReplicas=1とする。CDはこの設定を作成・変更せず、開始時のRunning/Stopped状態とAIを含む既存設定を保全する。Running Workerはイメージ既定entrypoint（引数なし、または`--consume`）に限定し、新しい最新revisionのReadyを待って有効なまま残す。APIもRunningと新revisionのlive/readyを確認する。旧イメージはdigest固定を要求する。
+2026-10-19の運用変更では、Workerを通常ConsumerでRunning、API/Workerの実AIをLive・停止解除・opt-in有効のまま維持する。Workerの常駐はminReplicas=1、maxReplicas=1とする。CDはこの設定を作成・変更せず、開始時のRunning/Stopped状態とAIを含む既存設定を保全する。Running Workerはイメージ既定entrypoint（引数なし、または`--consume`）に限定し、新しい最新revisionの現在のactive・Healthyと、Runningかつ全コンテナReadyな実replicaをGETで確認して有効なまま残す。過去のlatestReadyRevisionNameだけで成功判定せず、inactiveなら起動・有効化せず失敗する。APIもRunningと新revisionのlive/readyを確認する。旧イメージはdigest固定を要求する。
 
 明示的な停止運用も維持し、その場合はWorkerがStopped・全リビジョン無効・実レプリカ0・`/bin/sleep infinity`を前提に、新revisionも停止・無効化する。Runningとsleep、Stoppedと通常Consumerの不整合は拒否する。CDがstart/stopを送信したり、AI設定やscaleを停止用の値へ戻したりすることはない。稼働状態の変化も設定ドリフトとして送信直前と完了時に検出する。実AIの有限制御は既存機構を使い、都度の予算承認や新たな台帳は追加しない。
 

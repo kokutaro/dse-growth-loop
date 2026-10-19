@@ -254,7 +254,19 @@ class Azure:
                     require(p['template'].get('revisionSuffix')==owned_revision and p.get('latestRevisionName')=='dse-'+component+'--'+owned_revision,'PRODUCTION_REVISION_DRIFT')
                 if component=='worker':
                     if production_worker_state(value)=='Running':
-                        if p.get('latestReadyRevisionName')==p.get('latestRevisionName'):return value
+                        latest=p.get('latestRevisionName')
+                        require(isinstance(latest,str) and re.fullmatch('dse-worker--[a-z0-9-]+',latest),'INVALID_REVISION_NAME')
+                        if p.get('latestReadyRevisionName')==latest:
+                            base=self.settings.app_id('dse-worker',False)+'/revisions/'+latest
+                            revision=self.rest('get',base)['properties']
+                            require(revision.get('active') is True,'PRODUCTION_WORKER_REVISION_INACTIVE')
+                            if revision.get('healthState')=='Healthy':
+                                replicas=self.rest('get',base+'/replicas')
+                                require(not replicas.get('nextLink'),'REPLICA_LIST_INCOMPLETE')
+                                if any(replica['properties'].get('runningState')=='Running' and
+                                    replica['properties'].get('containers') and all(
+                                        container.get('ready') is True and container.get('runningState')=='Running'
+                                        for container in replica['properties']['containers']) for replica in replicas['value']):return value
                         time.sleep(5);continue
                     latest=p['latestRevisionName']
                     for revision in self.worker_revisions():
