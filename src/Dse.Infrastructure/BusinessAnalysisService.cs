@@ -228,6 +228,7 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
             var failed = false; var quiescenceUnknown = false;
             foreach (var group in Group(run.Inputs.Select(x => x.Source).ToArray()))
             {
+                if (timeout.IsCancellationRequested) { failed = true; break; }
                 var metrics = Metrics(group); var gid = "group-" + ConversationService.Hash(string.Join(":", group.Select(x => x.KnowledgeId)))[..16];
                 if (metrics.IndependentChallenges < limits.Number("minimumIndependentChallenges") || metrics.DistinctDepartments < limits.Number("minimumDepartments") || metrics.MissingMetadata.Contains("departmentId"))
                 {
@@ -271,7 +272,7 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
                     if (drafted.Status != AiStatus.Succeeded || h is null || h.EvidenceIds is null || h.EvidenceIds.Length == 0 ||
                         h.EvidenceIds.Distinct().Count() != h.EvidenceIds.Length || h.EvidenceIds.Any(x => !group.Any(s => s.KnowledgeId == x)) ||
                         new[] { h.Audience, h.Problem, h.ExistingWorkaround, h.ValueHypothesis, h.CounterEvidence, h.NextCustomerCheck }.Any(x => string.IsNullOrWhiteSpace(x) || x.Length > 1500))
-                    { failed = true; run.Value["exclusions"]!.AsArray().Add(new JsonObject { ["groupId"] = gid, ["reason"] = drafted.Failure == AiFailure.Timeout ? "TIMEOUT_OR_CANCELLED" : drafted.Failure?.ToString() ?? "UNGROUNDED_HYPOTHESIS" }); if (drafted.Status == AiStatus.BudgetStopped || quiescenceUnknown || drafted.Failure == AiFailure.Unavailable) break; continue; }
+                    { failed = true; run.Value["exclusions"]!.AsArray().Add(new JsonObject { ["groupId"] = gid, ["reason"] = drafted.Failure == AiFailure.Timeout ? "TIMEOUT_OR_CANCELLED" : drafted.Failure?.ToString() ?? "UNGROUNDED_HYPOTHESIS" }); if (timeout.IsCancellationRequested || drafted.Status == AiStatus.BudgetStopped || quiescenceUnknown || drafted.Failure == AiFailure.Unavailable) break; continue; }
                     if (BusinessAnalysisLivePrivacy.HypothesisText(h).Any(text => AnonymousWorkspaceKnownIdentifiers.Contains(text, run.Inputs.SelectMany(x => x.KnownIdentifiers))))
                     { failed = true; run.Value["exclusions"]!.AsArray().Add(new JsonObject { ["groupId"] = gid, ["reason"] = "IDENTIFYING_CONTENT" }); continue; }
                     run.Value["groups"]!.AsArray().Add(new JsonObject { ["id"] = gid, ["metrics"] = Node(metrics), ["hypothesis"] = Node(h),

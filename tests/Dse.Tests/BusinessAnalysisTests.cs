@@ -527,11 +527,21 @@ public sealed class BusinessAnalysisTests
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken ct)
         {Calls++;throw new InvalidOperationException("Inference must never be reached");}
     }
-    [Theory] [InlineData(false)] [InlineData(true)]
-    public async Task Analysis_deadline_during_credentials_releases_both_slots_and_forbids_late_dispatch(bool disabled)
+    [Theory] [InlineData(false,false)] [InlineData(false,true)] [InlineData(true,false)] [InlineData(true,true)]
+    public async Task Analysis_deadline_during_credentials_releases_both_slots_and_forbids_late_dispatch(bool disabled,bool multipleGroups)
     {
         using var s=await CreateLive();s.Config["BusinessAnalysis:TimeoutSeconds"]="1";s.Config["AiUsage:TimeoutSeconds"]="30";
         if(disabled){s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";}
+        if(multipleGroups)
+        {
+            s.Config["BusinessAnalysis:MinimumIndependentChallenges"]="1";s.Config["BusinessAnalysis:MinimumDepartments"]="1";
+            var cp=RecordPartition.Conversation(LiveTenant,"demo-business-session-3");var partition=RecordPartition.Catalog(LiveTenant);var kid=KnowledgeService.Id("demo-business-session-3");
+            var authority=(await s.Store.ReadAsync(cp,kid,default))!;var catalog=(await s.Store.ReadAsync(partition,kid,default))!;
+            foreach(var section in authority.Value["sections"]!.AsArray())if(section!["field"]!.GetValue<string>()=="challenge")section["text"]="quartz";
+            catalog.Value["summary"]=new KnowledgeSummary(authority.Value["sections"]!.Deserialize<SummarySection[]>(Json)!).Text;
+            await s.Store.CommitAsync(cp,[RecordWrite.Replace(authority.Value,authority.ETag)],default);
+            await s.Store.CommitAsync(partition,[RecordWrite.Replace(catalog.Value,catalog.ETag)],default);
+        }
         var credentials=new DeferredCredentials();var handler=new NoInferenceHandler();
         using var transport=new AiHttpTransport(new HttpClient(handler),credentials,TimeProvider.System,s.Config);
         var live=new BusinessAnalysisLiveDrafter(s.Config,s.Repo,new(s.Store,TimeProvider.System),transport,TimeProvider.System);
@@ -543,7 +553,8 @@ public sealed class BusinessAnalysisTests
             var partition=RecordPartition.Catalog(LiveTenant);
             Assert.Equal("ready",(await s.Store.ReadAsync(partition,"business-analysis-slot",default))!.Value.Text("status"));
             Assert.Empty((await s.Store.ReadAsync(partition,"system-ai-gate",default))!.Value.Strings("active"));
-            Assert.Equal("completed",(await StartLive(s,LiveRequest())).Text("status"));Assert.Equal(1,s.Wire.Calls);
+            var corrected=await StartLive(s,LiveRequest());Assert.Equal("completed",corrected.Text("status"));
+            Assert.Equal(multipleGroups?2:1,corrected["groups"]!.AsArray().Count);Assert.Equal(multipleGroups?2:1,s.Wire.Calls);
             credentials.Result.TrySetResult("late-fake-credential");await Task.Delay(50);Assert.Equal(0,handler.Calls);
         }
         finally {credentials.Result.TrySetResult("late-fake-credential");}
