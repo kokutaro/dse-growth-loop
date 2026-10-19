@@ -153,6 +153,20 @@ public partial class AiTests
             }
         }
     }
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Independent_post_dispatch_transport_cancellation_keeps_both_modes_pending_without_retry(bool disabled)
+    {
+        var c=disabled?AccountingOff():Config();var store=new MemoryRecordStore();using var caller=new CancellationTokenSource();
+        using var independent=new CancellationTokenSource();independent.Cancel();
+        var handler=new Handler((_,ct)=>{Assert.False(ct.IsCancellationRequested);Assert.False(caller.IsCancellationRequested);return Task.FromCanceled<HttpResponseMessage>(independent.Token);});
+        using var service=Service(c,store,handler);
+        Assert.Equal(AiFailure.Timeout,(await Decide(service,ct:caller.Token)).Failure);Assert.False(caller.IsCancellationRequested);Assert.Equal(1,handler.Calls);
+        var kind=disabled?"aiExecution":"aiReservation";var pending=Assert.Single((await store.QueryAsync(RecordPartition.Catalog("demo"),kind,null,null,100,null,default)).Items);
+        Assert.Equal("pending",pending.Value.Text("state"));Assert.Contains(pending.Value.Text("id"),(await store.ReadAsync(RecordPartition.Catalog("demo"),"system-ai-gate",default))!.Value.Strings("active"));
+        Assert.Equal(AiFailure.Busy,(await Decide(service,Context() with {JobId="after-independent-cancel"})).Failure);Assert.Equal(1,handler.Calls);
+        using var otherMode=Service(disabled?Config():AccountingOff(),store,new Handler((_,_)=>throw new InvalidOperationException("Must remain blocked across modes")));
+        Assert.Equal(AiFailure.Busy,(await Decide(otherMode,Context() with {JobId="other-mode-after-independent-cancel"})).Failure);
+    }
     [Fact]
     public async Task Disabled_accounting_timeout_keeps_execution_slot_and_never_retries_even_if_transport_ignores_cancellation()
     {
