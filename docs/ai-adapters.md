@@ -116,3 +116,5 @@ timeout・通信結果不明では実行スロットを自動開放せず、自�
 Disabledの `--recover-ai-slot` には `Recovery__ProcessesStopped=true` に加え、`Recovery__ApiStopped` / `WorkerStopped` / `ProvidersStopped` の明示確認、`Recovery__ApprovalReference`、`StopEvidenceReference`、64桁SHA-256の `StopEvidenceSha256` が必要。API/Workerの停止だけでは、timeout後の提供元処理の終了確認に代えられない。復旧はこれらの証跡参照を実行状態に残す。確定したHTTP拒否では通常AIゲートと業務分析スロットを解放するが、同じ処理の自動再送は行わない。
 
 共有ゲートを使用するLedger/Disabledの両モードで、送信後のキャンセル・timeout・結果不明の通信失敗はpendingを保持し、自動再試行しない。明確な拒否以外の5xxも結果不明として扱う。単独slot復旧の提供元終了・停止証跡は両モードで必須であり、モード切替だけでpendingを解放できない。
+
+認証取得と推論送信はリクエスト単位のdispatch状態で区別する。送信前の認証失敗はスロットを解放し、送信後の結果不明は保持する。キャンセルと実送信の境界はCASで閉じ、非協調の認証取得がtimeout後に完了しても古い処理から推論を送信できない。

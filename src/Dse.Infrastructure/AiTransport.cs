@@ -49,18 +49,39 @@ public interface IAiTransport
     Task<AiWireResponse> SendAsync(AiModel model, JsonObject body, int maxResponseBytes, CancellationToken ct);
 }
 
+// CAS closes the cancellation/dispatch race: abandoned credential work can never send later.
+public sealed class AiDispatchState
+{
+    private int phase; // 0 preparing, 1 dispatched, 2 abandoned before dispatch
+    public bool TryAbandonBeforeDispatch() => Interlocked.CompareExchange(ref phase, 2, 0) == 0 || Volatile.Read(ref phase) == 2;
+    public void MarkDispatched(CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        if (Interlocked.CompareExchange(ref phase, 1, 0) != 0) throw new OperationCanceledException(ct);
+    }
+}
+public interface IDispatchTrackingAiTransport : IAiTransport
+{
+    Task<AiWireResponse> SendAsync(AiModel model, JsonObject body, int maxResponseBytes, CancellationToken ct, AiDispatchState dispatch);
+}
+
 // Raw HTTP has no SDK retry policy. The executor is the only inference retry owner.
-public sealed class AiHttpTransport(HttpClient http, IAiCredentials credentials, TimeProvider clock, IConfiguration? config = null) : IAiTransport, IDisposable
+public sealed class AiHttpTransport(HttpClient http, IAiCredentials credentials, TimeProvider clock, IConfiguration? config = null) : IDispatchTrackingAiTransport, IDisposable
 {
     public void Dispose() => http.Dispose();
-    public async Task<AiWireResponse> SendAsync(AiModel model, JsonObject body, int maxResponseBytes, CancellationToken ct)
+    public Task<AiWireResponse> SendAsync(AiModel model, JsonObject body, int maxResponseBytes, CancellationToken ct) =>
+        SendAsync(model, body, maxResponseBytes, ct, new AiDispatchState());
+    public async Task<AiWireResponse> SendAsync(AiModel model, JsonObject body, int maxResponseBytes, CancellationToken ct, AiDispatchState dispatch)
     {
         var endpoint = model.Provider == "Jev" ? model.Endpoint : new Uri(model.Endpoint, "openai/v1/chat/completions");
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
-        request.Headers.Authorization = new("Bearer", await credentials.BearerAsync(model.Provider, ct));
+        try { request.Headers.Authorization = new("Bearer", await credentials.BearerAsync(model.Provider, ct)); }
+        catch (Exception e) when (e is Azure.Identity.AuthenticationFailedException or Azure.Identity.CredentialUnavailableException or Azure.RequestFailedException)
+        { throw new AiException(AiFailure.Unauthorized) { InferenceNotDispatched = true }; }
         request.Content = new StringContent(AiCodecs.SerializeRequest(body), Encoding.UTF8, "application/json");
         if (config is not null && (AiLimits.Read(config).Stopped || !AiLimits.Read(config).LiveOptIn || config["Ai:Mode"] != "Live"))
             throw new AiException(AiFailure.Stopped);
+        dispatch.MarkDispatched(ct);
         using var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
         var requestId = new[] { "x-request-id", "apim-request-id", "x-ms-request-id" }
             .SelectMany(name => response.Headers.TryGetValues(name, out var values) ? values : [])

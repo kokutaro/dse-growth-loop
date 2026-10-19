@@ -26,6 +26,40 @@ public partial class AiTests
         AiSmoke.Validate(c);
         c["AiSmoke:DummyOnly"]="false";Assert.Throws<InvalidOperationException>(()=>AiSmoke.Validate(c));
     }
+    private sealed class StagedCredentials : IAiCredentials
+    {
+        public Func<CancellationToken,Task<string>> Fetch = _ => throw new HttpRequestException("credential fetch failed before inference");
+        public Task<string> BearerAsync(string provider,CancellationToken ct) => Fetch(ct);
+    }
+    [Theory] [InlineData(false,false)] [InlineData(false,true)] [InlineData(true,false)] [InlineData(true,true)]
+    public async Task Credential_fetch_failure_releases_admission_without_dispatching_and_allows_a_corrected_call(bool disabled,bool bodyReadFailure)
+    {
+        var c=disabled?AccountingOff():Config();var store=new MemoryRecordStore();await AuthorityProvider.SeedDemoAsync(store,"demo",default);
+        var repo=new PrimaryRepository(store);var credentials=new StagedCredentials {Fetch=_=>Task.FromException<string>(bodyReadFailure ? new IOException("credential response read failed") : new HttpRequestException("credential request failed"))};var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using var service=new AiService(c,repo,new(repo),new(repo),new(store,TimeProvider.System),new AiHttpTransport(new HttpClient(handler),credentials,TimeProvider.System,c),TimeProvider.System);
+        Assert.Equal(AiFailure.Unavailable,(await Decide(service)).Failure);Assert.Equal(0,handler.Calls);
+        Assert.Empty((await store.ReadAsync(RecordPartition.Catalog("demo"),"system-ai-gate",default))!.Value.Strings("active"));
+        credentials.Fetch=_=>Task.FromResult("dummy-credential");Assert.Equal(AiStatus.Succeeded,(await Decide(service,Context() with {JobId="credentials-fixed"})).Status);Assert.Equal(1,handler.Calls);
+    }
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Timed_out_noncooperative_credentials_are_abandoned_and_cannot_dispatch_later(bool disabled)
+    {
+        var c=disabled?AccountingOff():Config();c["AiUsage:TimeoutSeconds"]="1";var store=new MemoryRecordStore();await AuthorityProvider.SeedDemoAsync(store,"demo",default);
+        var repo=new PrimaryRepository(store);var delayed=new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var credentials=new StagedCredentials {Fetch=_=>delayed.Task};var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using var service=new AiService(c,repo,new(repo),new(repo),new(store,TimeProvider.System),new AiHttpTransport(new HttpClient(handler),credentials,TimeProvider.System,c),TimeProvider.System);
+        try
+        {
+            Assert.Equal(AiFailure.Timeout,(await Decide(service).WaitAsync(TimeSpan.FromSeconds(5))).Failure);Assert.Equal(0,handler.Calls);
+            Assert.Empty((await store.ReadAsync(RecordPartition.Catalog("demo"),"system-ai-gate",default))!.Value.Strings("active"));
+            credentials.Fetch=_=>Task.FromResult("dummy-credential");Assert.Equal(AiStatus.Succeeded,(await Decide(service,Context() with {JobId="credential-timeout-fixed"})).Status);
+            delayed.TrySetResult("late-credential");await Task.Yield();Assert.Equal(1,handler.Calls);
+        }
+        finally {delayed.TrySetResult("late-credential");}
+    }
+    [Fact]
+    public void Abandoned_transport_dispatch_state_cannot_be_reopened()
+    {var state=new AiDispatchState();Assert.True(state.TryAbandonBeforeDispatch());Assert.Throws<OperationCanceledException>(()=>state.MarkDispatched(default));}
     private sealed class AccountingProbe(MemoryRecordStore inner) : IRecordStore
     {
         public List<string> ReadIds = []; public List<string> WrittenKinds = [];

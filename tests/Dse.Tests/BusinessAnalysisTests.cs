@@ -395,6 +395,7 @@ public sealed class BusinessAnalysisTests
         public async Task<AiWireResponse> SendAsync(AiModel model, JsonObject body, int maxResponseBytes, CancellationToken ct)
         {
             Calls++; Sent = body.Copy(); if (During is not null) await During();
+            if (Variation == "credential-failure") throw new AiException(AiFailure.Unavailable) { InferenceNotDispatched = true };
             if (Variation is "rejected400" or "rejected404") throw new AiException(AiFailure.Unavailable) { ProviderRejected = true };
             var input = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!.AsObject();
             var ids = input["sources"]!.AsArray().Select(x => x!["id"]!.GetValue<string>()).ToArray();
@@ -582,7 +583,7 @@ public sealed class BusinessAnalysisTests
     }
     private static BusinessAnalysisRecoveryRequest RecoveryRequest(JsonObject inspection, string runId) => new(runId, Analyst.PrincipalId, inspection.Text("runEtag"), inspection.Text("slotEtag"),
         "approval-local-fake", true, true, true, "stop-evidence-local-fake", new string('a', 64), inspection.Strings("pendingReservationIds"));
-    [Theory] [InlineData("rejected400")] [InlineData("rejected404")]
+    [Theory] [InlineData("rejected400")] [InlineData("rejected404")] [InlineData("credential-failure")]
     public async Task Definite_provider_rejection_releases_business_slot_and_allows_a_corrected_new_analysis(string variation)
     {
         using var s=await CreateLive(variation:variation);s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";

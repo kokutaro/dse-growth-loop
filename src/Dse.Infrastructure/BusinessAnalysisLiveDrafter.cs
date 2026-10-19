@@ -55,7 +55,8 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
         audit["jobId"] = jobId; audit["container"] = "catalog"; audit["sessionId"] = null; audit["operation"] = PromptVersion;
         audit["status"] = "not_evaluated"; audit["errorCode"] = null; audit["trace"] = trace; audit["inputSnapshots"] = AiCodecs.Node(snapshots);
         await repository.CommitAsync(partition, [RecordWrite.Create(audit)], ct);
-        AiReservation? reservation = null; AiUsage? usage = null; var sent = false; var uncertainExecution = false; var responseReceived = false; var providerRejected = false;
+        AiReservation? reservation = null; AiUsage? usage = null; var sent = false; var uncertainExecution = false; var responseReceived = false; var providerRejected = false; var notDispatched = false;
+        var dispatch = transport is IDispatchTrackingAiTransport ? new AiDispatchState() : null;
         var status = AiStatus.Failed; AiFailure? failure = null; BusinessHypothesis? hypothesis = null; var start = Stopwatch.GetTimestamp();
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(ct); deadline.CancelAfter(TimeSpan.FromSeconds(limits.TimeoutSeconds));
         try
@@ -69,7 +70,7 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
             RequireConfiguration(pinnedConfiguration);
             await RequireSourcesAsync(actor, sources, deadline.Token);
             sent = true;
-            var request = SendMeasuredAsync(model, body, limits.OutputTokens * 16 + 4096, deadline.Token);
+            var request = SendMeasuredAsync(model, body, limits.OutputTokens * 16 + 4096, deadline.Token, dispatch);
             // Observe a late exception but never settle/refund or launch another attempt after the deadline.
             _ = request.ContinueWith(t => { _ = t.Exception; }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             AiWireResponse response;
@@ -85,7 +86,7 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
             if (hypothesis is not null && BusinessAnalysisLivePrivacy.HypothesisText(hypothesis).Any(text => AnonymousWorkspaceKnownIdentifiers.Contains(text, currentInput.Known))) throw new AiException(AiFailure.SchemaMismatch);
             status = hypothesis is null ? AiStatus.NotEvaluated : AiStatus.Succeeded;
         }
-        catch (AiException e) { failure = e.Failure; providerRejected = e.ProviderRejected; uncertainExecution |= sent && !responseReceived && !e.ProviderRejected && (e.Failure is AiFailure.Unavailable or AiFailure.OutputLimit); if (e.RequestId is not null && RecordJson.IsId(e.RequestId)) trace["providerRequestIds"]!.AsArray().Add(e.RequestId); }
+        catch (AiException e) { failure = e.Failure; providerRejected = e.ProviderRejected; notDispatched = e.InferenceNotDispatched; uncertainExecution |= sent && !responseReceived && !e.ProviderRejected && (e.Failure is AiFailure.Unavailable or AiFailure.OutputLimit); if (e.RequestId is not null && RecordJson.IsId(e.RequestId)) trace["providerRequestIds"]!.AsArray().Add(e.RequestId); }
         catch (DomainException e) when (e.Status < 500) { failure = e.Code == "SOURCE_REVOKED" ? AiFailure.InventedId : e.Code == "AI_BUDGET_STOPPED" ? AiFailure.Stopped : AiFailure.Configuration; }
         catch (OperationCanceledException) { uncertainExecution = sent; failure = ct.IsCancellationRequested ? AiFailure.Cancelled : AiFailure.Timeout; }
         catch (Exception e) when (e is HttpRequestException or IOException) { uncertainExecution = sent && !responseReceived; failure = AiFailure.Unavailable; }
@@ -95,6 +96,8 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
         finally
         {
             using var finalize = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            notDispatched |= dispatch?.TryAbandonBeforeDispatch() == true;
+            if (notDispatched) { uncertainExecution = false; usage = new(0, 0, false); }
             if (reservation is not null)
             {
                 // Pending reservations retain the full ceiling until a provider's termination is proved offline.
@@ -114,17 +117,17 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
             var current = (await repository.ReadAsync(partition, runId, finalize.Token))!;
             await repository.CommitAsync(partition, [RecordWrite.Replace(audit, current.ETag)], finalize.Token);
         }
-        return new(status, hypothesis, runId, failure) { ProviderRejected = providerRejected };
+        return new(status, hypothesis, runId, failure) { ProviderRejected = providerRejected, InferenceNotDispatched = notDispatched };
     }
     private void RequireConfiguration(string pinned)
     {
         BusinessAnalysisLiveRuntime.ValidateForStart(config);
         if (BusinessAnalysisLiveRuntime.ConfigurationHash(config) != pinned) throw new DomainException(409, "ANALYSIS_CONFIGURATION_CHANGED");
     }
-    private async Task<AiWireResponse> SendMeasuredAsync(AiModel model, JsonObject body, int maxBytes, CancellationToken ct)
+    private async Task<AiWireResponse> SendMeasuredAsync(AiModel model, JsonObject body, int maxBytes, CancellationToken ct, AiDispatchState? dispatch)
     {
         using var operation = OperationMeasurements.Start(MeasurementKind.HttpRequest);
-        try { return await transport.SendAsync(model, body, maxBytes, ct); }
+        try { return dispatch is not null ? await ((IDispatchTrackingAiTransport)transport).SendAsync(model, body, maxBytes, ct, dispatch) : await transport.SendAsync(model, body, maxBytes, ct); }
         catch (Exception error) { operation.Fail(error); throw; }
     }
     private sealed record CheckedInput(SourceSnapshot[] Snapshots, string[] Known);

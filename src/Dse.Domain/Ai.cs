@@ -7,6 +7,8 @@ public sealed record AiResult<T>(AiStatus Status, T? Value, string RunId, AiFail
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public bool ProviderRejected { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool InferenceNotDispatched { get; init; }
 }
 public sealed record AiContext(ActorAccess Actor, string JobId, string PromptVersion, string TaxonomyVersion,
     int DataVersion, EvidenceReference[] Evidence, SearchUnit[] Candidates, string? SessionId = null)
