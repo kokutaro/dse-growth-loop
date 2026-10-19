@@ -253,7 +253,7 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
                     var h = drafted.Value;
                     if (drafted.Status == AiStatus.NotEvaluated && drafted.Failure is null)
                     { run.Value["exclusions"]!.AsArray().Add(new JsonObject { ["groupId"] = gid, ["reason"] = "NO_COMMON_PROBLEM" }); continue; }
-                    if (drafted.Failure is AiFailure.Timeout or AiFailure.Cancelled or AiFailure.Unavailable or AiFailure.OutputLimit) quiescenceUnknown = true;
+                    if (!drafted.ProviderRejected && (drafted.Failure is AiFailure.Timeout or AiFailure.Cancelled or AiFailure.Unavailable or AiFailure.OutputLimit)) quiescenceUnknown = true;
                     if (drafted.Status != AiStatus.Succeeded || h is null || h.EvidenceIds is null || h.EvidenceIds.Length == 0 ||
                         h.EvidenceIds.Distinct().Count() != h.EvidenceIds.Length || h.EvidenceIds.Any(x => !group.Any(s => s.KnowledgeId == x)) ||
                         new[] { h.Audience, h.Problem, h.ExistingWorkaround, h.ValueHypothesis, h.CounterEvidence, h.NextCustomerCheck }.Any(x => string.IsNullOrWhiteSpace(x) || x.Length > 1500))

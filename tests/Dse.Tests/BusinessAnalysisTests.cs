@@ -395,6 +395,7 @@ public sealed class BusinessAnalysisTests
         public async Task<AiWireResponse> SendAsync(AiModel model, JsonObject body, int maxResponseBytes, CancellationToken ct)
         {
             Calls++; Sent = body.Copy(); if (During is not null) await During();
+            if (Variation is "rejected400" or "rejected404") throw new AiException(AiFailure.Unavailable) { ProviderRejected = true };
             var input = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!.AsObject();
             var ids = input["sources"]!.AsArray().Select(x => x!["id"]!.GetValue<string>()).ToArray();
             var h = new JsonObject { ["audience"] = "公開要約の対象者", ["problem"] = "共通課題の仮説", ["existingWorkaround"] = "現行対応", ["valueHypothesis"] = "検証前の価値仮説", ["counterEvidence"] = "共通でない可能性", ["nextCustomerCheck"] = "本人に確認", ["evidenceIds"] = RecordJson.Array(ids) };
@@ -581,6 +582,15 @@ public sealed class BusinessAnalysisTests
     }
     private static BusinessAnalysisRecoveryRequest RecoveryRequest(JsonObject inspection, string runId) => new(runId, Analyst.PrincipalId, inspection.Text("runEtag"), inspection.Text("slotEtag"),
         "approval-local-fake", true, true, true, "stop-evidence-local-fake", new string('a', 64), inspection.Strings("pendingReservationIds"));
+    [Theory] [InlineData("rejected400")] [InlineData("rejected404")]
+    public async Task Definite_provider_rejection_releases_business_slot_and_allows_a_corrected_new_analysis(string variation)
+    {
+        using var s=await CreateLive(variation:variation);s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";
+        var failed=await StartLive(s,LiveRequest());Assert.Equal("partial_failure",failed.Text("status"));Assert.Equal(1,s.Wire.Calls);
+        Assert.Equal("ready",(await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant),"business-analysis-slot",default))!.Value.Text("status"));
+        Assert.Empty((await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant),"system-ai-gate",default))!.Value.Strings("active"));
+        s.Wire.Variation="success";var corrected=await StartLive(s,LiveRequest());Assert.Equal("completed",corrected.Text("status"));Assert.Equal(2,s.Wire.Calls);
+    }
     [Theory] [InlineData(false)] [InlineData(true)]
     public async Task Timeout_retains_pending_cost_or_execution_slot_until_evidence_based_offline_recovery_without_retry(bool accountingDisabled)
     {

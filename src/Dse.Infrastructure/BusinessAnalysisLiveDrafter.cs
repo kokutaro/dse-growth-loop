@@ -55,7 +55,7 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
         audit["jobId"] = jobId; audit["container"] = "catalog"; audit["sessionId"] = null; audit["operation"] = PromptVersion;
         audit["status"] = "not_evaluated"; audit["errorCode"] = null; audit["trace"] = trace; audit["inputSnapshots"] = AiCodecs.Node(snapshots);
         await repository.CommitAsync(partition, [RecordWrite.Create(audit)], ct);
-        AiReservation? reservation = null; AiUsage? usage = null; var sent = false; var uncertainExecution = false; var responseReceived = false;
+        AiReservation? reservation = null; AiUsage? usage = null; var sent = false; var uncertainExecution = false; var responseReceived = false; var providerRejected = false;
         var status = AiStatus.Failed; AiFailure? failure = null; BusinessHypothesis? hypothesis = null; var start = Stopwatch.GetTimestamp();
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(ct); deadline.CancelAfter(TimeSpan.FromSeconds(limits.TimeoutSeconds));
         try
@@ -85,7 +85,7 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
             if (hypothesis is not null && BusinessAnalysisLivePrivacy.HypothesisText(hypothesis).Any(text => AnonymousWorkspaceKnownIdentifiers.Contains(text, currentInput.Known))) throw new AiException(AiFailure.SchemaMismatch);
             status = hypothesis is null ? AiStatus.NotEvaluated : AiStatus.Succeeded;
         }
-        catch (AiException e) { failure = e.Failure; uncertainExecution |= sent && !responseReceived && !e.ProviderRejected && (e.Failure is AiFailure.Unavailable or AiFailure.OutputLimit); if (e.RequestId is not null && RecordJson.IsId(e.RequestId)) trace["providerRequestIds"]!.AsArray().Add(e.RequestId); }
+        catch (AiException e) { failure = e.Failure; providerRejected = e.ProviderRejected; uncertainExecution |= sent && !responseReceived && !e.ProviderRejected && (e.Failure is AiFailure.Unavailable or AiFailure.OutputLimit); if (e.RequestId is not null && RecordJson.IsId(e.RequestId)) trace["providerRequestIds"]!.AsArray().Add(e.RequestId); }
         catch (DomainException e) when (e.Status < 500) { failure = e.Code == "SOURCE_REVOKED" ? AiFailure.InventedId : e.Code == "AI_BUDGET_STOPPED" ? AiFailure.Stopped : AiFailure.Configuration; }
         catch (OperationCanceledException) { uncertainExecution = sent; failure = ct.IsCancellationRequested ? AiFailure.Cancelled : AiFailure.Timeout; }
         catch (Exception e) when (e is HttpRequestException or IOException) { uncertainExecution = sent && !responseReceived; failure = AiFailure.Unavailable; }
@@ -114,7 +114,7 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
             var current = (await repository.ReadAsync(partition, runId, finalize.Token))!;
             await repository.CommitAsync(partition, [RecordWrite.Replace(audit, current.ETag)], finalize.Token);
         }
-        return new(status, hypothesis, runId, failure);
+        return new(status, hypothesis, runId, failure) { ProviderRejected = providerRejected };
     }
     private void RequireConfiguration(string pinned)
     {

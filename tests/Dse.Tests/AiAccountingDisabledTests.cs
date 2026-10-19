@@ -122,7 +122,12 @@ public partial class AiTests
             Assert.Equal("pending",execution.Value.Text("state"));
             var ledger=new AiLedger(memory,TimeProvider.System);
             await Assert.ThrowsAsync<ArgumentException>(()=>ledger.RecoverSlotAsync("demo",execution.Value.Text("id"),false,default));
-            await ledger.RecoverSlotAsync("demo",execution.Value.Text("id"),true,default);
+            await Assert.ThrowsAsync<ArgumentException>(()=>ledger.RecoverSlotAsync("demo",execution.Value.Text("id"),true,default));
+            var proof=new AiExecutionRecoveryEvidence(true,true,true,"offline-approval","provider-stopped-proof",new string('a',64));
+            foreach(var invalid in new[]{proof with {ProvidersStopped=false},proof with {ApiStopped=false},proof with {WorkerStopped=false},proof with {StopEvidenceSha256="invalid"},proof with {StopEvidenceReference=""}})
+                await Assert.ThrowsAsync<ArgumentException>(()=>ledger.RecoverSlotAsync("demo",execution.Value.Text("id"),true,default,invalid));
+            pending.TrySetResult(Response(Fixture("choice"))); // The fake provider is now quiescent before offline recovery.
+            await ledger.RecoverSlotAsync("demo",execution.Value.Text("id"),true,default,proof);
             Assert.Empty((await memory.ReadAsync(RecordPartition.Catalog("demo"),"system-ai-gate",default))!.Value.Strings("active"));
         }
         finally {pending.TrySetResult(Response(Fixture("choice")));}

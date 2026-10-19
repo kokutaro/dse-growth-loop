@@ -8,6 +8,8 @@ public sealed record AiReservation(string Id, string DayId, string Tenant, long 
     public bool AccountingDisabled { get; init; }
 }
 public sealed record AiUsage(long Input, long Output, bool Estimated);
+public sealed record AiExecutionRecoveryEvidence(bool ApiStopped, bool WorkerStopped, bool ProvidersStopped,
+    string ApprovalReference, string StopEvidenceReference, string StopEvidenceSha256);
 public enum AiValidationIssue { ResponseShape, Keys, Probability, DistributionSum, SelectedOption, SelectedMaximum }
 
 public sealed class AiException(AiFailure failure, bool retryable = false, TimeSpan? retryAfter = null, string? requestId = null, AiValidationIssue? validationIssue = null) : Exception("AI_" + failure.ToString().ToUpperInvariant())
@@ -123,16 +125,26 @@ public sealed partial class AiLedger(IRecordStore store, TimeProvider clock)
     }
 
     // Offline recovery releases a crashed concurrency slot but never refunds uncertain spend.
-    public async Task RecoverSlotAsync(string tenant, string reservationId, bool processesStopped, CancellationToken ct)
+    public async Task RecoverSlotAsync(string tenant, string reservationId, bool processesStopped, CancellationToken ct, AiExecutionRecoveryEvidence? evidence = null)
     {
         if (!processesStopped) throw new ArgumentException("Stop API and Worker before AI recovery");
         var partition = RecordPartition.Catalog(tenant);
         var row = await store.ReadAsync(partition, reservationId, ct) ?? throw new ArgumentException("Unknown reservation");
         if (row.Value.Text("kind") is not ("aiReservation" or "aiExecution")) throw new ArgumentException("Invalid reservation");
+        if (row.Value.Text("kind") == "aiExecution" && (evidence is null || !evidence.ApiStopped || !evidence.WorkerStopped || !evidence.ProvidersStopped ||
+            !RecordJson.IsId(evidence.ApprovalReference) || !RecordJson.IsId(evidence.StopEvidenceReference) ||
+            !System.Text.RegularExpressions.Regex.IsMatch(evidence.StopEvidenceSha256 ?? "", "\\A[a-fA-F0-9]{64}\\z")))
+            throw new ArgumentException("Execution recovery requires API/Worker/provider quiescence and reviewed stop evidence");
         if (row.Value.Text("state") != "pending") return;
         var gate = (await store.ReadAsync(partition, GateId, ct))!;
         gate.Value["active"] = RecordJson.Array(gate.Value.Strings("active").Where(x => x != reservationId));
         row.Value["state"] = "uncertain";
+        if (row.Value.Text("kind") == "aiExecution")
+        {
+            row.Value["recoveryApprovalReference"] = evidence!.ApprovalReference;
+            row.Value["stopEvidenceReference"] = evidence.StopEvidenceReference;
+            row.Value["stopEvidenceSha256"] = evidence.StopEvidenceSha256!.ToLowerInvariant();
+        }
         await store.CommitAsync(partition, [RecordWrite.Replace(row.Value, row.ETag), RecordWrite.Replace(gate.Value, gate.ETag)], ct);
     }
 }

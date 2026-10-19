@@ -112,3 +112,5 @@ Issue #9追加：`AiSmoke__Suite=connections`、`AiSmoke__Count=3`を明示す�
 Disabledでは `MaxAttempts=1`、`MaxConcurrency=1` を必須とし、停止スイッチ・Live opt-in・モデル固定・入出力上限・timeoutを維持する。`aiExecution` はrun IDごとの二重送信防止用の状態で、金額・累積回数・日付別トークンを保存しない。共有 `system-ai-gate.active` は旧会計モードとの同時送信を防ぐ制御状態としてのみ使用し、`weeklyBudgetRequired` はDisabledの送信条件にしない。運用上の `aiRun` 監査（結果・request ID・当該処理の試行数）は残し、Disabledの推定費用はnullにする。
 
 timeout・通信結果不明では実行スロットを自動開放せず、自動再試行しない。既存の停止・提供元終了確認を伴うオフライン復旧でのみ開放する。業務分析復旧は各runに記録したaccountingModeから会計予約／実行状態を区別し、古い予約や別runを変更しない。Unknown mode、複数試行・同時実行設定はfail closedとする。
+
+Disabledの `--recover-ai-slot` には `Recovery__ProcessesStopped=true` に加え、`Recovery__ApiStopped` / `WorkerStopped` / `ProvidersStopped` の明示確認、`Recovery__ApprovalReference`、`StopEvidenceReference`、64桁SHA-256の `StopEvidenceSha256` が必要。API/Workerの停止だけでは、timeout後の提供元処理の終了確認に代えられない。復旧はこれらの証跡参照を実行状態に残す。確定したHTTP拒否では通常AIゲートと業務分析スロットを解放するが、同じ処理の自動再送は行わない。
