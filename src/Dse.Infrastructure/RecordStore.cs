@@ -103,8 +103,8 @@ internal static class QueryRules
     {
         var allowedField = field is null or "personId" or "documentId" or "documentVersionId" or "entityId" or "jobId" ||
             (kind == "searchUnit" && field == "entityType") ||
-            (kind == "aiReservation" && field == "runId");
-        if ((!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "aiReservation")) || !allowedField || size is < 1 or > 100)
+            (kind is "aiReservation" or "aiExecution" && field == "runId");
+        if ((!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "aiReservation" or "aiExecution")) || !allowedField || size is < 1 or > 100)
             throw new ArgumentException("Invalid query");
     }
 }

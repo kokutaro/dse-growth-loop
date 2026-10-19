@@ -395,6 +395,8 @@ public sealed class BusinessAnalysisTests
         public async Task<AiWireResponse> SendAsync(AiModel model, JsonObject body, int maxResponseBytes, CancellationToken ct)
         {
             Calls++; Sent = body.Copy(); if (During is not null) await During();
+            if (Variation == "credential-failure") throw new AiException(AiFailure.Unavailable) { InferenceNotDispatched = true };
+            if (Variation is "rejected400" or "rejected404") throw new AiException(AiFailure.Unavailable) { ProviderRejected = true };
             var input = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!.AsObject();
             var ids = input["sources"]!.AsArray().Select(x => x!["id"]!.GetValue<string>()).ToArray();
             var h = new JsonObject { ["audience"] = "公開要約の対象者", ["problem"] = "共通課題の仮説", ["existingWorkaround"] = "現行対応", ["valueHypothesis"] = "検証前の価値仮説", ["counterEvidence"] = "共通でない可能性", ["nextCustomerCheck"] = "本人に確認", ["evidenceIds"] = RecordJson.Array(ids) };
@@ -458,6 +460,12 @@ public sealed class BusinessAnalysisTests
         var wire = new WireFake { Variation = variation }; var live = new BusinessAnalysisLiveDrafter(config, repo, new(store, TimeProvider.System), wire, TimeProvider.System);
         return new(path, store, repo, config, new(repo, store, new(repo), new BusinessAnalysisDrafter(config, live), config, TimeProvider.System), wire);
     }
+    private static string FindRootForTrace()
+    {
+        var d=new DirectoryInfo(AppContext.BaseDirectory);
+        while(!File.Exists(Path.Combine(d!.FullName,"DseGrowthLoop.slnx")))d=d.Parent;
+        return d.FullName;
+    }
     private static BusinessAnalysisRequest LiveRequest() => Request() with { ConfigVersion = BusinessAnalysisLiveRuntime.LiveConfigVersion };
     private static Task<JsonObject> StartLive(LiveSetup s, BusinessAnalysisRequest r) => s.Service.StartAsync(LiveAnalyst, r, r.RunId, default);
     private static Task<RecordPage> Rows(LiveSetup s, string kind) => s.Store.QueryAsync(RecordPartition.Catalog(LiveTenant), kind, null, null, 100, null, default);
@@ -491,17 +499,87 @@ public sealed class BusinessAnalysisTests
         var next=await StartLive(s,LiveRequest()); Assert.Equal(0,next.Number("sourceCount")); Assert.Empty(next["groups"]!.AsArray()); Assert.Equal(1,s.Wire.Calls);
     }
     [Fact]
-    public async Task Azure_mode_fake_transport_uses_shared_ledger_and_restarts_without_resending_or_private_inputs()
+    public async Task Historical_Ledger_analysis_replays_after_upgrade_without_another_provider_call()
     {
-        using var s = await CreateLive(); using var measurement = OperationMeasurements.Begin(MeasurementEvidence.Fixture); var request = LiveRequest(); var result = await StartLive(s, request);
+        using var s=await CreateLive();s.Config["AiUsage:MaxAttempts"]="1";var request=LiveRequest();var first=await StartLive(s,request);
+        var partition=RecordPartition.Catalog(LiveTenant);var saved=(await s.Store.ReadAsync(partition,BusinessAnalysisService.StorageId(LiveAnalyst.PrincipalId,request.RunId),default))!;
+        var l=AiLimits.Read(s.Config);var model=AiModel.Read(s.Config,"Foundry",l.OutputTokens);
+        // Explicit pre-upgrade shape: no AccountingEnabled property existed.
+        var limits=new {l.Stopped,l.LiveOptIn,l.DailyTokens,l.DailyCalls,l.DailyJpy,l.UsdToJpy,l.PriceVersion,l.FxVersion,l.InputTokens,l.OutputTokens,l.Concurrency,l.Attempts,l.TimeoutSeconds,l.Weekly,l.WeeklyCalls,l.WeeklyTotalJpy,l.InfrastructureReserveJpy,l.ExternalAiReserveJpy};
+        string Hash(string value)=>Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(value)));
+        var historical=Hash(RecordJson.Canonical(JsonSerializer.SerializeToNode(new {limits,model,promptVersion=BusinessAnalysisLiveDrafter.PromptVersion,configVersion=BusinessAnalysisLiveRuntime.LiveConfigVersion},Json)));
+        saved.Value["configurationHash"]=historical;
+        saved.Value["requestHash"]=Hash(RecordJson.Canonical(JsonSerializer.SerializeToNode(request,Json))+RecordJson.Canonical(saved.Value["limits"])+historical);
+        await s.Store.CommitAsync(partition,[RecordWrite.Replace(saved.Value,saved.ETag)],default);
+        var replay=await StartLive(s,request);Assert.Equal(first.Text("inputHash"),replay.Text("inputHash"));Assert.Equal(1,s.Wire.Calls);
+        s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";
+        Assert.NotEqual(historical,BusinessAnalysisLiveRuntime.ConfigurationHash(s.Config));
+        Assert.Equal("IDEMPOTENCY_CONFLICT",(await Assert.ThrowsAsync<DomainException>(()=>StartLive(s,request))).Code);Assert.Equal(1,s.Wire.Calls);
+    }
+    private sealed class DeferredCredentials : IAiCredentials
+    {
+        public TaskCompletionSource<string> Result = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Task<string> BearerAsync(string provider,CancellationToken ct)=>Result.Task;
+    }
+    private sealed class NoInferenceHandler : HttpMessageHandler
+    {
+        public int Calls;
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken ct)
+        {Calls++;throw new InvalidOperationException("Inference must never be reached");}
+    }
+    [Theory] [InlineData(false,false)] [InlineData(false,true)] [InlineData(true,false)] [InlineData(true,true)]
+    public async Task Analysis_deadline_during_credentials_releases_both_slots_and_forbids_late_dispatch(bool disabled,bool multipleGroups)
+    {
+        using var s=await CreateLive();s.Config["BusinessAnalysis:TimeoutSeconds"]="1";s.Config["AiUsage:TimeoutSeconds"]="30";
+        if(disabled){s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";}
+        if(multipleGroups)
+        {
+            s.Config["BusinessAnalysis:MinimumIndependentChallenges"]="1";s.Config["BusinessAnalysis:MinimumDepartments"]="1";
+            var cp=RecordPartition.Conversation(LiveTenant,"demo-business-session-3");var partition=RecordPartition.Catalog(LiveTenant);var kid=KnowledgeService.Id("demo-business-session-3");
+            var authority=(await s.Store.ReadAsync(cp,kid,default))!;var catalog=(await s.Store.ReadAsync(partition,kid,default))!;
+            foreach(var section in authority.Value["sections"]!.AsArray())if(section!["field"]!.GetValue<string>()=="challenge")section["text"]="quartz";
+            catalog.Value["summary"]=new KnowledgeSummary(authority.Value["sections"]!.Deserialize<SummarySection[]>(Json)!).Text;
+            await s.Store.CommitAsync(cp,[RecordWrite.Replace(authority.Value,authority.ETag)],default);
+            await s.Store.CommitAsync(partition,[RecordWrite.Replace(catalog.Value,catalog.ETag)],default);
+        }
+        var credentials=new DeferredCredentials();var handler=new NoInferenceHandler();
+        using var transport=new AiHttpTransport(new HttpClient(handler),credentials,TimeProvider.System,s.Config);
+        var live=new BusinessAnalysisLiveDrafter(s.Config,s.Repo,new(s.Store,TimeProvider.System),transport,TimeProvider.System);
+        var service=new BusinessAnalysisService(s.Repo,s.Store,new(s.Repo),new BusinessAnalysisDrafter(s.Config,live),s.Config,TimeProvider.System);
+        try
+        {
+            var request=LiveRequest();var failed=await service.StartAsync(LiveAnalyst,request,request.RunId,default).WaitAsync(TimeSpan.FromSeconds(16));
+            Assert.Equal("partial_failure",failed.Text("status"));Assert.False(failed["recoveryRequired"]!.GetValue<bool>());Assert.Equal(0,handler.Calls);
+            var partition=RecordPartition.Catalog(LiveTenant);
+            Assert.Equal("ready",(await s.Store.ReadAsync(partition,"business-analysis-slot",default))!.Value.Text("status"));
+            Assert.Empty((await s.Store.ReadAsync(partition,"system-ai-gate",default))!.Value.Strings("active"));
+            var corrected=await StartLive(s,LiveRequest());Assert.Equal("completed",corrected.Text("status"));
+            Assert.Equal(multipleGroups?2:1,corrected["groups"]!.AsArray().Count);Assert.Equal(multipleGroups?2:1,s.Wire.Calls);
+            credentials.Result.TrySetResult("late-fake-credential");await Task.Delay(50);Assert.Equal(0,handler.Calls);
+        }
+        finally {credentials.Result.TrySetResult("late-fake-credential");}
+    }
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Azure_mode_fake_transport_uses_shared_admission_and_restarts_without_resending_or_private_inputs(bool accountingDisabled)
+    {
+        using var s = await CreateLive();
+        if (accountingDisabled)
+        {
+            s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";
+            s.Config["AiUsage:DailyTokenLimit"]="0";s.Config["AiUsage:DailyCallLimit"]="0";s.Config["AiUsage:DailyEstimatedJpyLimit"]="0";
+            s.Config["AiUsage:UsdToJpy"]="0";s.Config["AiUsage:PriceVersion"]="";s.Config["AiUsage:FxVersion"]="";
+        }
+        using var measurement = OperationMeasurements.Begin(MeasurementEvidence.Fixture); var request = LiveRequest(); var result = await StartLive(s, request);
         Assert.Equal("completed", result.Text("status")); Assert.Equal("live", result.Text("processingMode")); Assert.Equal(1, s.Wire.Calls);
         Assert.Equal(12m, result["groups"]![0]!["metrics"]!["reportedHours"]!.GetValue<decimal>());
         var userInput = s.Wire.Sent!["messages"]![1]!["content"]!.GetValue<string>();
         Assert.DoesNotContain("session", userInput); Assert.DoesNotContain("principal", userInput); Assert.DoesNotContain("reportedHours", userInput); Assert.DoesNotContain("department", userInput);
-        var reservation = Assert.Single((await Rows(s, "aiReservation")).Items); Assert.Equal("settled", reservation.Value.Text("state"));
-        var day = (await Day(s)); Assert.Equal(1, day.Value.Number("calls")); Assert.Equal(120, day.Value.Number("tokens")); Assert.Equal(.021m, day.Value["jpy"]!.GetValue<decimal>());
+        var reservation = Assert.Single((await Rows(s, accountingDisabled ? "aiExecution" : "aiReservation")).Items); Assert.Equal(accountingDisabled ? "completed" : "settled", reservation.Value.Text("state"));
+        if (!accountingDisabled) { var day = (await Day(s)); Assert.Equal(1, day.Value.Number("calls")); Assert.Equal(120, day.Value.Number("tokens")); Assert.Equal(.021m, day.Value["jpy"]!.GetValue<decimal>()); }
         var audit = Assert.Single((await Rows(s, "aiRun")).Items).Value; Assert.Equal(1, audit["trace"]!["attemptCount"]!.GetValue<int>()); Assert.Equal(0, audit["trace"]!["retryCount"]!.GetValue<int>()); Assert.Null(audit["trace"]!["requestUnits"]); Assert.Equal("not_collected", audit["trace"]!["requestUnitsStatus"]!.GetValue<string>());
-        var measured = measurement.Export(MeasurementKind.SourceRead, MeasurementKind.FenceWrite, MeasurementKind.AuditWrite, MeasurementKind.LedgerReserve, MeasurementKind.LedgerSettle, MeasurementKind.HttpRequest);
+        var traceOutput=Path.Combine(FindRootForTrace(),"tests/Dse.Tests/TestResults");Directory.CreateDirectory(traceOutput);
+        await File.WriteAllTextAsync(Path.Combine(traceOutput,accountingDisabled?"business-ai-run-disabled.json":"business-ai-run-ledger.json"),audit.ToJsonString());
+        var measured = accountingDisabled ? measurement.Export(MeasurementKind.SourceRead, MeasurementKind.FenceWrite, MeasurementKind.AuditWrite, MeasurementKind.HttpRequest) : measurement.Export(MeasurementKind.SourceRead, MeasurementKind.FenceWrite, MeasurementKind.AuditWrite, MeasurementKind.LedgerReserve, MeasurementKind.LedgerSettle, MeasurementKind.HttpRequest);
         Assert.Empty(measured.MissingExpectedKinds); Assert.All(measured.Operations, op => Assert.Null(op.RequestUnits.Value)); Assert.False(measured.CompleteMeasurement); Assert.False(measured.AcceptanceGatePassed);
         Assert.DoesNotContain("共通課題の仮説", audit.ToJsonString());
         var restartedStore = new LocalRecordStore(new LocalIngestionFiles(s.Path)); var restartedRepo = new PrimaryRepository(restartedStore);
@@ -566,16 +644,27 @@ public sealed class BusinessAnalysisTests
     }
     private static BusinessAnalysisRecoveryRequest RecoveryRequest(JsonObject inspection, string runId) => new(runId, Analyst.PrincipalId, inspection.Text("runEtag"), inspection.Text("slotEtag"),
         "approval-local-fake", true, true, true, "stop-evidence-local-fake", new string('a', 64), inspection.Strings("pendingReservationIds"));
-    [Fact]
-    public async Task Timeout_retains_pending_cost_and_slot_until_evidence_based_offline_recovery_without_retry()
+    [Theory] [InlineData("rejected400")] [InlineData("rejected404")] [InlineData("credential-failure")]
+    public async Task Definite_provider_rejection_releases_business_slot_and_allows_a_corrected_new_analysis(string variation)
+    {
+        using var s=await CreateLive(variation:variation);s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";
+        var failed=await StartLive(s,LiveRequest());Assert.Equal("partial_failure",failed.Text("status"));Assert.Equal(1,s.Wire.Calls);
+        Assert.Equal("ready",(await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant),"business-analysis-slot",default))!.Value.Text("status"));
+        Assert.Empty((await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant),"system-ai-gate",default))!.Value.Strings("active"));
+        s.Wire.Variation="success";var corrected=await StartLive(s,LiveRequest());Assert.Equal("completed",corrected.Text("status"));Assert.Equal(2,s.Wire.Calls);
+    }
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Timeout_retains_pending_cost_or_execution_slot_until_evidence_based_offline_recovery_without_retry(bool accountingDisabled)
     {
         using var s = await CreateLive(recoveryOperator:true); s.Config["AiUsage:TimeoutSeconds"] = "1";
+        if (accountingDisabled) { s.Config["AiUsage:AccountingMode"] = "Disabled"; s.Config["AiUsage:MaxAttempts"] = "1"; }
+        var reservationKind = accountingDisabled ? "aiExecution" : "aiReservation";
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         s.Wire.During = async () => { entered.SetResult(); await release.Task; }; // Ignores cancellation, just like an uncertain remote request.
         var request = LiveRequest(); var task = StartLive(s, request); await entered.Task; var result = await task;
         Assert.Equal("partial_failure", result.Text("status")); Assert.True(result["recoveryRequired"]!.GetValue<bool>());
         Assert.Equal("ANALYSIS_RECOVERY_REQUIRED", (await Assert.ThrowsAsync<DomainException>(() => StartLive(s, LiveRequest()))).Code);
-        Assert.Equal(1, s.Wire.Calls); var pending = Assert.Single((await Rows(s, "aiReservation")).Items); Assert.Equal("pending", pending.Value.Text("state"));
+        Assert.Equal(1, s.Wire.Calls); var pending = Assert.Single((await Rows(s, reservationKind)).Items); Assert.Equal("pending", pending.Value.Text("state"));
         var gate = (await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "system-ai-gate", default))!; Assert.Contains(pending.Value.Text("id"), gate.Value.Strings("active"));
         release.SetResult(); await s.Wire.Finished.Task; // Tests terminate their fake; real offline termination requires independently reviewed evidence.
         s.Config["AiUsage:Stopped"] = "true"; s.Config["AiUsage:LiveOptIn"] = "false";
@@ -586,9 +675,10 @@ public sealed class BusinessAnalysisTests
         await Assert.ThrowsAsync<ArgumentException>(() => recovery.RecoverAsync(LiveOperator, input with { StopEvidenceSha256 = "invalid" }, default));
         Assert.Equal("STALE_VERSION", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(LiveOperator, input with { SlotETag = "\"stale-version\"" }, default))).Code);
         Assert.Equal("RECOVERY_RESERVATION_MISMATCH", (await Assert.ThrowsAsync<DomainException>(() => recovery.RecoverAsync(LiveOperator, input with { PendingReservationIds = [] }, default))).Code);
-        var dayBefore = (await Day(s)).Value.ToJsonString();
+        var dayBefore = accountingDisabled ? null : (await Day(s)).Value.ToJsonString();
         var recovered = await recovery.RecoverAsync(LiveOperator, input, default); Assert.Equal("aborted", recovered.Text("status")); Assert.Equal(0m, recovered["refundedJpy"]!.GetValue<decimal>());
-        Assert.Equal(dayBefore, (await Day(s)).Value.ToJsonString()); Assert.Equal("uncertain", Assert.Single((await Rows(s, "aiReservation")).Items).Value.Text("state"));
+        if (!accountingDisabled) Assert.Equal(dayBefore, (await Day(s)).Value.ToJsonString());
+        else { Assert.Empty((await Rows(s,"aiReservation")).Items); Assert.Null(await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant),"ai-day-"+DateTimeOffset.UtcNow.ToString("yyyy-MM-dd"),default)); } Assert.Equal("uncertain", Assert.Single((await Rows(s, reservationKind)).Items).Value.Text("state"));
         Assert.Empty((await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "system-ai-gate", default))!.Value.Strings("active"));
         Assert.Equal("ready", (await s.Store.ReadAsync(RecordPartition.Catalog(LiveTenant), "business-analysis-slot", default))!.Value.Text("status"));
         var saved = (await s.Service.GetAsync(LiveAnalyst, request.RunId, default)); Assert.Equal("aborted", saved.Text("status")); Assert.Empty(saved["groups"]!.AsArray()); Assert.Null(saved["sourceCount"]);

@@ -21,6 +21,13 @@ public class ChatSmokeTests
         ["Foundry:OutputUsdPerMillion"] = "1", ["Foundry:OutputLimit"] = "3000"
     }).Build();
 
+    [Fact]
+    public void Disabled_accounting_keeps_dummy_and_attempt_guards_without_daily_or_monthly_budget()
+    {
+        var c=Config();c["AiUsage:AccountingMode"]="Disabled";c["APPROVED_MONTHLY_BUDGET_JPY"]=null;
+        c["AiUsage:DailyTokenLimit"]="0";c["AiUsage:DailyCallLimit"]="0";c["AiUsage:DailyEstimatedJpyLimit"]="0";
+        ChatSmoke.Validate(c);c["ChatSmoke:DummyOnly"]="false";Assert.Throws<InvalidOperationException>(()=>ChatSmoke.Validate(c));
+    }
     [Theory]
     [InlineData("ChatSmoke:Approved", "false")]
     [InlineData("AZURE_CLIENT_ID", "")]

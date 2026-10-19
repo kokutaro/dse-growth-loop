@@ -46,6 +46,9 @@ def parameters(env):
             raise ValueError('AZURE_BUDGET_START_DATE を YYYY-MM-01 で指定してください。') from None
         if parsed.day != 1:
             raise ValueError('Budget開始日は月初を指定してください。')
+    accounting = env.get('AiUsage__AccountingMode', env.get('AI_ACCOUNTING_MODE', 'Ledger'))
+    if accounting not in ('Ledger', 'Disabled'):
+        raise ValueError('AiUsage__AccountingMode は Ledger / Disabled を指定してください。')
     stopped = boolean(env, 'AI_STOPPED', 'true')
     tokens = integer(env, 'AI_DAILY_TOKEN_LIMIT', 0)
     calls = integer(env, 'AI_DAILY_CALL_LIMIT', 0)
@@ -60,11 +63,11 @@ def parameters(env):
     weekly_cost = decimal_value(env, 'AI_WEEKLY_TOTAL_JPY_LIMIT', '0')
     infra_reserve = decimal_value(env, 'AI_INFRASTRUCTURE_RESERVE_JPY', '0')
     external_reserve = decimal_value(env, 'AI_EXTERNAL_AI_RESERVE_JPY', '0')
-    if period == 'Weekly' and (Decimal(weekly_cost) > 2000 or Decimal(fx) != 162 or
+    if accounting == 'Ledger' and period == 'Weekly' and (Decimal(weekly_cost) > 2000 or Decimal(fx) != 162 or
             Decimal(infra_reserve) + Decimal(external_reserve) >= Decimal(weekly_cost)):
         raise ValueError('週次予算は2,000円以下、固定為替162円、予算内の留保が必要です。')
     money_guard = (budget and calls and Decimal(cost) > 0) if period == 'Daily' else (weekly_calls and Decimal(weekly_cost) > 0)
-    if not stopped and not (money_guard and tokens and Decimal(fx) > 0 and price_version and fx_version):
+    if accounting == 'Ledger' and not stopped and not (money_guard and tokens and Decimal(fx) > 0 and price_version and fx_version):
         raise ValueError('AI停止解除には承認予算、正の日次上限、為替、単価版、為替版が必要です。')
     level = env.get('APP_LOG_LEVEL', 'Warning')
     if level not in ('Trace', 'Debug', 'Information', 'Warning', 'Error', 'Critical', 'None'):
@@ -75,6 +78,7 @@ def parameters(env):
         'Operations__AnalysisMode': 'Manual',
         'Operations__RecoveryMode': 'Manual',
         'Operations__WarmupEnabled': 'false',
+        'AiUsage__AccountingMode': accounting,
         'AiUsage__Stopped': str(stopped).lower(),
         'AiUsage__DailyTokenLimit': str(tokens),
         'AiUsage__DailyCallLimit': str(calls),
@@ -97,8 +101,10 @@ def parameters(env):
     runtime['Ai__Mode'] = mode
     runtime['AiUsage__LiveOptIn'] = str(boolean(env, 'AiUsage__LiveOptIn', 'false')).lower()
     runtime['BusinessAnalysis__Enabled'] = str(boolean(env, 'BusinessAnalysis__Enabled', 'false')).lower()
-    for name, default, ceiling in [('MaxInputTokens', 8000, 16000), ('MaxOutputTokens', 1000, 8000), ('MaxConcurrency', 1, 8), ('MaxAttempts', 2, 3), ('TimeoutSeconds', 30, 120)]:
+    for name, default, ceiling in [('MaxInputTokens', 8000, 16000), ('MaxOutputTokens', 1000, 8000), ('MaxConcurrency', 1, 8), ('MaxAttempts', 1 if accounting == 'Disabled' else 2, 3), ('TimeoutSeconds', 30, 120)]:
         runtime['AiUsage__' + name] = str(integer(env, 'AiUsage__' + name, default, 1, ceiling))
+    if accounting == 'Disabled' and any(runtime['AiUsage__' + key] != '1' for key in ('MaxAttempts', 'MaxConcurrency')):
+        raise ValueError('Disabled は MaxAttempts=1 / MaxConcurrency=1 が必要です。')
     # 明示allowlist。キー本文やsmoke承認を通常配置へコピーしない。
     for key in ('Foundry__ModelId', 'Foundry__ModelVersion', 'Foundry__Region', 'Foundry__Sku',
                 'Foundry__OutputLimit', 'Foundry__InputUsdPerMillion', 'Foundry__OutputUsdPerMillion',

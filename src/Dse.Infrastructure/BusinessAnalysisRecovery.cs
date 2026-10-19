@@ -73,9 +73,10 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
         foreach (var id in active)
         {
             var reservation = await store.ReadAsync(p, id, ct);
-            if (reservation is null || reservation.Value.Text("id") != id || reservation.Value.Text("kind") != "aiReservation" || reservation.Value.Text("tenantId") != tenant || reservation.Value.Text("state") != "pending" || !RecordJson.IsId(reservation.Value.Text("runId"))) throw Inconsistent();
+            if (reservation is null || reservation.Value.Text("id") != id || reservation.Value.Text("kind") is not ("aiReservation" or "aiExecution") || reservation.Value.Text("tenantId") != tenant || reservation.Value.Text("state") != "pending" || !RecordJson.IsId(reservation.Value.Text("runId"))) throw Inconsistent();
             var run = await store.ReadAsync(p, reservation.Value.Text("runId"), ct);
             if (run is null || run.Value.Text("kind") != "aiRun" || run.Value.Text("tenantId") != tenant) throw Inconsistent();
+            if (reservation.Value.Text("kind") != (run.Value["trace"]?["accountingMode"]?.GetValue<string>() == "Disabled" ? "aiExecution" : "aiReservation")) throw Inconsistent();
             if (run.Value.Text("jobId") == jobId && run.Value.Text("operation") == BusinessAnalysisLiveDrafter.PromptVersion)
             {
                 if (!aiRuns.ContainsKey(run.Value.Text("id"))) throw Inconsistent();
@@ -88,12 +89,13 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
         {
             // Exact runId queries detect orphaned target pending rows, including rows omitted from gate.active.
             // Tenant-wide reservation history is never paged; one business drafter sends once per group.
-            var page = await store.QueryAsync(p, "aiReservation", "runId", run.Value.Text("id"), 100, null, ct);
+            var kind = run.Value["trace"]?["accountingMode"]?.GetValue<string>() == "Disabled" ? "aiExecution" : "aiReservation";
+            var page = await store.QueryAsync(p, kind, "runId", run.Value.Text("id"), 100, null, ct);
             if (page.ContinuationToken is not null || (examined += page.Items.Length) > 1000) throw new DomainException(422, "RECOVERY_SCAN_LIMIT");
             if (run.Value["trace"]?["attemptCount"] is not JsonValue attempts || !attempts.TryGetValue<int>(out var count) || count is < 0 or > 1 || (count > 0 && page.Items.Length == 0)) throw Inconsistent();
             foreach (var row in page.Items)
             {
-                if (row.Value.Text("kind") != "aiReservation" || row.Value.Text("tenantId") != tenant || row.Value.Text("runId") != run.Value.Text("id") || row.Value.Text("state") is not ("pending" or "settled" or "uncertain")) throw Inconsistent();
+                if (row.Value.Text("kind") != kind || row.Value.Text("tenantId") != tenant || row.Value.Text("runId") != run.Value.Text("id") || !(kind == "aiExecution" ? new[] { "pending", "completed", "uncertain" } : new[] { "pending", "settled", "uncertain" }).Contains(row.Value.Text("state"))) throw Inconsistent();
                 if (row.Value.Text("state") != "pending") continue;
                 if (!activeRows.TryGetValue(row.Value.Text("id"), out var activeRow) || activeRow.ETag != row.ETag) throw Inconsistent();
                 pending.Add(row);
@@ -166,8 +168,13 @@ public sealed class BusinessAnalysisRecovery(IRecordStore store, IConfiguration 
         List<RecordWrite> writes = [RecordWrite.Replace(run.Value, run.ETag), RecordWrite.Replace(slot.Value, slot.ETag), RecordWrite.Create(receipt)];
         foreach (var reservation in pending)
         {
-            reservation.Value["state"] = "uncertain"; reservation.Value["actualInput"] = reservation.Value["input"]?.DeepClone(); reservation.Value["actualOutput"] = reservation.Value["output"]?.DeepClone();
-            reservation.Value["chargedEstimateJpy"] = reservation.Value["jpy"]?.DeepClone(); writes.Add(RecordWrite.Replace(reservation.Value, reservation.ETag));
+            reservation.Value["state"] = "uncertain";
+            if (reservation.Value.Text("kind") == "aiReservation")
+            {
+                reservation.Value["actualInput"] = reservation.Value["input"]?.DeepClone(); reservation.Value["actualOutput"] = reservation.Value["output"]?.DeepClone();
+                reservation.Value["chargedEstimateJpy"] = reservation.Value["jpy"]?.DeepClone();
+            }
+            writes.Add(RecordWrite.Replace(reservation.Value, reservation.ETag));
         }
         if (gate is not null)
         {

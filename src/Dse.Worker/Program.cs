@@ -118,7 +118,10 @@ switch (command)
         var reservationId = builder.Configuration["Recovery:AiReservationId"];
         if (string.IsNullOrWhiteSpace(reservationId)) throw new ArgumentException("Recovery__AiReservationId required");
         await host.Services.GetRequiredService<AiLedger>().RecoverSlotAsync(tenant, reservationId,
-            builder.Configuration["Recovery:ProcessesStopped"] == "true", ct);
+            builder.Configuration["Recovery:ProcessesStopped"] == "true", ct,
+            new(builder.Configuration["Recovery:ApiStopped"] == "true", builder.Configuration["Recovery:WorkerStopped"] == "true",
+                builder.Configuration["Recovery:ProvidersStopped"] == "true", builder.Configuration["Recovery:ApprovalReference"] ?? "",
+                builder.Configuration["Recovery:StopEvidenceReference"] ?? "", builder.Configuration["Recovery:StopEvidenceSha256"] ?? ""));
         break;
     case "--seed-demo":
         await host.Services.GetRequiredService<ICatalog>().SeedDemoAsync(tenant, ct); break;

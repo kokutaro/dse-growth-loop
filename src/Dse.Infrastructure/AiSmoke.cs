@@ -10,7 +10,7 @@ public static class AiSmoke
         var limits = AiLimits.Read(config);
         var suite = config["AiSmoke:Suite"] ?? "basic";
         if (config["Data:Mode"] != "Azure" || config["Ai:Mode"] != "Live" || limits.Stopped || !limits.LiveOptIn ||
-            !decimal.TryParse(config["APPROVED_MONTHLY_BUDGET_JPY"], out var approved) || approved <= 0 ||
+            (limits.AccountingEnabled && (!decimal.TryParse(config["APPROVED_MONTHLY_BUDGET_JPY"], out var approved) || approved <= 0)) ||
             config["AiSmoke:Approved"] != "true" || config["AiSmoke:DummyOnly"] != "true" ||
             string.IsNullOrWhiteSpace(config["AiSmoke:OperatorPersonId"]) || string.IsNullOrWhiteSpace(config["AiSmoke:ApprovalReference"]) ||
             suite is not ("basic" or "connections") || config["AiSmoke:Count"] != (suite == "connections" ? "3" : "2") ||

@@ -14,7 +14,7 @@ public static class AiRegistration
         services.AddSingleton<IAiTransport>(sp =>
         {
             if (config["Ai:Mode"] == "Live" && config["Data:Mode"] == "Demo" && string.IsNullOrWhiteSpace(config["Data:LocalPath"]))
-                throw new InvalidOperationException("Live AI requires a persistent ledger");
+                throw new InvalidOperationException("Live AI requires persistent execution state");
             // No redirect, no SDK inference retries, no HttpClientFactory body/header logging.
             var http = new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false }) { Timeout = Timeout.InfiniteTimeSpan };
             TokenCredential credential = config["Data:Mode"] == "Azure"

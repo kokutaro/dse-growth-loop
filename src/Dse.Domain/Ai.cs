@@ -3,7 +3,13 @@ namespace Dse.Domain;
 public enum AiStatus { Succeeded, Failed, BudgetStopped, NotEvaluated }
 public enum AiFailure { Stopped, Budget, Busy, InputLimit, OutputLimit, Configuration, Unauthorized, RateLimited, Unavailable, Timeout, Cancelled, InvalidJson, SchemaMismatch, Refused, Truncated, InventedId, ModelMismatch }
 public enum NoulState { Supported, Unknown, NotEvaluated }
-public sealed record AiResult<T>(AiStatus Status, T? Value, string RunId, AiFailure? Failure, bool Cached = false);
+public sealed record AiResult<T>(AiStatus Status, T? Value, string RunId, AiFailure? Failure, bool Cached = false)
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool ProviderRejected { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool InferenceNotDispatched { get; init; }
+}
 public sealed record AiContext(ActorAccess Actor, string JobId, string PromptVersion, string TaxonomyVersion,
     int DataVersion, EvidenceReference[] Evidence, SearchUnit[] Candidates, string? SessionId = null)
 {

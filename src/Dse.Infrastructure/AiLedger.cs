@@ -3,8 +3,13 @@ using Dse.Domain;
 
 namespace Dse.Infrastructure;
 
-public sealed record AiReservation(string Id, string DayId, string Tenant, long Input, long Output, decimal Jpy, string? WeekId = null);
+public sealed record AiReservation(string Id, string DayId, string Tenant, long Input, long Output, decimal Jpy, string? WeekId = null)
+{
+    public bool AccountingDisabled { get; init; }
+}
 public sealed record AiUsage(long Input, long Output, bool Estimated);
+public sealed record AiExecutionRecoveryEvidence(bool ApiStopped, bool WorkerStopped, bool ProvidersStopped,
+    string ApprovalReference, string StopEvidenceReference, string StopEvidenceSha256);
 public enum AiValidationIssue { ResponseShape, Keys, Probability, DistributionSum, SelectedOption, SelectedMaximum }
 
 public sealed class AiException(AiFailure failure, bool retryable = false, TimeSpan? retryAfter = null, string? requestId = null, AiValidationIssue? validationIssue = null) : Exception("AI_" + failure.ToString().ToUpperInvariant())
@@ -12,6 +17,8 @@ public sealed class AiException(AiFailure failure, bool retryable = false, TimeS
     public AiFailure Failure { get; } = failure;
     public AiValidationIssue? ValidationIssue { get; } = validationIssue;
     public bool Retryable { get; } = retryable;
+    public bool ProviderRejected { get; init; }
+    public bool InferenceNotDispatched { get; init; }
     public TimeSpan? RetryAfter { get; } = retryAfter;
     public string? RequestId { get; } = requestId;
 }
@@ -28,6 +35,7 @@ public sealed partial class AiLedger(IRecordStore store, TimeProvider clock)
     public async Task<AiReservation> ReserveAsync(string tenant, string runId, AiModel model, AiLimits limits, long input, long output, CancellationToken ct)
     {
         if (limits.Stopped || !limits.LiveOptIn) throw new AiException(AiFailure.Stopped);
+        if (!limits.AccountingEnabled) return await new AiExecutionGuard(store, clock).BeginAsync(tenant, runId, limits, input, output, ct);
         if (limits.DailyTokens <= 0 || (!limits.Weekly && (limits.DailyCalls <= 0 || limits.DailyJpy <= 0)) || (limits.Weekly && (limits.WeeklyCalls <= 0 || limits.WeeklyTotalJpy <= 0)) || limits.UsdToJpy <= 0 ||
             string.IsNullOrWhiteSpace(limits.PriceVersion) || string.IsNullOrWhiteSpace(limits.FxVersion) ||
             limits.PriceVersion == "unapproved" || limits.FxVersion == "unapproved") throw new AiException(AiFailure.Budget);
@@ -49,7 +57,7 @@ public sealed partial class AiLedger(IRecordStore store, TimeProvider clock)
             if (g["weeklyBudgetRequired"]?.GetValue<bool>() == true && !limits.Weekly) throw new AiException(AiFailure.Budget);
             if (g["blocked"]?.GetValue<bool>() == true) throw new AiException(AiFailure.Budget);
             var active = g["active"]?.AsArray() ?? new JsonArray();
-            if (active.Count >= limits.Concurrency) throw new AiException(AiFailure.Busy);
+            if (active.Any(id => id?.GetValue<string>().StartsWith("ai-exec-", StringComparison.Ordinal) == true) || active.Count >= limits.Concurrency) throw new AiException(AiFailure.Busy);
             if (Count(d, "tokens") + input + output > limits.DailyTokens ||
                 (!limits.Weekly && (Count(d, "calls") + 1 > limits.DailyCalls || Money(d) + cost > limits.DailyJpy)) ||
                 (limits.Weekly && (Count(w!, "calls") + 1 > limits.WeeklyCalls || Money(w!, "usd") * limits.UsdToJpy + Money(w!, "reservedNonRuntimeJpy") + cost > limits.WeeklyTotalJpy)))
@@ -79,6 +87,11 @@ public sealed partial class AiLedger(IRecordStore store, TimeProvider clock)
 
     public async Task SettleAsync(AiReservation reservation, AiUsage? usage, AiModel model, AiLimits limits, CancellationToken ct)
     {
+        if (reservation.AccountingDisabled)
+        {
+            await new AiExecutionGuard(store, clock).CompleteAsync(reservation, usage, ct);
+            return;
+        }
         var partition = RecordPartition.Catalog(reservation.Tenant);
         for (var conflict = 0; conflict < 20; conflict++)
         {
@@ -113,16 +126,23 @@ public sealed partial class AiLedger(IRecordStore store, TimeProvider clock)
     }
 
     // Offline recovery releases a crashed concurrency slot but never refunds uncertain spend.
-    public async Task RecoverSlotAsync(string tenant, string reservationId, bool processesStopped, CancellationToken ct)
+    public async Task RecoverSlotAsync(string tenant, string reservationId, bool processesStopped, CancellationToken ct, AiExecutionRecoveryEvidence? evidence = null)
     {
         if (!processesStopped) throw new ArgumentException("Stop API and Worker before AI recovery");
         var partition = RecordPartition.Catalog(tenant);
         var row = await store.ReadAsync(partition, reservationId, ct) ?? throw new ArgumentException("Unknown reservation");
-        if (row.Value.Text("kind") != "aiReservation") throw new ArgumentException("Invalid reservation");
+        if (row.Value.Text("kind") is not ("aiReservation" or "aiExecution")) throw new ArgumentException("Invalid reservation");
+        if (evidence is null || !evidence.ApiStopped || !evidence.WorkerStopped || !evidence.ProvidersStopped ||
+            !RecordJson.IsId(evidence.ApprovalReference) || !RecordJson.IsId(evidence.StopEvidenceReference) ||
+            !System.Text.RegularExpressions.Regex.IsMatch(evidence.StopEvidenceSha256 ?? "", "\\A[a-fA-F0-9]{64}\\z"))
+            throw new ArgumentException("Execution recovery requires API/Worker/provider quiescence and reviewed stop evidence");
         if (row.Value.Text("state") != "pending") return;
         var gate = (await store.ReadAsync(partition, GateId, ct))!;
         gate.Value["active"] = RecordJson.Array(gate.Value.Strings("active").Where(x => x != reservationId));
         row.Value["state"] = "uncertain";
+        row.Value["recoveryApprovalReference"] = evidence.ApprovalReference;
+        row.Value["stopEvidenceReference"] = evidence.StopEvidenceReference;
+        row.Value["stopEvidenceSha256"] = evidence.StopEvidenceSha256!.ToLowerInvariant();
         await store.CommitAsync(partition, [RecordWrite.Replace(row.Value, row.ETag), RecordWrite.Replace(gate.Value, gate.ETag)], ct);
     }
 }

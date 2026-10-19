@@ -35,6 +35,16 @@ public sealed class AiSearchPreflightTests
     }
 
     [Fact]
+    public void Disabled_accounting_preflight_needs_runtime_safety_and_provider_pins_but_no_budget_or_fx()
+    {
+        var c=Config();c["AiUsage:AccountingMode"]="Disabled";c["AiUsage:BudgetPeriod"]="Weekly";
+        foreach(var key in new[]{"DailyTokenLimit","DailyCallLimit","DailyEstimatedJpyLimit","UsdToJpy","WeeklyCallLimit","WeeklyTotalJpyLimit"})c["AiUsage:"+key]="0";
+        c["AiUsage:PriceVersion"]="";c["AiUsage:FxVersion"]="";
+        Assert.True(AiSearchPreflight.Check(c).Ready);
+        c["AiUsage:MaxAttempts"]="2";Assert.Contains(AiSearchPreflight.Check(c).Issues,i=>i.Code=="AI_LIMITS_INVALID");
+    }
+
+    [Fact]
     public void Incident_configuration_reports_all_missing_groups_in_one_pass()
     {
         var config=Config();config["AiUsage:MaxOutputTokens"]="1000";config["AiUsage:DailyTokenLimit"]="0";

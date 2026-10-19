@@ -142,8 +142,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             ["modelId"] = null, ["promptVersion"] = context.PromptVersion, ["taxonomyVersion"] = context.TaxonomyVersion,
             ["dataVersion"] = context.DataVersion, ["inputHash"] = inputHash, ["evidenceIds"] = RecordJson.Array(evidenceIds.Order()),
             ["inputTokens"] = 0L, ["outputTokens"] = 0L, ["requestUnits"] = 0, ["retryCount"] = 0,
-            ["estimatedCostJpy"] = 0m, ["pricingVersion"] = string.IsNullOrWhiteSpace(limits.PriceVersion) ? "unapproved" : limits.PriceVersion,
-            ["fxVersion"] = limits.FxVersion, ["durationMs"] = 0L, ["attemptCount"] = 0, ["usageEstimated"] = false,
+            ["estimatedCostJpy"] = limits.AccountingEnabled ? JsonValue.Create(0m) : null, ["pricingVersion"] = string.IsNullOrWhiteSpace(limits.PriceVersion) ? "unapproved" : limits.PriceVersion,
+            ["fxVersion"] = limits.FxVersion, ["accountingMode"] = limits.AccountingEnabled ? "Ledger" : "Disabled", ["durationMs"] = 0L, ["attemptCount"] = 0, ["usageEstimated"] = false,
             ["providerRequestIds"] = new JsonArray()
         };
         run["trace"] = trace;
@@ -225,10 +225,18 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         trace["attemptCount"] = attempts; trace["retryCount"] = attempts - 1;
                         AiUsage? usage = null;
                         AiException? retry = null;
+                        var requestSent = false; var responseReceived = false; var uncertain = false; var notDispatched = false;
+                        var dispatch = !mock && transport is IDispatchTrackingAiTransport ? new AiDispatchState() : null;
                         try
                         {
                             await Save(deadline.Token);
-                            var response = await (mock ? MockAiTransport.Instance : transport).SendAsync(model, body, limits.OutputTokens * 16 + 4096, deadline.Token);
+                            requestSent = true;
+                            var request = dispatch is not null
+                                ? ((IDispatchTrackingAiTransport)transport).SendAsync(model, body, limits.OutputTokens * 16 + 4096, deadline.Token, dispatch)
+                                : (mock ? MockAiTransport.Instance : transport).SendAsync(model, body, limits.OutputTokens * 16 + 4096, deadline.Token);
+                            _ = request.ContinueWith(t => { _ = t.Exception; }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                            var response = await request.WaitAsync(deadline.Token);
+                            responseReceived = true;
                             if (response.RequestId is not null) trace["providerRequestIds"]!.AsArray().Add(response.RequestId);
                             usage = response.Usage;
                             if (usage is not null && (usage.Input > limits.InputTokens || usage.Output > limits.OutputTokens)) throw new AiException(AiFailure.OutputLimit);
@@ -247,6 +255,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                             if (e.RequestId is not null) trace["providerRequestIds"]!.AsArray().Add(e.RequestId);
                             retry = e;
                         }
+                        catch (OperationCanceledException) { retry = new(ct.IsCancellationRequested ? AiFailure.Cancelled : AiFailure.Timeout); }
                         catch (HttpRequestException) { retry = new(AiFailure.Unavailable, true); }
                         catch (IOException) { retry = new(AiFailure.Unavailable, true); }
                         catch (JsonException) { retry = new(AiFailure.InvalidJson); }
@@ -255,14 +264,19 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         finally
                         {
                             using var settlement = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                            if (reservation is not null) await ledger.SettleAsync(reservation, usage, model, limits, settlement.Token);
+                            notDispatched = dispatch?.TryAbandonBeforeDispatch() == true || retry?.InferenceNotDispatched == true;
+                            if (notDispatched) usage = new(0, 0, false);
+                            uncertain = !notDispatched && retry?.ProviderRejected != true && requestSent && !responseReceived &&
+                                (deadline.IsCancellationRequested || retry?.Failure is AiFailure.Timeout or AiFailure.Cancelled or AiFailure.Unavailable or AiFailure.OutputLimit);
+                            if (reservation is not null && !uncertain) await ledger.SettleAsync(reservation, usage, model, limits, settlement.Token);
                             var charged = mock ? new AiUsage(0, 0, false) : usage ?? new(limits.InputTokens, limits.OutputTokens, true);
                             trace["inputTokens"] = trace["inputTokens"]!.GetValue<long>() + charged.Input;
                             trace["outputTokens"] = trace["outputTokens"]!.GetValue<long>() + charged.Output;
-                            trace["estimatedCostJpy"] = trace["estimatedCostJpy"]!.GetValue<decimal>() + model.Cost(charged.Input, charged.Output, limits);
+                            trace["estimatedCostJpy"] = limits.AccountingEnabled ? trace["estimatedCostJpy"]!.GetValue<decimal>() + model.Cost(charged.Input, charged.Output, limits) : null;
                             trace["usageEstimated"] = trace["usageEstimated"]!.GetValue<bool>() || charged.Estimated;
                             await Save(settlement.Token);
                         }
+                        if ((uncertain || notDispatched) && retry is not null) throw retry;
                         if (retry is null) break;
                         if (!retry.Retryable || attempt == limits.Attempts) throw retry;
                         var delay = retry.RetryAfter ?? TimeSpan.FromSeconds(Math.Pow(2, attempt - 1));

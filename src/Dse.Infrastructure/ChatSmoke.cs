@@ -40,9 +40,9 @@ public static class ChatSmoke
             !RecordJson.IsId(c["ChatSmoke:RunId"] ?? "") || string.IsNullOrWhiteSpace(c["ChatSmoke:ApprovalReference"]) ||
             !Guid.TryParse(c["AZURE_CLIENT_ID"], out _) || !Guid.TryParse(c["Auth:TenantId"], out _) ||
             c["ChatSmoke:Suite"] is not ("quality" or "queue" or "probe") ||
-            !decimal.TryParse(c["APPROVED_MONTHLY_BUDGET_JPY"], out var budget) || budget <= 0 ||
+            (l.AccountingEnabled && (!decimal.TryParse(c["APPROVED_MONTHLY_BUDGET_JPY"], out var budget) || budget <= 0)) ||
             l.Attempts != 1 || l.Concurrency != 1 || l.InputTokens > 8000 || l.OutputTokens > 3000 ||
-            l.DailyCalls is < 1 or > 80 || l.DailyTokens is < 1 or > 1000000 || l.DailyJpy is <= 0 or > 100)
+            (l.AccountingEnabled && (l.DailyCalls is < 1 or > 80 || l.DailyTokens is < 1 or > 1000000 || l.DailyJpy is <= 0 or > 100)))
             throw new InvalidOperationException("Chat smoke requires explicit bounded Azure/live/dummy approval");
         _ = AiModel.Read(c, "Jev", l.OutputTokens); _ = AiModel.Read(c, "Foundry", l.OutputTokens);
     }

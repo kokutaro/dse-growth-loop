@@ -228,6 +228,7 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
             var failed = false; var quiescenceUnknown = false;
             foreach (var group in Group(run.Inputs.Select(x => x.Source).ToArray()))
             {
+                if (timeout.IsCancellationRequested) { failed = true; break; }
                 var metrics = Metrics(group); var gid = "group-" + ConversationService.Hash(string.Join(":", group.Select(x => x.KnowledgeId)))[..16];
                 if (metrics.IndependentChallenges < limits.Number("minimumIndependentChallenges") || metrics.DistinctDepartments < limits.Number("minimumDepartments") || metrics.MissingMetadata.Contains("departmentId"))
                 {
@@ -240,24 +241,38 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
                     var drafted = await fence.RunAsync(actor.TenantId, async token =>
                     {
                         if (!await CurrentAsync(actor, run.Value, token)) throw new DomainException(409, "SOURCE_REVOKED");
+                        Task<AiResult<BusinessHypothesis>>? task = null;
                         try
                         {
-                            var task = drafter is IBusinessFencedHypothesisDrafter protectedDrafter
+                            task = drafter is IBusinessFencedHypothesisDrafter protectedDrafter
                                 ? protectedDrafter.DraftUnderFenceAsync(actor, id + ":" + gid, group, timeout.Token)
                                 : drafter.DraftAsync(actor, id + ":" + gid, group, timeout.Token);
+                            _ = task.ContinueWith(t => { _ = t.Exception; }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
                             return await task.WaitAsync(timeout.Token);
                         }
-                        catch (OperationCanceledException) { quiescenceUnknown = true; return new AiResult<BusinessHypothesis>(AiStatus.Failed, null, request.RunId, AiFailure.Timeout); }
+                        catch (OperationCanceledException)
+                        {
+                            // The drafter has a bounded independent finalizer. Give its atomic
+                            // pre-dispatch abandonment a chance to report certainty, without retry.
+                            AiResult<BusinessHypothesis>? completed = null;
+                            try { if (task is not null) completed = await task.WaitAsync(TimeSpan.FromSeconds(12)); }
+                            catch (Exception) { /* Unknown dispatch remains blocked for offline recovery. */ }
+                            var notDispatched = completed?.InferenceNotDispatched == true;
+                            var rejected = completed?.ProviderRejected == true;
+                            quiescenceUnknown = !notDispatched && !rejected;
+                            return new AiResult<BusinessHypothesis>(AiStatus.Failed, null, request.RunId, AiFailure.Timeout)
+                                { InferenceNotDispatched = notDispatched, ProviderRejected = rejected };
+                        }
                         catch (IOException) { return new AiResult<BusinessHypothesis>(AiStatus.Failed, null, request.RunId, AiFailure.Unavailable); }
                     }, ct);
                     var h = drafted.Value;
                     if (drafted.Status == AiStatus.NotEvaluated && drafted.Failure is null)
                     { run.Value["exclusions"]!.AsArray().Add(new JsonObject { ["groupId"] = gid, ["reason"] = "NO_COMMON_PROBLEM" }); continue; }
-                    if (drafted.Failure is AiFailure.Timeout or AiFailure.Cancelled or AiFailure.Unavailable or AiFailure.OutputLimit) quiescenceUnknown = true;
+                    if (!drafted.ProviderRejected && !drafted.InferenceNotDispatched && (drafted.Failure is AiFailure.Timeout or AiFailure.Cancelled or AiFailure.Unavailable or AiFailure.OutputLimit)) quiescenceUnknown = true;
                     if (drafted.Status != AiStatus.Succeeded || h is null || h.EvidenceIds is null || h.EvidenceIds.Length == 0 ||
                         h.EvidenceIds.Distinct().Count() != h.EvidenceIds.Length || h.EvidenceIds.Any(x => !group.Any(s => s.KnowledgeId == x)) ||
                         new[] { h.Audience, h.Problem, h.ExistingWorkaround, h.ValueHypothesis, h.CounterEvidence, h.NextCustomerCheck }.Any(x => string.IsNullOrWhiteSpace(x) || x.Length > 1500))
-                    { failed = true; run.Value["exclusions"]!.AsArray().Add(new JsonObject { ["groupId"] = gid, ["reason"] = drafted.Failure == AiFailure.Timeout ? "TIMEOUT_OR_CANCELLED" : drafted.Failure?.ToString() ?? "UNGROUNDED_HYPOTHESIS" }); if (drafted.Status == AiStatus.BudgetStopped || quiescenceUnknown || drafted.Failure == AiFailure.Unavailable) break; continue; }
+                    { failed = true; run.Value["exclusions"]!.AsArray().Add(new JsonObject { ["groupId"] = gid, ["reason"] = drafted.Failure == AiFailure.Timeout ? "TIMEOUT_OR_CANCELLED" : drafted.Failure?.ToString() ?? "UNGROUNDED_HYPOTHESIS" }); if (timeout.IsCancellationRequested || drafted.Status == AiStatus.BudgetStopped || quiescenceUnknown || drafted.Failure == AiFailure.Unavailable) break; continue; }
                     if (BusinessAnalysisLivePrivacy.HypothesisText(h).Any(text => AnonymousWorkspaceKnownIdentifiers.Contains(text, run.Inputs.SelectMany(x => x.KnownIdentifiers))))
                     { failed = true; run.Value["exclusions"]!.AsArray().Add(new JsonObject { ["groupId"] = gid, ["reason"] = "IDENTIFYING_CONTENT" }); continue; }
                     run.Value["groups"]!.AsArray().Add(new JsonObject { ["id"] = gid, ["metrics"] = Node(metrics), ["hypothesis"] = Node(h),
