@@ -48,7 +48,7 @@ public sealed class BusinessAnalysisLiveDrafter(IConfiguration config, IPrimaryR
             ["inputHash"] = ConversationService.Hash(RecordJson.Canonical(body) + RecordJson.Canonical(AiCodecs.Node(snapshots))),
             ["evidenceIds"] = RecordJson.Array(sources.Select(s => s.KnowledgeId).Order()), ["inputTokens"] = 0L, ["outputTokens"] = 0L,
             ["inputByteBound"] = inputBytes, ["requestUnits"] = null, ["requestUnitsStatus"] = "not_collected", ["retryCount"] = 0, ["attemptCount"] = 0,
-            ["estimatedCostJpy"] = limits.AccountingEnabled ? JsonValue.Create(0m) : null, ["pricingVersion"] = limits.PriceVersion, ["fxVersion"] = limits.FxVersion,
+            ["estimatedCostJpy"] = limits.AccountingEnabled ? JsonValue.Create(0m) : null, ["pricingVersion"] = string.IsNullOrWhiteSpace(limits.PriceVersion) ? "unapproved" : limits.PriceVersion, ["fxVersion"] = limits.FxVersion,
             ["accountingMode"] = limits.AccountingEnabled ? "Ledger" : "Disabled", ["usageEstimated"] = false, ["durationMs"] = 0L, ["providerRequestIds"] = new JsonArray()
         };
         var audit = RecordJson.New("aiRun", runId, actor.TenantId, actor.PrincipalId, actor.ScopeIds, clock.GetUtcNow());

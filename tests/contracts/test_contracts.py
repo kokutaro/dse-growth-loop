@@ -258,6 +258,17 @@ class ContractsTests(unittest.TestCase):
         self.assertEqual(value["trace"]["attemptCount"], 1)
         self.assertFalse(value["trace"]["usageEstimated"])
 
+    def test_actual_disabled_accounting_trace_matches_contract_without_cost_claims(self):
+        value = json.loads((ROOT / "tests/Dse.Tests/TestResults/ai-run-disabled.json").read_text())
+        self.validator("AiRun").validate(value)
+        validate_invariants("AiRun", value, self.taxonomy)
+        self.assertEqual(value["trace"]["accountingMode"], "Disabled")
+        self.assertIsNone(value["trace"]["estimatedCostJpy"])
+        for mode, cost in [("Disabled", 0), ("Ledger", None), ("unknown", None)]:
+            broken = copy.deepcopy(value)
+            broken["trace"].update(accountingMode=mode, estimatedCostJpy=cost)
+            self.assertFalse(self.validator("AiRun").is_valid(broken))
+
     def test_fixture_compatibility_uses_actual_domain_serialization(self):
         # Exported by FixtureContractTests; no second hand-copied fixture.
         fixture_path = ROOT / "tests/Dse.Tests/TestResults/contract-fixture.json"

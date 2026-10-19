@@ -3545,7 +3545,10 @@
             "minimum": 0
           },
           "estimatedCostJpy": {
-            "type": "number",
+            "type": [
+              "number",
+              "null"
+            ],
             "minimum": 0
           },
           "durationMs": {
@@ -3642,6 +3645,13 @@
               "observed"
             ],
             "description": "Optional measurement provenance. Live business analysis leaves RU null."
+          },
+          "accountingMode": {
+            "enum": [
+              "Ledger",
+              "Disabled"
+            ],
+            "description": "Absent on historical runs; Disabled has no cost or cumulative call accounting."
           }
         },
         "required": [
@@ -3658,7 +3668,36 @@
           "estimatedCostJpy",
           "pricingVersion"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "accountingMode"
+              ],
+              "properties": {
+                "accountingMode": {
+                  "const": "Disabled"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "estimatedCostJpy": {
+                  "type": "null"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "estimatedCostJpy": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        ]
       },
       "Document": {
         "type": "object",

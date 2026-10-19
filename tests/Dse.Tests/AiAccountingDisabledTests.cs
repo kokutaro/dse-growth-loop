@@ -86,6 +86,11 @@ public partial class AiTests
             Assert.Equal("completed",execution.Value.Text("state"));
             var run=Assert.Single((await memory.QueryAsync(RecordPartition.Catalog("demo"),"aiRun",null,null,100,null,default)).Items);
             Assert.Null(run.Value["trace"]!["estimatedCostJpy"]);
+            if (!rejected)
+            {
+                var output=Path.Combine(Root,"tests/Dse.Tests/TestResults");Directory.CreateDirectory(output);
+                await File.WriteAllTextAsync(Path.Combine(output,"ai-run-disabled.json"),run.Value.ToJsonString());
+            }
         }
     }
     [Fact]
