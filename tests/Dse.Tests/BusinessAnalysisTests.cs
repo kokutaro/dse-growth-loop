@@ -498,6 +498,56 @@ public sealed class BusinessAnalysisTests
         Assert.Equal("SOURCE_REVOKED",(await Assert.ThrowsAsync<DomainException>(() => s.Service.SourceAsync(LiveAnalyst,request.RunId,KnowledgeService.Id("demo-business-session-1"),default))).Code);
         var next=await StartLive(s,LiveRequest()); Assert.Equal(0,next.Number("sourceCount")); Assert.Empty(next["groups"]!.AsArray()); Assert.Equal(1,s.Wire.Calls);
     }
+    [Fact]
+    public async Task Historical_Ledger_analysis_replays_after_upgrade_without_another_provider_call()
+    {
+        using var s=await CreateLive();s.Config["AiUsage:MaxAttempts"]="1";var request=LiveRequest();var first=await StartLive(s,request);
+        var partition=RecordPartition.Catalog(LiveTenant);var saved=(await s.Store.ReadAsync(partition,BusinessAnalysisService.StorageId(LiveAnalyst.PrincipalId,request.RunId),default))!;
+        var l=AiLimits.Read(s.Config);var model=AiModel.Read(s.Config,"Foundry",l.OutputTokens);
+        // Explicit pre-upgrade shape: no AccountingEnabled property existed.
+        var limits=new {l.Stopped,l.LiveOptIn,l.DailyTokens,l.DailyCalls,l.DailyJpy,l.UsdToJpy,l.PriceVersion,l.FxVersion,l.InputTokens,l.OutputTokens,l.Concurrency,l.Attempts,l.TimeoutSeconds,l.Weekly,l.WeeklyCalls,l.WeeklyTotalJpy,l.InfrastructureReserveJpy,l.ExternalAiReserveJpy};
+        string Hash(string value)=>Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(value)));
+        var historical=Hash(RecordJson.Canonical(JsonSerializer.SerializeToNode(new {limits,model,promptVersion=BusinessAnalysisLiveDrafter.PromptVersion,configVersion=BusinessAnalysisLiveRuntime.LiveConfigVersion},Json)));
+        saved.Value["configurationHash"]=historical;
+        saved.Value["requestHash"]=Hash(RecordJson.Canonical(JsonSerializer.SerializeToNode(request,Json))+RecordJson.Canonical(saved.Value["limits"])+historical);
+        await s.Store.CommitAsync(partition,[RecordWrite.Replace(saved.Value,saved.ETag)],default);
+        var replay=await StartLive(s,request);Assert.Equal(first.Text("inputHash"),replay.Text("inputHash"));Assert.Equal(1,s.Wire.Calls);
+        s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";
+        Assert.NotEqual(historical,BusinessAnalysisLiveRuntime.ConfigurationHash(s.Config));
+        Assert.Equal("IDEMPOTENCY_CONFLICT",(await Assert.ThrowsAsync<DomainException>(()=>StartLive(s,request))).Code);Assert.Equal(1,s.Wire.Calls);
+    }
+    private sealed class DeferredCredentials : IAiCredentials
+    {
+        public TaskCompletionSource<string> Result = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Task<string> BearerAsync(string provider,CancellationToken ct)=>Result.Task;
+    }
+    private sealed class NoInferenceHandler : HttpMessageHandler
+    {
+        public int Calls;
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken ct)
+        {Calls++;throw new InvalidOperationException("Inference must never be reached");}
+    }
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Analysis_deadline_during_credentials_releases_both_slots_and_forbids_late_dispatch(bool disabled)
+    {
+        using var s=await CreateLive();s.Config["BusinessAnalysis:TimeoutSeconds"]="1";s.Config["AiUsage:TimeoutSeconds"]="30";
+        if(disabled){s.Config["AiUsage:AccountingMode"]="Disabled";s.Config["AiUsage:MaxAttempts"]="1";}
+        var credentials=new DeferredCredentials();var handler=new NoInferenceHandler();
+        using var transport=new AiHttpTransport(new HttpClient(handler),credentials,TimeProvider.System,s.Config);
+        var live=new BusinessAnalysisLiveDrafter(s.Config,s.Repo,new(s.Store,TimeProvider.System),transport,TimeProvider.System);
+        var service=new BusinessAnalysisService(s.Repo,s.Store,new(s.Repo),new BusinessAnalysisDrafter(s.Config,live),s.Config,TimeProvider.System);
+        try
+        {
+            var request=LiveRequest();var failed=await service.StartAsync(LiveAnalyst,request,request.RunId,default).WaitAsync(TimeSpan.FromSeconds(16));
+            Assert.Equal("partial_failure",failed.Text("status"));Assert.False(failed["recoveryRequired"]!.GetValue<bool>());Assert.Equal(0,handler.Calls);
+            var partition=RecordPartition.Catalog(LiveTenant);
+            Assert.Equal("ready",(await s.Store.ReadAsync(partition,"business-analysis-slot",default))!.Value.Text("status"));
+            Assert.Empty((await s.Store.ReadAsync(partition,"system-ai-gate",default))!.Value.Strings("active"));
+            Assert.Equal("completed",(await StartLive(s,LiveRequest())).Text("status"));Assert.Equal(1,s.Wire.Calls);
+            credentials.Result.TrySetResult("late-fake-credential");await Task.Delay(50);Assert.Equal(0,handler.Calls);
+        }
+        finally {credentials.Result.TrySetResult("late-fake-credential");}
+    }
     [Theory] [InlineData(false)] [InlineData(true)]
     public async Task Azure_mode_fake_transport_uses_shared_admission_and_restarts_without_resending_or_private_inputs(bool accountingDisabled)
     {

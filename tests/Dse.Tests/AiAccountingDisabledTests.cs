@@ -60,6 +60,17 @@ public partial class AiTests
     [Fact]
     public void Abandoned_transport_dispatch_state_cannot_be_reopened()
     {var state=new AiDispatchState();Assert.True(state.TryAbandonBeforeDispatch());Assert.Throws<OperationCanceledException>(()=>state.MarkDispatched(default));}
+    [Theory] [InlineData(false)] [InlineData(true)]
+    public async Task Definite_rejection_with_simultaneous_caller_cancellation_releases_the_gate(bool disabled)
+    {
+        var c=disabled?AccountingOff():Config();var store=new MemoryRecordStore();using var cancel=new CancellationTokenSource();
+        var handler=new Handler((_,_)=>{cancel.Cancel();return Task.FromResult(Response("rejected",HttpStatusCode.BadRequest));});
+        using var service=Service(c,store,handler);
+        Assert.Equal(AiFailure.Unavailable,(await Decide(service,ct:cancel.Token)).Failure);Assert.Equal(1,handler.Calls);
+        Assert.Empty((await store.ReadAsync(RecordPartition.Catalog("demo"),"system-ai-gate",default))!.Value.Strings("active"));
+        using var corrected=Service(c,store,new Handler((_,_)=>Task.FromResult(Response(Fixture("choice")))));
+        Assert.Equal(AiStatus.Succeeded,(await Decide(corrected,Context() with {JobId="rejection-cancel-fixed"})).Status);
+    }
     private sealed class AccountingProbe(MemoryRecordStore inner) : IRecordStore
     {
         public List<string> ReadIds = []; public List<string> WrittenKinds = [];

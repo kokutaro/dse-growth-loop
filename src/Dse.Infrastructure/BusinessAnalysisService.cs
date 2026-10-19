@@ -240,14 +240,28 @@ public sealed class BusinessAnalysisService(IPrimaryRepository repository, IReco
                     var drafted = await fence.RunAsync(actor.TenantId, async token =>
                     {
                         if (!await CurrentAsync(actor, run.Value, token)) throw new DomainException(409, "SOURCE_REVOKED");
+                        Task<AiResult<BusinessHypothesis>>? task = null;
                         try
                         {
-                            var task = drafter is IBusinessFencedHypothesisDrafter protectedDrafter
+                            task = drafter is IBusinessFencedHypothesisDrafter protectedDrafter
                                 ? protectedDrafter.DraftUnderFenceAsync(actor, id + ":" + gid, group, timeout.Token)
                                 : drafter.DraftAsync(actor, id + ":" + gid, group, timeout.Token);
+                            _ = task.ContinueWith(t => { _ = t.Exception; }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
                             return await task.WaitAsync(timeout.Token);
                         }
-                        catch (OperationCanceledException) { quiescenceUnknown = true; return new AiResult<BusinessHypothesis>(AiStatus.Failed, null, request.RunId, AiFailure.Timeout); }
+                        catch (OperationCanceledException)
+                        {
+                            // The drafter has a bounded independent finalizer. Give its atomic
+                            // pre-dispatch abandonment a chance to report certainty, without retry.
+                            AiResult<BusinessHypothesis>? completed = null;
+                            try { if (task is not null) completed = await task.WaitAsync(TimeSpan.FromSeconds(12)); }
+                            catch (Exception) { /* Unknown dispatch remains blocked for offline recovery. */ }
+                            var notDispatched = completed?.InferenceNotDispatched == true;
+                            var rejected = completed?.ProviderRejected == true;
+                            quiescenceUnknown = !notDispatched && !rejected;
+                            return new AiResult<BusinessHypothesis>(AiStatus.Failed, null, request.RunId, AiFailure.Timeout)
+                                { InferenceNotDispatched = notDispatched, ProviderRejected = rejected };
+                        }
                         catch (IOException) { return new AiResult<BusinessHypothesis>(AiStatus.Failed, null, request.RunId, AiFailure.Unavailable); }
                     }, ct);
                     var h = drafted.Value;

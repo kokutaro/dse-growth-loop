@@ -13,7 +13,13 @@ public static class BusinessAnalysisLiveRuntime
         var limits = AiLimits.Read(config); var model = AiModel.Read(config, "Foundry", limits.OutputTokens);
         return SnapshotHash(limits, model);
     }
-    internal static string SnapshotHash(AiLimits limits, AiModel model) => ConversationService.Hash(RecordJson.Canonical(AiCodecs.Node(new { limits, model, promptVersion = BusinessAnalysisLiveDrafter.PromptVersion, configVersion = LiveConfigVersion })));
+    internal static string SnapshotHash(AiLimits limits, AiModel model)
+    {
+        var snapshot = AiCodecs.Node(new { limits, model, promptVersion = BusinessAnalysisLiveDrafter.PromptVersion, configVersion = LiveConfigVersion });
+        // Existing Ledger runs were fingerprinted before AccountingEnabled existed.
+        if (limits.AccountingEnabled) snapshot["limits"]!.AsObject().Remove("accountingEnabled");
+        return ConversationService.Hash(RecordJson.Canonical(snapshot));
+    }
     public static bool IsFixture(IConfiguration config) => config["Data:Mode"] == "Demo" && config["Ai:Mode"] == "Mock";
     public static void ValidateForStart(IConfiguration config)
     {
