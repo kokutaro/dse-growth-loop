@@ -7,6 +7,17 @@ public sealed record ExperiencePeriod(string? Start, string? End, string Precisi
 {
     public void Validate()
     {
+        // Imported calendar months include both endpoints. Legacy full dates retain elapsed-month semantics.
+        if (Precision == "month" && (Start is null || Start.Length == 7) && (End is null || End.Length == 7))
+        {
+            DateOnly first = default, last = default;
+            if (Start is not null && !DateOnly.TryParseExact(Start + "-01", "yyyy-MM-dd", out first) ||
+                End is not null && (!DateOnly.TryParseExact(End + "-01", "yyyy-MM-dd", out last) || last.Year == 9999 && last.Month == 12) ||
+                (Start is null || End is null) && Months is not null ||
+                Start is not null && End is not null && (last < first || Months != (last.Year - first.Year) * 12 + last.Month - first.Month + 1))
+                throw new ArgumentException("Invalid month period");
+            return;
+        }
         if (Precision == "unknown")
         {
             if (Start is not null || End is not null || Months is not null) throw new ArgumentException("Invalid period");

@@ -165,6 +165,15 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                     var status = extraction.Spans.Length == 0 ? "needs_review" : "ready";
                     latest.Value["status"] = status; latest.Value["activeVersion"] = extraction.Spans.Length == 0 ? null : notice.Version;
                     latest.Value["extractionState"] = "complete"; latest.Value["aiState"] = "not_started";
+                    if (extraction.ResumeImport is { } resume)
+                        latest.Value["resumeImport"] = JsonSerializer.SerializeToNode(resume with
+                        {
+                            Projects = resume.Projects.Select(p => p with
+                            {
+                                EvidenceIds = extraction.Spans.Select((s, i) => (s, i)).Where(x => x.s.Label == p.Location)
+                                    .Select(x => $"{ver.Value.Text("id")}-e{x.i:D8}").ToArray()
+                            }).ToArray()
+                        }, new JsonSerializerOptions(JsonSerializerDefaults.Web));
                     latestVersion.Value["status"] = status; latestVersion.Value["extractedBlobKey"] = extractedKey;
                     latestVersion.Value["warnings"] = RecordJson.Array(extraction.Warnings); latest.Value["warnings"] = RecordJson.Array(extraction.Warnings);
                     latestVersion.Value["evidenceCount"] = extraction.Spans.Length;

@@ -5,6 +5,7 @@ type Period = { start: string | null; end: string | null; precision: string; mon
 type Decisions = { choices: Record<string, { probabilities: Record<string, number>; confidence: number }>; nouls: Record<string, { state: number; yesProbability: number | null }> };
 type Experience = { id: string; documentId: string; description: string; period: Period; confirmationState: string; correctionState: string; pendingExtraction?: { description: string }; evidenceRefs: { id: string }[]; decisions?: Decisions };
 type Person = { id: string; displayName: string; available: boolean; publicationState?: string; confirmationState: string; sourceVersion: number; activeVersion: number | null; projectionJobId?: string; totalExperienceMonths?: number | null };
+const isCalendarMonth = (period: Period) => period.precision === "month" && (!period.start || period.start.length === 7) && (!period.end || period.end.length === 7);
 export function Profiles({ config, person: demoPerson }: { config: AppConfig; person?: string }) {
   const [person, setPerson] = useState<Person>(); const [etag, setEtag] = useState("");
   const [experiences, setExperiences] = useState<Experience[]>([]); const [changed, setChanged] = useState<Set<string>>(new Set());
@@ -62,10 +63,11 @@ export function Profiles({ config, person: demoPerson }: { config: AppConfig; pe
   }
   function periodDate(row: Experience, key: "start" | "end", value: string) {
     const period = { ...row.period, [key]: value || null };
-    period.precision = period.start ? "day" : "unknown";
+    const calendarMonth = isCalendarMonth(row.period);
+    period.precision = calendarMonth ? "month" : period.start ? "day" : "unknown";
     if (period.start && period.end) {
       const start = new Date(period.start), end = new Date(period.end);
-      period.months = (end.getUTCFullYear() - start.getUTCFullYear()) * 12 + end.getUTCMonth() - start.getUTCMonth() - (end.getUTCDate() < start.getUTCDate() ? 1 : 0);
+      period.months = (end.getUTCFullYear() - start.getUTCFullYear()) * 12 + end.getUTCMonth() - start.getUTCMonth() + (calendarMonth ? 1 : -(end.getUTCDate() < start.getUTCDate() ? 1 : 0));
     } else period.months = null;
     edit(row.id, { period });
   }
@@ -97,8 +99,8 @@ export function Profiles({ config, person: demoPerson }: { config: AppConfig; pe
       <p>Probabilityは分類への適合度で、経験年数・経験割合・熟練度ではありません。Confidenceは分類の確信度です。</p>
       {experiences.map(row => <article className="profile-experience" data-testid={row.documentId} key={row.id}>
         <label>経験の説明<textarea value={row.description} maxLength={8000} onChange={e => edit(row.id, { description: e.target.value })} /></label>
-        <label>開始日<input type="date" value={row.period.start ?? ""} onChange={e => periodDate(row, "start", e.target.value)} /></label>
-        <label>終了日<input type="date" value={row.period.end ?? ""} onChange={e => periodDate(row, "end", e.target.value)} /></label>
+        <label>{isCalendarMonth(row.period) ? "開始月" : "開始日"}<input type={isCalendarMonth(row.period) ? "month" : "date"} value={row.period.start ?? ""} onChange={e => periodDate(row, "start", e.target.value)} /></label>
+        <label>{isCalendarMonth(row.period) ? "終了月（この月を含む）" : "終了日"}<input type={isCalendarMonth(row.period) ? "month" : "date"} value={row.period.end ?? ""} onChange={e => periodDate(row, "end", e.target.value)} /></label>
         <p>月数：{row.period.months ?? "不明"} ／ {row.confirmationState} ／ 根拠：{row.evidenceRefs.map(r => r.id).join("、")}</p>
         {row.pendingExtraction && <p>再取込との差分確認：{row.pendingExtraction.description}（現在の本人訂正を保持。確認または訂正を保存すると差分を解消します）</p>}
         {row.decisions && <details><summary>分類・分野別経験判定</summary>

@@ -22,6 +22,8 @@
 
 設計版0.2に沿って初期実装を開始。React UI、.NET 10 API/Worker、Aspire AppHost、Bicepを追加した。現在動くのは手動条件による一次検索と根拠表示、および認可付きの本人訂正・正本照合API。docx/xlsxのアップロード・機械抽出・出典プレビューと永続ジョブ回復にも対応。[取込手順](docs/document-ingestion.md)を参照。原本からの構造化・全分布分類・検索投影、本人訂正・再取込差分・公開撤回にも対応。[プロフィール手順](docs/profile-pipeline.md)を参照。課題・参加承諾・永続チャット・再接続にも対応。[会話手順](docs/conversations.md)を参照。チャットの事例自動投稿にも対応し、別承認でダミーライブ検証を実施。[結果](docs/validation-results/20261003-issue-13-live/results.md)を参照。[実装状況](docs/implementation-status.md)に実装済み・未実装・未検証を区別する。
 
+社内職務経歴表はGoogle SheetsからXLSXへ書き出し、既存の本人アップロードで取り込む。[社内形式の手順と確認範囲](docs/internal-resume-ingestion.md)を参照。直接URL取込や未確認AIラベルの正解承認は行わない。
+
 ## ローカル起動
 
 .NET SDK 10.0.400、Node.js 24.13.0以降、Python 3を使用する。ダミーデータでの起動にAzure接続やAPIキーは不要。

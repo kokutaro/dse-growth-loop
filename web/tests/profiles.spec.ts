@@ -1,6 +1,32 @@
 import { test, expect } from "@playwright/test";
 import path from "node:path";
 
+test("社内形式XLSXを7案件に分け年月精度と未確認候補を表示し訂正できる", async ({ page }) => {
+  await page.goto("/validation.html");
+  await page.getByLabel("文書名", { exact: true }).fill("社内形式の架空プロフィール");
+  await page.getByLabel("原本ファイル").setInputFiles(path.resolve("tests/fixtures/internal-resume.xlsx"));
+  const accepted = page.waitForResponse(r => r.url().endsWith("/api/v1/documents") && r.request().method() === "POST");
+  await page.getByRole("button", { name: "アップロード", exact: true }).click();
+  const { documentId } = await (await accepted).json();
+  await expect(page.locator(".documents")).toContainText("検索投影済み", { timeout: 30000 });
+  await page.getByText("社内形式の抽出候補（本人未確認）", { exact: true }).click();
+  await expect(page.locator(".documents")).toContainText("PostgreSQL 16");
+  await expect(page.locator(".documents")).toContainText("日付なしの自己申告（案件経験と分離）");
+  await page.getByRole("button", { name: "プロフィールを更新", exact: true }).click();
+  const experiences = page.getByTestId(documentId);
+  await expect(experiences).toHaveCount(7);
+  await expect(page.locator(".profiles")).toContainText("経験月数（重複除外）：3");
+  await expect(experiences.first().getByLabel("開始月", { exact: true })).toHaveValue("2020-01");
+  await expect(experiences.first().getByLabel("終了月（この月を含む）", { exact: true })).toHaveValue("2020-03");
+  await expect(experiences.first()).toContainText("ai_unconfirmed");
+  expect(await experiences.first().getByLabel("経験の説明").inputValue()).not.toContain("希望専用");
+  await experiences.first().getByLabel("終了月（この月を含む）", { exact: true }).fill("2020-02");
+  await page.getByRole("button", { name: "訂正を保存", exact: true }).click();
+  await expect(page.locator(".profiles")).toContainText("保存しました");
+  await expect(experiences.first()).toContainText("月数：2");
+  await expect(experiences.first()).toContainText("self_corrected");
+});
+
 test("副業務を原文付きの検索断片として追加し経験月数を重複加算しない", async ({ page }) => {
   await page.goto("/validation.html");
   await page.getByLabel("文書名", { exact: true }).fill("副業務を含む架空プロフィール");
