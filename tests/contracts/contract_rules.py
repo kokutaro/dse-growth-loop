@@ -15,8 +15,14 @@ def validate_invariants(name, value, taxonomy):
     if "period" in value:
         period = value["period"]
         if period["start"] and period["end"]:
-            require(date.fromisoformat(period["start"]) <= date.fromisoformat(period["end"]),
+            calendar_month = period['precision'] == 'month' and len(period['start']) == len(period['end']) == 7
+            first = date.fromisoformat(period['start'] + '-01' if calendar_month else period['start'])
+            last = date.fromisoformat(period['end'] + '-01' if calendar_month else period['end'])
+            require(first <= last,
                     "period is reversed")
+            if calendar_month:
+                require(period['months'] == (last.year - first.year) * 12 + last.month - first.month + 1,
+                        'calendar month period includes both endpoints')
         if period["precision"] == "unknown":
             require(all(period[key] is None for key in ("start", "end", "months")),
                     "unknown period cannot imply zero experience")

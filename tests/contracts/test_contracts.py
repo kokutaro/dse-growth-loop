@@ -46,6 +46,16 @@ class ContractsTests(unittest.TestCase):
                 self.validator(row["schema"]).validate(row["value"])
                 validate_invariants(row["schema"], row["value"], self.taxonomy)
 
+    def test_generated_internal_resume_contracts(self):
+        path = ROOT / 'tests/Dse.Tests/TestResults/internal-resume-contract.json'
+        self.assertTrue(path.exists(), 'Run InternalResumeTests first')
+        rows = json.loads(path.read_text())
+        self.assertTrue(any(r['schema'] == 'Document' and 'resumeImport' in r['value'] for r in rows))
+        for row in rows:
+            with self.subTest(schema=row['schema'], id=row['value']['id']):
+                self.validator(row['schema']).validate(row['value'])
+                validate_invariants(row['schema'], row['value'], self.taxonomy)
+
     def test_knowledge_runtime_openapi(self):
         api = read("openapi-knowledge-v1.json")
         validate(api)

@@ -38,7 +38,9 @@ public static partial class ProfileExtraction
         var values = periods.ToArray();
         if (values.Length == 0 || values.Any(p => p.Start is null || p.End is null || p.Precision == "unknown")) return null;
         foreach (var value in values) value.Validate();
-        var sorted = values.Select(p => (Start: DateOnly.Parse(p.Start!), End: DateOnly.Parse(p.End!))).OrderBy(p => p.Start).ToArray();
+        var sorted = values.Select(p => p.Precision == "month" && p.Start!.Length == 7
+            ? (Start: DateOnly.ParseExact(p.Start + "-01", "yyyy-MM-dd"), End: DateOnly.ParseExact(p.End + "-01", "yyyy-MM-dd").AddMonths(1))
+            : (Start: DateOnly.Parse(p.Start!), End: DateOnly.Parse(p.End!))).OrderBy(p => p.Start).ToArray();
         var start = sorted[0].Start; var end = sorted[0].End; var months = 0;
         foreach (var next in sorted.Skip(1))
         {

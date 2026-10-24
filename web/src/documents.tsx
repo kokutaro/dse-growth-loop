@@ -4,15 +4,20 @@ import { getToken, type AppConfig } from "./auth";
 type Accepted = { documentId: string; jobId: string; version: number };
 type Job = { status: string; lastErrorCode: string | null; resultId: string | null };
 type Evidence = { id: string; location: { label: string }; text: string };
+type ResumeReview = { projects: { key: string; location: string; start: string | null; end: string | null; months: number | null; skillCandidates: { raw: string; normalized: string; columnHint: string; location: string }[] }[]; selfDeclarations: { kind: string; text: string; location: string }[] };
 type UploadContext = { personId: string; departmentId: string; scopeIds: string[]; maxBytes: number };
 const statuses: Record<string, string> = { queued: "処理待ち", processing: "処理中", ready: "機械抽出済み", failed: "失敗", needs_review: "確認待ち", cancelled: "取り消し", budget_stopped: "保留" };
 const warningLabels: Record<string, string> = { IMAGES_NOT_OCR: "画像の文字は抽出していません。", EMPTY_DOCUMENT: "抽出できる本文がありません。", EXTERNAL_LINKS_IGNORED: "外部リンク先は取得していません。", FORMULA_CACHED_VALUES_ONLY: "数式は保存済みの値です。再計算していません。", FORMULA_CACHE_MISSING: "保存値のない数式セルがあります。", AUXILIARY_PARTS_NOT_EXTRACTED: "ヘッダー・フッター・注釈は抽出対象外です。", EXCEL_1900_LEAP_DAY: "Excel固有の日付1900-02-29を含みます。", INVALID_DATE_SERIAL: "変換できない日付は元の値を表示します。" };
+Object.assign(warningLabels, { INTERNAL_RESUME_UNCONFIRMED: "社内形式の抽出候補です。本人未確認で、承認済み正解ではありません。", PERIOD_UNRESOLVED: "未確定の年月があります。経験月数は不明として扱います。", REVERSED_PERIOD: "開始月と終了月が逆の案件があります。原本を確認してください。", MONTH_COUNT_MISMATCH: "両端月を含む算出月数と、保存済みの月数表示が一致しません。", MONTH_COUNT_UNREADABLE: "読み取れない月数表示があります。", MONTH_COUNT_UNAVAILABLE: "比較できる月数の保存値がありません。" });
+const columnLabels: Record<string, string> = { language: "使用言語欄", database: "DB欄", server_os: "サーバOS欄", framework_middleware_tools: "FW・MW・ツール欄", reported_learning: "習得スキル欄", reported_learning_text: "習得内容の文章（技能語の選択待ち）", aspiration_or_unknown: "希望・未経験等の記載（実績から除外）" };
+const declarationLabels: Record<string, string> = { self_reported_technology: "得意技術", self_reported_work: "得意業務", qualification: "資格", self_promotion: "自己PR" };
 export function Documents({ config, person }: { config: AppConfig; person?: string }) {
   const [context, setContext] = useState<UploadContext>();
   const [accepted, setAccepted] = useState<Accepted>();
   const [job, setJob] = useState<Job>();
   const [evidence, setEvidence] = useState<Evidence[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [resumeReview, setResumeReview] = useState<ResumeReview>();
   const [pipeline, setPipeline] = useState<{ aiState: string; processingMode: string; sourceVersion: number; resultId: string; moreRuns?: boolean; runs?: { id: string; operation: string; status: string; errorCode?: string; trace: { modelId: string | null; promptVersion: string; taxonomyVersion: string; dataVersion: number; evidenceIds: string[]; inputTokens: number; outputTokens: number; attemptCount: number } }[]; job?: Job & { id: string; etag: string } }>();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -42,7 +47,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
   }
   async function loadContext() {
     const version = ++generation.current; uploadStorageKey.current = undefined;
-    setContext(undefined); setAccepted(undefined); setJob(undefined); setEvidence([]); setWarnings([]); setPipeline(undefined);
+    setContext(undefined); setAccepted(undefined); setJob(undefined); setEvidence([]); setWarnings([]); setPipeline(undefined); setResumeReview(undefined);
     try {
       const resolved: UploadContext = await (await request("/api/v1/upload-context")).json();
       if (!current(version)) return;
@@ -63,7 +68,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
   useEffect(() => {
     mounted.current = true;
     uploadStorageKey.current = undefined;
-    setContext(undefined); setAccepted(undefined); setJob(undefined); setEvidence([]); setWarnings([]); setPipeline(undefined);
+    setContext(undefined); setAccepted(undefined); setJob(undefined); setEvidence([]); setWarnings([]); setPipeline(undefined); setResumeReview(undefined);
     setTitle(""); setFile(undefined); setBusy(false); setError(""); key.current = crypto.randomUUID();
     if (config.mode === "Demo") void loadContext();
     return () => { mounted.current = false; generation.current++; uploadStorageKey.current = undefined; };
@@ -81,6 +86,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
       const doc = await (await request(`/api/v1/documents/${value.documentId}`)).json();
       if (!current(version)) return;
       setWarnings(doc.warnings ?? []);
+      setResumeReview(doc.resumeImport);
       if (doc.enrichmentJobId) { const next = await (await request(`/api/v1/documents/${value.documentId}/pipeline`)).json(); if (!current(version)) return; setPipeline(next); }
       if (jobState.status === "ready") {
         const all: Evidence[] = []; let token: string | null = null;
@@ -115,7 +121,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
       const value: Accepted = await (await request("/api/v1/documents", { method: "POST", headers: { "Idempotency-Key": key.current }, body })).json();
       if (!current(version) || storageKey !== uploadStorageKey.current) return;
       sessionStorage.setItem(storageKey, JSON.stringify(value));
-      setAccepted(value); setPipeline(undefined); setEvidence([]); setJob({ status: "queued", lastErrorCode: null, resultId: null }); await refresh(value);
+      setAccepted(value); setPipeline(undefined); setEvidence([]); setResumeReview(undefined); setJob({ status: "queued", lastErrorCode: null, resultId: null }); await refresh(value);
     } catch (e) { if (current(version)) setError(String(e)); } finally { if (current(version)) setBusy(false); }
   }
   async function retry() {
@@ -142,6 +148,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
   return <section className="panel documents" aria-labelledby="documents-title">
     <h2 id="documents-title">文書を取り込む</h2>
     <p>ダミーのWord（docx）・Excel（xlsx）を登録できます。画像OCRは対象外です。構造化・分類・検索投影の状態を下に表示します。</p>
+    <p>社内スキル記入シートはGoogle スプレッドシートからExcel形式で書き出して登録してください。</p>
     {!context ? <button onClick={loadContext}>登録先を確認する</button> : <p>対象者：{context.personId} ／ 部署：{context.departmentId} ／ 閲覧範囲：{context.scopeIds.join("、")} ／ 上限：{context.maxBytes / 1024 / 1024} MiB</p>}
     <form onSubmit={upload}>
       <label htmlFor="document-title">文書名</label><input id="document-title" value={title} required maxLength={300} onChange={e => { setTitle(e.target.value); key.current = crypto.randomUUID(); }} />
@@ -163,6 +170,13 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
       <button onClick={() => refresh()}>進捗を更新</button> <button onClick={original}>原本を取得</button>
       {job && ["failed", "needs_review", "queued", "budget_stopped"].includes(job.status) && <button disabled={busy} onClick={retry}>再実行・再通知</button>}
       {warnings.map(w => <p key={w}>{warningLabels[w] ?? w}</p>)}
+      {resumeReview && <details><summary>社内形式の抽出候補（本人未確認）</summary>
+        <p>技術欄の見出しは分類のヒントです。表記・バージョンと根拠を確認してください。業務領域は未確定で、技術の分類や習熟度から補いません。</p>
+        {resumeReview.projects.map(project => <article key={project.key}><h4>案件 {project.key}</h4><p>{project.start ?? "不明"} ～ {project.end ?? "未確定"}（両端月を含む）：{project.months ?? "不明"} か月</p><p>{project.location}</p>
+          <table><thead><tr><th>元表記</th><th>正規化候補</th><th>記載欄</th><th>根拠</th></tr></thead><tbody>{project.skillCandidates.map((skill, index) => <tr key={index}><td>{skill.raw}</td><td>{skill.normalized}</td><td>{columnLabels[skill.columnHint] ?? skill.columnHint}</td><td>{skill.location}</td></tr>)}</tbody></table>
+        </article>)}
+        <h4>日付なしの自己申告（案件経験と分離）</h4>{resumeReview.selfDeclarations.map(item => <p key={item.kind}>{declarationLabels[item.kind] ?? item.kind}：{item.text} ／ {item.location}</p>)}
+      </details>}
       {evidence.length > 0 && <h3>出典プレビュー</h3>}{evidence.map(span => <article key={span.id}><h4>{span.location.label}</h4><p className="evidence-text">{span.text}</p></article>)}
     </div>}
   </section>;

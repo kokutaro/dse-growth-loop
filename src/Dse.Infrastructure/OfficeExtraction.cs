@@ -17,7 +17,7 @@ public sealed class IngestionOptions
     public int Entries { get; init; } = 10000;
     public int ProcessingSeconds { get; init; } = 120;
     public int Attempts { get; init; } = 3;
-    public const string ProcessorVersion = "openxml-1";
+    public const string ProcessorVersion = "openxml-2";
     public static IngestionOptions Read(IConfiguration config)
     {
         var o = config.GetSection("Ingestion").Get<IngestionOptions>() ?? new();
@@ -28,7 +28,7 @@ public sealed class IngestionOptions
     }
 }
 public sealed record ExtractedSpan(string Type, string Label, string Text);
-public sealed record Extraction(ExtractedSpan[] Spans, string[] Warnings);
+public sealed record Extraction(ExtractedSpan[] Spans, string[] Warnings, ResumeImport? ResumeImport = null);
 
 // Reads Office Open XML parts only. Never invokes Office, formulas, relationships or embedded code.
 public sealed class OfficeExtractor(IngestionOptions options)
@@ -205,7 +205,8 @@ public sealed class OfficeExtractor(IngestionOptions options)
             }
         }
         if (spans.Count == 0) warnings.Add("EMPTY_DOCUMENT");
-        return new(spans.ToArray(), warnings.Order().ToArray());
+        var extraction = new Extraction(spans.ToArray(), warnings.Order().ToArray());
+        return mime == ExcelMime ? InternalResumeSheet.Adapt(extraction, ct) : extraction;
     }
     // ZipArchive does not reject every encryption flag or validate every stored-entry CRC.
     // Inspect central AND local headers, then check the actual decompressed bytes ourselves.
