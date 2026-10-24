@@ -46,7 +46,7 @@ test("fake AIで自然文・条件編集・結果・出典を確認できる", a
   await page.getByLabel("自然文の課題").fill("ソフトウェアの引き継ぎを改善したい");
   await page.getByRole("button", { name: "自然文から条件を生成" }).click();
   await expect(page.getByText("条件を生成しました。", { exact: false })).toBeVisible();
-  await page.getByLabel("複数分野・技術要素の分類ID").fill("software operations");
+  await page.getByLabel("業務・技術分野の大分類ID").fill("software operations");
   await page.getByLabel("補助経験条件ID").fill("handover");
   await page.getByLabel("検索語").fill("引き継ぎ");
   await page.getByRole("button", { name: "相談候補を探す" }).click();
@@ -64,7 +64,7 @@ test("分類停止時に手動条件へ戻せる", async ({ page }) => {
   await page.getByLabel("自然文の課題").fill("引き継ぎの改善");
   await page.getByRole("button", { name: "自然文から条件を生成" }).click();
   await expect(page.getByText("分類できませんでした。", { exact: false })).toBeVisible();
-  await page.getByLabel("複数分野・技術要素の分類ID").fill("operations");
+  await page.getByLabel("業務・技術分野の大分類ID").fill("operations");
   await page.getByRole("button", { name: "相談候補を探す" }).click();
   await expect(page.getByText("根拠に基づく再順位付け済み", { exact: true })).toBeVisible();
 });
@@ -75,11 +75,11 @@ test("条件生成の設定不備は運用者の確認を案内し、前回条�
   }));
   await page.goto("/validation.html");
   await page.getByLabel("自然文の課題").fill("引き継ぎの改善");
-  await page.getByLabel("複数分野・技術要素の分類ID").fill("software");
+  await page.getByLabel("業務・技術分野の大分類ID").fill("software");
   await page.getByRole("button", { name: "自然文から条件を生成" }).click();
   await expect(page.getByText("検索のAI設定が整っていません。運用者による設定確認後に再実行してください。", { exact: true })).toBeVisible();
   await expect(page.getByText("分類できませんでした。手動で条件を入力してください。", { exact: true })).toHaveCount(0);
-  await expect(page.getByLabel("複数分野・技術要素の分類ID")).toHaveValue("");
+  await expect(page.getByLabel("業務・技術分野の大分類ID")).toHaveValue("");
 });
 
 test("自然文だけでも一度の検索で条件生成から結果へ進む", async ({ page }) => {
@@ -144,7 +144,7 @@ for (const code of ["CLASSIFICATION_OUT_OF_SCOPE", "CLASSIFICATION_MANUAL_REQUIR
     });
     await page.goto("/validation.html");
     await page.getByLabel("自然文の課題").fill("以前の課題");
-    await page.getByLabel("複数分野・技術要素の分類ID").fill("software");
+    await page.getByLabel("業務・技術分野の大分類ID").fill("software");
     await page.getByLabel("自然文の課題").fill("対象分野が不明の新しい課題");
     for (let i = 0; i < 2; i++) {
       await page.getByRole("button", { name: "相談候補を探す" }).click();
@@ -158,8 +158,8 @@ for (const code of ["CLASSIFICATION_OUT_OF_SCOPE", "CLASSIFICATION_MANUAL_REQUIR
     expect(bodies).toHaveLength(2);
     expect(bodies.every(body => !("conditions" in body))).toBe(true);
     await expect(page.getByText("条件に合う候補はありません。", { exact: true })).toHaveCount(0);
-    await expect(page.getByLabel("複数分野・技術要素の分類ID")).toHaveValue("");
-    await page.getByLabel("複数分野・技術要素の分類ID").fill("operations");
+    await expect(page.getByLabel("業務・技術分野の大分類ID")).toHaveValue("");
+    await page.getByLabel("業務・技術分野の大分類ID").fill("operations");
     await page.getByRole("button", { name: "相談候補を探す" }).click();
     await expect(page.getByRole("button", { name: "相談候補を探す" })).toBeEnabled();
     expect(bodies[2]).toHaveProperty("conditions.categories", [{ axis: "domain", categoryId: "operations" }]);

@@ -50,10 +50,13 @@ public static partial class ProfileExtraction
         return months + Months(start, end);
     }
     public static string[] Terms(string text) => text.Split([' ', '\n', '\r', '\t', '、', '。', ',', ';', '：', ':'], StringSplitOptions.RemoveEmptyEntries)
-        .Select(Retriever.Normalize).Where(t => t.Length <= 100).Concat(Skills(text).Select(Retriever.Normalize)).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray();
+        .Select(Retriever.Normalize).Where(t => t.Length <= 100).Concat(DomainHints(text).Select(Retriever.Normalize)).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray();
     public static bool HasDomainEvidence(string text, string id) => id == "handover"
         ? new[] { "引き継ぎ", "引継", "handover" }.Any(term => text.Contains(term, StringComparison.OrdinalIgnoreCase))
-        : id != "unknown" && Skills(text).Contains(id);
-    public static string[] Skills(string text) => Domains.Where(p => text.Contains(p.Value, StringComparison.OrdinalIgnoreCase) || text.Contains(p.Key, StringComparison.OrdinalIgnoreCase) || p.Key == "software" && text.Contains("ソフト", StringComparison.Ordinal))
+        : id != "unknown" && DomainHints(text).Contains(id);
+    public static string[] DomainHints(string text) => Domains.Where(p => text.Contains(p.Value, StringComparison.OrdinalIgnoreCase) || text.Contains(p.Key, StringComparison.OrdinalIgnoreCase) || p.Key == "software" && text.Contains("ソフト", StringComparison.Ordinal))
         .Select(p => p.Key).ToArray();
+    // Legacy API retained for historical fixtures only. These are domain hints, never concrete skills.
+    public static string[] Skills(string text) => DomainHints(text);
+
 }

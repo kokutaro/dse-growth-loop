@@ -98,6 +98,8 @@ public sealed class ProfileService(IPrimaryRepository repository, AccessFence fe
                     updated["sourceVersion"] = oldVersion + 1;
                     // Old projections must stop immediately, including when a person opts out.
                     updated["activeVersion"] = null; updated["accessVersion"] = updated.Number("accessVersion") + 1;
+                    updated["specificSkills"] = JsonSerializer.SerializeToNode(SpecificSkills.NotEvaluated, ProjectionRules.Json);
+                    updated.Remove("skillInputHash"); updated.Remove("skillRunId");
                     Correct(updated, input.Action, actor, now);
                     List<RecordWrite> writes = [RecordWrite.Replace(updated, etag)];
                     var experienceBefore = new JsonArray();
@@ -109,6 +111,11 @@ public sealed class ProfileService(IPrimaryRepository repository, AccessFence fe
                             throw new DomainException(403, "FORBIDDEN");
                         experienceBefore.Add(experience.Value.Copy());
                         var value = experience.Value.Copy();
+                        if (value.Text("description") != edit.Description)
+                        {
+                            value["specificSkills"] = JsonSerializer.SerializeToNode(SpecificSkills.NotEvaluated, ProjectionRules.Json);
+                            value.Remove("skillInputHash"); value.Remove("skillRunId");
+                        }
                         value["description"] = edit.Description;
                         value["period"] = JsonSerializer.SerializeToNode(edit.Period, ProjectionRules.Json);
                         value["sourceVersion"] = value.Number("sourceVersion") + 1;

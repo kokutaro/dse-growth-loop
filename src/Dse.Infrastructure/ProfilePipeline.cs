@@ -12,7 +12,7 @@ public sealed record PipelinePlan(string Tenant, Dictionary<string, string?> Exp
 // Bounded atomic publication: no row becomes searchable until the complete generation commits.
 // Oversized inputs are held for review rather than silently truncating their experiences.
 public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore store, AccessFence fence, ITextStructurer structurer,
-    IDecisionProvider decisions, IdentityResolver identities, IConfiguration config, TimeProvider clock)
+    IDecisionProvider decisions, IdentityResolver identities, IConfiguration config, TimeProvider clock, IConcreteSkillExtractor? skillExtractor = null)
 {
     public const int MaxFragments = 20;
     public const string PromptVersion = "profile-v1";
@@ -196,20 +196,28 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
         // Each project is already independently classified. Repeating every raw cell for an aggregate
         // can exceed the unchanged AI input ceiling. Retrieve the person through those project units.
         if (internalResumeOnly) { entity.Remove("classificationResultId"); entity.Remove("decisions"); }
-        async Task<string[]?> ImportedSkills(JsonObject fragment)
+        async Task<string[]> ImportedLexicalTerms(JsonObject fragment)
         {
-            if (fragment.Text("confirmationState") == "self_corrected") return null;
+            if (fragment.Text("confirmationState") == "self_corrected") return [];
             foreach (var reference in fragment["evidenceRefs"]!.Deserialize<EvidenceReference[]>(Json)!)
             {
-                var source = (await Read(reference.Id))!.Value;
-                var doc = (await Read(source.Text("documentId")))!.Value;
-                var imported = doc["resumeImport"]?.Deserialize<ResumeImport>(Json)?.Projects
+                var span = (await Read(reference.Id))!.Value;
+                var doc = (await Read(span.Text("documentId")))!.Value;
+                var project = doc["resumeImport"]?.Deserialize<ResumeImport>(Json)?.Projects
                     .SingleOrDefault(p => p.EvidenceIds.Contains(reference.Id) && p.Description == fragment.Text("description"));
-                if (imported is not null) return imported.Skills;
+                if (project is not null) return project.SkillCandidates.Where(s => s.ColumnHint is not ("aspiration_or_unknown" or "reported_learning_text"))
+                    .Select(s => s.Normalized).ToArray();
             }
-            return null;
+            return [];
         }
         var projectionFragments = new List<JsonObject>(fragments);
+        SpecificSkills CombinedSkills()
+        {
+            var parts = projectionFragments.Select(f => f["specificSkills"]?.Deserialize<SpecificSkills>(Json) ?? SpecificSkills.NotEvaluated).ToArray();
+            return parts.Any(p => p.State == "not_evaluated") ? SpecificSkills.NotEvaluated :
+                parts.Any(p => p.State == "unknown") || parts.Sum(p => p.Items?.Length ?? 0) > 40 ? new(SpecificSkillRules.Version, "unknown", null) :
+                new(SpecificSkillRules.Version, "extracted", parts.SelectMany(p => p.Items ?? []).Distinct().ToArray());
+        }
         var searchOnlyIds = new HashSet<string>();
         if (!department && config.GetValue<bool>("Profile:SecondaryWorkFragments"))
             foreach (var fragment in fragments)
@@ -255,7 +263,30 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             }
             fragment["classificationResultId"] = fingerprint;
             fragment["decisions"] = Node(answer);
-            var importedSkills = fragment == entity ? null : await ImportedSkills(fragment);
+            // A single contract for prose and internal-resume cells. Technical column values are
+            // already present in authoritative evidence; never promote imported hints directly.
+            var skillInputHash = Id("skills-", RecordJson.Canonical(new JsonObject {
+                ["text"] = fragment["description"]!.DeepClone(), ["refs"] = Node(evidence),
+                ["version"] = SpecificSkillRules.Version, ["model"] = config["Foundry:ModelId"] ?? "mock-v1",
+                ["mode"] = config["Ai:Mode"] ?? "Mock" }));
+            SpecificSkills specific;
+            if (fragment == entity) specific = CombinedSkills();
+            else if (department || skillExtractor is null) specific = SpecificSkills.NotEvaluated;
+            else if (fragment.Text("skillInputHash") == skillInputHash && fragment["specificSkills"] is not null)
+                specific = fragment["specificSkills"]!.Deserialize<SpecificSkills>(Json)!;
+            else
+            {
+                var skillResult = await skillExtractor.ExtractSkillsAsync(new(actor, job.Text("id"), SpecificSkillRules.Version,
+                    Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []), fragment.Text("description"), ct);
+                if (skillResult.Status != AiStatus.Succeeded || skillResult.Value is null) throw Failure(skillResult.Status, skillResult.Failure);
+                specific = skillResult.Value;
+                SpecificSkillRules.Validate(specific, (await SourceRefs(evidence)).ToDictionary(e => e.Id, e => e.Text));
+                if ((specific.Items ?? []).Any(s => SpecificSkillRules.IsExperience(s) && !fragment.Text("description").Contains(s.Raw, StringComparison.Ordinal)))
+                    throw new DomainException(422, "UNGROUNDED_SKILL");
+                fragment["skillRunId"] = skillResult.RunId;
+            }
+            fragment["specificSkills"] = Node(specific); fragment["skillInputHash"] = skillInputHash;
+            var importedLexicalTerms = fragment == entity ? [] : await ImportedLexicalTerms(fragment);
             var unitId = Id("projection-", entity.Text("id") + ":" + entity.Number("sourceVersion") + ":" + fragment.Text("id"));
             await Read(unitId);
             var unit = new SearchUnit(unitId, entity.Text("id"), entity.Text("kind"), tenant, fragment.Text("id"),
@@ -263,16 +294,17 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 department || entity["available"]!.GetValue<bool>(), Retriever.TaxonomyVersion,
                 answer.Choices.SelectMany(q => q.Value.Probabilities.Select(p => new CategoryProbability(q.Key, p.Key, p.Value))).ToArray(),
                 answer.Nouls.Select(p => new ExperienceSignal(p.Key, p.Value.YesProbability, p.Value.State switch { NoulState.Supported => "supported", NoulState.Unknown => "unknown", _ => "not_evaluated" })).ToArray(),
-                ProfileExtraction.Terms(fragment.Text("description")).Concat((importedSkills ?? []).Select(Retriever.Normalize)).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray(),
+                ProfileExtraction.Terms(fragment.Text("description")).Concat(importedLexicalTerms.Select(Retriever.Normalize)).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray(),
                 await SourceRefs(evidence), fragment.Text("confirmationState"))
             { SourceVersion = entity.Number("sourceVersion"), ProjectionVersion = entity.Number("sourceVersion"), AccessVersion = entity.Number("accessVersion"), ProjectionState = "ready", EvidenceRefs = evidence,
-                SkillIds = ProfileExtraction.Skills(fragment.Text("description")), ProcessingMode = entity.Text("processingMode") };
+                SpecificSkills = specific, ProcessingMode = entity.Text("processingMode") };
             var projection = Node(unit).AsObject();
             foreach (var pair in RecordJson.New("searchUnit", unitId, tenant, actor.PrincipalId, entity.Strings("scopeIds"), clock.GetUtcNow()))
                 if (!projection.ContainsKey(pair.Key)) projection[pair.Key] = pair.Value?.DeepClone();
             projection["classificationResultIds"] = RecordJson.Array([fingerprint]); Write(projection); projectionIds.Add(unitId);
             if (!department && fragment != entity && !searchOnlyIds.Contains(fragment.Text("id"))) Write(fragment);
         }
+        if (internalResumeOnly) entity["specificSkills"] = Node(CombinedSkills());
         if (department)
         {
             entity["fragments"] = Node(fragments.Select(f => { var value = f.Copy(); value["kind"] = "departmentActivityFragment"; value.Remove("personId"); return value; }).ToArray());

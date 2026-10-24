@@ -193,6 +193,16 @@
             "minimum": 1,
             "maximum": 100,
             "default": 20
+          },
+          "specificSkills": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "description": "Concrete personal experience tags only; independent of domain categories and lexical terms."
           }
         },
         "required": [
@@ -879,6 +889,16 @@
                     "type": "integer",
                     "minimum": 1,
                     "maximum": 100
+                  },
+                  "specificSkills": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    },
+                    "description": "Concrete personal experience tags only; independent of domain categories and lexical terms."
                   }
                 },
                 "required": [
@@ -1256,6 +1276,11 @@
           "termMatches": {
             "type": "integer",
             "minimum": 0
+          },
+          "specificSkillMatches": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Concrete personal skill matches, separate from lexical termMatches."
           }
         },
         "required": [

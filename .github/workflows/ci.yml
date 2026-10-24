@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
       # Each suite gets a fresh API and rate-limit budget, as well as fresh data.
       matrix:
-        suite: [knowledge, conversations, chat-assistance, documents, profiles, search, logout, workspace, business-analysis, identity-disclosure, workspace-anonymity]
+        suite: [knowledge, conversations, chat-assistance, documents, profiles, search, logout, workspace, business-analysis, identity-disclosure, workspace-anonymity, specific-skills]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v6

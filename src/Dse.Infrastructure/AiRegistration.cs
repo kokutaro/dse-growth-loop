@@ -24,6 +24,7 @@ public static class AiRegistration
         });
         services.AddSingleton<AiService>();
         services.AddSingleton<ITextStructurer>(sp => sp.GetRequiredService<AiService>());
+        services.AddSingleton<IConcreteSkillExtractor>(sp => sp.GetRequiredService<AiService>());
         services.AddSingleton<IDecisionProvider>(sp => sp.GetRequiredService<AiService>());
         services.AddSingleton<IReranker>(sp => sp.GetRequiredService<AiService>());
         services.AddSingleton<IKnowledgeDrafter>(sp => sp.GetRequiredService<AiService>());

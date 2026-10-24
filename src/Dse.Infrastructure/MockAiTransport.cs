@@ -31,7 +31,22 @@ public sealed class MockAiTransport : IAiTransport
         var input = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!;
         var evidenceIds = input["evidence"]!.AsArray().Select(x => x!["id"]!.GetValue<string>()).ToArray();
         JsonObject content;
-        if (operation == "knowledgeDraft") content = new() { ["sections"] = new JsonArray(Dse.Domain.KnowledgeSummary.Fields.Select(f => (JsonNode)new JsonObject
+        if (operation == "extractSkills")
+        {
+            // A deliberately small fixture, not a model-quality implementation.
+            var examples = new[] { "C#", "Azure", "回帰試験", "回帰テスト" };
+            var items = new JsonArray();
+            foreach (var e in input["evidence"]!.AsArray())
+            {
+                var text = e!["text"]!.GetValue<string>();
+                foreach (var raw in examples.Where(text.Contains))
+                    if (Dse.Domain.SpecificSkillRules.HasPositiveContext(text)) items.Add(new JsonObject {
+                        ["raw"] = raw, ["normalizationCandidate"] = Dse.Domain.SpecificSkillRules.Normalize(raw),
+                        ["evidenceId"] = e["id"]!.DeepClone(), ["quote"] = text, ["participation"] = text.Contains("共同", StringComparison.Ordinal) ? "joint" : text.Contains("補助", StringComparison.Ordinal) || text.Contains("支援", StringComparison.Ordinal) ? "assisted" : "performed" });
+            }
+            content = new() { ["state"] = "extracted", ["items"] = items };
+        }
+        else if (operation == "knowledgeDraft") content = new() { ["sections"] = new JsonArray(Dse.Domain.KnowledgeSummary.Fields.Select(f => (JsonNode)new JsonObject
         { ["field"] = f, ["text"] = f == "attempts" ? input["evidence"]![0]!["text"]!.DeepClone() : "不明（ダミー下書き・要確認）", ["basis"] = f == "attempts" ? "participant_report" : "unknown", ["evidenceIds"] = Dse.Domain.RecordJson.Array(f == "attempts" ? evidenceIds.Take(1) : []) }).ToArray()) };
         else if (operation == "rerank") content = new() { ["items"] = new JsonArray(input["candidates"]!.AsArray().Select(x => (JsonNode)new JsonObject
         {

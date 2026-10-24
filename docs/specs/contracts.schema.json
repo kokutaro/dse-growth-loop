@@ -899,6 +899,15 @@
               "type": "null"
             }
           ]
+        },
+        "specificSkills": {
+          "$ref": "#/$defs/SpecificSkills"
+        },
+        "skillInputHash": {
+          "type": "string"
+        },
+        "skillRunId": {
+          "type": "string"
         }
       },
       "required": [
@@ -1042,6 +1051,15 @@
               "type": "null"
             }
           ]
+        },
+        "specificSkills": {
+          "$ref": "#/$defs/SpecificSkills"
+        },
+        "skillInputHash": {
+          "type": "string"
+        },
+        "skillRunId": {
+          "type": "string"
         }
       },
       "required": [
@@ -1154,6 +1172,15 @@
             "$ref": "#/$defs/DepartmentActivityFragment"
           },
           "maxItems": 20
+        },
+        "specificSkills": {
+          "$ref": "#/$defs/SpecificSkills"
+        },
+        "skillInputHash": {
+          "type": "string"
+        },
+        "skillRunId": {
+          "type": "string"
         }
       },
       "required": [
@@ -1649,13 +1676,18 @@
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
           },
           "maxItems": 100,
-          "uniqueItems": true
+          "uniqueItems": true,
+          "deprecated": true,
+          "description": "Legacy domain keyword IDs only. Never promote to concrete personal skills. New writes use specificSkills."
         },
         "processingMode": {
           "enum": [
             "fixture",
             "live"
           ]
+        },
+        "specificSkills": {
+          "$ref": "#/$defs/SpecificSkills"
         }
       },
       "required": [
@@ -2019,7 +2051,8 @@
             "decide",
             "rerank",
             "summarize",
-            "knowledgeDraft"
+            "knowledgeDraft",
+            "extractSkills"
           ]
         }
       },
@@ -2263,6 +2296,15 @@
                   "type": "integer",
                   "minimum": 1,
                   "maximum": 100
+                },
+                "specificSkills": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "maxItems": 20
                 }
               },
               "required": [
@@ -2338,6 +2380,14 @@
                   "maxItems": 5000
                 },
                 "terms": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "maxItems": 5000
+                },
+                "specificSkills": {
                   "type": "array",
                   "items": {
                     "type": "string",
@@ -5915,6 +5965,118 @@
         "warnings"
       ],
       "additionalProperties": false
+    },
+    "SpecificSkill": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "raw": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "normalizationCandidate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        },
+        "participation": {
+          "enum": [
+            "performed",
+            "joint",
+            "assisted",
+            "consultation",
+            "aspiration",
+            "other_person",
+            "negated",
+            "unclear"
+          ]
+        }
+      },
+      "required": [
+        "raw",
+        "normalizationCandidate",
+        "evidenceId",
+        "quote",
+        "participation"
+      ]
+    },
+    "SpecificSkills": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": "specific-skills-v1"
+        },
+        "state": {
+          "enum": [
+            "extracted",
+            "unknown",
+            "not_evaluated"
+          ]
+        },
+        "items": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/SpecificSkill"
+          },
+          "maxItems": 40,
+          "uniqueItems": true
+        },
+        "searchTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "version",
+        "state",
+        "items",
+        "searchTerms"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "extracted"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "type": "array"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "items": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
     }
   },
   "oneOf": [

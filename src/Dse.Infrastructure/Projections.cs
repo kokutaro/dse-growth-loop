@@ -182,6 +182,11 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
             refs.Add(new(reference.Id, evidence.Value.Document.Text("title"), evidence.Value.Span["location"]!["label"]!.GetValue<string>(), evidence.Value.Span.Text("text")));
             snapshots.Add(Snapshot(evidence.Value.Document));
         }
+        if (unit.SpecificSkills is not null)
+        {
+            try { SpecificSkillRules.Validate(unit.SpecificSkills, refs.ToDictionary(r => r.Id, r => r.Text)); }
+            catch (ArgumentException) { return null; }
+        }
         return new(unit with { SourceRefs = refs.ToArray() }, snapshots.Distinct().ToArray());
     }
     public async Task<(JsonObject Span, JsonObject Document)?> EvidenceAsync(ActorAccess actor, EvidenceReference reference, CancellationToken ct)
