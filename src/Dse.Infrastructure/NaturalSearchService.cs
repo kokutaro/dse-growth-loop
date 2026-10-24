@@ -120,7 +120,7 @@ public sealed class NaturalSearchService(IProjectionRepository projections, IPri
             run["rules"] = AiCodecs.Node(rules); run["conditions"] = AiCodecs.Node(conditions);
             run["taxonomyVersion"] = Retriever.TaxonomyVersion; run["normalizationVersion"] = "normalization-v1";
             run["dataVersions"] = AiCodecs.Node(primary.MergedCandidates.SelectMany(c => c.Units).Select(u => new { u.Id, u.EntityId, u.SourceVersion, u.AccessVersion, u.ProjectionVersion }));
-            run["routes"] = AiCodecs.Node(new[] { "probability", "noul", "terms" }.ToDictionary(route => route,
+            run["routes"] = AiCodecs.Node(new[] { "probability", "noul", "terms", "specificSkills" }.ToDictionary(route => route,
                 route => primary.MergedCandidates.Where(c => c.Routes.Contains(route)).Select(c => c.EntityType + ":" + c.EntityId).ToArray()));
             run["matchedUnits"] = primary.MatchedUnits; run["mergedBeforeLimit"] = primary.BeforeLimit;
             run["beforeMergeIds"] = AiCodecs.Node(primary.MergedCandidates.SelectMany(c => c.Units).Select(u => u.Id));

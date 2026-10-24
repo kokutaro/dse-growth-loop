@@ -1,3 +1,4 @@
+import { SkillDetails, type SpecificSkills } from "./specific-skills";
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { initializeAuth, getToken, endAuth, type AppConfig } from "./auth";
@@ -17,7 +18,7 @@ type Candidate = {
   entityType: string;
   title: string;
   routes: string[];
-  units: { summary: string; sourceRefs: SourceRef[]; confirmationState: string; processingMode?: string }[];
+  units: { summary: string; sourceRefs: SourceRef[]; confirmationState: string; processingMode?: string; specificSkills?: SpecificSkills }[];
 };
 type SearchResult = {
   candidates: Candidate[];
@@ -31,6 +32,7 @@ const routeNames: Record<string, string> = {
   probability: "分類一致",
   noul: "経験の補助判定",
   terms: "語一致",
+  specificSkills: "具体スキルの経験タグ一致",
 };
 
 function App() {
@@ -43,6 +45,7 @@ function App() {
   const [conversionStatus, setConversionStatus] = useState("");
   const [stage, setStage] = useState("");
   const [category, setCategory] = useState("operations");
+  const [specificSkills, setSpecificSkills] = useState("");
   const [terms, setTerms] = useState("引き継ぎ");
   const [noul, setNoul] = useState(true);
   const [result, setResult] = useState<SearchResult>();
@@ -93,7 +96,7 @@ function App() {
         setTerms(value.conditions.terms.join(" "));
         setConversionStatus("条件を生成しました。複数分野・技術要素・経験条件を編集できます。");
       } else {
-        setCategoryIds(""); setSignalIds(""); setTerms("");
+        setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills("");
         setConversionStatus(value.status === "manual_required:configuration"
           ? "検索のAI設定が整っていません。運用者による設定確認後に再実行してください。"
           : value.status === "manual_required:unknown"
@@ -120,6 +123,7 @@ function App() {
         headers.Authorization = `Bearer ${await getToken(config)}`;
       const conditions = { categories: query.trim() ? categoryIds.split(/[\s、,]+/u).filter(Boolean).map(categoryId => ({ axis: "domain", categoryId })) : category ? [{ axis: "domain", categoryId: category }] : [],
         signalIds: query.trim() ? signalIds.split(/[\s、,]+/u).filter(Boolean) : noul ? ["handover"] : [],
+        specificSkills: specificSkills.split(/[、,]+/u).map(s => s.trim()).filter(Boolean),
         terms: terms.split(/[\s、,]+/u).filter(Boolean), probabilityThreshold: 0.2, noulThreshold: 0.5, limit: 20 };
       const response = await fetch(query.trim() ? "/api/v2/search" : "/api/search", {
         method: "POST",
@@ -129,7 +133,7 @@ function App() {
       if (generation !== searchGeneration.current) return;
       if (response.status === 422) {
         const failure = await response.json();
-        setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms("");
+        setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills("");
         if (failure.code === "CLASSIFICATION_OUT_OF_SCOPE") {
           setConversionStatus("自動検索の対象分野を判断できませんでした。検索は実行していません。必要な条件を手動で入力できます。");
           setStage("自動検索対象外");
@@ -204,10 +208,11 @@ function App() {
             <h2 id="search-title">探したい経験は？</h2>
             <form onSubmit={search}>
               <label htmlFor="query">自然文の課題</label>
-              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
+              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills(""); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
               <small>ダミーの課題を入力してください。パスワード・キーなどのログイン情報は入力できません。</small>
               <button type="button" disabled={busy || !config || !query.trim()} onClick={() => { void convert(); }}>自然文から条件を生成</button>
               {conversionStatus && <p role="status">{conversionStatus}</p>}
+              <label>具体スキル（カンマ区切り）<input disabled={busy} value={specificSkills} onChange={e => { setSpecificSkills(e.target.value); setConditionsReady(true); }} placeholder="C#, 回帰試験" /></label>
               {query.trim() && <>
                 <label htmlFor="search-target">検索対象</label>
                 <select id="search-target" value={target} disabled={busy} onChange={e => { setTarget(e.target.value); setResult(undefined); }}>
@@ -215,7 +220,7 @@ function App() {
                   <option value="person">人物</option>
                   <option value="knowledge">事例</option>
                 </select>
-                <label htmlFor="category-ids">複数分野・技術要素の分類ID</label>
+                <label htmlFor="category-ids">業務・技術分野の大分類ID</label>
                 <input id="category-ids" disabled={busy} value={categoryIds} onChange={e => { setCategoryIds(e.target.value); setConditionsReady(true); }} />
                 <small>operations sales manufacturing software mechanical（スペース区切り）</small>
                 <label htmlFor="signal-ids">補助経験条件ID</label>
@@ -319,6 +324,7 @@ function App() {
                         </div>)}
                         {candidate.entityType === "person" && <small>相談する人物ID：{candidate.entityId}</small>}
                         <p>{candidate.units[0].summary}</p>
+                        {candidate.units.map((u, i) => <SkillDetails key={i} value={u.specificSkills} />)}
                         <small>{candidate.units.some(u => u.confirmationState === "reviewed") ? "参加者確認・公開承認済み" : candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</small>
                         <div className="routes">
                           {candidate.routes.map((route) => (

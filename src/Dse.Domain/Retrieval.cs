@@ -14,6 +14,7 @@ public sealed record SearchUnit(string Id, string EntityId, string EntityType, s
 {
     public string Kind => "searchUnit";
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string[]? SkillIds { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public SpecificSkills? SpecificSkills { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ProcessingMode { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? SourceVersion { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? AccessVersion { get; init; }
@@ -26,13 +27,14 @@ public sealed record SearchAccess(string TenantId, string[] ScopeIds);
 public sealed record SearchRequest(CategoryKey[] Categories, string[] SignalIds, string[] Terms,
     double ProbabilityThreshold = 0.2, double NoulThreshold = 0.5, int Limit = 20)
 {
+    public string[] SpecificSkills { get; init; } = [];
     public void Validate()
     {
-        if (Categories is null || SignalIds is null || Terms is null ||
+        if (Categories is null || SignalIds is null || Terms is null || SpecificSkills is null || SpecificSkills.Length > 20 || SpecificSkills.Any(Invalid) ||
             Categories.Length > 10 || SignalIds.Length > 10 || Terms.Length > 20 ||
             Categories.Any(x => x is null || Invalid(x.Axis) || Invalid(x.CategoryId)) ||
             SignalIds.Any(Invalid) || Terms.Any(Invalid) ||
-            Categories.Length + SignalIds.Length + Terms.Length == 0 ||
+            Categories.Length + SignalIds.Length + Terms.Length + SpecificSkills.Length == 0 ||
             !double.IsFinite(ProbabilityThreshold) || ProbabilityThreshold is < 0 or > 1 ||
             !double.IsFinite(NoulThreshold) || NoulThreshold is < 0 or > 1 || Limit is < 1 or > 100)
             throw new ArgumentException("検索条件・閾値・候補上限を確認してください。");
@@ -40,7 +42,10 @@ public sealed record SearchRequest(CategoryKey[] Categories, string[] SignalIds,
     private static bool Invalid(string value) => string.IsNullOrWhiteSpace(value) || value.Length > 100;
 }
 public sealed record Candidate(string EntityId, string EntityType, string Title, string[] Routes, SearchUnit[] Units,
-    int CategoryMatches, double MaxProbability, int TermMatches);
+    int CategoryMatches, double MaxProbability, int TermMatches)
+{
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int SpecificSkillMatches { get; init; }
+}
 public sealed record SearchResult(Candidate[] Candidates, int MatchedUnits, int BeforeLimit,
     string RuleVersion = "retrieval-v1", string RerankingStatus = "not_configured")
 {
@@ -60,6 +65,7 @@ public static class Retriever
         request.Validate();
         rules?.Validate();
         var terms = request.Terms.Select(Normalize).ToHashSet(StringComparer.Ordinal);
+        var skills = request.SpecificSkills.Select(SpecificSkillRules.Normalize).ToHashSet(StringComparer.Ordinal);
         var hits = source.Where(u => u.TenantId == access.TenantId && u.ScopeIds.Intersect(access.ScopeIds).Any()
                 && u.Status == "active" && u.Available && u.TaxonomyVersion == TaxonomyVersion)
             .Select(u => new
@@ -69,8 +75,9 @@ public static class Retriever
                     && c.Probability >= request.ProbabilityThreshold).ToArray(),
                 Noul = u.ExperienceSignals.Any(s => request.SignalIds.Contains(s.SignalId)
                     && s.EvidenceState == "supported" && s.YesProbability >= request.NoulThreshold),
+                Skills = u.SpecificSkills?.Version == SpecificSkillRules.Version && u.SpecificSkills.State == "extracted" ? u.SpecificSkills.SearchTerms.Count(skills.Contains) : 0,
                 Terms = u.NormalizedTerms.Count(terms.Contains)
-            }).Where(h => h.Categories.Length > 0 || h.Noul || h.Terms > 0).ToArray();
+            }).Where(h => h.Categories.Length > 0 || h.Noul || h.Terms > 0 || h.Skills > 0).ToArray();
         var candidates = hits.GroupBy(h => (h.Unit.EntityType, h.Unit.EntityId)).Select(g =>
         {
             var units = g.Select(h => h.Unit).OrderBy(u => u.UnitId, StringComparer.Ordinal).ToArray();
@@ -79,11 +86,12 @@ public static class Retriever
             if (categories.Length > 0) routes.Add("probability");
             if (g.Any(h => h.Noul)) routes.Add("noul");
             if (g.Any(h => h.Terms > 0)) routes.Add("terms");
+            if (g.Any(h => h.Skills > 0)) routes.Add("specificSkills");
             return new Candidate(g.Key.EntityId, g.Key.EntityType, units[0].Title, [.. routes], units,
                 categories.Select(c => (c.Axis, c.CategoryId)).Distinct().Count(),
-                categories.Select(c => c.Probability).DefaultIfEmpty(0).Max(), g.Max(h => h.Terms));
+                categories.Select(c => c.Probability).DefaultIfEmpty(0).Max(), g.Max(h => h.Terms)) { SpecificSkillMatches = g.Max(h => h.Skills) };
         }).OrderByDescending(c => c.CategoryMatches).ThenByDescending(c => c.MaxProbability)
-            .ThenByDescending(c => c.TermMatches).ThenBy(c => c.EntityId, StringComparer.Ordinal)
+            .ThenByDescending(c => c.SpecificSkillMatches).ThenByDescending(c => c.TermMatches).ThenBy(c => c.EntityId, StringComparer.Ordinal)
             .ThenBy(c => c.EntityType, StringComparer.Ordinal).ToArray();
         // 上限の約20%（最低1件）をNoul/語一致のみの救済候補へ予約する。
         Candidate[] Select(Candidate[] values, int limit, int reserve)

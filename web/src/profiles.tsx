@@ -1,9 +1,10 @@
+import { SkillDetails, type SpecificSkills } from "./specific-skills";
 import { useEffect, useRef, useState } from "react";
 import { authSessionSignal, getToken, type AppConfig } from "./auth";
 
 type Period = { start: string | null; end: string | null; precision: string; months: number | null };
 type Decisions = { choices: Record<string, { probabilities: Record<string, number>; confidence: number }>; nouls: Record<string, { state: number; yesProbability: number | null }> };
-type Experience = { id: string; documentId: string; description: string; period: Period; confirmationState: string; correctionState: string; pendingExtraction?: { description: string }; evidenceRefs: { id: string }[]; decisions?: Decisions };
+type Experience = { id: string; documentId: string; description: string; period: Period; confirmationState: string; correctionState: string; pendingExtraction?: { description: string }; evidenceRefs: { id: string }[]; decisions?: Decisions; specificSkills?: SpecificSkills };
 type Person = { id: string; displayName: string; available: boolean; publicationState?: string; confirmationState: string; sourceVersion: number; activeVersion: number | null; projectionJobId?: string; totalExperienceMonths?: number | null };
 const isCalendarMonth = (period: Period) => period.precision === "month" && (!period.start || period.start.length === 7) && (!period.end || period.end.length === 7);
 export function Profiles({ config, person: demoPerson }: { config: AppConfig; person?: string }) {
@@ -102,8 +103,9 @@ export function Profiles({ config, person: demoPerson }: { config: AppConfig; pe
         <label>{isCalendarMonth(row.period) ? "開始月" : "開始日"}<input type={isCalendarMonth(row.period) ? "month" : "date"} value={row.period.start ?? ""} onChange={e => periodDate(row, "start", e.target.value)} /></label>
         <label>{isCalendarMonth(row.period) ? "終了月（この月を含む）" : "終了日"}<input type={isCalendarMonth(row.period) ? "month" : "date"} value={row.period.end ?? ""} onChange={e => periodDate(row, "end", e.target.value)} /></label>
         <p>月数：{row.period.months ?? "不明"} ／ {row.confirmationState} ／ 根拠：{row.evidenceRefs.map(r => r.id).join("、")}</p>
+        <SkillDetails value={row.specificSkills} />
         {row.pendingExtraction && <p>再取込との差分確認：{row.pendingExtraction.description}（現在の本人訂正を保持。確認または訂正を保存すると差分を解消します）</p>}
-        {row.decisions && <details><summary>分類・分野別経験判定</summary>
+        {row.decisions && <details><summary>業務・技術分野の大分類と補助判定</summary>
           {Object.entries(row.decisions.choices).map(([axis, choice]) => <p key={axis}>{axis}：{Object.entries(choice.probabilities).map(([k, v]) => `${k} ${(v * 100).toFixed(1)}%`).join(" ／ ")} ／ Confidence {choice.confidence}</p>)}
           {Object.entries(row.decisions.nouls).map(([id, noul]) => <p key={id}>{id}：{noul.state === 2 ? "未評価" : noul.state === 1 ? "情報不足" : `経験ありの確率 ${noul.yesProbability}（0は経験なしの判定）`}</p>)}
         </details>}

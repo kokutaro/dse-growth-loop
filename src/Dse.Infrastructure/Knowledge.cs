@@ -334,7 +334,7 @@ public sealed class KnowledgeService(IPrimaryRepository repository, IRecordStore
                     answer.Choices.SelectMany(q => q.Value.Probabilities.Select(p => new CategoryProbability(q.Key, p.Key, p.Value))).ToArray(),
                     answer.Nouls.Select(p => new ExperienceSignal(p.Key, p.Value.YesProbability, p.Value.State == NoulState.Supported ? "supported" : "unknown")).ToArray(),
                     ProfileExtraction.Terms(k.Text("summary")), [new(id, k.Text("title"), "承認済み要約", k.Text("summary"))], "reviewed")
-                { SourceVersion = version, ProjectionVersion = version, AccessVersion = state.Number("accessVersion"), ProjectionState = "ready", EvidenceRefs = evidence, ProcessingMode = state.Text("processingMode"), SkillIds = ProfileExtraction.Skills(k.Text("summary")) };
+                { SourceVersion = version, ProjectionVersion = version, AccessVersion = state.Number("accessVersion"), ProjectionState = "ready", EvidenceRefs = evidence, ProcessingMode = state.Text("processingMode"), SkillIds = ProfileExtraction.DomainHints(k.Text("summary")) };
                 var projection = Node(unit).AsObject();
                 projection["classificationResultIds"] = RecordJson.Array([$"{id}:classification:{version}"]);
                 foreach (var pair in RecordJson.New("searchUnit", projectionId, tenant, state.Text("ownerId"), k.Strings("scopeIds"), clock.GetUtcNow())) if (!projection.ContainsKey(pair.Key)) projection[pair.Key] = pair.Value?.DeepClone();

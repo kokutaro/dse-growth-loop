@@ -350,7 +350,7 @@ public sealed partial class AnonymousWorkspaceService
     {
         SearchInput.RequireSafe(text);
         var terms = ProfileExtraction.Terms(text).Concat(new[] { "引き継ぎ", "チェックリスト", "標準化" }.Where(t => text.Contains(t, StringComparison.Ordinal))).Distinct().Take(20).ToArray();
-        var categories = ProfileExtraction.Skills(text).Where(x => x != "unknown").Select(x => new CategoryKey("domain", x)).Take(10).ToArray();
+        var categories = ProfileExtraction.DomainHints(text).Where(x => x != "unknown").Select(x => new CategoryKey("domain", x)).Take(10).ToArray();
         if (terms.Length + categories.Length == 0) throw new DomainException(422, "SEARCH_CONDITIONS_REQUIRED");
         return new(categories, [], terms);
     }

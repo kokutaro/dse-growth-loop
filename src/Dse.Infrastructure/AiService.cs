@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 namespace Dse.Infrastructure;
 
 public sealed class AiService(IConfiguration config, IPrimaryRepository repository, SourceGuard guard,
-    AccessFence fence, AiLedger ledger, IAiTransport transport, TimeProvider clock) : ITextStructurer, IDecisionProvider, IReranker, ISummarizer, IKnowledgeDrafter, IDisposable
+    AccessFence fence, AiLedger ledger, IAiTransport transport, TimeProvider clock) : ITextStructurer, IConcreteSkillExtractor, IDecisionProvider, IReranker, ISummarizer, IKnowledgeDrafter, IDisposable
 {
     private readonly AuthorityProvider authorityProvider = new(repository, config);
     private readonly MemoryCache cache = new(new MemoryCacheOptions { SizeLimit = 128 });
@@ -21,6 +21,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         RunAsync(context, "knowledgeDraft", "", [], [], (body, model, evidence, _) => AiCodecs.Knowledge(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<StructuredText>> StructureAsync(AiContext context, string text, CancellationToken ct) =>
         RunAsync(context, "structure", text, [], [], (body, model, evidence, _) => AiCodecs.Structure(AiCodecs.FoundryContent(body, model), evidence), ct);
+    public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext context, string text, CancellationToken ct) =>
+        RunAsync(context, "extractSkills", text, [], [], (body, model, evidence, _) => AiCodecs.Skills(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<GroundedText>> SummarizeAsync(AiContext context, string text, CancellationToken ct) =>
         RunAsync(context, "summarize", text, [], [], (body, model, evidence, _) => AiCodecs.Summary(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<Ranking>> RerankAsync(AiContext context, string query, CancellationToken ct) =>
@@ -241,6 +243,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                             usage = response.Usage;
                             if (usage is not null && (usage.Input > limits.InputTokens || usage.Output > limits.OutputTokens)) throw new AiException(AiFailure.OutputLimit);
                             result = parse(response.Body, model, evidenceIds, candidateEvidence);
+                            if (result is SpecificSkills skillResult)
+                                SpecificSkillRules.Validate(skillResult, evidence.ToDictionary(e => e!["id"]!.GetValue<string>(), e => e!["text"]!.GetValue<string>()));
                             if (searchRerank && result is Ranking ranking)
                                 foreach (var item in ranking.Items)
                                 {

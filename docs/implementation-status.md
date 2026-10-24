@@ -322,3 +322,7 @@ Issue #30の後続改修として、検索対象指定・リランク総入力�
 2026-10-04の[観測後修正・実AI回帰](validation-results/20261004-issue-30-regression/results.md)で、入札の正解取得漏れを解消し、全対象24問の人物・事例Recall100%／スキーマ不一致0を確認した。独立確認への転用はしない。HTTPの15秒基準と新しい独立集合の確認が残る。この時点では新規v3ラベルと累計稼働延長案は承認待ちだった。後続の新規承認と実測を以下に記録する。
 
 2026-10-04の新規承認後、[独立v3の実サービス48検索](validation-results/20261004-issue-30-independent-v3-production/results.md)を完了。全対象・対象指定とも人物／事例の一次Recall、種別欄HitRate／Precision／Recallは100%、誤推薦0/4、根拠整合120/120。v3結果を見た調整なし。Mac再ロックにより認証付きHTTP・画面・coldは未実施で、APIを再展開せず元設定・実レプリカ0・Job0を確認した。Issue #30と恒久採用は保留。
+
+## 2026-10-24 ローカル実装（未公開）
+
+大分類と具体スキルを分離する通常Foundry処理・根拠/関与検証・検索/API/画面を追加。[specific-skills-v1](specific-skills-v1.md)に契約と移行の影響を記載。実AI精度の新評価、push、PR、deploy、Azure設定変更は別途未実施。
