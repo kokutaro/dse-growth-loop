@@ -1822,5 +1822,249 @@
       "ownerPersonId": "person-001",
       "ownerAccessEpoch": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
     }
+  },
+  {
+    "name": "growing-skillCandidate",
+    "schema": "SkillCandidate",
+    "value": {
+      "kind": "skillCandidate",
+      "id": "skill-candidate-fixture",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo-scope"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"fixture-etag\"",
+      "createdAt": "2026-10-25T00:00:00Z",
+      "updatedAt": "2026-10-25T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "fragmentId": "experience-fixture",
+      "sourceFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sourceInputState": "extracted",
+      "item": {
+        "raw": "回帰試験",
+        "normalizationCandidate": null,
+        "evidenceId": "evidence-fixture",
+        "quote": "私は回帰試験を実施した。",
+        "participation": "performed",
+        "analysis": {
+          "version": "skill-elements-v1",
+          "quoteState": "quote_verified",
+          "semanticSupport": "unreviewed",
+          "experienceState": "eligible",
+          "subjectScope": "person",
+          "kind": "practice",
+          "reason": null,
+          "elements": [
+            {
+              "label": "回帰試験",
+              "action": null,
+              "object": null,
+              "conditions": [],
+              "kind": "practice",
+              "subjectScope": "person",
+              "participation": "performed",
+              "conceptId": null,
+              "conceptState": "unmapped",
+              "slices": [
+                {
+                  "text": "回帰試験",
+                  "quoteOffset": 2,
+                  "length": 4
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "element": {
+        "label": "回帰試験",
+        "action": null,
+        "object": null,
+        "conditions": [],
+        "kind": "practice",
+        "subjectScope": "person",
+        "participation": "performed",
+        "conceptId": null,
+        "conceptState": "unmapped",
+        "slices": [
+          {
+            "text": "回帰試験",
+            "quoteOffset": 2,
+            "length": 4
+          }
+        ]
+      },
+      "dictionaryVersionAtCollection": 0,
+      "state": "registered",
+      "conceptId": "skill-fixture",
+      "history": [
+        "skill-review-fixture"
+      ],
+      "reviewedDictionaryVersion": 1
+    }
+  },
+  {
+    "name": "growing-skillDictionaryHead",
+    "schema": "SkillDictionaryHead",
+    "value": {
+      "kind": "skillDictionaryHead",
+      "id": "skill-dictionary-head",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo-scope"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"fixture-etag\"",
+      "createdAt": "2026-10-25T00:00:00Z",
+      "updatedAt": "2026-10-25T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "version": 1
+    }
+  },
+  {
+    "name": "growing-skillDictionaryVersion",
+    "schema": "SkillDictionaryVersion",
+    "value": {
+      "kind": "skillDictionaryVersion",
+      "id": "skill-dictionary-version-1",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo-scope"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"fixture-etag\"",
+      "createdAt": "2026-10-25T00:00:00Z",
+      "updatedAt": "2026-10-25T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "snapshot": {
+        "version": 1,
+        "concepts": [
+          {
+            "id": "skill-fixture",
+            "name": "回帰試験",
+            "definition": "既存動作の維持を確認する具体的な試験",
+            "boundary": "性能計測や知識の保有とは区別する",
+            "scopeIds": [
+              "demo-scope"
+            ],
+            "state": "active",
+            "redirectId": null,
+            "introducedVersion": 1,
+            "aliases": [
+              {
+                "text": "回帰試験",
+                "kind": "practice",
+                "object": null,
+                "conditions": []
+              }
+            ]
+          }
+        ]
+      },
+      "reviewId": "skill-review-fixture"
+    }
+  },
+  {
+    "name": "growing-skillDictionaryReview",
+    "schema": "SkillDictionaryReview",
+    "value": {
+      "kind": "skillDictionaryReview",
+      "id": "skill-review-fixture",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo-scope"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"fixture-etag\"",
+      "createdAt": "2026-10-25T00:00:00Z",
+      "updatedAt": "2026-10-25T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "candidateId": "skill-candidate-fixture",
+      "action": "new",
+      "reason": "架空の契約例。評価goldではない。",
+      "previousVersion": 0,
+      "approvedVersion": 1,
+      "sourceId": null,
+      "targetId": "skill-fixture",
+      "sourceFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "name": "SkillMatchProposal",
+    "schema": "SkillMatchProposal",
+    "value": {
+      "kind": "skillMatchProposal",
+      "id": "skill-proposal-demo",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo-scope"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"fixture-etag\"",
+      "createdAt": "2026-10-25T00:00:00Z",
+      "updatedAt": "2026-10-25T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "candidateId": "skill-candidate-demo",
+      "sourceFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "dictionaryVersion": 1,
+      "snapshotHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "policyVersion": "skill-catalogue-semantic-v1",
+      "phase": "complete",
+      "outcome": "existing_candidate",
+      "reason": "SEMANTIC_PROPOSAL_ONLY",
+      "basis": "semantic_noul",
+      "targetIds": [
+        "skill-regression-demo"
+      ],
+      "applicableCount": 1,
+      "shortlistComplete": true,
+      "comparisons": [
+        {
+          "conceptId": "skill-regression-demo",
+          "forward": 0.91,
+          "reverse": 0.93,
+          "minimum": 0.91,
+          "equivalent": true
+        }
+      ],
+      "providerExecutionUncertain": false,
+      "aiRunId": "mock-semantic-run"
+    }
   }
 ]

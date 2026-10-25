@@ -1,0 +1,1449 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Growing skill dictionary v1 (local implementation)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5180"
+    }
+  ],
+  "paths": {
+    "/api/v1/skill-dictionary": {
+      "get": {
+        "summary": "承認済み辞書版を読む",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [
+          {
+            "in": "query",
+            "name": "version",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        }
+      }
+    },
+    "/api/v1/skill-candidates": {
+      "get": {
+        "summary": "現在の権限で根拠を確認できる候補だけを読む",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [
+          {
+            "in": "query",
+            "name": "continuationToken",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        }
+      }
+    },
+    "/api/v1/skill-candidates/collect": {
+      "post": {
+        "summary": "既存の根拠付き抽出を収集。AIは実行しない",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/skill-candidates/{id}/review": {
+      "post": {
+        "summary": "人の判断を原子的に保存",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/skill-candidates/{id}/history": {
+      "get": {
+        "summary": "閲覧権限を再確認して履歴を読む",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        }
+      }
+    },
+    "/api/v1/skill-dictionary/preview": {
+      "post": {
+        "summary": "固定版で再分類。業務・goldの更新なし",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/skill-candidates/{id}/suggestion": {
+      "get": {
+        "summary": "固定版の保存済み候補提案を再読込（AI送信なし）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        }
+      }
+    },
+    "/api/v1/skill-candidates/{id}/suggest": {
+      "post": {
+        "summary": "既存AI保護経路で意味候補を提案（承認なし）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuggestionInput"
+              }
+            }
+          }
+        },
+        "x-ai-policy": "skill-catalogue-semantic-v1",
+        "x-reuses-existing-ai-guard-audit": true
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "IdempotencyKey": {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "IfMatch": {
+        "in": "header",
+        "name": "If-Match",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "SkillCandidate": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "skillCandidate"
+          },
+          "fragmentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceInputState": {
+            "enum": [
+              "extracted",
+              "unknown",
+              "not_evaluated"
+            ]
+          },
+          "item": {
+            "$ref": "#/components/schemas/SpecificSkill"
+          },
+          "element": {
+            "$ref": "#/components/schemas/SkillElement"
+          },
+          "dictionaryVersionAtCollection": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "state": {
+            "enum": [
+              "pending",
+              "matched",
+              "registered",
+              "alias",
+              "merged",
+              "not_skill",
+              "deferred"
+            ]
+          },
+          "conceptId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "maxItems": 50,
+            "uniqueItems": true
+          },
+          "reviewedDictionaryVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "kind",
+          "fragmentId",
+          "sourceFingerprint",
+          "sourceInputState",
+          "item",
+          "element",
+          "dictionaryVersionAtCollection",
+          "state",
+          "conceptId",
+          "history"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PersistedMetadata"
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "SpecificSkill": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "raw": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "normalizationCandidate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "evidenceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8000
+          },
+          "participation": {
+            "enum": [
+              "performed",
+              "joint",
+              "assisted",
+              "consultation",
+              "aspiration",
+              "other_person",
+              "negated",
+              "unclear"
+            ]
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SkillAnalysis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "raw",
+          "normalizationCandidate",
+          "evidenceId",
+          "quote",
+          "participation"
+        ]
+      },
+      "SkillAnalysis": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": "skill-elements-v1"
+          },
+          "quoteState": {
+            "enum": [
+              "quote_verified",
+              "invalid_quote"
+            ]
+          },
+          "semanticSupport": {
+            "const": "unreviewed"
+          },
+          "experienceState": {
+            "enum": [
+              "eligible",
+              "content_only",
+              "non_practice",
+              "pending",
+              "blocked"
+            ]
+          },
+          "subjectScope": {
+            "enum": [
+              "person",
+              "knowledge",
+              "other",
+              "team",
+              "unresolved"
+            ]
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "knowledge",
+              "reference",
+              "qualification"
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillElement"
+            },
+            "maxItems": 8
+          }
+        },
+        "required": [
+          "version",
+          "quoteState",
+          "semanticSupport",
+          "experienceState",
+          "subjectScope",
+          "kind",
+          "reason",
+          "elements"
+        ],
+        "additionalProperties": false
+      },
+      "SkillElement": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 220
+          },
+          "action": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "object": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8000
+            },
+            "maxItems": 8,
+            "uniqueItems": true
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "knowledge",
+              "reference",
+              "qualification"
+            ]
+          },
+          "subjectScope": {
+            "enum": [
+              "person",
+              "knowledge",
+              "other",
+              "team",
+              "unresolved",
+              "unspecified"
+            ]
+          },
+          "participation": {
+            "enum": [
+              "performed",
+              "joint",
+              "assisted",
+              "consultation",
+              "aspiration",
+              "other_person",
+              "negated",
+              "unclear",
+              "unspecified"
+            ]
+          },
+          "conceptId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conceptState": {
+            "enum": [
+              "unmapped",
+              "approved_existing_alias"
+            ]
+          },
+          "slices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillSlice"
+            },
+            "maxItems": 2
+          }
+        },
+        "required": [
+          "label",
+          "action",
+          "object",
+          "conditions",
+          "kind",
+          "subjectScope",
+          "participation",
+          "conceptId",
+          "conceptState",
+          "slices"
+        ],
+        "additionalProperties": false
+      },
+      "SkillSlice": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "quoteOffset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "length": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "text",
+          "quoteOffset",
+          "length"
+        ],
+        "additionalProperties": false
+      },
+      "PersistedMetadata": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "tenantId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "ownerId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "scopeIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "minItems": 1,
+            "maxItems": 20,
+            "uniqueItems": true
+          },
+          "schemaVersion": {
+            "const": "1.0"
+          },
+          "sourceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "activeVersion": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "etag": {
+            "type": "string",
+            "pattern": "^\"[^\"\\r\\n]+\"$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/Actor"
+          },
+          "correctedBy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Actor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "ownerId",
+          "scopeIds",
+          "schemaVersion",
+          "sourceVersion",
+          "activeVersion",
+          "etag",
+          "createdAt",
+          "updatedAt",
+          "createdBy",
+          "correctedBy"
+        ]
+      },
+      "Actor": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "principal",
+              "service"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          }
+        },
+        "required": [
+          "type",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "SkillConcept": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "definition": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "boundary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "scopeIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "minItems": 1,
+            "maxItems": 20,
+            "uniqueItems": true
+          },
+          "state": {
+            "enum": [
+              "active",
+              "merged"
+            ]
+          },
+          "redirectId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "introducedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillAlias"
+            },
+            "minItems": 1,
+            "maxItems": 40
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "definition",
+          "boundary",
+          "scopeIds",
+          "state",
+          "redirectId",
+          "introducedVersion",
+          "aliases"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "active"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "redirectId": {
+                  "type": "null"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "redirectId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SkillAlias": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "knowledge",
+              "reference",
+              "qualification"
+            ]
+          },
+          "object": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8000
+            },
+            "maxItems": 8,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "text",
+          "kind",
+          "object",
+          "conditions"
+        ],
+        "additionalProperties": false
+      },
+      "SkillDictionaryReview": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "skillDictionaryReview"
+          },
+          "candidateId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "action": {
+            "enum": [
+              "new",
+              "alias",
+              "merge",
+              "not_skill",
+              "defer"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "previousVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "approvedVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sourceId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "targetId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sourceFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "kind",
+          "candidateId",
+          "action",
+          "reason",
+          "previousVersion",
+          "approvedVersion",
+          "sourceId",
+          "targetId",
+          "sourceFingerprint"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PersistedMetadata"
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "CollectInput": {
+        "type": "object",
+        "properties": {
+          "fragmentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          }
+        },
+        "required": [
+          "fragmentId"
+        ],
+        "additionalProperties": false
+      },
+      "ReviewInput": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "enum": [
+              "new",
+              "alias",
+              "merge",
+              "defer",
+              "not_skill"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dictionaryETag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "targetId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sourceId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "definition": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "boundary": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "expectedVersion",
+          "dictionaryETag"
+        ],
+        "additionalProperties": false
+      },
+      "PreviewInput": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "candidateIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "minItems": 1,
+            "maxItems": 50,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "version",
+          "candidateIds"
+        ],
+        "additionalProperties": false
+      },
+      "SuggestionInput": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dictionaryETag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "version",
+          "dictionaryETag"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

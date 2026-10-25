@@ -282,7 +282,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 specific = skillResult.Value;
                 fragment["skillRunId"] = skillResult.RunId;
             }
-            specific = SpecificSkillRules.Assess(specific, (await SourceRefs(evidence)).ToDictionary(e => e.Id, e => e.Text), fragment.Text("description"));
+            specific = SpecificSkillRules.Assess(specific, (await SourceRefs(evidence)).ToDictionary(e => e.Id, e => e.Text), fragment.Text("description"), entity.Text("kind"));
             fragment["specificSkills"] = Node(specific); fragment["skillInputHash"] = skillInputHash;
             var importedLexicalTerms = fragment == entity ? [] : await ImportedLexicalTerms(fragment);
             var unitId = Id("projection-", entity.Text("id") + ":" + entity.Number("sourceVersion") + ":" + fragment.Text("id"));

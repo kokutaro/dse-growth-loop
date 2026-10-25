@@ -11,7 +11,8 @@
     "test:auth": "node --experimental-test-module-mocks --test unit/auth.test.mjs",
     "build": "tsc --noEmit && vite build",
     "test:e2e": "node scripts/test-e2e.mjs",
-    "test:e2e:raw": "playwright test"
+    "test:e2e:raw": "playwright test",
+    "test:e2e:dictionary": "playwright test --config playwright.skill-dictionary.config.ts"
   },
   "dependencies": {
     "@azure/msal-browser": "5.22.0",

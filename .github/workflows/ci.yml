@@ -68,3 +68,27 @@ jobs:
           name: playwright-${{ matrix.suite }}
           path: web/test-results
           retention-days: 7
+  skill-dictionary-browser-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.13.0"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - run: npm run test:e2e:dictionary -- --trace retain-on-failure
+        working-directory: web
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-skill-dictionary
+          path: web/test-results
+          retention-days: 7

@@ -1,0 +1,6 @@
+.skill-suggestion table{width:100%;border-collapse:collapse;margin:1rem 0}
+.skill-suggestion th,.skill-suggestion td{padding:12px 10px;text-align:left;vertical-align:top;border-bottom:1px solid #dce8e2}
+.skill-suggestion th{font-size:.9rem;background:#eef5f1}
+.skill-suggestion td:first-child{min-width:240px;width:46%}
+.skill-suggestion td:not(:first-child){min-width:64px;white-space:nowrap}
+.skill-suggestion td button{width:auto;min-width:145px}

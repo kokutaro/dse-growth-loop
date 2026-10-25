@@ -75,7 +75,7 @@ public static class Retriever
                     && c.Probability >= request.ProbabilityThreshold).ToArray(),
                 Noul = u.ExperienceSignals.Any(s => request.SignalIds.Contains(s.SignalId)
                     && s.EvidenceState == "supported" && s.YesProbability >= request.NoulThreshold),
-                Skills = u.SpecificSkills?.Version == SpecificSkillRules.Version && u.SpecificSkills.State == "extracted" ? u.SpecificSkills.SearchTerms.Count(skills.Contains) : 0,
+                Skills = u.SpecificSkills?.Version == SpecificSkillRules.Version && u.SpecificSkills.State == "extracted" ? u.SpecificSkills.TermsFor(u.EntityType).Count(skills.Contains) : 0,
                 Terms = u.NormalizedTerms.Count(terms.Contains)
             }).Where(h => h.Categories.Length > 0 || h.Noul || h.Terms > 0 || h.Skills > 0).ToArray();
         var candidates = hits.GroupBy(h => (h.Unit.EntityType, h.Unit.EntityId)).Select(g =>

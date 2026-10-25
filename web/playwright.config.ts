@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
+  testIgnore: 'skill-dictionary.spec.ts', // Dedicated loopback-only fixture host; see test:e2e:dictionary.
   // Tests update the same seeded identities and use one in-memory API instance.
   workers: 1,
   use: {
