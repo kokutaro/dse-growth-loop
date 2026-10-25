@@ -66,13 +66,13 @@ public sealed class SpecificSkillsTests
         Assert.Contains("u.specificSkills.searchTerms",query.QueryText); Assert.DoesNotContain("skillIds",query.QueryText);
     }
 
-    private sealed class Extractor(string quote, string participation = "performed") : IConcreteSkillExtractor
+    private sealed class Extractor(string quote, string participation = "performed", bool corruptSibling = false) : IConcreteSkillExtractor
     {
         public int Calls;
         public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext context,string text,CancellationToken ct)
         {
             Calls++;
-            return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new("C#","C#",context.Evidence[0].Id,quote,participation)]),"skill-run-test",null));
+            return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new("C#","C#",context.Evidence[0].Id,quote,participation), ..(corruptSibling ? new SpecificSkill[] { new("Azure",null,"invented","Azureで構築した。","performed") } : [])]),"skill-run-test",null));
         }
     }
     [Fact]
@@ -81,14 +81,14 @@ public sealed class SpecificSkillsTests
         using var h=new IngestionHarness(); const string text="C#で回帰試験を実施した。";
         var upload=await h.Upload(bytes:OfficeFixtures.Package(body:$"<w:p><w:r><w:t>{text}</w:t></w:r></w:p>")); await h.Processor.RunOnceAsync(default);
         var doc=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),upload.Body!["documentId"]!.GetValue<string>(),default))!;
-        var ai=new PipelineAi();var extractor=new Extractor(text);
+        var ai=new PipelineAi();var extractor=new Extractor(text,corruptSibling:true);
         var config=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?> { ["Data:Mode"]="Demo",["Ai:Mode"]="Mock" }).Build();
         var pipeline=new ProfilePipeline(h.Repo,h.Store,new(h.Repo),ai,ai,new(config),config,h.Clock,extractor);
         await pipeline.CommitAsync(await pipeline.BuildAsync(Jobs.Create(doc.Value,"enrichment",h.Clock.GetUtcNow()),default),[],default);
         var person=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),"demo-person-01",default))!;
         var exp=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),person.Value.Strings("experienceIds")[0],default))!;
         var result=exp.Value["specificSkills"]!.Deserialize<SpecificSkills>(new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
-        Assert.Equal(["c#"],result.SearchTerms);Assert.Equal("skill-run-test",exp.Value.Text("skillRunId"));
+        Assert.Equal(["c#"],result.SearchTerms);Assert.Equal("unknown_evidence",Assert.Single(result.RejectedItems!).Reason);Assert.Equal("skill-run-test",exp.Value.Text("skillRunId"));
         Assert.Equal(1,extractor.Calls);
         await pipeline.CommitAsync(await pipeline.BuildAsync(Jobs.Create(person.Value,"projection",h.Clock.GetUtcNow()),default),[],default);
         Assert.Equal(1,extractor.Calls);

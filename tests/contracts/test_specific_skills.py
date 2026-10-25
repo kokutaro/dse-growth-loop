@@ -24,3 +24,12 @@ class SpecificSkillContracts(unittest.TestCase):
         unit = schema['$defs']['SearchUnit']
         self.assertTrue(unit['properties']['skillIds']['deprecated'])
         self.assertNotIn('specificSkills', unit['required'])
+
+    def test_quarantine_is_explicit_and_distinct_from_an_empty_result(self):
+        schema = json.loads((Path(__file__).resolve().parents[2] / 'docs/specs/contracts.schema.json').read_text())
+        validator = Draft202012Validator({'$ref': '#/$defs/SpecificSkills', '$defs': schema['$defs']})
+        item = dict(raw='C#', normalizationCandidate=None, evidenceId='e1', quote='同僚がC#で計算した。', participation='performed')
+        value = dict(version='specific-skills-v1', state='extracted', items=[], searchTerms=[], guardVersion='scoped-assertion-v2', rejectedItems=[dict(item=item, reason='other_actor')])
+        self.assertTrue(validator.is_valid(value))
+        value['rejectedItems'][0]['reason'] = 'silent_drop'
+        self.assertFalse(validator.is_valid(value))

@@ -184,7 +184,7 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
         }
         if (unit.SpecificSkills is not null)
         {
-            try { SpecificSkillRules.Validate(unit.SpecificSkills, refs.ToDictionary(r => r.Id, r => r.Text)); }
+            try { unit = unit with { SpecificSkills = SpecificSkillRules.Assess(unit.SpecificSkills, refs.ToDictionary(r => r.Id, r => r.Text), unit.Summary) }; }
             catch (ArgumentException) { return null; }
         }
         return new(unit with { SourceRefs = refs.ToArray() }, snapshots.Distinct().ToArray());

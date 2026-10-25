@@ -244,7 +244,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                             if (usage is not null && (usage.Input > limits.InputTokens || usage.Output > limits.OutputTokens)) throw new AiException(AiFailure.OutputLimit);
                             result = parse(response.Body, model, evidenceIds, candidateEvidence);
                             if (result is SpecificSkills skillResult)
-                                SpecificSkillRules.Validate(skillResult, evidence.ToDictionary(e => e!["id"]!.GetValue<string>(), e => e!["text"]!.GetValue<string>()));
+                                result = (T)(object)SpecificSkillRules.Assess(skillResult, evidence.ToDictionary(e => e!["id"]!.GetValue<string>(), e => e!["text"]!.GetValue<string>()));
                             if (searchRerank && result is Ranking ranking)
                                 foreach (var item in ranking.Items)
                                 {
