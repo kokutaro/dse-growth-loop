@@ -215,8 +215,8 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
         {
             var parts = projectionFragments.Select(f => f["specificSkills"]?.Deserialize<SpecificSkills>(Json) ?? SpecificSkills.NotEvaluated).ToArray();
             return parts.Any(p => p.State == "not_evaluated") ? SpecificSkills.NotEvaluated :
-                parts.Any(p => p.State == "unknown") || parts.Sum(p => p.Items?.Length ?? 0) > 40 ? new(SpecificSkillRules.Version, "unknown", null) :
-                new(SpecificSkillRules.Version, "extracted", parts.SelectMany(p => p.Items ?? []).Distinct().ToArray());
+                parts.Any(p => p.State == "unknown") || parts.Sum(p => (p.Items?.Length ?? 0) + (p.RejectedItems?.Length ?? 0)) > 40 ? new(SpecificSkillRules.Version, "unknown", null) :
+                new(SpecificSkillRules.Version, "extracted", parts.SelectMany(p => p.Items ?? []).Distinct().ToArray()) { RejectedItems = parts.SelectMany(p => p.RejectedItems ?? []).Distinct().ToArray(), GuardVersion = SpecificSkillRules.GuardVersion };
         }
         var searchOnlyIds = new HashSet<string>();
         if (!department && config.GetValue<bool>("Profile:SecondaryWorkFragments"))
@@ -280,11 +280,9 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                     Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []), fragment.Text("description"), ct);
                 if (skillResult.Status != AiStatus.Succeeded || skillResult.Value is null) throw Failure(skillResult.Status, skillResult.Failure);
                 specific = skillResult.Value;
-                SpecificSkillRules.Validate(specific, (await SourceRefs(evidence)).ToDictionary(e => e.Id, e => e.Text));
-                if ((specific.Items ?? []).Any(s => SpecificSkillRules.IsExperience(s) && !fragment.Text("description").Contains(s.Raw, StringComparison.Ordinal)))
-                    throw new DomainException(422, "UNGROUNDED_SKILL");
                 fragment["skillRunId"] = skillResult.RunId;
             }
+            specific = SpecificSkillRules.Assess(specific, (await SourceRefs(evidence)).ToDictionary(e => e.Id, e => e.Text), fragment.Text("description"));
             fragment["specificSkills"] = Node(specific); fragment["skillInputHash"] = skillInputHash;
             var importedLexicalTerms = fragment == entity ? [] : await ImportedLexicalTerms(fragment);
             var unitId = Id("projection-", entity.Text("id") + ":" + entity.Number("sourceVersion") + ":" + fragment.Text("id"));

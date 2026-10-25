@@ -28,12 +28,16 @@ public partial class AiTests
             Assert.Null(input["expected"]); Assert.Null(input["review"]);
             var content=new JsonObject { ["state"]="extracted",["items"]=new JsonArray(new JsonObject {
                 ["raw"]="C#",["normalizationCandidate"]="C#",["evidenceId"]=eid,["quote"]=quote,["participation"]=involvement }) };
+            // A bad sibling must not discard a grounded candidate or trigger another provider call.
+            content["items"]!.AsArray().Add(new JsonObject { ["raw"]="Azure",["normalizationCandidate"]=null,
+                ["evidenceId"]="not-sent",["quote"]="Azureで構築した。",["participation"]="performed" });
             return Response(Foundry(content.ToJsonString()));
         });
         using var service=Service(Config(),store,handler);
         var result=await service.ExtractSkillsAsync(Context() with { Evidence=unit.EvidenceRefs,PromptVersion=SpecificSkillRules.Version },text,default);
-        Assert.Equal(valid?AiStatus.Succeeded:AiStatus.Failed,result.Status);
-        if(valid) Assert.Equal(involvement,Assert.Single(result.Value!.Items!).Participation);
+        Assert.Equal(AiStatus.Succeeded,result.Status);
+        if (!valid) { Assert.Empty(result.Value!.Items!); Assert.Equal(2,result.Value.RejectedItems!.Length); Assert.Empty(result.Value.SearchTerms); }
+        if(valid) { Assert.Equal(involvement,Assert.Single(result.Value!.Items!).Participation); Assert.Equal("unknown_evidence",Assert.Single(result.Value.RejectedItems!).Reason); }
         var audit=(await store.QueryAsync(RecordPartition.Catalog("demo"),"aiRun",null,null,100,null,default)).Items.Single();
         Assert.Equal("extractSkills",audit.Value.Text("operation"));
         Assert.Equal(SpecificSkillRules.Version,audit.Value["trace"]!["promptVersion"]!.GetValue<string>());

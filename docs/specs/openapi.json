@@ -9256,6 +9256,50 @@
               "type": "string"
             },
             "uniqueItems": true
+          },
+          "guardVersion": {
+            "type": "string",
+            "const": "scoped-assertion-v2"
+          },
+          "rejectedItems": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "item",
+                "reason"
+              ],
+              "properties": {
+                "item": {
+                  "$ref": "#/components/schemas/SpecificSkill"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "invalid_candidate",
+                    "unknown_evidence",
+                    "quote_not_in_source",
+                    "raw_not_in_quote",
+                    "incomplete_passage",
+                    "broad_domain",
+                    "experience_not_established",
+                    "excluded_operand",
+                    "negated_assertion",
+                    "reported_or_intended",
+                    "no_completed_assertion",
+                    "other_actor",
+                    "ownership_restricted",
+                    "involvement_mismatch",
+                    "duplicate_candidate",
+                    "not_in_fragment",
+                    "reported_quote",
+                    "retracted_assertion"
+                  ]
+                }
+              }
+            }
           }
         },
         "required": [

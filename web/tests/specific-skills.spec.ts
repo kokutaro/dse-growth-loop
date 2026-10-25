@@ -17,6 +17,9 @@ test("具体スキルを大分類から分け、本人の実施だけを根拠�
   await expect(page.locator(".profiles .specific-skills strong")).toHaveText(["C#", "回帰試験"]);
   await expect(page.locator(".profiles .specific-skills").filter({ hasText: "C#" })).toContainText("本人実施");
   await expect(page.locator(".profiles .specific-skills").filter({ hasText: "C#" })).toContainText("根拠ID：");
+  await expect(page.locator(".profiles .quarantined-skills")).toHaveCount(2);
+  await expect(page.locator(".profiles .specific-skills").filter({ hasText: "候補はすべて保留中" })).toHaveCount(2);
+  await expect(page.locator(".profiles .quarantined-skills")).toContainText(["本人の経験タグ・検索には採用しません", "本人の経験タグ・検索には採用しません"]);
   await page.getByLabel("分野", { exact: true }).selectOption("");
   await page.getByLabel("検索語", { exact: true }).fill("");
   await page.getByLabel("引き継ぎ経験の補助判定を加える").uncheck();

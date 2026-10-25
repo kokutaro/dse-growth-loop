@@ -40,7 +40,7 @@ public sealed class MockAiTransport : IAiTransport
             {
                 var text = e!["text"]!.GetValue<string>();
                 foreach (var raw in examples.Where(text.Contains))
-                    if (Dse.Domain.SpecificSkillRules.HasPositiveContext(text)) items.Add(new JsonObject {
+                    items.Add(new JsonObject {
                         ["raw"] = raw, ["normalizationCandidate"] = Dse.Domain.SpecificSkillRules.Normalize(raw),
                         ["evidenceId"] = e["id"]!.DeepClone(), ["quote"] = text, ["participation"] = text.Contains("共同", StringComparison.Ordinal) ? "joint" : text.Contains("補助", StringComparison.Ordinal) || text.Contains("支援", StringComparison.Ordinal) ? "assisted" : "performed" });
             }

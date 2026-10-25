@@ -149,7 +149,7 @@ internal static class AiCodecs
         var items = content["items"]!.AsArray(); Require(items.Count <= 40);
         var skills = items.Select(x => {
             var item = x!.AsObject(); Keys(item, "raw", "normalizationCandidate", "evidenceId", "quote", "participation");
-            Require(allowed.Contains(item.Text("evidenceId")), AiFailure.InventedId);
+            // Unknown evidence IDs are quarantined per candidate by SpecificSkillRules.Assess.
             return new SpecificSkill(Text(item,"raw"), item["normalizationCandidate"]?.GetValue<string>(), item.Text("evidenceId"), Text(item,"quote"), item.Text("participation"));
         }).ToArray();
         return new(SpecificSkillRules.Version, state, skills);
