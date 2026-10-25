@@ -1,0 +1,151 @@
+{
+  "version": "skill-catalogue-semantic-proposal-v1",
+  "frozenAt": "2026-10-25T10:48:15.412821+00:00",
+  "baseCommit": "8ba73e08dfeaf6e123182649cf822481fe5bbc88",
+  "humanApprovedExpectations": false,
+  "expectationsOrigin": "explicit synthetic developer-authored cases; not human semantic gold",
+  "realApiCalls": 0,
+  "positiveRule": "both directions min>=0.8; proposal only",
+  "negativeRouting": "both <=0.2 AND full applicable-catalogue coverage => provisional new candidate, not skill confirmation; otherwise review",
+  "maxShortlist": 3,
+  "maxCatalogue": 200,
+  "inferenceRetries": "existing configured AiService only; durable intent once per actor/source/version/policy; unknown outcomes never auto-resend",
+  "cases": [
+    {
+      "id": "synonym",
+      "candidate": "リグレッション試験",
+      "dictionary": "回帰試験",
+      "forward": 0.91,
+      "reverse": 0.93,
+      "expected": "existing_candidate"
+    },
+    {
+      "id": "other_action",
+      "candidate": "性能試験",
+      "dictionary": "回帰試験",
+      "forward": 0.05,
+      "reverse": 0.04,
+      "expected": "new_candidate"
+    },
+    {
+      "id": "different_object",
+      "candidate": "APIの負荷試験",
+      "dictionary": "画面の負荷試験",
+      "forward": 0.03,
+      "reverse": 0.04,
+      "expected": "new_candidate"
+    },
+    {
+      "id": "condition",
+      "candidate": "低温での作動試験",
+      "dictionary": "高温での作動試験",
+      "forward": 0.06,
+      "reverse": 0.02,
+      "expected": "new_candidate"
+    },
+    {
+      "id": "compound",
+      "candidate": "試験設計と実行",
+      "dictionary": "試験実行",
+      "forward": 0.9,
+      "reverse": 0.4,
+      "expected": "requires_review"
+    },
+    {
+      "id": "outside",
+      "candidate": "切削加工",
+      "dictionary": "回帰試験",
+      "forward": 0.01,
+      "reverse": 0.02,
+      "expected": "new_candidate"
+    },
+    {
+      "id": "knowledge",
+      "candidate": "知識の回帰試験",
+      "dictionary": "実務の回帰試験",
+      "forward": null,
+      "reverse": null,
+      "expected": "new_candidate"
+    },
+    {
+      "id": "qualification",
+      "candidate": "資格の取得",
+      "dictionary": "実務技能",
+      "forward": null,
+      "reverse": null,
+      "expected": "new_candidate"
+    },
+    {
+      "id": "ambiguous",
+      "candidate": "評価",
+      "dictionary": "複数の評価技能",
+      "forward": 0.91,
+      "reverse": 0.91,
+      "expected": "requires_review"
+    },
+    {
+      "id": "near_boundary",
+      "candidate": "試験",
+      "dictionary": "既存技能",
+      "forward": 0.79,
+      "reverse": 0.79,
+      "expected": "requires_review"
+    },
+    {
+      "id": "inclusive_boundary",
+      "candidate": "同等の技能",
+      "dictionary": "既存技能",
+      "forward": 0.8,
+      "reverse": 0.8,
+      "expected": "existing_candidate"
+    },
+    {
+      "id": "api_failure",
+      "candidate": "技能",
+      "dictionary": "既存技能",
+      "forward": null,
+      "reverse": null,
+      "expected": "requires_review"
+    },
+    {
+      "id": "version_change",
+      "candidate": "技能",
+      "dictionary": "旧版辞書",
+      "forward": 0.95,
+      "reverse": 0.95,
+      "expected": "requires_review"
+    },
+    {
+      "id": "foreign_id",
+      "candidate": "技能",
+      "dictionary": "越権ID",
+      "forward": null,
+      "reverse": null,
+      "expected": "rejected_before_ai"
+    },
+    {
+      "id": "shortlist_incomplete",
+      "candidate": "技能",
+      "dictionary": "上限超過の辞書",
+      "forward": 0.01,
+      "reverse": 0.01,
+      "expected": "requires_review"
+    },
+    {
+      "id": "source_revoked",
+      "candidate": "技能",
+      "dictionary": "既存技能",
+      "forward": 0.95,
+      "reverse": 0.95,
+      "expected": "not_exposed"
+    },
+    {
+      "id": "role",
+      "candidate": "補助した試験",
+      "dictionary": "試験",
+      "forward": 0.91,
+      "reverse": 0.92,
+      "expected": "existing_candidate_without_experience_change"
+    }
+  ]
+}

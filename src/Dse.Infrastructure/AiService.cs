@@ -52,6 +52,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         Func<JsonObject, AiModel, HashSet<string>, IReadOnlyDictionary<string, HashSet<string>>, T> parse, CancellationToken ct)
     {
         var actor = await authorityProvider.RequireAsync(context.Actor, ct);
+        if (context.PromptVersion == SkillSemanticMatching.Version)
+            await new SkillDictionaryService(repository,fence,new(repository,clock),clock).RequireSemanticInputUnderFenceAsync(context,text,choices,nouls,ct);
         var searchRerank = operation == "rerank" && context.PromptVersion is "search-rerank-v1" or "search-rerank-v2";
         ChatAccess? chat = null;
         ActorAccess[] sharedActors = [];
@@ -244,7 +246,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                             if (usage is not null && (usage.Input > limits.InputTokens || usage.Output > limits.OutputTokens)) throw new AiException(AiFailure.OutputLimit);
                             result = parse(response.Body, model, evidenceIds, candidateEvidence);
                             if (result is SpecificSkills skillResult)
-                                result = (T)(object)SpecificSkillRules.Assess(skillResult, evidence.ToDictionary(e => e!["id"]!.GetValue<string>(), e => e!["text"]!.GetValue<string>()));
+                                result = (T)(object)SpecificSkillRules.Assess(skillResult, evidence.ToDictionary(e => e!["id"]!.GetValue<string>(), e => e!["text"]!.GetValue<string>()), sourceKind: "unresolved");
                             if (searchRerank && result is Ranking ranking)
                                 foreach (var item in ranking.Items)
                                 {

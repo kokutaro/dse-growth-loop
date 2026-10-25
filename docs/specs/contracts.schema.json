@@ -6003,6 +6003,16 @@
             "negated",
             "unclear"
           ]
+        },
+        "analysis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SkillAnalysis"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -6046,8 +6056,10 @@
           "uniqueItems": true
         },
         "guardVersion": {
-          "type": "string",
-          "const": "scoped-assertion-v2"
+          "enum": [
+            "scoped-assertion-v2",
+            "scoped-assertion-v3"
+          ]
         },
         "rejectedItems": {
           "type": "array",
@@ -6083,11 +6095,19 @@
                   "duplicate_candidate",
                   "not_in_fragment",
                   "reported_quote",
-                  "retracted_assertion"
+                  "retracted_assertion",
+                  "actor_not_established"
                 ]
               }
             }
           }
+        },
+        "contentTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
         }
       },
       "required": [
@@ -6121,6 +6141,768 @@
           }
         }
       ]
+    },
+    "SkillSlice": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "quoteOffset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "text",
+        "quoteOffset",
+        "length"
+      ],
+      "additionalProperties": false
+    },
+    "SkillElement": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220
+        },
+        "action": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "object": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8000
+          },
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "kind": {
+          "enum": [
+            "practice",
+            "knowledge",
+            "reference",
+            "qualification"
+          ]
+        },
+        "subjectScope": {
+          "enum": [
+            "person",
+            "knowledge",
+            "other",
+            "team",
+            "unresolved",
+            "unspecified"
+          ]
+        },
+        "participation": {
+          "enum": [
+            "performed",
+            "joint",
+            "assisted",
+            "consultation",
+            "aspiration",
+            "other_person",
+            "negated",
+            "unclear",
+            "unspecified"
+          ]
+        },
+        "conceptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conceptState": {
+          "enum": [
+            "unmapped",
+            "approved_existing_alias"
+          ]
+        },
+        "slices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SkillSlice"
+          },
+          "maxItems": 2
+        }
+      },
+      "required": [
+        "label",
+        "action",
+        "object",
+        "conditions",
+        "kind",
+        "subjectScope",
+        "participation",
+        "conceptId",
+        "conceptState",
+        "slices"
+      ],
+      "additionalProperties": false
+    },
+    "SkillAnalysis": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": "skill-elements-v1"
+        },
+        "quoteState": {
+          "enum": [
+            "quote_verified",
+            "invalid_quote"
+          ]
+        },
+        "semanticSupport": {
+          "const": "unreviewed"
+        },
+        "experienceState": {
+          "enum": [
+            "eligible",
+            "content_only",
+            "non_practice",
+            "pending",
+            "blocked"
+          ]
+        },
+        "subjectScope": {
+          "enum": [
+            "person",
+            "knowledge",
+            "other",
+            "team",
+            "unresolved"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "practice",
+            "knowledge",
+            "reference",
+            "qualification"
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SkillElement"
+          },
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "version",
+        "quoteState",
+        "semanticSupport",
+        "experienceState",
+        "subjectScope",
+        "kind",
+        "reason",
+        "elements"
+      ],
+      "additionalProperties": false
+    },
+    "SkillAlias": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "kind": {
+          "enum": [
+            "practice",
+            "knowledge",
+            "reference",
+            "qualification"
+          ]
+        },
+        "object": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8000
+          },
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "text",
+        "kind",
+        "object",
+        "conditions"
+      ],
+      "additionalProperties": false
+    },
+    "SkillConcept": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "boundary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "scopeIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "state": {
+          "enum": [
+            "active",
+            "merged"
+          ]
+        },
+        "redirectId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "introducedVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SkillAlias"
+          },
+          "minItems": 1,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "definition",
+        "boundary",
+        "scopeIds",
+        "state",
+        "redirectId",
+        "introducedVersion",
+        "aliases"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "active"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "redirectId": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "redirectId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "SkillDictionarySnapshot": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "concepts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SkillConcept"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "version",
+        "concepts"
+      ],
+      "additionalProperties": false
+    },
+    "SkillCandidate": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "skillCandidate"
+        },
+        "fragmentId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceInputState": {
+          "enum": [
+            "extracted",
+            "unknown",
+            "not_evaluated"
+          ]
+        },
+        "item": {
+          "$ref": "#/$defs/SpecificSkill"
+        },
+        "element": {
+          "$ref": "#/$defs/SkillElement"
+        },
+        "dictionaryVersionAtCollection": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "matched",
+            "registered",
+            "alias",
+            "merged",
+            "not_skill",
+            "deferred"
+          ]
+        },
+        "conceptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "reviewedDictionaryVersion": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "kind",
+        "fragmentId",
+        "sourceFingerprint",
+        "sourceInputState",
+        "item",
+        "element",
+        "dictionaryVersionAtCollection",
+        "state",
+        "conceptId",
+        "history"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "SkillDictionaryHead": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "skillDictionaryHead"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "kind",
+        "version"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "SkillDictionaryVersion": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "skillDictionaryVersion"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/SkillDictionarySnapshot"
+        },
+        "reviewId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "required": [
+        "kind",
+        "snapshot",
+        "reviewId"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "SkillDictionaryReview": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "skillDictionaryReview"
+        },
+        "candidateId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "action": {
+          "enum": [
+            "new",
+            "alias",
+            "merge",
+            "not_skill",
+            "defer"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "previousVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "approvedVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "targetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "kind",
+        "candidateId",
+        "action",
+        "reason",
+        "previousVersion",
+        "approvedVersion",
+        "sourceId",
+        "targetId",
+        "sourceFingerprint"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "SkillEquivalence": {
+      "type": "object",
+      "properties": {
+        "conceptId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "forward": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reverse": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "equivalent": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "conceptId",
+        "forward",
+        "reverse",
+        "minimum",
+        "equivalent"
+      ],
+      "additionalProperties": false
+    },
+    "SkillMatchProposal": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "skillMatchProposal"
+        },
+        "candidateId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dictionaryVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "snapshotHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "policyVersion": {
+          "const": "skill-catalogue-semantic-v1"
+        },
+        "phase": {
+          "enum": [
+            "prepared",
+            "dispatching",
+            "complete"
+          ]
+        },
+        "outcome": {
+          "enum": [
+            "existing_candidate",
+            "new_candidate",
+            "requires_review"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "basis": {
+          "enum": [
+            "semantic_noul",
+            "exact_alias",
+            "empty_scoped_catalogue"
+          ]
+        },
+        "targetIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "applicableCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "shortlistComplete": {
+          "type": "boolean"
+        },
+        "comparisons": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/SkillEquivalence"
+          }
+        },
+        "providerExecutionUncertain": {
+          "type": "boolean"
+        },
+        "aiRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "candidateId",
+        "sourceFingerprint",
+        "dictionaryVersion",
+        "snapshotHash",
+        "policyVersion",
+        "phase",
+        "outcome",
+        "reason",
+        "basis",
+        "targetIds",
+        "applicableCount",
+        "shortlistComplete",
+        "comparisons",
+        "providerExecutionUncertain",
+        "aiRunId"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
     }
   },
   "oneOf": [
@@ -6183,6 +6965,9 @@
     },
     {
       "$ref": "#/$defs/Opportunity"
+    },
+    {
+      "$ref": "#/$defs/SkillMatchProposal"
     }
   ],
   "x-example-required": [

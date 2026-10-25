@@ -359,6 +359,7 @@ function App() {
         {config && <Conversations config={config} candidates={result?.candidates ?? []} onKnowledgeChanged={invalidateKnowledge} />}
         {config && <Documents config={config} />}
         {config && <Profiles config={config} />}
+        {config && <p><a href="/skill-dictionary.html">共通技能辞書と候補レビュー（既存の運用者権限が必要）</a></p>}
       </main>}
       <footer>
         人の優劣ではなく、経験との接点を探す。DSE Growth Loop / 開発初期版

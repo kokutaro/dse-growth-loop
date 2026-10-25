@@ -5,7 +5,10 @@ using System.Text.RegularExpressions;
 namespace Dse.Domain;
 
 // Separate from taxonomy-v1's domain probabilities. NormalizationCandidate is not an approved taxonomy ID.
-public sealed record SpecificSkill(string Raw, string? NormalizationCandidate, string EvidenceId, string Quote, string Participation);
+public sealed record SpecificSkill(string Raw, string? NormalizationCandidate, string EvidenceId, string Quote, string Participation)
+{
+    public SkillAnalysis? Analysis { get; init; }
+}
 public sealed record SkillRejection(SpecificSkill Item, string Reason);
 public sealed record SpecificSkills(string Version, string State, SpecificSkill[]? Items)
 {
@@ -14,8 +17,11 @@ public sealed record SpecificSkills(string Version, string State, SpecificSkill[
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? GuardVersion { get; init; }
     public static SpecificSkills NotEvaluated => new(SpecificSkillRules.Version, "not_evaluated", null);
-    public string[] SearchTerms => State == "extracted" ? Items!.Where(SpecificSkillRules.IsExperience)
+    public string[] SearchTerms => State == "extracted" ? Items!.Where(SpecificSkillRules.IsSearchExperience)
         .Select(s => SpecificSkillRules.Normalize(s.Raw)).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray() : [];
+    public string[] ContentTerms => State == "extracted" ? Items!.Where(s => s.Analysis?.ExperienceState == "content_only")
+        .Select(s => SpecificSkillRules.Normalize(s.Raw)).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray() : [];
+    public string[] TermsFor(string entityType) => entityType == "knowledge" ? ContentTerms : SearchTerms;
 }
 public interface IConcreteSkillExtractor
 {
@@ -24,11 +30,15 @@ public interface IConcreteSkillExtractor
 public static class SpecificSkillRules
 {
     public const string Version = "specific-skills-v1";
-    public const string GuardVersion = "scoped-assertion-v2";
+    public const string GuardVersion = "scoped-assertion-v3";
     public static readonly string[] Participations = ["performed", "joint", "assisted", "consultation", "aspiration", "other_person", "negated", "unclear"];
     public static string Normalize(string raw) => raw.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant() switch
     { "回帰テスト" => "回帰試験", "c sharp" => "c#", var value => value };
     public static bool IsExperience(SpecificSkill skill) => skill.Participation is "performed" or "joint" or "assisted";
+    // Old in-memory fixtures remain readable. Every production boundary calls Assess
+    // against current evidence; AI input cannot supply this derived analysis.
+    public static bool IsSearchExperience(SpecificSkill skill) => IsExperience(skill) &&
+        (skill.Analysis is null || skill.Analysis.ExperienceState == "eligible");
     private static bool Match(string text, string pattern) => Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     // Sentence boundaries respect reported quotations: a full quote is grounding, not proof of ownership.
@@ -111,11 +121,16 @@ public static class SpecificSkillRules
                     scope = contrast.Groups[2].Value;
                     if (!scope.Contains(item.Raw, StringComparison.Ordinal)) { reason = "excluded_operand"; continue; }
                 }
-                if (Match(scope, Negation)) { reason = "negated_assertion"; continue; }
+                // A negative relative modifier is not a denial of the governing action.
+                // Only mask a proven condition in a private analysis view; never alter
+                // the stored raw, quote or source, and never mask the excluded action.
+                var assertion = SkillElements.AssertionView(scope, item.Raw);
+                if (Match(assertion, Negation)) { reason = "negated_assertion"; continue; }
                 if (Match(scope, ReportOrWish)) { reason = "reported_or_intended"; continue; }
                 if (!CompletedAssertion(scope)) { reason = "no_completed_assertion"; continue; }
                 var own = Match(scope, Own); var foreign = Match(scope, Foreign);
                 if (foreign) { reason = "other_actor"; continue; }
+                if (!own && Match(scope, @"(?:チーム|部門|部署)(?:が|は|で)")) { reason = "actor_not_established"; continue; }
                 var preceding = source[..span.Start];
                 if (!own && Match(preceding, @"本人の担当.{0,100}のみ")) { reason = "ownership_restricted"; continue; }
                 // Explicit own subject resets inherited foreign context; implicit narrative inherits the latest subject.
@@ -148,11 +163,12 @@ public static class SpecificSkillRules
         if (!evidence.TryGetValue(s.EvidenceId, out var source)) return "unknown_evidence";
         if (!source.Contains(s.Quote, StringComparison.Ordinal)) return "quote_not_in_source";
         if (!s.Quote.Contains(s.Raw, StringComparison.Ordinal)) return "raw_not_in_quote";
+        if (!CompletePassage(source,s.Quote)) return "incomplete_passage";
         return IsExperience(s) ? ExperienceFailure(s, source) : null;
     }
     // Envelope failures still fail the operation. Candidate failures are retained explicitly but never indexed.
     // Re-assess persisted candidates against current evidence, including previously quarantined candidates.
-    public static SpecificSkills Assess(SpecificSkills result, IReadOnlyDictionary<string, string> evidence, string? fragmentText = null)
+    public static SpecificSkills Assess(SpecificSkills result, IReadOnlyDictionary<string, string> evidence, string? fragmentText = null, string sourceKind = "person")
     {
         if (result.RejectedItems?.Any(r => r is null || r.Item is null) == true)
             throw new ArgumentException("Invalid quarantined candidate");
@@ -167,7 +183,11 @@ public static class SpecificSkillRules
             if (reason is null && IsExperience(item) && fragmentText is not null && !fragmentText.Contains(item.Raw, StringComparison.Ordinal)) reason = "not_in_fragment";
             if (reason == "invalid_candidate") throw new ArgumentException("Invalid specific skill candidate");
             if (!seen.Add((item.Raw, item.EvidenceId, item.Quote, item.Participation))) reason = "duplicate_candidate";
-            if (reason is null) accepted.Add(item); else rejected.Add(new(item, reason));
+            var analysis = SkillElements.Analyze(item, evidence.GetValueOrDefault(item.EvidenceId), sourceKind, reason);
+            // Reassessment is value-idempotent, including derived array values.
+            if (item.Analysis is not null && System.Text.Json.JsonSerializer.Serialize(item.Analysis) == System.Text.Json.JsonSerializer.Serialize(analysis)) analysis = item.Analysis;
+            var assessed = item with { Analysis = analysis };
+            if (reason is null) accepted.Add(assessed); else rejected.Add(new(assessed, reason));
         }
         return result with { Items = result.State == "extracted" ? accepted.ToArray() : null, RejectedItems = rejected.Count == 0 ? null : rejected.ToArray(), GuardVersion = GuardVersion };
     }
