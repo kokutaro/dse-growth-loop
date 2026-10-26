@@ -130,11 +130,12 @@ public static class SpecificSkillRules
                 if (!CompletedAssertion(scope)) { reason = "no_completed_assertion"; continue; }
                 // The object of completed planning work is not the activity being
                 // planned. Keep "Xの計画" as work, but do not certify "X" from it.
-                // A later explicit X assertion is assessed in its own sentence;
-                // repeated mentions in this clause need their full context.
+                // Check every mention: a separate actual X assertion must survive,
+                // while repeating X inside two planning operands is still planning.
                 var operand = Regex.Escape(item.Raw);
-                if (Regex.Matches(scope, operand).Count == 1 &&
-                    Match(scope, operand + @"の(?:計画|予定|構想)(?:だけ|のみ)?を(?:作成|策定|立案|検討|立て)"))
+                var mentions = Regex.Matches(scope, operand);
+                if (mentions.Count > 0 && mentions.All(m =>
+                    Match(scope[(m.Index + m.Length)..], @"^の(?:計画|予定|構想)(?:だけ|のみ)?(?:を|と|や)")))
                 { reason = "planning_not_execution"; continue; }
                 var own = Match(scope, Own); var foreign = Match(scope, Foreign);
                 if (foreign) { reason = "other_actor"; continue; }
