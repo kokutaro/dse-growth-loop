@@ -199,6 +199,7 @@ public partial class AiTests
     [InlineData("model", AiFailure.ModelMismatch)]
     [InlineData("json", AiFailure.InvalidJson)]
     [InlineData("duplicate", AiFailure.InvalidJson)]
+    [InlineData("duplicate_probability", AiFailure.SchemaMismatch)]
     [InlineData("usage", AiFailure.SchemaMismatch)]
     public async Task Invalid_Jev_response_never_succeeds(string change, AiFailure expected)
     {
@@ -213,7 +214,7 @@ public partial class AiTests
             case "model": json["model"] = "jev-latest"; break;
             case "usage": json["usage"]!["input_tokens"] = -1; break;
         }
-        var payload = change switch { "json" => "{broken", "duplicate" => json.ToJsonString().Replace("{\"model\":", "{\"model\":\"unexpected\",\"model\":"), _ => json.ToJsonString() };
+        var payload = change switch { "json" => "{broken", "duplicate_probability" => json.ToJsonString().Replace("\"sales\":", "\"sales\":0,\"sales\":"), "duplicate" => json.ToJsonString().Replace("{\"model\":", "{\"model\":\"unexpected\",\"model\":"), _ => json.ToJsonString() };
         var handler = new Handler((_, _) => Task.FromResult(Response(payload)));
         using var service = Service(Config(), new MemoryRecordStore(), handler);
         var result = await Decide(service);

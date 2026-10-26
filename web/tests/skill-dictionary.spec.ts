@@ -61,7 +61,7 @@ test('既存カタログ画面から製品API・実行ガード・監査を通�
  await page.getByRole('button',{name:'AIで既存技能の候補を照会'}).click();await expect(page.getByRole('alert')).toContainText('結果を確認できません');
  const retried=page.waitForRequest(r=>r.url().endsWith('/suggest'));await page.getByRole('button',{name:'同じ操作を再送'}).click();expect((await retried).headers()['idempotency-key']).toBe(originalKey);await expect(page.getByRole('status')).toContainText('候補提案を保存しました');
  await page.locator('tbody tr').filter({hasText:'回帰試験の実施確認'}).first().getByRole('button',{name:'この候補を確認'}).click();await expect(page.locator('.skill-suggestion')).toContainText('既存技能の候補（未承認）');
- const panel=page.locator('.skill-suggestion');await expect(panel).toContainText('0.92');await panel.getByRole('button',{name:'この候補IDと比較'}).first().click();expect(await page.getByLabel('比較・統合先の技能').inputValue()).not.toBe('');await expect(page.getByLabel('レビュー判断')).toHaveValue('defer');await expect(page.getByRole('button',{name:'判断を承認して保存'})).toBeDisabled();
+ const panel=page.locator('.skill-suggestion');await expect(panel).toContainText('0.99');await panel.getByRole('button',{name:'この候補IDと比較'}).first().click();expect(await page.getByLabel('比較・統合先の技能').inputValue()).not.toBe('');await expect(page.getByLabel('レビュー判断')).toHaveValue('defer');await expect(page.getByRole('button',{name:'判断を承認して保存'})).toBeDisabled();
  const after=await (await request.get('/api/test/semantic-audit')).json();expect(after.calls-before.calls).toBe(1);expect(after.runs.length-before.runs.length).toBe(1);expect(after.runs.at(-1).status).toBe('succeeded');expect(await (await request.get('/api/v1/skill-dictionary')).json()).toEqual(dict);
  await page.screenshot({path:path.join(out,'product-semantic-proposal.png'),fullPage:true});
  const list=(await (await request.get('/api/v1/skill-candidates')).json()).items;const c=list.find((x:{fragmentId:string})=>x.fragmentId==='fragment-semantic-proposal');expect(c.state).toBe('pending');
@@ -72,4 +72,32 @@ test('既存カタログ画面から製品API・実行ガード・監査を通�
  await collect('semantic-failure','応答不正の試験');await page.getByRole('button',{name:'AIで既存技能の候補を照会'}).click();await expect(panel).toContainText('AI_INVALIDJSON');await expect(panel).toContainText('要確認');await page.screenshot({path:path.join(out,'product-semantic-failure.png'),fullPage:true});
  const failed=await (await request.get('/api/test/semantic-audit')).json();expect(failed.calls-after.calls).toBe(1);expect(errors).toEqual([]);
  await fs.writeFile(path.join(out,'browser-results.json'),JSON.stringify({productPathConnected:true,externalAiRequests:0,scenarios:['existing product UI/API/AiService guard audit','lost response same-key replay','read source/operator boundaries','unexpected ID rejected','stale version rejected','human approval separate','failed AI not new skill'],simulatedWireCalls:failed.calls-before.calls,pageErrors:errors},null,2));
+});
+
+test('入力枠を超える比較は省略も送信もせず要確認を表示し、再送しても課金しない',async({page,request})=>{
+ await page.goto('/skill-dictionary.html');
+ await page.getByLabel('実績・知識ID').fill('fragment-semantic-oversize');await page.getByRole('button',{name:'保存済み抽出を収集',exact:true}).click();await expect(page.getByRole('status')).toContainText('収集状態');
+ await page.locator('tbody tr').filter({hasText:'装置の検証'}).first().getByRole('button',{name:'この候補を確認'}).click();
+ const before=await(await request.get('/api/test/semantic-audit')).json();const panel=page.locator('.skill-suggestion');
+ await page.getByRole('button',{name:'AIで既存技能の候補を照会'}).click();
+ await expect(panel).toContainText('AIには送信していません');await expect(panel).toContainText('要確認');await expect(panel).toContainText('有効なAI返値 0 件');
+ const replay=page.waitForResponse(r=>r.url().endsWith('/suggest')&&r.request().method()==='POST');await page.getByRole('button',{name:'AIで既存技能の候補を照会'}).click();await(await replay).finished();await expect(page.getByRole('button',{name:'AIで既存技能の候補を照会'})).toBeEnabled();await expect(panel).toContainText('AIには送信していません');
+ const after=await(await request.get('/api/test/semantic-audit')).json();expect(after.calls).toBe(before.calls);
+});
+
+test('Choiceの該当なし・複合技能の保留を人の承認と分け、過去noulは新方式へ流用しない',async({page,request})=>{
+ await page.goto('/skill-dictionary.html');await expect(page.getByLabel('実績・知識ID')).toBeVisible();
+ async function choose(fragment:string,label:string){await page.getByLabel('実績・知識ID').fill('fragment-'+fragment);await page.getByRole('button',{name:'保存済み抽出を収集',exact:true}).click();await expect(page.getByRole('status')).toContainText('収集状態');await page.locator('tbody tr').filter({hasText:label}).first().getByRole('button',{name:'この候補を確認'}).click();await expect(page.locator('.skill-suggestion').first().getByText('まだ照会していません。',{exact:true})).toBeVisible();}
+ const before=await(await request.get('/api/v1/skill-dictionary')).json();await choose('choice-outside','辞書外');
+ await page.getByRole('button',{name:'AIで既存技能の候補を照会'}).click();await expect(page.locator('.skill-suggestion')).toContainText('新規候補（未確定）');await expect(page.locator('.skill-suggestion')).toContainText('該当なしを選択');
+ await choose('choice-compound','回帰試験と性能計測');await page.getByRole('button',{name:'AIで既存技能の候補を照会'}).click();await expect(page.locator('.skill-suggestion')).toContainText('要確認');await expect(page.locator('.skill-suggestion')).toContainText('判断保留');
+ await page.locator('.candidate-review').screenshot({path:'test-results/skill-dictionary/choice-uncertain.png'});
+ await choose('choice-legacy','過去方式');const candidates=(await(await request.get('/api/v1/skill-candidates')).json()).items;const c=candidates.find((x:{fragmentId:string})=>x.fragmentId==='fragment-choice-legacy');
+ expect((await request.post('/api/test/seed-noul?candidateId='+encodeURIComponent(c.id))).status()).toBe(200);
+ await page.reload();await page.locator('tbody tr').filter({hasText:'過去方式'}).first().getByRole('button',{name:'この候補を確認'}).click();
+ const panel=page.locator('.skill-suggestion').first();await expect(panel.getByRole('heading',{name:'Choiceによる既存技能の候補'})).toBeVisible();await expect(panel.getByText('まだ照会していません。',{exact:true})).toBeVisible();
+ const audit=await(await request.get('/api/test/semantic-audit')).json();await page.getByRole('button',{name:'AIで既存技能の候補を照会'}).click();await expect(panel).toContainText('小数2桁の丸めを許容して受理');await expect(panel.getByRole('columnheader',{name:'最小値'})).toHaveCount(0);
+ const after=await(await request.get('/api/test/semantic-audit')).json();expect(after.calls-audit.calls).toBe(1);expect(await(await request.get('/api/v1/skill-dictionary')).json()).toEqual(before);
+ await panel.screenshot({path:'test-results/skill-dictionary/choice-rounded.png'});
+ await panel.locator('summary').click();await expect(panel.getByRole('heading',{name:'過去のnoul系提案'})).toBeVisible();await expect(panel.getByRole('columnheader',{name:'最小値'})).toBeVisible();await panel.locator('details').screenshot({path:'test-results/skill-dictionary/choice-noul-history.png'});
 });

@@ -18,8 +18,8 @@ public sealed class SkillSemanticServiceTests
         public async Task<AiResult<Decisions>> DecideAsync(AiContext context,string text,ChoiceQuestion[] choices,NoulQuestion[] nouls,CancellationToken ct)
         {
             Calls++;Started.TrySetResult();if(Release is not null)await Release.Task.WaitAsync(ct);if(During is not null)await During();
-            Assert.Equal(SkillSemanticMatching.Version,context.PromptVersion);Assert.Empty(choices);Assert.NotEmpty(context.Evidence);
-            return new(Failure is null?AiStatus.Succeeded:AiStatus.Failed,Failure is null?new(new Dictionary<string,ChoiceAnswer>(),nouls.ToDictionary(q=>q.Id,q=>new NoulAnswer(NoulState.Supported,q.Id.EndsWith("_ab")?Forward:Reverse))):null,"mock-semantic-run",Failure);
+            Assert.Equal(SkillChoiceMatching.Version,context.PromptVersion);Assert.Single(choices);Assert.Empty(nouls);Assert.NotEmpty(context.Evidence);
+            return new(Failure is null?AiStatus.Succeeded:AiStatus.Failed,Failure is null?new(new Dictionary<string,ChoiceAnswer>{{choices[0].Id,new(choices[0].Options.Keys.First(k=>k is not (SkillChoiceMatching.None or SkillChoiceMatching.Uncertain)),choices[0].Options.Keys.ToDictionary(k=>k,k=>k==choices[0].Options.Keys.First()?1d:0d),1)}},new Dictionary<string,NoulAnswer>()):null,"mock-semantic-run",Failure);
         }
     }
     private static async Task<JsonObject> Dict(SkillDictionaryFixture f)=>await f.Fence.RunAsync("demo",ct=>f.Service.ReadUnderFenceAsync(A,null,ct),default);
@@ -42,7 +42,7 @@ public sealed class SkillSemanticServiceTests
     public async Task Semantic_proposal_never_approves_alias_changes_gold_or_publishes_experience()
     {
         var (f,j,c,d,target)=await Setup();var p=RecordPartition.Catalog("demo");var source=RecordJson.Canonical((await f.Repo.ReadAsync(p,"fragment-alias",default))!.Value);var dictionary=RecordJson.Canonical((await f.Repo.ReadAsync(p,"skill-dictionary-version-1",default))!.Value);
-        var result=await Suggest(f,c,d);Assert.Equal("existing_candidate",result.Text("outcome"));Assert.Equal(target,result["comparisons"]![0]!["conceptId"]!.GetValue<string>());Assert.Equal(1,j.Calls);
+        var result=await Suggest(f,c,d);Assert.Equal("existing_candidate",result.Text("outcome"));Assert.Equal(target,result["choice"]!["selectedId"]!.GetValue<string>());Assert.Equal(1,j.Calls);
         Assert.True(result["requiresHumanApproval"]!.GetValue<bool>());Assert.False(result["experienceChanged"]!.GetValue<bool>());Assert.False(result["goldChanged"]!.GetValue<bool>());
         Assert.Equal(source,RecordJson.Canonical((await f.Repo.ReadAsync(p,"fragment-alias",default))!.Value));Assert.Equal(dictionary,RecordJson.Canonical((await f.Repo.ReadAsync(p,"skill-dictionary-version-1",default))!.Value));
         Assert.Equal("pending",(await f.Repo.ReadAsync(p,c.Value.Text("id"),default))!.Value.Text("state"));Assert.Single((await f.Repo.QueryAsync(p,"skillDictionaryReview",null,null,100,null,default)).Items);
@@ -66,7 +66,7 @@ public sealed class SkillSemanticServiceTests
     public async Task Empty_or_kind_incompatible_dictionary_is_only_a_new_candidate_with_no_model_call()
     {
         var (f,j,c,d,_)=await Setup(false);var result=await Suggest(f,c,d);Assert.Equal("new_candidate",result.Text("outcome"));Assert.Equal("empty_scoped_catalogue",result.Text("basis"));Assert.Equal(0,j.Calls);
-        await Register(f,"regression");var knowledge=await Collect(f,"knowledge");var result2=await Suggest(f,knowledge,await Dict(f));Assert.Equal("new_candidate",result2.Text("outcome"));Assert.Equal(0,j.Calls);
+        await Register(f,"regression");var knowledge=await Collect(f,"knowledge");var result2=await Suggest(f,knowledge,await Dict(f));Assert.Equal("requires_review",result2.Text("outcome"));Assert.Equal("CHOICE_KIND_MISMATCH",result2.Text("reason"));Assert.Equal(1,j.Calls);
         Assert.Equal("content_only",knowledge.Value["item"]!["analysis"]!["experienceState"]!.GetValue<string>());
     }
     [Fact]
