@@ -12,7 +12,8 @@ internal static class AiCodecs
         256 + choices.Sum(q => 256 + Encoding.UTF8.GetByteCount(q.Id) +
             q.Options.Keys.Sum(k => 64 + 2 * Encoding.UTF8.GetByteCount(k))) + nouls.Count(x => x.HasEvidence) * 192;
     internal static string SerializeRequest(JsonObject body) => body["response_format"]?["json_schema"]?["name"]?.GetValue<string>() == "rerank"
-        ? SearchRerankBudget.Serialize(body) : body.ToJsonString();
+        ? SearchRerankBudget.Serialize(body) : body["state"]?["semanticInputVersion"]?.GetValue<string>() == SkillSemanticBudget.Version
+            ? SkillSemanticBudget.Serialize(body) : body.ToJsonString();
     internal static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     internal static JsonNode Node<T>(T value) => JsonSerializer.SerializeToNode(value, Json)!;
     internal static void Require(bool condition, AiFailure failure = AiFailure.SchemaMismatch, AiValidationIssue? issue = null)
@@ -30,14 +31,14 @@ internal static class AiCodecs
     {
         var questions = new JsonObject();
         foreach (var q in choices)
-            questions[q.Id] = new JsonObject { ["type"] = "choice", ["instructions"] = q.Instructions, ["criteria"] = Node(q.Options) };
+            questions[q.Id] = new JsonObject { ["type"] = "choice", ["instructions"] = q.Instructions, ["criteria"] = Node(input["choiceWireVersion"]?.GetValue<string>()==SkillChoiceWire.Version?SkillChoiceWire.Options(q):q.Options) };
         foreach (var q in nouls.Where(x => x.HasEvidence))
             questions[q.Id] = new JsonObject { ["type"] = "noul", ["instructions"] = q.Instructions };
         Require(questions.Count > 0);
         return new() { ["model"] = model.ModelId, ["state"] = input.DeepClone(), ["questions"] = questions };
     }
 
-    internal static Decisions Decisions(JsonObject body, AiModel model, ChoiceQuestion[] choices, NoulQuestion[] nouls)
+    internal static Decisions Decisions(JsonObject body, AiModel model, ChoiceQuestion[] choices, NoulQuestion[] nouls,bool compactChoice=false)
     {
         Require(body.Text("model") == model.ModelId, AiFailure.ModelMismatch);
         var answers = body["answers"]!.AsObject();
@@ -49,13 +50,15 @@ internal static class AiCodecs
             Keys(answer, "type", "choice", "probabilities", "confidence");
             Require(answer.Text("type") == "choice");
             var distribution = answer["probabilities"]!.AsObject();
-            Keys(distribution, q.Options.Keys.ToArray());
+            var wireMap=compactChoice?SkillChoiceWire.IdMap(q):q.Options.Keys.ToDictionary(k=>k,k=>k);
+            Keys(distribution, wireMap.Keys.ToArray());
+            if(compactChoice)Require(distribution.All(p=>SkillChoiceWire.BoundedNumber(p.Value))&&SkillChoiceWire.BoundedNumber(answer["confidence"]),issue:AiValidationIssue.ResponseShape);
             var probabilities = distribution.ToDictionary(x => x.Key, x => Probability(x.Value));
             var selected = answer.Text("choice");
-            Require(Math.Abs(probabilities.Values.Sum() - 1) <= 0.000001, issue: AiValidationIssue.DistributionSum);
+            Require(ChoiceProbabilityRules.Validate(probabilities.Values).Accepted, issue: AiValidationIssue.DistributionSum);
             Require(probabilities.ContainsKey(selected), issue: AiValidationIssue.SelectedOption);
             Require(probabilities[selected] == probabilities.Values.Max(), issue: AiValidationIssue.SelectedMaximum);
-            choiceResults[q.Id] = new(selected, probabilities, Probability(answer["confidence"]));
+            choiceResults[q.Id] = new(wireMap[selected], probabilities.ToDictionary(p=>wireMap[p.Key],p=>p.Value), Probability(answer["confidence"]));
         }
         var noulResults = new Dictionary<string, NoulAnswer>();
         foreach (var q in nouls)

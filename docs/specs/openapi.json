@@ -3684,9 +3684,9 @@
             "minimum": 0
           },
           "inputBudgetVersion": {
-            "type": "string",
             "enum": [
-              "search-total-bytes-v1"
+              "search-total-bytes-v1",
+              "skill-semantic-input-v2"
             ]
           },
           "requestUnitsStatus": {
@@ -3702,6 +3702,30 @@
               "Disabled"
             ],
             "description": "Absent on historical runs; Disabled has no cost or cumulative call accounting."
+          },
+          "choiceProbabilityValidationVersion": {
+            "const": "choice-probabilities-v2"
+          },
+          "choiceProbabilityValidation": {
+            "type": "object",
+            "maxProperties": 100,
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ChoiceProbabilityValidation"
+            }
+          },
+          "outputByteBound": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "choiceWireVersion": {
+            "const": "skill-choice-wire-v1"
+          },
+          "choiceWireMapHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "choiceNumericBytes": {
+            "const": 32
           }
         },
         "required": [
@@ -10024,7 +10048,10 @@
             "pattern": "^[a-f0-9]{64}$"
           },
           "policyVersion": {
-            "const": "skill-catalogue-semantic-v1"
+            "enum": [
+              "skill-catalogue-semantic-v1",
+              "skill-catalogue-choice-v1"
+            ]
           },
           "phase": {
             "enum": [
@@ -10049,7 +10076,8 @@
             "enum": [
               "semantic_noul",
               "exact_alias",
-              "empty_scoped_catalogue"
+              "empty_scoped_catalogue",
+              "choice"
             ]
           },
           "targetIds": {
@@ -10058,13 +10086,13 @@
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
             },
-            "maxItems": 3,
+            "maxItems": 200,
             "uniqueItems": true
           },
           "applicableCount": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 200
+            "maximum": 10000
           },
           "shortlistComplete": {
             "type": "boolean"
@@ -10089,6 +10117,37 @@
                 "type": "null"
               }
             ]
+          },
+          "inputVersion": {
+            "enum": [
+              "skill-semantic-input-v2"
+            ]
+          },
+          "candidateSetHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "choice": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SkillChoiceScore"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "probabilityPolicyVersion": {
+            "const": "choice-probabilities-v2"
+          },
+          "inferenceNotDispatched": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "wireVersion": {
+            "const": "skill-choice-wire-v1"
           }
         },
         "required": [
@@ -10112,9 +10171,137 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/PersistedMetadata"
+          },
+          {
+            "if": {
+              "properties": {
+                "policyVersion": {
+                  "const": "skill-catalogue-choice-v1"
+                }
+              },
+              "required": [
+                "policyVersion"
+              ]
+            },
+            "then": {
+              "required": [
+                "inputVersion",
+                "probabilityPolicyVersion",
+                "candidateSetHash",
+                "choice",
+                "inferenceNotDispatched",
+                "wireVersion"
+              ]
+            }
           }
         ],
         "unevaluatedProperties": false
+      },
+      "ChoiceProbabilityValidation": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "const": true
+          },
+          "reason": {
+            "enum": [
+              "unit_sum",
+              "rounded_2dp",
+              "rounded_3dp",
+              "rounded_4dp",
+              "rounded_5dp",
+              "rounded_6dp"
+            ]
+          },
+          "sum": {
+            "type": "number",
+            "minimum": 0.979999999,
+            "maximum": 1.020000001
+          },
+          "allowedError": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.02
+          },
+          "roundingDecimals": {
+            "enum": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              null
+            ]
+          },
+          "normalized": {
+            "const": false
+          }
+        },
+        "required": [
+          "accepted",
+          "reason",
+          "sum",
+          "allowedError",
+          "roundingDecimals",
+          "normalized"
+        ],
+        "additionalProperties": false
+      },
+      "SkillChoiceScore": {
+        "type": "object",
+        "properties": {
+          "selectedId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "probabilities": {
+            "type": "object",
+            "minProperties": 2,
+            "maxProperties": 255,
+            "propertyNames": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "topProbability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "secondProbability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "gap": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "probabilityValidation": {
+            "$ref": "#/components/schemas/ChoiceProbabilityValidation"
+          }
+        },
+        "required": [
+          "selectedId",
+          "probabilities",
+          "confidence",
+          "topProbability",
+          "secondProbability",
+          "gap",
+          "probabilityValidation"
+        ],
+        "additionalProperties": false
       }
     },
     "parameters": {

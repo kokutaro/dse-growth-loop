@@ -21,8 +21,8 @@ public sealed class SkillSemanticProductTests
  {
   var(f,c,d)=await Setup();var config=SkillSemanticTestRuntime.Config();var wire=new SkillSemanticTestRuntime.Wire();using var ai=SkillSemanticTestRuntime.Ai(f,config,wire);var service=new SkillDictionaryService(f.Repo,f.Fence,new(f.Repo,TimeProvider.System),TimeProvider.System,()=>ai);
   var p=RecordPartition.Catalog("demo");var source=RecordJson.Canonical((await f.Repo.ReadAsync(p,"fragment-alias",default))!.Value);
-  var result=await Suggest(service,c,d);Assert.True(result.Text("outcome")=="existing_candidate",result.ToJsonString());Assert.Equal(1,wire.Calls);Assert.Equal(2,wire.Last!["questions"]!.AsObject().Count);
-  var run=(await f.Repo.ReadAsync(p,result.Text("aiRunId"),default))!.Value;Assert.Equal("succeeded",run.Text("status"));Assert.Equal(SkillSemanticMatching.Version,run["trace"]!["promptVersion"]!.GetValue<string>());Assert.Equal("Disabled",run["trace"]!["accountingMode"]!.GetValue<string>());
+  var result=await Suggest(service,c,d);Assert.True(result.Text("outcome")=="existing_candidate",result.ToJsonString());Assert.Equal(1,wire.Calls);Assert.Single(wire.Last!["questions"]!.AsObject());
+  var run=(await f.Repo.ReadAsync(p,result.Text("aiRunId"),default))!.Value;Assert.Equal("succeeded",run.Text("status"));Assert.Equal(SkillChoiceMatching.Version,run["trace"]!["promptVersion"]!.GetValue<string>());Assert.Equal("Disabled",run["trace"]!["accountingMode"]!.GetValue<string>());
   Assert.Empty((await f.Repo.ReadAsync(p,"system-ai-gate",default))!.Value.Strings("active"));Assert.Equal("completed",Assert.Single((await f.Store.QueryAsync(p,"aiExecution",null,null,100,null,default)).Items).Value.Text("state"));
   Assert.Equal(source,RecordJson.Canonical((await f.Repo.ReadAsync(p,"fragment-alias",default))!.Value));Assert.Equal(1,(await Dict(f)).Number("version"));Assert.Equal("pending",(await f.Repo.ReadAsync(p,c.Value.Text("id"),default))!.Value.Text("state"));
   Assert.Equal(result.Text("proposalId"),(await Suggest(service,c,d)).Text("proposalId"));Assert.Equal(1,wire.Calls);
@@ -49,6 +49,6 @@ public sealed class SkillSemanticProductTests
  public async Task AiService_cannot_be_called_with_an_invented_proposal_or_free_text()
  {
   var(f,c,d)=await Setup();var wire=new SkillSemanticTestRuntime.Wire();using var ai=SkillSemanticTestRuntime.Ai(f,SkillSemanticTestRuntime.Config(),wire);
-  await Assert.ThrowsAsync<DomainException>(()=>ai.DecideAsync(new(A,"invented-proposal",SkillSemanticMatching.Version,"taxonomy-v1",1,[],[]),"arbitrary",[],SkillSemanticMatching.Questions(1),default));Assert.Equal(0,wire.Calls);
+  await Assert.ThrowsAsync<DomainException>(()=>ai.DecideAsync(new(A,"invented-proposal",SkillChoiceMatching.Version,"taxonomy-v1",1,[],[]),"arbitrary",[],SkillSemanticMatching.Questions(1),default));Assert.Equal(0,wire.Calls);
  }
 }

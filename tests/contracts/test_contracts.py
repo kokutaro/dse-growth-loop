@@ -170,6 +170,12 @@ class ContractsTests(unittest.TestCase):
                 self.validator(row["schema"]).validate(row["value"])
                 validate_invariants(row["schema"], row["value"], self.taxonomy)
 
+    def test_product_choice_trace_and_saved_proposal_contracts(self):
+        rows = json.loads((ROOT / "tests/Dse.Tests/TestResults/skill-choice-contracts.json").read_text())
+        self.assertEqual({"RunTrace", "SkillMatchProposal"}, {row["schema"] for row in rows})
+        for row in rows:
+            self.validator(row["schema"]).validate(row["value"])
+
     def test_schema_and_every_named_example(self):
         Draft202012Validator.check_schema(self.schema)
         covered = set()

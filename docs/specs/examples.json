@@ -2066,5 +2066,107 @@
       "providerExecutionUncertain": false,
       "aiRunId": "mock-semantic-run"
     }
+  },
+  {
+    "name": "ChoiceProbabilityValidation",
+    "schema": "ChoiceProbabilityValidation",
+    "value": {
+      "accepted": true,
+      "reason": "rounded_2dp",
+      "sum": 0.99,
+      "allowedError": 0.015,
+      "roundingDecimals": 2,
+      "normalized": false
+    }
+  },
+  {
+    "name": "SkillChoiceScore",
+    "schema": "SkillChoiceScore",
+    "value": {
+      "selectedId": "skill-demo",
+      "probabilities": {
+        "skill-demo": 0.99,
+        "none_of_the_above": 0,
+        "insufficient_evidence": 0
+      },
+      "confidence": 0.99,
+      "topProbability": 0.99,
+      "secondProbability": 0,
+      "gap": 0.99,
+      "probabilityValidation": {
+        "accepted": true,
+        "reason": "rounded_2dp",
+        "sum": 0.99,
+        "allowedError": 0.015,
+        "roundingDecimals": 2,
+        "normalized": false
+      }
+    }
+  },
+  {
+    "name": "SkillMatchProposalChoice",
+    "schema": "SkillMatchProposal",
+    "value": {
+      "kind": "skillMatchProposal",
+      "id": "skill-proposal-demo",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo-scope"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "etag": "\"fixture-etag\"",
+      "createdAt": "2026-10-25T00:00:00Z",
+      "updatedAt": "2026-10-25T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "candidateId": "skill-candidate-demo",
+      "sourceFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "dictionaryVersion": 1,
+      "snapshotHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "policyVersion": "skill-catalogue-choice-v1",
+      "phase": "complete",
+      "outcome": "existing_candidate",
+      "reason": "CHOICE_PROPOSAL_ONLY",
+      "basis": "choice",
+      "targetIds": [
+        "skill-demo"
+      ],
+      "applicableCount": 1,
+      "shortlistComplete": true,
+      "comparisons": [],
+      "providerExecutionUncertain": false,
+      "aiRunId": "mock-semantic-run",
+      "inputVersion": "skill-semantic-input-v2",
+      "probabilityPolicyVersion": "choice-probabilities-v2",
+      "candidateSetHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "choice": {
+        "selectedId": "skill-demo",
+        "probabilities": {
+          "skill-demo": 0.99,
+          "none_of_the_above": 0,
+          "insufficient_evidence": 0
+        },
+        "confidence": 0.99,
+        "topProbability": 0.99,
+        "secondProbability": 0,
+        "gap": 0.99,
+        "probabilityValidation": {
+          "accepted": true,
+          "reason": "rounded_2dp",
+          "sum": 0.99,
+          "allowedError": 0.015,
+          "roundingDecimals": 2,
+          "normalized": false
+        }
+      },
+      "inferenceNotDispatched": false,
+      "wireVersion": "skill-choice-wire-v1"
+    }
   }
 ]
