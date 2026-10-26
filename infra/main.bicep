@@ -22,6 +22,10 @@ param deployIngestionWorker bool = false
 param deployBusinessAnalysisJob bool = false
 param runtimeSettings array = [
   { name: 'AiUsage__Stopped', value: 'true' }
+  { name: 'AiUsage__MaxInputTokens', value: '10240' }
+  { name: 'AiUsage__MaxOutputTokens', value: '4096' }
+  { name: 'Foundry__OutputLimit', value: '4096' }
+  { name: 'Jev__OutputLimit', value: '4096' }
   { name: 'Operations__AnalysisMode', value: 'Manual' }
   { name: 'Operations__RecoveryMode', value: 'Manual' }
   { name: 'Operations__WarmupEnabled', value: 'false' }
