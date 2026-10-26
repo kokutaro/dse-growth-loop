@@ -30,7 +30,7 @@ public interface IConcreteSkillExtractor
 public static class SpecificSkillRules
 {
     public const string Version = "specific-skills-v1";
-    public const string GuardVersion = "scoped-assertion-v3";
+    public const string GuardVersion = "scoped-assertion-v4";
     public static readonly string[] Participations = ["performed", "joint", "assisted", "consultation", "aspiration", "other_person", "negated", "unclear"];
     public static string Normalize(string raw) => raw.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant() switch
     { "回帰テスト" => "回帰試験", "c sharp" => "c#", var value => value };
@@ -128,6 +128,15 @@ public static class SpecificSkillRules
                 if (Match(assertion, Negation)) { reason = "negated_assertion"; continue; }
                 if (Match(scope, ReportOrWish)) { reason = "reported_or_intended"; continue; }
                 if (!CompletedAssertion(scope)) { reason = "no_completed_assertion"; continue; }
+                // The object of completed planning work is not the activity being
+                // planned. Keep "Xの計画" as work, but do not certify "X" from it.
+                // Check every mention: a separate actual X assertion must survive,
+                // while repeating X inside two planning operands is still planning.
+                var operand = Regex.Escape(item.Raw);
+                var mentions = Regex.Matches(scope, operand);
+                if (mentions.Count > 0 && mentions.All(m =>
+                    Match(scope[(m.Index + m.Length)..], @"^の(?:計画|予定|構想)(?:だけ|のみ)?(?:を|と|や)")))
+                { reason = "planning_not_execution"; continue; }
                 var own = Match(scope, Own); var foreign = Match(scope, Foreign);
                 if (foreign) { reason = "other_actor"; continue; }
                 if (!own && Match(scope, @"(?:チーム|部門|部署)(?:が|は|で)")) { reason = "actor_not_established"; continue; }

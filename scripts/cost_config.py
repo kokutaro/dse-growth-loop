@@ -101,10 +101,12 @@ def parameters(env):
     runtime['Ai__Mode'] = mode
     runtime['AiUsage__LiveOptIn'] = str(boolean(env, 'AiUsage__LiveOptIn', 'false')).lower()
     runtime['BusinessAnalysis__Enabled'] = str(boolean(env, 'BusinessAnalysis__Enabled', 'false')).lower()
-    for name, default, ceiling in [('MaxInputTokens', 8000, 16000), ('MaxOutputTokens', 1000, 8000), ('MaxConcurrency', 1, 8), ('MaxAttempts', 1 if accounting == 'Disabled' else 2, 3), ('TimeoutSeconds', 30, 120)]:
+    for name, default, ceiling in [('MaxInputTokens', 10240, 16000), ('MaxOutputTokens', 4096, 8000), ('MaxConcurrency', 1, 8), ('MaxAttempts', 1 if accounting == 'Disabled' else 2, 3), ('TimeoutSeconds', 30, 120)]:
         runtime['AiUsage__' + name] = str(integer(env, 'AiUsage__' + name, default, 1, ceiling))
     if accounting == 'Disabled' and any(runtime['AiUsage__' + key] != '1' for key in ('MaxAttempts', 'MaxConcurrency')):
         raise ValueError('Disabled は MaxAttempts=1 / MaxConcurrency=1 が必要です。')
+    for provider in ('Foundry', 'Jev'):
+        runtime[provider + '__OutputLimit'] = str(integer(env, provider + '__OutputLimit', 4096, 1))
     # 明示allowlist。キー本文やsmoke承認を通常配置へコピーしない。
     for key in ('Foundry__ModelId', 'Foundry__ModelVersion', 'Foundry__Region', 'Foundry__Sku',
                 'Foundry__OutputLimit', 'Foundry__InputUsdPerMillion', 'Foundry__OutputUsdPerMillion',

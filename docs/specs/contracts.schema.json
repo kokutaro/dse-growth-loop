@@ -6082,7 +6082,8 @@
         "guardVersion": {
           "enum": [
             "scoped-assertion-v2",
-            "scoped-assertion-v3"
+            "scoped-assertion-v3",
+            "scoped-assertion-v4"
           ]
         },
         "rejectedItems": {
