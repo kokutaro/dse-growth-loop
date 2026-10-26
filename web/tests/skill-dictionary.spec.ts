@@ -11,13 +11,16 @@ test('仮データの収集から人の承認、統合、固定版プレビュ�
   await page.getByLabel('レビュー判断').selectOption(action);await page.getByLabel('確認理由').fill(reason);
   if(action==='new'){await page.getByLabel('技能の定義').fill('変更後に既存動作が保たれるかを試験する具体作業');await page.getByLabel('含む範囲・含めない範囲').fill('大分類だけで統合しない。知識・資格・希望を実務経験とは認定しない。');}
  }
- async function save(version:number){await page.getByRole('button',{name:'判断を承認して保存'}).click();await expect(page.getByRole('status')).toContainText(`辞書版 ${version}`);await expect(page.locator('.candidate-review')).toHaveCount(0);}
+ async function save(version:number){await page.getByRole('button',{name:'判断を承認して保存'}).click();await expect(page.getByRole('status')).toContainText(`辞書版 ${version}`);await expect(page.locator('.candidate-review')).toHaveCount(0);await expect(page.getByRole('button',{name:'保存済み抽出を収集',exact:true})).toBeEnabled();}
  await collect('regression');await choose('回帰試験');await form('new');
  // Server commits once, but the client loses the response. The retry must use
  // the same key/body/ETag and receive the original approval, not create a second.
  await page.route('**/api/v1/skill-candidates/*/review',async route=>{const r=await route.fetch();expect(r.status()).toBe(200);await route.abort('failed');},{times:1});
  await page.getByRole('button',{name:'判断を承認して保存'}).click();await expect(page.getByRole('alert')).toContainText('結果を確認できません');
  await page.getByRole('button',{name:'同じ操作を再送'}).click();await expect(page.getByRole('status')).toContainText('辞書版 1');
+ // The status is set before refresh finishes. Wait for the whole UI operation
+ // before a separate API reader can compete for the serialization fence.
+ await expect(page.locator('.candidate-review')).toHaveCount(0);await expect(page.getByRole('button',{name:'保存済み抽出を収集',exact:true})).toBeEnabled();
  let dictionary=await (await request.get('/api/v1/skill-dictionary')).json();expect(dictionary.version).toBe(1);expect(dictionary.concepts).toHaveLength(1);const canonical=dictionary.concepts[0].id;
  await collect('alias');await choose('リグレッション試験');await form('alias');await page.getByLabel('比較・統合先の技能').selectOption(canonical);await save(2);
  await collect('regression-alt');await choose('退行試験');await form('new');await save(3);
