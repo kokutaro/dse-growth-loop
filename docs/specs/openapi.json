@@ -9781,10 +9781,24 @@
             ]
           },
           "item": {
-            "$ref": "#/components/schemas/SpecificSkill"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpecificSkill"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "element": {
-            "$ref": "#/components/schemas/SkillElement"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SkillElement"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "dictionaryVersionAtCollection": {
             "type": "integer",
@@ -9798,7 +9812,8 @@
               "alias",
               "merged",
               "not_skill",
-              "deferred"
+              "deferred",
+              "collection_held"
             ]
           },
           "conceptId": {
@@ -9824,6 +9839,18 @@
           "reviewedDictionaryVersion": {
             "type": "integer",
             "minimum": 0
+          },
+          "candidateType": {
+            "enum": [
+              "collection"
+            ]
+          },
+          "holdReasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
           }
         },
         "required": [
@@ -9841,6 +9868,55 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/PersistedMetadata"
+          },
+          {
+            "if": {
+              "required": [
+                "candidateType"
+              ],
+              "properties": {
+                "candidateType": {
+                  "const": "collection"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "holdReasons"
+              ],
+              "properties": {
+                "state": {
+                  "const": "collection_held"
+                },
+                "item": {
+                  "type": "null"
+                },
+                "element": {
+                  "type": "null"
+                },
+                "conceptId": {
+                  "type": "null"
+                },
+                "history": {
+                  "maxItems": 0
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "item": {
+                  "$ref": "#/components/schemas/SpecificSkill"
+                },
+                "element": {
+                  "$ref": "#/components/schemas/SkillElement"
+                },
+                "state": {
+                  "not": {
+                    "const": "collection_held"
+                  }
+                }
+              }
+            }
           }
         ],
         "unevaluatedProperties": false

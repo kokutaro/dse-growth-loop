@@ -9,6 +9,8 @@ public static class SkillDictionaryEndpoints
             new FencedResult(f,RecordEndpoints.Actor(c).TenantId,async t=>{c.Response.Headers.CacheControl="no-store";return Results.Ok(await s.ReadUnderFenceAsync(RecordEndpoints.Actor(c),version,t));},ct));
         api.MapGet("/skill-candidates",(string? continuationToken,HttpContext c,SkillDictionaryService s,AccessFence f,PageTokens tokens,CancellationToken ct)=>
             new FencedResult(f,RecordEndpoints.Actor(c).TenantId,async t=>{c.Response.Headers.CacheControl="no-store";var actor=RecordEndpoints.Actor(c);const string filter="skill-candidates-v1:50";var result=await s.ListUnderFenceAsync(actor,tokens.Decode(actor,filter,continuationToken),t);result["continuationToken"]=tokens.Encode(actor,filter,result["continuationToken"]?.GetValue<string>());return Results.Ok(result);},ct));
+        api.MapGet("/skill-candidates/{id}/source",(string id,HttpContext c,SkillDictionaryService s,AccessFence f,CancellationToken ct)=>
+            new FencedResult(f,RecordEndpoints.Actor(c).TenantId,async t=>{c.Response.Headers.CacheControl="no-store";return Results.Ok(await s.SourceUnderFenceAsync(RecordEndpoints.Actor(c),id,t));},ct));
         api.MapGet("/skill-candidates/{id}/history",(string id,HttpContext c,SkillDictionaryService s,AccessFence f,CancellationToken ct)=>
             new FencedResult(f,RecordEndpoints.Actor(c).TenantId,async t=>{c.Response.Headers.CacheControl="no-store";return Results.Ok(await s.HistoryUnderFenceAsync(RecordEndpoints.Actor(c),id,t));},ct));
         api.MapPost("/skill-dictionary/preview",(SkillDictionaryPreview input,HttpContext c,SkillDictionaryService s,AccessFence f,CancellationToken ct)=>

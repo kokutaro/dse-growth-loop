@@ -605,6 +605,75 @@
         "x-ai-policy": "skill-catalogue-semantic-v1",
         "x-reuses-existing-ai-guard-audit": true
       }
+    },
+    "/api/v1/skill-candidates/{id}/source": {
+      "get": {
+        "summary": "現在の閲覧権限で原文と収集保留理由を確認。古い引用を返さない",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態または操作結果",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証必要"
+          },
+          "403": {
+            "description": "現在のoperator権限が必要"
+          },
+          "404": {
+            "description": "根拠・候補・辞書版へのアクセスなし"
+          },
+          "409": {
+            "description": "重複・状態・別名・種別・スコープの競合または根拠更新"
+          },
+          "412": {
+            "description": "候補ETagまたは辞書版が古い。人の再確認が必要"
+          },
+          "413": {
+            "description": "原子バッチの上限"
+          },
+          "422": {
+            "description": "明示した処理上限"
+          },
+          "429": {
+            "description": "既存レート制限"
+          },
+          "503": {
+            "description": "依存先またはフェンスが利用不可"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -659,10 +728,24 @@
             ]
           },
           "item": {
-            "$ref": "#/components/schemas/SpecificSkill"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpecificSkill"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "element": {
-            "$ref": "#/components/schemas/SkillElement"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SkillElement"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "dictionaryVersionAtCollection": {
             "type": "integer",
@@ -676,7 +759,8 @@
               "alias",
               "merged",
               "not_skill",
-              "deferred"
+              "deferred",
+              "collection_held"
             ]
           },
           "conceptId": {
@@ -702,6 +786,18 @@
           "reviewedDictionaryVersion": {
             "type": "integer",
             "minimum": 0
+          },
+          "candidateType": {
+            "enum": [
+              "collection"
+            ]
+          },
+          "holdReasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
           }
         },
         "required": [
@@ -719,6 +815,55 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/PersistedMetadata"
+          },
+          {
+            "if": {
+              "required": [
+                "candidateType"
+              ],
+              "properties": {
+                "candidateType": {
+                  "const": "collection"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "holdReasons"
+              ],
+              "properties": {
+                "state": {
+                  "const": "collection_held"
+                },
+                "item": {
+                  "type": "null"
+                },
+                "element": {
+                  "type": "null"
+                },
+                "conceptId": {
+                  "type": "null"
+                },
+                "history": {
+                  "maxItems": 0
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "item": {
+                  "$ref": "#/components/schemas/SpecificSkill"
+                },
+                "element": {
+                  "$ref": "#/components/schemas/SkillElement"
+                },
+                "state": {
+                  "not": {
+                    "const": "collection_held"
+                  }
+                }
+              }
+            }
           }
         ],
         "unevaluatedProperties": false
@@ -1326,6 +1471,14 @@
           "fragmentId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "expectedFingerprint": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "再確認した現在根拠のfingerprint。変更時は409として再確認を要求する。"
           }
         },
         "required": [

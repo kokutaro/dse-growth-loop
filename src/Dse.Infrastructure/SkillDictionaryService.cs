@@ -34,7 +34,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         return new(){["version"]=snapshot.Version,["etag"]=head?.ETag??EmptyETag,["currentVersion"]=head?.Value.Number("version")??0,
             ["concepts"]=Node(snapshot.Concepts.Where(c=>c.ScopeIds.Intersect(actor.ScopeIds).Any()).ToArray()),["contract"]=SkillDictionaryRules.Version};
     }
-    private sealed record Source(StoredRecord Fragment,SpecificSkills Skills,string Fingerprint);
+    private sealed record Source(StoredRecord Fragment,SpecificSkills Skills,string Fingerprint,Dictionary<string,string> Evidence);
     private async Task<Source> ReadSource(ActorAccess actor,string id,CancellationToken ct)
     {
         if(!RecordJson.IsId(id))throw new ArgumentException("Invalid fragment ID");
@@ -56,7 +56,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         var skills=value["specificSkills"]?.Deserialize<SpecificSkills>(ProjectionRules.Json)??SpecificSkills.NotEvaluated;
         var assessed=SpecificSkillRules.Assess(skills,evidence,text,value.Text("kind")=="experience"?"person":value.Text("kind"));
         var fingerprint=Hash(RecordJson.Canonical(new JsonObject{["version"]=value.Number("sourceVersion"),["scopes"]=value["scopeIds"]?.DeepClone(),["evidenceBindings"]=evidenceBindings,["text"]=text,["evidenceRefs"]=Node(refs),["skills"]=Node(assessed)}));
-        return new(fragment,assessed,fingerprint);
+        return new(fragment,assessed,fingerprint,evidence);
     }
     private async Task<StoredRecord> Candidate(ActorAccess actor,string id,CancellationToken ct)
     {
@@ -65,6 +65,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         if(row?.Value.Text("kind")!="skillCandidate"||!AccessPolicy.InScope(actor,row.Value))throw new DomainException(404,"NOT_FOUND");
         var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
         if(source.Fingerprint!=row.Value.Text("sourceFingerprint"))throw new DomainException(409,"SKILL_SOURCE_CHANGED");
+        if(row.Value.Text("candidateType")=="collection")throw new DomainException(409,"SKILL_COLLECTION_HELD");
         return row;
     }
     // Caller keeps the access fence through serialization. Inaccessible source
@@ -76,14 +77,30 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         var items=new JsonArray();
         foreach(var row in page.Items)
         {
-            try { var valid=await Candidate(actor,row.Value.Text("id"),ct);var value=valid.Value.Copy();value["etag"]=valid.ETag;items.Add(value); }
-            catch(DomainException e) when(e.Status==404||e.Code=="SKILL_SOURCE_CHANGED") { }
+            try
+            {
+                if(!AccessPolicy.InScope(actor,row.Value))continue;
+                var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
+                var changed=source.Fingerprint!=row.Value.Text("sourceFingerprint");
+                // Never serialize an old quote/label, proposal or review reason after a
+                // source change. Current access to the fragment is not access to old text.
+                var value=changed?new JsonObject{
+                    ["id"]=row.Value.Text("id"),["fragmentId"]=row.Value.Text("fragmentId"),
+                    ["state"]=row.Value.Text("state"),["candidateType"]=row.Value.Text("candidateType"),
+                    ["item"]=null,["element"]=null
+                }:row.Value.Copy();
+                value["etag"]=row.ETag;value["sourceStatus"]=changed?"changed":"current";
+                value["reviewable"]=!changed&&row.Value.Text("candidateType")!="collection";
+                items.Add(value);
+            }
+            catch(DomainException e) when(e.Status==404) { }
         }
         return new(){["items"]=items,["continuationToken"]=page.ContinuationToken};
     }
     public Task<MutationResponse> CollectAsync(ActorAccess actor,string key,SkillCandidateCollect input,CancellationToken ct)=>fence.RunAsync(actor.TenantId,async token=>
     {
         actor=await Operator(actor,token);var source=await ReadSource(actor,input.FragmentId,token);var p=RecordPartition.Catalog(actor.TenantId);
+        if(input.ExpectedFingerprint is not null&&input.ExpectedFingerprint!=source.Fingerprint)throw new DomainException(409,"SKILL_SOURCE_CHANGED");
         return await idempotency.ExecuteAsync(p,actor,"POST","skill-candidates/collect",key,null,Node(new{input.FragmentId,source.Fingerprint}),async()=>
         {
             var (_,snapshot)=await Snapshot(actor.TenantId,null,token);var writes=new List<RecordWrite>();var bindings=new JsonArray();
@@ -102,11 +119,53 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                 }
                 bindings.Add(new JsonObject{["candidateId"]=id,["mapping"]=Node(match),["state"]=existing?.Value.Text("state")??(match.State=="mapped"?"matched":"pending")});
             }
+            // A collection notice is not a skill and cannot be approved or sent to AI.
+            // Persist only the outcome/reasons; unverified quotes are never copied.
+            string? collectionId=null;
+            if(source.Skills.RejectedItems?.Length>0)
+            {
+                collectionId="skill-candidate-"+Hash(input.FragmentId+":"+source.Fingerprint+":collection");
+                if(await repository.ReadAsync(p,collectionId,token) is null)
+                {
+                    var notice=RecordJson.New("skillCandidate",collectionId,actor.TenantId,actor.PrincipalId,source.Fragment.Value.Strings("scopeIds"),clock.GetUtcNow());
+                    notice["candidateType"]="collection";notice["fragmentId"]=input.FragmentId;notice["sourceFingerprint"]=source.Fingerprint;
+                    notice["sourceInputState"]=source.Skills.State;notice["item"]=null;notice["element"]=null;notice["conceptId"]=null;
+                    notice["state"]="collection_held";notice["dictionaryVersionAtCollection"]=snapshot.Version;notice["history"]=new JsonArray();
+                    notice["holdReasons"]=RecordJson.Array((source.Skills.RejectedItems??[]).Select(r=>r.Reason).Distinct());
+                    writes.Add(RecordWrite.Create(notice));
+                }
+            }
             if(writes.Count>90)throw new DomainException(422,"SKILL_COLLECTION_LIMIT"); // Never truncate candidates or break normal extraction.
             var state=source.Skills.State=="unknown"?"undetermined":source.Skills.State=="not_evaluated"?"not_evaluated":bindings.Count==0?(source.Skills.RejectedItems?.Length>0?"held":"none"):"assessed";
-            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["dictionaryVersion"]=snapshot.Version,["inputState"]=source.Skills.State,["state"]=state,["bindings"]=bindings,["created"]=writes.Count,["quarantined"]=source.Skills.RejectedItems?.Length??0},null,null));
+            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["dictionaryVersion"]=snapshot.Version,["inputState"]=source.Skills.State,["state"]=state,["bindings"]=bindings,["created"]=writes.Count(w=>w.Value.Text("candidateType")!="collection"),["collectionId"]=collectionId,["quarantined"]=source.Skills.RejectedItems?.Length??0},null,null));
         },token);
     },ct);
+    // Read current evidence under the same tenant fence as serialization. Deleted,
+    // withdrawn or inaccessible sources all stay 404; no tombstone leaks their existence.
+    public async Task<JsonObject> SourceUnderFenceAsync(ActorAccess actor,string id,CancellationToken ct)
+    {
+        actor=await Operator(actor,ct);
+        if(!RecordJson.IsId(id))throw new ArgumentException("Invalid candidate ID");
+        var row=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),id,ct);
+        if(row?.Value.Text("kind")!="skillCandidate"||!AccessPolicy.InScope(actor,row.Value))throw new DomainException(404,"NOT_FOUND");
+        var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
+        var rejected=new JsonArray();
+        foreach(var r in source.Skills.RejectedItems??[])
+        {
+            var text=source.Evidence.GetValueOrDefault(r.Item.EvidenceId);
+            // Explain the failure without echoing a fabricated/withdrawn quote.
+            rejected.Add(new JsonObject{["reason"]=r.Reason,
+                ["raw"]=text?.Contains(r.Item.Raw,StringComparison.Ordinal)==true?r.Item.Raw:null,
+                ["participation"]=r.Item.Participation});
+        }
+        return new(){["candidateId"]=id,["fragmentId"]=row.Value.Text("fragmentId"),
+            ["sourceStatus"]=source.Fingerprint==row.Value.Text("sourceFingerprint")?"current":"changed",
+            ["currentFingerprint"]=source.Fingerprint,["guardVersion"]=SpecificSkillRules.GuardVersion,
+            ["inputState"]=source.Skills.State,["acceptedCount"]=source.Skills.Items?.Length??0,["rejected"]=rejected,
+            ["currentText"]=source.Fragment.Value.Text(source.Fragment.Value.Text("kind")=="knowledge"?"summary":"description"),
+            ["evidence"]=new JsonArray(source.Evidence.Select(e=>(JsonNode)new JsonObject{["id"]=e.Key,["text"]=e.Value}).ToArray()),
+            ["requiresRecollection"]=true,["personalExperienceApproved"]=false};
+    }
     public Task<MutationResponse> ReviewAsync(ActorAccess actor,string id,string key,string etag,SkillDictionaryReview input,CancellationToken ct)=>fence.RunAsync(actor.TenantId,async token=>
     {
         actor=await Operator(actor,token);var row=await Candidate(actor,id,token);var p=RecordPartition.Catalog(actor.TenantId);

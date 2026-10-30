@@ -9,7 +9,7 @@ public sealed record SkillConcept(string Id, string Name, string Definition, str
 public sealed record SkillDictionarySnapshot(int Version, SkillConcept[] Concepts);
 public sealed record SkillDictionaryReview(string Action, string Reason, int ExpectedVersion, string DictionaryETag,
     string? TargetId = null, string? SourceId = null, string? Name = null, string? Definition = null, string? Boundary = null);
-public sealed record SkillCandidateCollect(string FragmentId);
+public sealed record SkillCandidateCollect(string FragmentId,string? ExpectedFingerprint=null);
 public sealed record SkillDictionaryPreview(int Version, string[] CandidateIds);
 public sealed record SkillDictionaryMatch(string State, string? ConceptId);
 
