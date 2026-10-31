@@ -136,9 +136,9 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var evidenceIds = context.Evidence.Select(x => x.Id).Concat(conversationEvidence.Select(x => x!["id"]!.GetValue<string>())).Concat(candidateEvidence.Values.SelectMany(x => x)).ToHashSet();
         if (evidenceIds.Count > 100 || snapshots.Distinct().Count() > 100) throw new ArgumentException("Too many AI sources");
         var input = new JsonObject { ["text"] = text, ["evidence"] = evidence, ["candidates"] = candidates };
-        if (context.PromptVersion is WorkbookRules.Version or WorkbookRules.CellSkillPrompt)
+        if (context.PromptVersion is WorkbookRules.Version or WorkbookRules.CellSkillPrompt || operation=="decide" && context.WorkbookSectionKind is not null)
         {
-            input["workbookPolicy"] = context.PromptVersion;
+            input["workbookPolicy"] = operation=="decide" ? "workbook-domain-v1" : context.PromptVersion;
             input["sectionKind"] = context.WorkbookSectionKind;
             foreach (var entry in evidence)
             {
@@ -148,7 +148,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             }
         }
         Dictionary<string,string>? workbookWireMap = null;
-        if (context.PromptVersion is WorkbookRules.Version or WorkbookRules.CellSkillPrompt)
+        if (context.PromptVersion is WorkbookRules.Version or WorkbookRules.CellSkillPrompt || operation=="decide" && context.WorkbookSectionKind is not null)
             (input, workbookWireMap) = WorkbookWire.Prepare(input);
         if (context.PromptVersion == SkillSemanticMatching.Version || SkillChoiceMatching.IsVersion(context.PromptVersion)) input = SkillSemanticBudget.Prepare(input, context.Evidence);
         if(SkillChoiceMatching.IsVersion(context.PromptVersion))input=SkillChoiceWire.Prepare(input,choices.Single());

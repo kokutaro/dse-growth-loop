@@ -40,6 +40,7 @@ public static class WorkbookWire
         Encoder=System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
     internal static bool IsWorkbookRequest(JsonObject body)
     {
+        if(body["state"]?["workbookWireVersion"]?.GetValue<string>()=="workbook-wire-v1")return true;
         if(body["messages"] is not JsonArray messages || messages.Count<2)return false;
         var content=messages[1]?["content"]?.GetValue<string>();
         if(content is null)return false;

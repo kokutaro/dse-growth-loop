@@ -86,4 +86,27 @@ public partial class AiTests
         else Assert.Equal(wrongId?"unknown_evidence":"raw_not_in_quote",Assert.Single(result.Value!.RejectedItems!).Reason);
     }
 
+    [Fact]
+    public async Task Workbook_domain_wire_preserves_text_all_cells_and_question_without_repeating_storage_ids()
+    {
+        var store=new MemoryRecordStore();await DemoRecords.SeedAsync(store,"demo",default);
+        var unit=(await new MemoryProjectionRepository(store).FindAsync(new([],[],["dummy"]),IdentityResolver.Demo.Search,default))[0];
+        var span=(await store.ReadAsync(RecordPartition.Catalog("demo"),unit.EvidenceRefs![0].Id,default))!;
+        const string text="設計資料を確認した。実装は未実施。";span.Value["text"]=text;
+        span.Value["sourceCell"]=new JsonObject{["sheet"]="追加された任意シート",["address"]="Z123",["sheetState"]="hidden",["hiddenRow"]=false,["hiddenColumn"]=false};
+        await store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(span.Value,span.ETag)],default);
+        var handler=new Handler(async(req,ct)=>{
+            var body=JsonNode.Parse(await req.Content!.ReadAsStringAsync(ct))!;var state=body["state"]!;
+            Assert.Equal(text,state["text"]!.GetValue<string>());Assert.Null(state["evidence"]);
+            Assert.Equal(text,state["cells"]!["c0"]!["text"]!.GetValue<string>());
+            Assert.Equal("s0!Z123",state["cells"]!["c0"]!["at"]!.GetValue<string>());
+            Assert.Equal("hidden",state["sheets"]!["s0"]!["visibility"]!.GetValue<string>());
+            Assert.Equal("Select a department",body["questions"]!["department"]!["instructions"]!.GetValue<string>());
+            Assert.DoesNotContain(unit.EvidenceRefs[0].Id,body.ToJsonString());return Response(Fixture("choice"));
+        });
+        using var service=Service(Config(),store,handler);
+        var result=await service.DecideAsync(Context() with{Evidence=unit.EvidenceRefs,PromptVersion=ProfilePipeline.PromptVersion,WorkbookSectionKind="context"},text,Questions(),[],default);
+        Assert.Equal(AiStatus.Succeeded,result.Status);Assert.Equal(1,handler.Calls);
+    }
+
 }

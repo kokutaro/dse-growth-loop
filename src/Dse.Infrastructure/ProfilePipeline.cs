@@ -304,7 +304,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             if (saved is not null) answer = saved.Value["decisions"]!.Deserialize<Decisions>(Json)!;
             else
             {
-                var result = await decisions.DecideAsync(new(actor, job.Text("id"), PromptVersion, Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []), fragment.Text("description"),
+                var result = await decisions.DecideAsync(new(actor, job.Text("id"), PromptVersion, Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { WorkbookSectionKind=fragment.Text("workbookSectionKind") is {Length:>0} sectionKind?sectionKind:null }, fragment.Text("description"),
                     [new("domain", "state.textの経験分野を分類。根拠は訂正前の場合もある。Probabilityは年数・熟練度ではない。", ProfileExtraction.Domains)],
                     ProfileExtraction.Domains.Concat(new[] { new KeyValuePair<string, string>("handover", "引き継ぎ") }).Select(p => new NoulQuestion(p.Key, p.Value + "の経験がstate.textに明記されているか。根拠は本人訂正前の場合もある。", ProfileExtraction.HasDomainEvidence(fragment.Text("description"), p.Key))).ToArray(), ct);
                 if (result.Status != AiStatus.Succeeded || result.Value is null) throw Failure(result.Status, result.Failure);
