@@ -177,10 +177,12 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
         if (source.Text("kind") == "knowledge" && !await new AuthorityProvider(repository,configuration).CurrentTokenAsync(actor.TenantId,source,ct)) return null;
         List<SourceSnapshot> snapshots = [Snapshot(source)];
         List<SourceRef> refs = [];
+        bool workbook = false;
         foreach (var reference in unit.EvidenceRefs)
         {
             var evidence = await EvidenceAsync(actor, reference, ct);
             if (evidence is null) return null;
+            workbook |= evidence.Value.Span["sourceCell"] is not null;
             refs.Add(new(reference.Id, evidence.Value.Document.Text("title"), evidence.Value.Span["location"]!["label"]!.GetValue<string>(), evidence.Value.Span.Text("text")));
             snapshots.Add(Snapshot(evidence.Value.Document));
         }
@@ -189,6 +191,10 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
             try { unit = unit with { SpecificSkills = SpecificSkillRules.Assess(unit.SpecificSkills, refs.ToDictionary(r => r.Id, r => r.Text), unit.Summary, unit.EntityType) }; }
             catch (ArgumentException) { return null; }
         }
+        // Old workbook projections may contain whole-cell lexical terms, including knowledge.
+        // Rebuild only the authorized, reassessed experience terms before matching. No write.
+        if (workbook && unit.EntityType == "person")
+            unit = unit with { NormalizedTerms = unit.SpecificSkills?.Version == SpecificSkillRules.Version ? unit.SpecificSkills.SearchTerms : [] };
         return new(unit with { SyntheticTest = SyntheticTestAccess.IsTest(source), SourceRefs = refs.ToArray() }, snapshots.Distinct().ToArray());
     }
     public async Task<(JsonObject Span, JsonObject Document)?> EvidenceAsync(ActorAccess actor, EvidenceReference reference, CancellationToken ct)

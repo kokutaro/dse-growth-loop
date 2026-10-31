@@ -10,19 +10,22 @@ using Microsoft.Extensions.Configuration;
 namespace Dse.Infrastructure;
 
 public sealed class AiService(IConfiguration config, IPrimaryRepository repository, SourceGuard guard,
-    AccessFence fence, AiLedger ledger, IAiTransport transport, TimeProvider clock) : ITextStructurer, IConcreteSkillExtractor, IDecisionProvider, IReranker, ISummarizer, IKnowledgeDrafter, IDisposable
+    AccessFence fence, AiLedger ledger, IAiTransport transport, TimeProvider clock) : IWorkbookStructurer, ITextStructurer, IConcreteSkillExtractor, IDecisionProvider, IReranker, ISummarizer, IKnowledgeDrafter, IDisposable
 {
     private readonly AuthorityProvider authorityProvider = new(repository, config);
     private readonly MemoryCache cache = new(new MemoryCacheOptions { SizeLimit = 128 });
     private sealed record Cached(byte[] Value, string RunId);
     public void Dispose() => cache.Dispose();
 
+    public Task<AiResult<WorkbookStructure>> StructureWorkbookAsync(AiContext context, CancellationToken ct) =>
+        RunAsync(context, "structureWorkbook", "Group every supplied source cell into project or non-project context, preserving all source IDs.", [], [],
+            (body, model, evidence, _) => AiCodecs.Workbook(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<KnowledgeSummary>> DraftAsync(AiContext context, CancellationToken ct) =>
         RunAsync(context, "knowledgeDraft", "", [], [], (body, model, evidence, _) => AiCodecs.Knowledge(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<StructuredText>> StructureAsync(AiContext context, string text, CancellationToken ct) =>
         RunAsync(context, "structure", text, [], [], (body, model, evidence, _) => AiCodecs.Structure(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext context, string text, CancellationToken ct) =>
-        RunAsync(context, "extractSkills", text, [], [], (body, model, evidence, _) => AiCodecs.Skills(AiCodecs.FoundryContent(body, model), evidence), ct);
+        RunAsync(context, "extractSkills", text, [], [], (body, model, evidence, _) => AiCodecs.Skills(AiCodecs.FoundryContent(body, model), evidence, context.PromptVersion == WorkbookRules.CellSkillPrompt), ct);
     public Task<AiResult<GroundedText>> SummarizeAsync(AiContext context, string text, CancellationToken ct) =>
         RunAsync(context, "summarize", text, [], [], (body, model, evidence, _) => AiCodecs.Summary(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<Ranking>> RerankAsync(AiContext context, string query, CancellationToken ct) =>
@@ -42,7 +45,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         if (!RecordJson.IsId(context.JobId) || !RecordJson.IsId(context.Actor.TenantId) || !context.Actor.HasRole("member") ||
             context.Actor.TenantId != (!string.IsNullOrWhiteSpace(config["Auth:TenantId"]) ? config["Auth:TenantId"] : config["Data:Mode"] == "Demo" ? "demo" : null) ||
             context.DataVersion < 1 || context.TaxonomyVersion != "taxonomy-v1" || string.IsNullOrWhiteSpace(context.PromptVersion) || context.PromptVersion.Length > 80 ||
-            context.Evidence.Length > 100 || context.Candidates.Length > 100 || text.Length > 64000 ||
+            context.WorkbookSectionKind is not (null or "project" or "context") || context.Evidence.Length > 100 || context.Candidates.Length > 100 || text.Length > 64000 ||
             context.ConversationEvidenceIds is { Length: > 100 } || context.SessionId is not null && !RecordJson.IsId(context.SessionId)) throw new ArgumentException("Invalid AI context");
         // Protect both a fresh send and a cache hit against concurrent revocation.
         return fence.RunAsync(context.Actor.TenantId, token => RunProtectedAsync(context, operation, text, choices, nouls, parse, token), ct);
@@ -124,6 +127,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             foreach (var participant in sharedActors)
                 if (await guard.EvidenceAsync(participant, reference, ct) is null) throw new DomainException(409, "SOURCE_REVOKED");
             var doc = source.Document;
+            if(doc.Text("generationParentId")!=""&&doc.Text("generationState")!="published")
+                await GenerationAccess.RequireProcessingAsync(repository,actor,doc,ct);
             snapshots.Add(new(doc.Text("id"), doc.Number("sourceVersion"), doc.Number("activeVersion"), doc.Number("accessVersion")));
             evidence.Add(new JsonObject { ["id"] = reference.Id, ["documentVersionId"] = reference.DocumentVersionId,
                 ["sourceVersion"] = reference.SourceVersion, ["text"] = source.Span.Text("text") });
@@ -131,6 +136,20 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var evidenceIds = context.Evidence.Select(x => x.Id).Concat(conversationEvidence.Select(x => x!["id"]!.GetValue<string>())).Concat(candidateEvidence.Values.SelectMany(x => x)).ToHashSet();
         if (evidenceIds.Count > 100 || snapshots.Distinct().Count() > 100) throw new ArgumentException("Too many AI sources");
         var input = new JsonObject { ["text"] = text, ["evidence"] = evidence, ["candidates"] = candidates };
+        if (context.PromptVersion is WorkbookRules.Version or WorkbookRules.CellSkillPrompt || operation=="decide" && context.WorkbookSectionKind is not null)
+        {
+            input["workbookPolicy"] = operation=="decide" ? "workbook-domain-v1" : context.PromptVersion;
+            input["sectionKind"] = context.WorkbookSectionKind;
+            foreach (var entry in evidence)
+            {
+                var span = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), entry!["id"]!.GetValue<string>(), ct))!.Value;
+                entry["location"] = span["location"]?.DeepClone();
+                entry["sourceCell"] = span["sourceCell"]?.DeepClone();
+            }
+        }
+        Dictionary<string,string>? workbookWireMap = null;
+        if (context.PromptVersion is WorkbookRules.Version or WorkbookRules.CellSkillPrompt || operation=="decide" && context.WorkbookSectionKind is not null)
+            (input, workbookWireMap) = WorkbookWire.Prepare(input);
         if (context.PromptVersion == SkillSemanticMatching.Version || SkillChoiceMatching.IsVersion(context.PromptVersion)) input = SkillSemanticBudget.Prepare(input, context.Evidence);
         if(SkillChoiceMatching.IsVersion(context.PromptVersion))input=SkillChoiceWire.Prepare(input,choices.Single());
         if (searchRerank) input["groundingPolicy"] = "Reason must be an exact contiguous quotation from one cited evidence text. Omit unsuitable candidates; an empty items array means all unsuitable. Do not infer missing role or dates.";
@@ -255,9 +274,16 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                             if (response.RequestId is not null) trace["providerRequestIds"]!.AsArray().Add(response.RequestId);
                             usage = response.Usage;
                             if (usage is not null && (usage.Input > limits.InputTokens || usage.Output > limits.OutputTokens)) throw new AiException(AiFailure.OutputLimit);
-                            result = parse(response.Body, model, evidenceIds, candidateEvidence);
+                            result = parse(response.Body, model, workbookWireMap?.Keys.ToHashSet() ?? evidenceIds, candidateEvidence);
+                            if (workbookWireMap is not null) result = WorkbookWire.Restore(result, workbookWireMap);
                             if (result is SpecificSkills skillResult)
+                            {
+                                if (context.PromptVersion == WorkbookRules.CellSkillPrompt)
+                                    skillResult = skillResult with { Items = skillResult.Items?.Select(item => item with {
+                                        Quote = evidence.FirstOrDefault(e => e!["id"]!.GetValue<string>() == item.EvidenceId)?["text"]?.GetValue<string>() ?? "[unknown evidence]"
+                                    }).ToArray() };
                                 result = (T)(object)SpecificSkillRules.Assess(skillResult, evidence.ToDictionary(e => e!["id"]!.GetValue<string>(), e => e!["text"]!.GetValue<string>()), sourceKind: "unresolved");
+                            }
                             if (searchRerank && result is Ranking ranking)
                                 foreach (var item in ranking.Items)
                                 {

@@ -34,7 +34,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         return new(){["version"]=snapshot.Version,["etag"]=head?.ETag??EmptyETag,["currentVersion"]=head?.Value.Number("version")??0,
             ["concepts"]=Node(snapshot.Concepts.Where(c=>c.ScopeIds.Intersect(actor.ScopeIds).Any()).ToArray()),["contract"]=SkillDictionaryRules.Version};
     }
-    private sealed record Source(StoredRecord Fragment,SpecificSkills Skills,string Fingerprint,Dictionary<string,string> Evidence);
+    private sealed record Source(StoredRecord Fragment,SpecificSkills Skills,string Fingerprint,Dictionary<string,string> Evidence,bool Superseded);
     private async Task<Source> ReadSource(ActorAccess actor,string id,CancellationToken ct)
     {
         if(!RecordJson.IsId(id))throw new ArgumentException("Invalid fragment ID");
@@ -57,9 +57,9 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             evidenceBindings.Add(new JsonObject{["id"]=reference.Id,["documentId"]=result.Document.Text("id"),["accessVersion"]=result.Document.Number("accessVersion"),["scopes"]=result.Document["scopeIds"]?.DeepClone(),["textHash"]=Hash(result.Span.Text("text"))});
         }
         var skills=value["specificSkills"]?.Deserialize<SpecificSkills>(ProjectionRules.Json)??SpecificSkills.NotEvaluated;
-        var assessed=SpecificSkillRules.Assess(skills,evidence,text,value.Text("kind")=="experience"?"person":value.Text("kind"));
+        var assessed=SpecificSkillRules.Assess(skills,evidence,text,value.Text("workbookSectionKind")=="context"?"context":value.Text("kind")=="experience"?"person":value.Text("kind"));
         var fingerprint=Hash(RecordJson.Canonical(new JsonObject{["version"]=value.Number("sourceVersion"),["scopes"]=value["scopeIds"]?.DeepClone(),["evidenceBindings"]=evidenceBindings,["text"]=text,["evidenceRefs"]=Node(refs),["skills"]=Node(assessed)}));
-        return new(fragment,assessed,fingerprint,evidence);
+        return new(fragment,assessed,fingerprint,evidence,value.Text("generationSupersededBy")!="");
     }
     private async Task<StoredRecord> Candidate(ActorAccess actor,string id,CancellationToken ct)
     {
@@ -67,7 +67,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         var row=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),id,ct);
         if(row?.Value.Text("kind")!="skillCandidate"||!AccessPolicy.InScope(actor,row.Value))throw new DomainException(404,"NOT_FOUND");
         var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
-        if(source.Fingerprint!=row.Value.Text("sourceFingerprint"))throw new DomainException(409,"SKILL_SOURCE_CHANGED");
+        if(source.Superseded||source.Fingerprint!=row.Value.Text("sourceFingerprint"))throw new DomainException(409,"SKILL_SOURCE_CHANGED");
         if(row.Value.Text("candidateType")=="collection")throw new DomainException(409,"SKILL_COLLECTION_HELD");
         return row;
     }
@@ -84,7 +84,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             {
                 if(!AccessPolicy.InScope(actor,row.Value))continue;
                 var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
-                var changed=source.Fingerprint!=row.Value.Text("sourceFingerprint");
+                var changed=source.Superseded||source.Fingerprint!=row.Value.Text("sourceFingerprint");
                 // Never serialize an old quote/label, proposal or review reason after a
                 // source change. Current access to the fragment is not access to old text.
                 var value=changed?new JsonObject{
@@ -103,7 +103,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
     }
     public Task<MutationResponse> CollectAsync(ActorAccess actor,string key,SkillCandidateCollect input,CancellationToken ct)=>fence.RunAsync(actor.TenantId,async token=>
     {
-        actor=await Operator(actor,token);var source=await ReadSource(actor,input.FragmentId,token);var p=RecordPartition.Catalog(actor.TenantId);
+        actor=await Operator(actor,token);var source=await ReadSource(actor,input.FragmentId,token);if(source.Superseded)throw new DomainException(409,"SKILL_GENERATION_SUPERSEDED");var p=RecordPartition.Catalog(actor.TenantId);
         if(input.ExpectedFingerprint is not null&&input.ExpectedFingerprint!=source.Fingerprint)throw new DomainException(409,"SKILL_SOURCE_CHANGED");
         return await idempotency.ExecuteAsync(p,actor,"POST","skill-candidates/collect",key,null,Node(new{input.FragmentId,source.Fingerprint}),async()=>
         {
@@ -156,7 +156,8 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         if(row?.Value.Text("kind")!="skillCandidate"||!AccessPolicy.InScope(actor,row.Value))throw new DomainException(404,"NOT_FOUND");
         var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
         var rejected=new JsonArray();
-        foreach(var r in source.Skills.RejectedItems??[])
+        if(source.Superseded)rejected.Add(new JsonObject{["reason"]="generation_superseded",["raw"]=null,["basis"]=null});
+        foreach(var r in source.Superseded?[]:source.Skills.RejectedItems??[])
         {
             var text=source.Evidence.GetValueOrDefault(r.Item.EvidenceId);
             // Explain the failure without echoing a fabricated/withdrawn quote.
@@ -165,11 +166,11 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                 ["basis"]=r.Item.Basis});
         }
         return new(){["candidateId"]=id,["fragmentId"]=row.Value.Text("fragmentId"),
-            ["sourceStatus"]=source.Fingerprint==row.Value.Text("sourceFingerprint")?"current":"changed",
+            ["sourceStatus"]=!source.Superseded&&source.Fingerprint==row.Value.Text("sourceFingerprint")?"current":"changed",
             ["currentFingerprint"]=source.Fingerprint,["guardVersion"]=SpecificSkillRules.GuardVersion,
-            ["inputState"]=source.Skills.State,["acceptedCount"]=source.Skills.Items?.Length??0,["rejected"]=rejected,
-            ["currentText"]=source.Fragment.Value.Text(source.Fragment.Value.Text("kind")=="knowledge"?"summary":"description"),
-            ["evidence"]=new JsonArray(source.Evidence.Select(e=>(JsonNode)new JsonObject{["id"]=e.Key,["text"]=e.Value}).ToArray()),
+            ["inputState"]=source.Skills.State,["acceptedCount"]=source.Superseded?0:source.Skills.Items?.Length??0,["rejected"]=rejected,
+            ["currentText"]=source.Superseded?"":source.Fragment.Value.Text(source.Fragment.Value.Text("kind")=="knowledge"?"summary":"description"),
+            ["evidence"]=new JsonArray((source.Superseded?new Dictionary<string,string>():source.Evidence).Select(e=>(JsonNode)new JsonObject{["id"]=e.Key,["text"]=e.Value}).ToArray()),
             ["requiresRecollection"]=true,["personalExperienceApproved"]=false};
     }
     public Task<MutationResponse> ReviewAsync(ActorAccess actor,string id,string key,string etag,SkillDictionaryReview input,CancellationToken ct)=>fence.RunAsync(actor.TenantId,async token=>

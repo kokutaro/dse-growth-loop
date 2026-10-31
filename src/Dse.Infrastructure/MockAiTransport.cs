@@ -29,9 +29,13 @@ public sealed class MockAiTransport : IAiTransport
         }
         var operation = body["response_format"]!["json_schema"]!["name"]!.GetValue<string>();
         var input = JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!;
+        if (input["cells"] is JsonObject cells)
+            input["evidence"] = new JsonArray(cells.Select(p => { var e=p.Value!.DeepClone().AsObject();e["id"]=p.Key;return (JsonNode)e; }).ToArray());
         var evidenceIds = input["evidence"]!.AsArray().Select(x => x!["id"]!.GetValue<string>()).ToArray();
         JsonObject content;
-        if (operation == "extractSkills")
+        if (operation == "structureWorkbook")
+            content = new() { ["sections"] = new JsonArray(new JsonObject { ["kind"] = "context", ["evidenceIds"] = Dse.Domain.RecordJson.Array(evidenceIds), ["startEvidenceId"] = null, ["endEvidenceId"] = null, ["precision"] = "unknown", ["endState"]="unknown" }) };
+        else if (operation == "extractSkills")
         {
             // Explicit canned examples, never a semantic/ownership classifier or quality claim.
             var examples = new[] {
@@ -47,6 +51,8 @@ public sealed class MockAiTransport : IAiTransport
                         items.Add(new JsonObject { ["raw"]=raw,["normalizationCandidate"]=null,
                             ["evidenceId"]=e["id"]!.DeepClone(),["quote"]=example.Text,["basis"]=example.Basis });
             }
+            if (input["workbookPolicy"]?.GetValue<string>() == Dse.Domain.WorkbookRules.CellSkillPrompt)
+                foreach (var item in items) item!.AsObject().Remove("quote");
             content = new() { ["state"] = "extracted", ["items"] = items };
         }
         else if (operation == "knowledgeDraft") content = new() { ["sections"] = new JsonArray(Dse.Domain.KnowledgeSummary.Fields.Select(f => (JsonNode)new JsonObject

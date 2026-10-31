@@ -119,7 +119,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
             {
                 if(!SyntheticTestAccess.IsTest(value))return;
                 var manager=await new AuthorityProvider(repository).PersonAsync(notice.TenantId,value.Text("managedByPersonId"),token)??throw new DomainException(409,"SOURCE_REVOKED");
-                try { await SyntheticTestAccess.RequireLinkedAsync(repository,manager,value,token); }
+                try { await SyntheticTestAccess.RequireLinkedAsync(repository,manager,value,token); await GenerationAccess.RequireProcessingAsync(repository,manager,value,token); }
                 catch(DomainException) { throw new DomainException(409,"SOURCE_REVOKED"); }
             }
             await CheckSynthetic(doc.Value,processing.Token);
@@ -153,6 +153,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                         SyntheticTestAccess.Mark(evidence,doc.Value);
                         evidence["documentId"] = doc.Value.Text("id"); evidence["documentVersionId"] = ver.Value.Text("id"); evidence["sourceVersion"] = notice.Version;
                         evidence["location"] = new JsonObject { ["type"] = span.Type, ["label"] = span.Label };
+                        if (span.Cell is not null) evidence["sourceCell"] = JsonSerializer.SerializeToNode(span.Cell, ProjectionRules.Json);
                         evidence["text"] = span.Text; evidence["textHash"] = OfficeExtractor.Hash(Encoding.UTF8.GetBytes(span.Text)); evidence["validationState"] = "validated";
                         writes.Add(RecordWrite.Create(evidence));
                     }
@@ -172,6 +173,14 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                     await CheckSynthetic(latest.Value,token);
                     if (latest.ETag != doc.ETag || latestVersion.ETag != ver.ETag || latest.Value.Number("sourceVersion") != notice.Version || latestVersion.Value.Text("jobId") != notice.JobId)
                         throw new DomainException(409, "SOURCE_REVOKED");
+                    if (extraction.Workbook is not null)
+                    {
+                        latest.Value["workbookCapture"] = new JsonObject { ["version"] = extraction.Workbook.Version,
+                            ["sheets"] = RecordJson.Array(extraction.Workbook.Sheets), ["cellCount"] = extraction.Workbook.Cells.Length,
+                            ["spanCount"] = extraction.Spans.Length, ["manifestBlobKey"] = extractedKey,
+                            ["warnings"] = RecordJson.Array(extraction.Warnings) };
+                        latest.Value.Remove("resumeImport");
+                    }
                     var status = extraction.Spans.Length == 0 ? "needs_review" : "ready";
                     latest.Value["status"] = status; latest.Value["activeVersion"] = extraction.Spans.Length == 0 ? null : notice.Version;
                     latest.Value["extractionState"] = "complete"; latest.Value["aiState"] = "not_started";
@@ -232,6 +241,14 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                 current.Value["notificationState"] = "pending";
                 List<RecordWrite> failureWrites = [RecordWrite.Replace(current.Value, current.ETag)];
                 var failedDoc = await repository.ReadAsync(partition, current.Value.Text("aggregateId"), ct);
+                if (failedDoc is not null && failedDoc.Value.Text("generationParentId")!="")
+                {
+                    failedDoc.Value["generationState"]=code=="SOURCE_REVOKED"?"cancelled":"failed";
+                    failedDoc.Value["generationFailure"]=code;failedDoc.Value["aiState"]="failed";
+                    // No automatic replay of a paid generation after a dependency/unknown failure.
+                    terminal=true;if(current.Value.Text("status")=="queued")current.Value["status"]="failed";
+                    if(profileJob||code=="SOURCE_REVOKED")failureWrites.Add(RecordWrite.Replace(failedDoc.Value,failedDoc.ETag));
+                }
                 if (!profileJob && failedDoc is not null && failedDoc.Value.Number("sourceVersion") == notice.Version && code != "SOURCE_REVOKED")
                 {
                     var failedVersion = await repository.ReadAsync(partition, failedDoc.Value.Text("currentVersionId"), ct);

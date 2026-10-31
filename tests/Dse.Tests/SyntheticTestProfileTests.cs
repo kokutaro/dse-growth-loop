@@ -19,6 +19,8 @@ public sealed class SyntheticHarness : IDisposable
     public IConfiguration Config {get;}=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock"}).Build();
     public SyntheticTestProfiles Service {get;}
     public DocumentUploads Uploads {get;}
+    public IIngestionBlobs Blobs {get;}
+    public JobNotifications Notifications {get;}
     public IngestionProcessor Processor {get;}
     public ProfilePipeline Pipeline {get;}
     public FaultQueue Queue {get;}
@@ -32,8 +34,8 @@ public sealed class SyntheticHarness : IDisposable
         manager["departmentId"]="existing-department";manager["displayName"]="運用者fixture";
         Store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Create(manager)],default).GetAwaiter().GetResult();
         var clock=TimeProvider.System;var idem=new IdempotencyExecutor(Repo,clock);Service=new(Repo,Fence,idem,Config,clock);
-        var files=new LocalIngestionFiles(directory);var queue=Queue=new FaultQueue(new LocalIngestionQueue(files,clock));var blobs=new LocalIngestionBlobs(files);var options=new IngestionOptions();var extractor=new OfficeExtractor(options);var notices=new JobNotifications(Repo,queue,clock);
-        var ai=new PipelineAi();Pipeline=new(Repo,Store,Fence,ai,ai,new(Config),Config,clock,new SyntheticFixtureSkills());
+        var files=new LocalIngestionFiles(directory);var queue=Queue=new FaultQueue(new LocalIngestionQueue(files,clock));var blobs=Blobs=new LocalIngestionBlobs(files);var options=new IngestionOptions();var extractor=new OfficeExtractor(options);var notices=Notifications=new JobNotifications(Repo,queue,clock);
+        var ai=new PipelineAi();Pipeline=new(Repo,Store,Fence,ai,ai,new(Config),Config,clock,new SyntheticFixtureSkills(),new FixtureWorkbookSections(Repo));
         Uploads=new(Repo,Fence,idem,blobs,extractor,options,notices,clock,Config);
         Processor=new(Repo,blobs,queue,extractor,options,Fence,clock,NullLogger<IngestionProcessor>.Instance,Pipeline,notices);
     }
@@ -111,7 +113,7 @@ public sealed class SyntheticTestProfileTests
     {
         using var h=new SyntheticHarness();var p=await h.Person();var r=await h.Upload(p);
         await h.Processor.RunOnceAsync(default);await h.Processor.RunOnceAsync(default);
-        var person=await h.Read(p.Text("id"));Assert.Equal(2,person.Strings("experienceIds").Length);
+        var person=await h.Read(p.Text("id"));Assert.Equal(3,person.Strings("experienceIds").Length);
         var doc=await h.Read(r.Body!["documentId"]!.GetValue<string>());Assert.Equal("complete",doc.Text("aiState"));Assert.True(SyntheticTestAccess.IsTest(doc));
         var catalog=new ValidatedCatalog(new MemoryProjectionRepository(h.Store),new(h.Repo,h.Config),h.Fence,h.Store);
         var request=new SearchRequest([new("domain","software")],[],[]);
@@ -185,14 +187,16 @@ public sealed class SyntheticTestProfileTests
         using var h=new SyntheticHarness();var p=await h.Person();var r=await h.Upload(p);var doc=await h.Read(r.Body!["documentId"]!.GetValue<string>());
         var config=LiveBudgetConfig();var budget=SyntheticImportBudget.Create(doc,config,DateTimeOffset.UtcNow);
         var old=await h.Read(budget.Text("id"));await h.Store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(budget,old.Text("etag"))],default);
-        Task<AiFailure?> Reserve(string operation,string run)=>h.Fence.RunAsync<AiFailure?>("demo",async ct=>{try{await SyntheticImportBudget.ReserveAsync(h.Repo,config,SyntheticHarness.Operator,[doc.Text("id")],operation,operation=="decide"?ProfilePipeline.PromptVersion:SpecificSkillRules.Version,run,1,ct);return null;}catch(AiException e){return e.Failure;}},default);
+        Task<AiFailure?> Reserve(string operation,string run)=>h.Fence.RunAsync<AiFailure?>("demo",async ct=>{try{await SyntheticImportBudget.ReserveAsync(h.Repo,config,SyntheticHarness.Operator,[doc.Text("id")],operation,operation=="decide"?ProfilePipeline.PromptVersion:WorkbookRules.CellSkillPrompt,run,1,ct);return null;}catch(AiException e){return e.Failure;}},default);
         await Reserve("extractSkills","unknown-send-1");
         Assert.Equal(AiFailure.Budget,await Reserve("extractSkills","unknown-send-1"));
         await Reserve("extractSkills","failed-send-2");
-        Assert.Equal(AiFailure.Budget,await Reserve("extractSkills","retry-job-3"));
+        await Reserve("extractSkills","third-send-3");
+        Assert.Equal(AiFailure.Budget,await Reserve("extractSkills","retry-job-4"));
         await Reserve("decide","domain-1");await Reserve("decide","domain-2");
-        Assert.Equal(AiFailure.Budget,await Reserve("decide","domain-3"));
-        Assert.Equal(4,(await h.Read(budget.Text("id")))["dispatches"]!.AsObject().Count);
+        await Reserve("decide","domain-3");
+        Assert.Equal(AiFailure.Budget,await Reserve("decide","domain-4"));
+        Assert.Equal(6,(await h.Read(budget.Text("id")))["dispatches"]!.AsObject().Count);
         Assert.Equal("Disabled",config["AiUsage:AccountingMode"]);
     }
     [Fact]
@@ -201,7 +205,7 @@ public sealed class SyntheticTestProfileTests
         using var h=new SyntheticHarness();var p=await h.Person();var r=await h.Upload(p);var doc=await h.Read(r.Body!["documentId"]!.GetValue<string>());var config=LiveBudgetConfig();
         var budget=SyntheticImportBudget.Create(doc,config,DateTimeOffset.UtcNow);var old=await h.Read(budget.Text("id"));await h.Store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(budget,old.Text("etag"))],default);
         config["AiUsage:MaxInputTokens"]="10240";
-        Assert.Equal(AiFailure.Configuration,(await Assert.ThrowsAsync<AiException>(()=>SyntheticImportBudget.ReserveAsync(h.Repo,config,SyntheticHarness.Operator,[doc.Text("id")],"extractSkills",SpecificSkillRules.Version,"changed",1,default))).Failure);
+        Assert.Equal(AiFailure.Configuration,(await Assert.ThrowsAsync<AiException>(()=>SyntheticImportBudget.ReserveAsync(h.Repo,config,SyntheticHarness.Operator,[doc.Text("id")],"extractSkills",WorkbookRules.CellSkillPrompt,"changed",1,default))).Failure);
         Assert.Equal(AiFailure.Budget,(await Assert.ThrowsAsync<AiException>(()=>SyntheticImportBudget.ReserveAsync(h.Repo,config,SyntheticHarness.Operator,[doc.Text("id")],"decide",SkillChoiceMatching.Version,"extra-choice",1,default))).Failure);
         Assert.Empty((await h.Read(budget.Text("id")))["dispatches"]!.AsObject());
     }
@@ -224,7 +228,7 @@ public sealed class SyntheticTestProfileTests
         Assert.Equal("pending",(await h.Read(r.Body!["jobId"]!.GetValue<string>())).Text("notificationState"));
         h.Queue.FailSend=false;var replay=await h.Upload(p);Assert.Equal(r.Body!.ToJsonString(),replay.Body!.ToJsonString());
         await h.Processor.RunOnceAsync(default);await h.Processor.RunOnceAsync(default);
-        Assert.Equal(2,(await h.Read(p.Text("id"))).Strings("experienceIds").Length);
+        Assert.Equal(3,(await h.Read(p.Text("id"))).Strings("experienceIds").Length);
         Assert.Single((await h.Repo.QueryAsync(RecordPartition.Catalog("demo"),"syntheticImportBudget",null,null,100,null,default)).Items);
     }
     private sealed class LocalOnlyWire : IDispatchTrackingAiTransport
@@ -246,12 +250,13 @@ public sealed class SyntheticTestProfileTests
         await h.Store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(budget,old.Text("etag"))],default);
         var version=await h.Read(doc.Text("currentVersionId"));var spans=await h.Repo.QueryAsync(RecordPartition.Catalog("demo"),"evidenceSpan","documentVersionId",version.Text("id"),100,null,default);var evidence=spans.Items.First().Value;
         var wire=new LocalOnlyWire();using var ai=new AiService(config,h.Repo,new(h.Repo,config),h.Fence,new(h.Store,TimeProvider.System),wire,TimeProvider.System);
-        var context=new AiContext(SyntheticHarness.Operator,"synthetic-test-run",SpecificSkillRules.Version,Retriever.TaxonomyVersion,1,[new(evidence.Text("id"),version.Text("id"),1)],[]);
+        var context=new AiContext(SyntheticHarness.Operator,"synthetic-test-run",WorkbookRules.CellSkillPrompt,Retriever.TaxonomyVersion,1,[new(evidence.Text("id"),version.Text("id"),1)],[]);
         var one=await ai.ExtractSkillsAsync(context,"fixture 1",default);Assert.Equal(AiStatus.Succeeded,one.Status);
         Assert.Equal(AiStatus.Succeeded,(await ai.ExtractSkillsAsync(context,"fixture 1",default)).Status);Assert.Equal(1,wire.Calls); // cache doesn't consume a slot
-        Assert.Equal(AiStatus.Succeeded,(await ai.ExtractSkillsAsync(context,"fixture 2",default)).Status);
-        var stopped=await ai.ExtractSkillsAsync(context,"fixture 3",default);Assert.Equal(AiStatus.BudgetStopped,stopped.Status);Assert.Equal(AiFailure.Budget,stopped.Failure);Assert.Equal(2,wire.Calls);
-        Assert.Equal(2,(await h.Read(budget.Text("id")))["dispatches"]!.AsObject().Count);
+        Assert.Equal(AiStatus.Succeeded,(await ai.ExtractSkillsAsync(context with{DataVersion=2},"fixture 2",default)).Status);
+        Assert.Equal(AiStatus.Succeeded,(await ai.ExtractSkillsAsync(context with{DataVersion=3},"fixture 3",default)).Status);
+        var stopped=await ai.ExtractSkillsAsync(context with{DataVersion=4},"fixture 4",default);Assert.Equal(AiStatus.BudgetStopped,stopped.Status);Assert.Equal(AiFailure.Budget,stopped.Failure);Assert.Equal(3,wire.Calls);
+        Assert.Equal(3,(await h.Read(budget.Text("id")))["dispatches"]!.AsObject().Count);
     }
 
     [Theory]
@@ -269,6 +274,34 @@ public sealed class SyntheticTestProfileTests
             await Assert.ThrowsAsync<DomainException>(()=>SyntheticTestAccess.RequireLinkedAsync(h.Repo,previouslyResolved,doc,ct));
             return true;
         },default);
+    }
+
+    [Fact]
+    public async Task Workbook_context_collection_never_reclassifies_it_as_person_experience()
+    {
+        using var h=new SyntheticHarness();var p=await h.Person();await h.Upload(p);await h.Processor.RunOnceAsync(default);await h.Processor.RunOnceAsync(default);
+        var person=await h.Read(p.Text("id"));var records=new List<JsonObject>();foreach(var id in person.Strings("experienceIds"))records.Add(await h.Read(id));
+        var context=Assert.Single(records,r=>r.Text("workbookSectionKind")=="context");
+        var service=new SkillDictionaryService(h.Repo,h.Fence,new(h.Repo,TimeProvider.System),TimeProvider.System);
+        var collected=await service.CollectAsync(SyntheticHarness.Operator,Guid.NewGuid().ToString("N"),new(context.Text("id")),default);
+        Assert.NotEmpty(collected.Body!["bindings"]!.AsArray());
+        foreach(var binding in collected.Body["bindings"]!.AsArray())
+        {
+            var c=await h.Read(binding!["candidateId"]!.GetValue<string>());
+            Assert.NotEqual("eligible",c["item"]!["analysis"]!["experienceState"]!.GetValue<string>());
+        }
+    }
+    [Fact]
+    public async Task Old_consumed_budget_is_not_refilled_or_silently_upgraded_for_new_workbook_prompt()
+    {
+        using var h=new SyntheticHarness();var p=await h.Person();var r=await h.Upload(p);var doc=await h.Read(r.Body!["documentId"]!.GetValue<string>());
+        var config=LiveBudgetConfig();var budget=SyntheticImportBudget.Create(doc,config,DateTimeOffset.UtcNow);
+        budget["configuration"]!.AsObject().Remove("budgetVersion");budget["configuration"]!["maximumUsd"]=.01478656m;
+        budget["dispatches"]!["old-run:1"]="extractSkills";
+        var before=await h.Read(budget.Text("id"));await h.Store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(budget,before.Text("etag"))],default);
+        var error=await Assert.ThrowsAsync<AiException>(()=>SyntheticImportBudget.ReserveAsync(h.Repo,config,SyntheticHarness.Operator,[doc.Text("id")],"structureWorkbook",WorkbookRules.Version,"new-run",1,default));
+        Assert.Equal(AiFailure.Configuration,error.Failure);var after=await h.Read(budget.Text("id"));
+        Assert.Single(after["dispatches"]!.AsObject());Assert.Null(after["configuration"]!["budgetVersion"]);
     }
 
 }

@@ -171,7 +171,10 @@ public sealed class ProfilePipelineTests
             "<row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>機械設計</t></is></c><c r=\"B1\" t=\"inlineStr\"><is><t>2019-01-01</t></is></c><c r=\"C1\" t=\"inlineStr\"><is><t>2023-01-01</t></is></c></row>" +
             "<row r=\"2\"><c r=\"A2\" t=\"inlineStr\"><is><t>ソフトウェア開発</t></is></c><c r=\"B2\" t=\"inlineStr\"><is><t>2023-01-01</t></is></c><c r=\"C2\" t=\"inlineStr\"><is><t>2026-01-01</t></is></c></row></sheetData></worksheet>";
         var upload = await h.Upload(bytes: OfficeFixtures.Package(true, sheet), excel: true); await h.Processor.RunOnceAsync(default);
-        var pipeline = Create(h, new()); await pipeline.CommitAsync(await pipeline.BuildAsync(await Enrichment(h, upload), default), [], default);
+        var ai=new PipelineAi { WorkbookFactory = c => new([
+            new("project",c.Evidence.Take(3).Select(e=>e.Id).ToArray()){StartEvidenceId=c.Evidence[1].Id,EndEvidenceId=c.Evidence[2].Id,Precision="day"},
+            new("project",c.Evidence.Skip(3).Select(e=>e.Id).ToArray()){StartEvidenceId=c.Evidence[4].Id,EndEvidenceId=c.Evidence[5].Id,Precision="day"}]) };
+        var pipeline = Create(h, ai); await pipeline.CommitAsync(await pipeline.BuildAsync(await Enrichment(h, upload), default), [], default);
         var person = (await h.Repo.ReadAsync(RecordPartition.Catalog("demo"), "demo-person-01", default))!.Value;
         Assert.Equal(84, person.Number("totalExperienceMonths")); Assert.Equal(2, person.Strings("experienceIds").Length);
         foreach (var id in person.Strings("experienceIds"))
@@ -186,8 +189,11 @@ public sealed class ProfilePipelineTests
         new IdentityResolver(new ConfigurationBuilder().Build()), new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Data:Mode"] = "Demo", ["Ai:Mode"] = "Mock" }).Build(), h.Clock);
 }
 
-public sealed class PipelineAi : ITextStructurer, IDecisionProvider
+public sealed class PipelineAi : IWorkbookStructurer, ITextStructurer, IDecisionProvider
 {
+    public Func<AiContext,WorkbookStructure>? WorkbookFactory { get; init; }
+    public Task<AiResult<WorkbookStructure>> StructureWorkbookAsync(AiContext c, CancellationToken ct) =>
+        Task.FromResult(new AiResult<WorkbookStructure>(AiStatus.Succeeded, WorkbookFactory?.Invoke(c) ?? new([new("project", c.Evidence.Select(e=>e.Id).ToArray())]), "mock-workbook", null));
     public int Calls { get; private set; }
     public bool Ungrounded { get; set; }
     public bool Stopped { get; set; }

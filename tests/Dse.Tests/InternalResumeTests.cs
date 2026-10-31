@@ -86,11 +86,12 @@ public static class InternalResumeFixture
     }
 }
 
+// Legacy adapter read-compatibility only; production OfficeExtractor never calls Adapt.
 public sealed class InternalResumeTests
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     private static Extraction Extract(Dictionary<string, string>? cells = null, bool date1904 = false, bool missingCache = false) =>
-        new OfficeExtractor(new()).Extract(InternalResumeFixture.Package(cells, date1904, missingCache), "fictional.xlsx", OfficeExtractor.ExcelMime, default);
+        InternalResumeSheet.Adapt(new OfficeExtractor(new()).Extract(InternalResumeFixture.Package(cells, date1904, missingCache), "fictional.xlsx", OfficeExtractor.ExcelMime, default));
 
     [Theory]
     [InlineData(false)]
@@ -199,49 +200,21 @@ public sealed class InternalResumeTests
         Assert.Contains(project.SourceCells, c => c.Text.Contains(narrative, StringComparison.Ordinal));
     }
     [Fact]
-    public async Task Upload_worker_and_projection_preserve_months_provenance_unconfirmed_state_and_corrections()
+    public async Task Native_capture_preserves_all_sheets_cells_and_declarations_without_template_adapter()
     {
-        using var h = new IngestionHarness(); var ai = new PipelineAi(); var pipeline = ProfilePipelineTests.Create(h, ai);
-        var worker = new IngestionProcessor(h.Repo, h.Blobs, h.Queue, new OfficeExtractor(new()), new(), new AccessFence(h.Repo), h.Clock,
-            Microsoft.Extensions.Logging.Abstractions.NullLogger<IngestionProcessor>.Instance, pipeline, h.Notifications);
-        var upload = await h.Upload(bytes: InternalResumeFixture.Package(), excel: true); await worker.RunOnceAsync(default); await worker.RunOnceAsync(default);
-        var partition = RecordPartition.Catalog("demo");
-        var document = (await h.Repo.ReadAsync(partition, upload.Body!["documentId"]!.GetValue<string>(), default))!;
-        Assert.Equal("complete", document.Value.Text("aiState"));
-        var imported = document.Value["resumeImport"]!.Deserialize<ResumeImport>(Json)!;
-        var person = (await h.Repo.ReadAsync(partition, "demo-person-01", default))!;
-        Assert.Equal(7, person.Value.Strings("experienceIds").Length); Assert.Equal(3, person.Value.Number("totalExperienceMonths"));
-        Assert.Equal(7, person.Value.Strings("projectionIds").Length); Assert.Equal(7, ai.Calls);
-        Assert.All(imported.Projects, p => Assert.Single(p.EvidenceIds));
-        foreach (var id in person.Value.Strings("experienceIds"))
-        {
-            var experience = (await h.Repo.ReadAsync(partition, id, default))!;
-            Assert.Equal("ai_unconfirmed", experience.Value.Text("confirmationState")); Assert.Equal("2020-01", experience.Value["period"]!["start"]!.GetValue<string>());
-            var evidenceId = experience.Value["evidenceRefs"]![0]!["id"]!.GetValue<string>();
-            var evidence = (await h.Repo.ReadAsync(partition, evidenceId, default))!;
-            Assert.Contains("/ 02. スキル記入シート(例つき)!A", evidence.Value["location"]!["label"]!.GetValue<string>());
-            Assert.Single(imported.Projects, p => p.EvidenceIds.Contains(evidenceId));
-        }
-        var units = (await h.Store.QueryAsync(partition, "searchUnit", "entityId", "demo-person-01", 100, null, default)).Items;
-        Assert.Contains(units, u => u.Value.Strings("normalizedTerms").Contains("postgresql 16"));
-        Assert.DoesNotContain(units, u => u.Value.Text("summary").Contains("希望専用", StringComparison.Ordinal));
-        var usable = await new SourceGuard(h.Repo).FilterAsync(IdentityResolver.Demo, units.Select(u => u.Value.Deserialize<SearchUnit>(Json)!).ToArray(), default);
-        Assert.Single(Retriever.Search(usable, new([], [], ["PostgreSQL 16"]), IdentityResolver.Demo.Search).Candidates);
-        var experienceId = person.Value.Strings("experienceIds")[0];
-        var service = new ProfileService(h.Repo, new AccessFence(h.Repo), new IdempotencyExecutor(h.Repo, h.Clock));
-        await service.UpdateAsync(IdentityResolver.Demo, "demo-person-01", "resume-correction-01", person.ETag,
-            new("架空表示", true, "correct", [new(experienceId, "本人が訂正した架空経験", new("2020-01", "2020-02", "month", 2))]), default);
-        await h.Upload("resume-reimport-001", InternalResumeFixture.Package(InternalResumeFixture.ShiftedCells(23, 7, true)), true);
-        await worker.RunOnceAsync(default); await worker.RunOnceAsync(default);
-        var corrected = (await h.Repo.ReadAsync(partition, experienceId, default))!.Value;
-        Assert.Equal("本人が訂正した架空経験", corrected.Text("description")); Assert.Equal("self_corrected", corrected.Text("confirmationState"));
-        Assert.Equal("conflict", corrected.Text("correctionState")); Assert.NotNull(corrected["pendingExtraction"]);
-        var all = new List<object> { new { schema = "Document", value = document.Value } };
-        foreach (var kind in new[] { "person", "experience", "evidenceSpan", "searchUnit" })
-            all.AddRange((await h.Store.QueryAsync(partition, kind, kind == "evidenceSpan" ? "documentId" : kind == "person" ? null : kind == "searchUnit" ? "entityId" : "personId", kind == "evidenceSpan" ? document.Value.Text("id") : kind == "person" ? null : "demo-person-01", 100, null, default)).Items
-                .Where(r => kind != "searchUnit" || r.Value.Text("processingMode") == "fixture").Select(r => (object)new { schema = RecordJson.ContractKinds[kind], value = r.Value }));
-        var root = new DirectoryInfo(AppContext.BaseDirectory); while (root is not null && !File.Exists(Path.Combine(root.FullName, "DseGrowthLoop.slnx"))) root = root.Parent;
-        var output = Path.Combine(root!.FullName, "tests/Dse.Tests/TestResults"); Directory.CreateDirectory(output);
-        await File.WriteAllTextAsync(Path.Combine(output, "internal-resume-contract.json"), JsonSerializer.Serialize(all));
+        using var h = new IngestionHarness();
+        var upload = await h.Upload(bytes: InternalResumeFixture.Package(), excel: true);
+        await h.Processor.RunOnceAsync(default);
+        var doc = (await h.Repo.ReadAsync(RecordPartition.Catalog("demo"), upload.Body!["documentId"]!.GetValue<string>(), default))!.Value;
+        Assert.Null(doc["resumeImport"]); Assert.NotNull(doc["workbookCapture"]);
+        var spans = new List<StoredRecord>(); string? cursor = null;
+        do { var page = await h.Repo.QueryAsync(RecordPartition.Catalog("demo"), "evidenceSpan", "documentId", doc.Text("id"), 100, cursor, default); spans.AddRange(page.Items); cursor = page.ContinuationToken; } while (cursor is not null);
+        Assert.Contains(spans, r => r.Value.Text("text") == "自己PR専用文");
+        Assert.Contains(spans, r => r.Value.Text("text") == "説明タブ専用スキル");
+        Assert.Contains(spans, r => r.Value.Text("text").Contains("希望専用技能"));
+        Assert.True(spans.Count > 100); // capture is complete; AI will hold this with an explicit capacity reason
+        var root=new DirectoryInfo(AppContext.BaseDirectory);while(root is not null&&!File.Exists(Path.Combine(root.FullName,"DseGrowthLoop.slnx")))root=root.Parent;
+        var output=Path.Combine(root!.FullName,"tests/Dse.Tests/TestResults");Directory.CreateDirectory(output);
+        await File.WriteAllTextAsync(Path.Combine(output,"workbook-capture-contract.json"),JsonSerializer.Serialize(new[]{new {schema="Document",value=doc}}.Cast<object>().Concat(spans.Select(r=>(object)new {schema="EvidenceSpan",value=r.Value}))));
     }
 }

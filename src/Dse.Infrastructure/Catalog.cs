@@ -80,8 +80,16 @@ public static class CosmosCatalog
             routes.Add("EXISTS(SELECT VALUE s FROM s IN u.experienceSignals WHERE ARRAY_CONTAINS(@signals, s.signalId) AND IS_NUMBER(s.yesProbability) AND s.yesProbability >= @noul AND s.evidenceState = 'supported')");
         if (request.Terms.Length > 0)
             routes.Add("EXISTS(SELECT VALUE t FROM t IN u.normalizedTerms WHERE ARRAY_CONTAINS(@terms, t))");
-        if (request.SpecificSkills.Length > 0)
-            routes.Add("(u.specificSkills.version = @specificSkillVersion AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE ARRAY_CONTAINS(@specificSkills, t)) OR (u.entityType = 'knowledge' AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE ARRAY_CONTAINS(@specificSkills, t)))))");
+        // SQL is a bounded superset. SourceGuard and the identifier-boundary matcher
+        // recheck evidence/ACL and remove false positives before returning anything.
+        var skillQueries = request.SpecificSkills.Concat(request.Terms).Select(SpecificSkillRules.Normalize).Distinct().ToArray();
+        if (skillQueries.Length > 0)
+        {
+            var clauses = skillQueries.Select((q,i) => SkillTextMatch.AllowsPartial(q) ? $"CONTAINS(t, @skillQuery{i})" : $"t = @skillQuery{i}").ToArray();
+            var predicate = string.Join(" OR ", clauses);
+            routes.Add("(u.specificSkills.version = @specificSkillVersion AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE " + predicate + ") OR (u.entityType = 'knowledge' AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE " + predicate + "))))");
+            for(var i=0;i<skillQueries.Length;i++) parameters.Add(($"@skillQuery{i}",skillQueries[i]));
+        }
         var query = new QueryDefinition("SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s)) AND " + (request.SyntheticOnly ? "u.syntheticTest = true" : "(NOT IS_DEFINED(u.syntheticTest) OR u.syntheticTest = false)") + " AND (" + string.Join(" OR ", routes) + ")")
             .WithParameter("@tenant", access.TenantId).WithParameter("@taxonomy", Retriever.TaxonomyVersion)
             .WithParameter("@scopes", access.ScopeIds).WithParameter("@probability", request.ProbabilityThreshold)

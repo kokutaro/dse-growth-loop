@@ -37,6 +37,7 @@ public static class SyntheticTestAccess
         if (!IsTest(row)) return;
         var person = await RequireAsync(repo, actor, row.Text("kind") == "person" ? row.Text("id") : row.Text("testPersonId"), ct);
         if (!Owns(actor, row) || !row.Strings("scopeIds").SequenceEqual(person.Strings("scopeIds"))) throw new DomainException(409, "SOURCE_REVOKED");
+        if(row.Text("kind")=="document")await GenerationAccess.RequireParentsAsync(repo,actor,row,ct);
     }
 }
 

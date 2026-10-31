@@ -12,7 +12,7 @@ public sealed record PipelinePlan(string Tenant, Dictionary<string, string?> Exp
 // Bounded atomic publication: no row becomes searchable until the complete generation commits.
 // Oversized inputs are held for review rather than silently truncating their experiences.
 public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore store, AccessFence fence, ITextStructurer structurer,
-    IDecisionProvider decisions, IdentityResolver identities, IConfiguration config, TimeProvider clock, IConcreteSkillExtractor? skillExtractor = null)
+    IDecisionProvider decisions, IdentityResolver identities, IConfiguration config, TimeProvider clock, IConcreteSkillExtractor? skillExtractor = null, IWorkbookStructurer? workbookStructurer = null)
 {
     public const int MaxFragments = 20;
     public const string PromptVersion = "profile-v1";
@@ -68,11 +68,23 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             }
         if (enrichment)
         {
+            var generation = document!.Value.Text("generationParentId")!="";
             if (!AccessPolicy.CanUse(actor, document!.Value) || document.Value.Text("status") != "ready" ||
                 document.Value.Text("enrichmentJobId") is { Length: > 0 } currentJob && currentJob != job.Text("id"))
                 throw new DomainException(409, "SOURCE_REVOKED");
-            if (document.Value.Text("importKey") is { Length: > 0 } importKey && person.Value["documentHeads"]?[importKey]?.GetValue<string>() != document.Value.Text("id"))
+            if (document.Value.Text("importKey") is { Length: > 0 } importKey && person.Value["documentHeads"]?[importKey]?.GetValue<string>() != (generation ? document.Value.Text("generationParentId") : document.Value.Text("id")))
                 throw new DomainException(409, "SOURCE_REVOKED");
+            if(generation)
+            {
+                await GenerationAccess.RequireProcessingAsync(repository,actor,document.Value,ct);
+                var ancestor=document.Value;
+                while(ancestor.Text("generationParentId") is {Length:>0} parentId)
+                {
+                    var parent=await Read(parentId)??throw new DomainException(409,"SOURCE_REVOKED");
+                    if(parent.ETag!=ancestor.Text("generationParentEtag"))throw new DomainException(409,"SOURCE_REVOKED");
+                    await Read(ancestor.Text("generationOriginalVersionId"));ancestor=parent.Value;
+                }
+            }
             var touched = new HashSet<string>();
             var version = await Read(document.Value.Text("currentVersionId")) ?? throw new DomainException(409, "SOURCE_REVOKED");
             var spans = new List<StoredRecord>(); string? cursor = null;
@@ -80,14 +92,41 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             {
                 var page = await repository.QueryAsync(partition, "evidenceSpan", "documentVersionId", version.Value.Text("id"), 100, cursor, ct);
                 spans.AddRange(page.Items); cursor = page.ContinuationToken;
-                if (spans.Count > 100) throw new DomainException(422, "PROFILE_FRAGMENT_LIMIT");
+                if (spans.Count > 50000) throw new DomainException(422, "WORKBOOK_CAPTURE_CELL_LIMIT");
             } while (cursor is not null);
             if (spans.Count == 0) throw new DomainException(422, "UNGROUNDED_EXTRACTION");
             var resume = document.Value["resumeImport"]?.Deserialize<ResumeImport>(Json);
             var projects = resume?.Projects.ToDictionary(p => p.Location, StringComparer.Ordinal);
+            var workbook = document.Value["workbookCapture"] is not null;
+            var sections = new Dictionary<string, WorkbookSection>();
+            if (workbook)
+            {
+                // Capture is complete even when AI capacity cannot cover it. Never silently sample cells.
+                if (spans.Count > WorkbookRules.MaxEvidence) throw new DomainException(422, "WORKBOOK_AI_EVIDENCE_LIMIT");
+                if (spans.Sum(s => s.Value.Text("text").Length + 1) > 8000) throw new DomainException(422, "WORKBOOK_PROFILE_TEXT_LIMIT");
+                var references = spans.Select(r => new EvidenceReference(r.Value.Text("id"), version.Value.Text("id"), r.Value.Number("sourceVersion"))).ToArray();
+                foreach (var spanRow in spans)
+                {
+                    expected[spanRow.Value.Text("id")] = spanRow.ETag;
+                    if (spanRow.Value.Text("validationState") != "validated" || spanRow.Value.Number("sourceVersion") != document.Value.Number("activeVersion"))
+                        throw new DomainException(422, "UNGROUNDED_EXTRACTION");
+                }
+                var workbookAi = workbookStructurer ?? structurer as IWorkbookStructurer ?? throw new DomainException(422, "WORKBOOK_STRUCTURER_UNAVAILABLE");
+                var structured = await workbookAi.StructureWorkbookAsync(new(actor, job.Text("id"), WorkbookRules.Version, Retriever.TaxonomyVersion,
+                    job.Number("aggregateVersion"), references, []), ct);
+                if (structured.Status != AiStatus.Succeeded || structured.Value is null) throw Failure(structured.Status, structured.Failure);
+                try { WorkbookRules.Validate(structured.Value, references.Select(r => r.Id).ToArray(), SyntheticTestAccess.IsTest(document.Value)); }
+                catch (ArgumentException) { throw new DomainException(422, "WORKBOOK_STRUCTURE_COVERAGE"); }
+                foreach (var section in structured.Value.Sections)
+                    sections.Add(section.EvidenceIds.Order(StringComparer.Ordinal).First(), section);
+                document.Value["workbookStructure"] = Node(structured.Value);
+                document.Value["workbookStructureRunId"] = structured.RunId;
+                document.Value["workbookStructureVersion"] = WorkbookRules.Version;
+            }
+            var groupByEvidence = sections.SelectMany(s => s.Value.EvidenceIds.Select(id => (id, key:s.Key))).ToDictionary(p => p.id, p => p.key);
             var groups = spans.OrderBy(x => x.Value.Text("id"), StringComparer.Ordinal)
                 .Where(s => projects is null || projects.ContainsKey(s.Value["location"]!["label"]!.GetValue<string>()))
-                .GroupBy(s => projects is null ? RowKey(s) : s.Value["location"]!["label"]!.GetValue<string>()).ToArray();
+                .GroupBy(s => workbook ? groupByEvidence[s.Value.Text("id")] : projects is null ? RowKey(s) : s.Value["location"]!["label"]!.GetValue<string>()).ToArray();
             if (projects is not null && (resume!.Format != InternalResumeSheet.Format || groups.Length != projects.Count))
                 throw new DomainException(422, "INTERNAL_RESUME_INVALID");
             if (groups.Length > MaxFragments) throw new DomainException(422, "PROFILE_FRAGMENT_LIMIT");
@@ -100,11 +139,13 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 }
                 var span = group.First();
                 var project = projects?.GetValueOrDefault(group.Key);
-                var text = project?.Description ?? string.Join(" ", group.Select(row => row.Value.Text("text")));
+                var text = project?.Description ?? string.Join(workbook ? "\n" : " ", group.Select(row => row.Value.Text("text")));
+                if (text.Length > 8000) throw new DomainException(422, "WORKBOOK_SECTION_TEXT_LIMIT");
                 var fragmentRefs = group.Select(row => new EvidenceReference(row.Value.Text("id"), version.Value.Text("id"), row.Value.Number("sourceVersion"))).ToArray();
                 var reference = fragmentRefs[0];
                 // Dates and cells stay mechanical. Only prose without a recognizable date range needs structuring.
-                var period = project?.Period ?? ProfileExtraction.Period(text);
+                var workbookPeriod=workbook?WorkbookDates.Resolve(sections[group.Key],group):null;
+                var period = project?.Period ?? workbookPeriod?.Period ?? ProfileExtraction.Period(text);
                 period.Validate();
                 string? structureRun = null;
                 if (group.Count() == 1 && span.Value["location"]?["type"]?.GetValue<string>() == "paragraph" && period.Precision == "unknown")
@@ -139,6 +180,14 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 SyntheticTestAccess.Mark(value,person.Value);
                 value["importKey"] = document.Value.Text("importKey");
                 value["title"] = document.Value.Text("title");
+                if (workbook)
+                {
+                    value["workbookSectionKind"] = sections[group.Key].Kind;
+                    value["workbookStructureVersion"] = WorkbookRules.Version;
+                    value["periodState"] = workbookPeriod!.Warnings.Length==0?"source_precision_resolved":"source_precision_review";
+                    value["periodWarnings"]=RecordJson.Array(workbookPeriod.Warnings);value["periodEndState"]=workbookPeriod.EndState;value["workbookPeriodVersion"]=WorkbookDates.Version;
+                    value["skillQuotePolicy"] = WorkbookRules.CellSkillPrompt;
+                }
                 value["personId"] = personId; value["documentId"] = document.Value.Text("id"); value["structureRunId"] = structureRun;
                 value["processingMode"] = config["Ai:Mode"] == "Mock" ? "fixture" : "live";
                 value["updatedAt"] = clock.GetUtcNow();
@@ -152,7 +201,11 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                     removed["correctionState"] = "conflict";
                     removed["pendingExtraction"] = new JsonObject { ["description"] = "再取込原本から削除されています", ["removed"] = true };
                 }
-                else fragments.Remove(removed);
+                else
+                {
+                    if(generation){removed["generationSupersededBy"]=document.Value.Text("id");removed["sourceVersion"]=removed.Number("sourceVersion")+1;Write(removed);}
+                    fragments.Remove(removed);
+                }
             }
         }
         if (fragments.Count is 0 or > MaxFragments) throw new DomainException(422, "PROFILE_FRAGMENT_LIMIT");
@@ -177,7 +230,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
         entity["activeVersion"] = entity.Number("sourceVersion");
         entity["processingMode"] = config["Ai:Mode"] == "Mock" ? "fixture" : "live";
         if (entity.Text("confirmationState") is not ("self_corrected" or "self_confirmed")) entity["confirmationState"] = "ai_unconfirmed";
-        entity["totalExperienceMonths"] = ProfileExtraction.TotalMonths(fragments.Select(f => f["period"]!.Deserialize<ExperiencePeriod>(Json)!));
+        entity["totalExperienceMonths"] = ProfileExtraction.TotalMonths(fragments.Where(f => f.Text("workbookSectionKind") != "context").Select(f => f["period"]!.Deserialize<ExperiencePeriod>(Json)!));
         if (!department) entity["experienceIds"] = RecordJson.Array(fragments.Select(f => f.Text("id")));
         else { entity["summary"] = combined; entity["period"] = Node(new ExperiencePeriod(null, null, "unknown", null)); }
         entity["correctionState"] = fragments.Any(f => f.Text("correctionState") == "conflict") ? "conflict" : "none";
@@ -198,7 +251,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
         {
             var source = (await Read(reference.Id))!.Value;
             var doc = (await Read(source.Text("documentId")))!.Value;
-            if (doc["resumeImport"] is null) internalResumeOnly = false;
+            if (doc["resumeImport"] is null && doc["workbookCapture"] is null) internalResumeOnly = false;
         }
         // Each project is already independently classified. Repeating every raw cell for an aggregate
         // can exceed the unchanged AI input ceiling. Retrieve the person through those project units.
@@ -253,7 +306,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             if (saved is not null) answer = saved.Value["decisions"]!.Deserialize<Decisions>(Json)!;
             else
             {
-                var result = await decisions.DecideAsync(new(actor, job.Text("id"), PromptVersion, Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []), fragment.Text("description"),
+                var result = await decisions.DecideAsync(new(actor, job.Text("id"), PromptVersion, Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { WorkbookSectionKind=fragment.Text("workbookSectionKind") is {Length:>0} sectionKind?sectionKind:null }, fragment.Text("description"),
                     [new("domain", "state.textの経験分野を分類。根拠は訂正前の場合もある。Probabilityは年数・熟練度ではない。", ProfileExtraction.Domains)],
                     ProfileExtraction.Domains.Concat(new[] { new KeyValuePair<string, string>("handover", "引き継ぎ") }).Select(p => new NoulQuestion(p.Key, p.Value + "の経験がstate.textに明記されているか。根拠は本人訂正前の場合もある。", ProfileExtraction.HasDomainEvidence(fragment.Text("description"), p.Key))).ToArray(), ct);
                 if (result.Status != AiStatus.Succeeded || result.Value is null) throw Failure(result.Status, result.Failure);
@@ -274,7 +327,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             // already present in authoritative evidence; never promote imported hints directly.
             var skillInputHash = Id("skills-", RecordJson.Canonical(new JsonObject {
                 ["text"] = fragment["description"]!.DeepClone(), ["refs"] = Node(evidence),
-                ["version"] = SpecificSkillRules.Version, ["model"] = config["Foundry:ModelId"] ?? "mock-v1",
+                ["version"] = fragment.Text("skillQuotePolicy") == WorkbookRules.CellSkillPrompt ? WorkbookRules.CellSkillPrompt : SpecificSkillRules.Version, ["model"] = config["Foundry:ModelId"] ?? "mock-v1",
                 ["mode"] = config["Ai:Mode"] ?? "Mock" }));
             SpecificSkills specific;
             if (fragment == entity) specific = CombinedSkills();
@@ -283,23 +336,23 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 specific = fragment["specificSkills"]!.Deserialize<SpecificSkills>(Json)!;
             else
             {
-                var skillResult = await skillExtractor.ExtractSkillsAsync(new(actor, job.Text("id"), SpecificSkillRules.Version,
-                    Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []), fragment.Text("description"), ct);
+                var skillResult = await skillExtractor.ExtractSkillsAsync(new(actor, job.Text("id"), fragment.Text("skillQuotePolicy") == WorkbookRules.CellSkillPrompt ? WorkbookRules.CellSkillPrompt : SpecificSkillRules.Version,
+                    Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { WorkbookSectionKind = fragment.Text("workbookSectionKind") is { Length: > 0 } kind ? kind : null }, fragment.Text("description"), ct);
                 if (skillResult.Status != AiStatus.Succeeded || skillResult.Value is null) throw Failure(skillResult.Status, skillResult.Failure);
                 specific = skillResult.Value;
                 fragment["skillRunId"] = skillResult.RunId;
             }
-            specific = SpecificSkillRules.Assess(specific, (await SourceRefs(evidence)).ToDictionary(e => e.Id, e => e.Text), fragment.Text("description"), entity.Text("kind"));
+            specific = SpecificSkillRules.Assess(specific, (await SourceRefs(evidence)).ToDictionary(e => e.Id, e => e.Text), fragment.Text("description"), fragment.Text("workbookSectionKind") == "context" ? "context" : entity.Text("kind"));
             fragment["specificSkills"] = Node(specific); fragment["skillInputHash"] = skillInputHash;
             var importedLexicalTerms = fragment == entity ? [] : await ImportedLexicalTerms(fragment);
             var unitId = Id("projection-", entity.Text("id") + ":" + entity.Number("sourceVersion") + ":" + fragment.Text("id"));
             await Read(unitId);
             var unit = new SearchUnit(unitId, entity.Text("id"), entity.Text("kind"), tenant, fragment.Text("id"),
                 department ? entity.Text("title") : entity.Text("displayName"), fragment.Text("description"), entity.Strings("scopeIds"), "active",
-                department || entity["available"]!.GetValue<bool>(), Retriever.TaxonomyVersion,
+                fragment.Text("workbookSectionKind") != "context" && (department || entity["available"]!.GetValue<bool>()), Retriever.TaxonomyVersion,
                 answer.Choices.SelectMany(q => q.Value.Probabilities.Select(p => new CategoryProbability(q.Key, p.Key, p.Value))).ToArray(),
                 answer.Nouls.Select(p => new ExperienceSignal(p.Key, p.Value.YesProbability, p.Value.State switch { NoulState.Supported => "supported", NoulState.Unknown => "unknown", _ => "not_evaluated" })).ToArray(),
-                ProfileExtraction.Terms(fragment.Text("description")).Concat(importedLexicalTerms.Select(Retriever.Normalize)).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray(),
+                (fragment.Text("workbookSectionKind") is "project" or "context" ? specific.SearchTerms : ProfileExtraction.Terms(fragment.Text("description")).Concat(importedLexicalTerms.Select(Retriever.Normalize))).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray(),
                 await SourceRefs(evidence), fragment.Text("confirmationState"))
             { SourceVersion = entity.Number("sourceVersion"), ProjectionVersion = entity.Number("sourceVersion"), AccessVersion = entity.Number("accessVersion"), ProjectionState = "ready", EvidenceRefs = evidence,
                 SpecificSkills = specific, SyntheticTest = SyntheticTestAccess.IsTest(entity), ProcessingMode = entity.Text("processingMode") };
@@ -319,6 +372,17 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
         entity["projectionIds"] = RecordJson.Array(projectionIds); Write(entity);
         if (document is not null)
         {
+            if(document.Value.Text("generationParentId")!="")
+            {
+                entity["documentHeads"]![document.Value.Text("importKey")]=document.Value.Text("id");
+                entity.Remove("pendingGenerationId");
+                document.Value["generationState"]="published";document.Value["generationPublishedAt"]=clock.GetUtcNow();
+                var auditId=Id("audit-generation-",document.Value.Text("id")+":published");await Read(auditId);
+                var audit=RecordJson.New("audit",auditId,tenant,actor.PrincipalId,document.Value.Strings("scopeIds"),clock.GetUtcNow());
+                audit["aggregateId"]=document.Value.Text("id");audit["parentDocumentId"]=document.Value.Text("generationParentId");audit["action"]="reextraction_generation_published";
+                SyntheticTestAccess.Mark(audit,entity);Write(audit);
+                Write(entity); // replace the already-planned value after switching the head atomically
+            }
             document.Value["aiState"] = "complete"; document.Value["processingMode"] = entity.Text("processingMode"); document.Value["profileResultId"] = entity.Text("id"); Write(document.Value);
         }
         return new(tenant, expected, writes.Values.ToArray(), entity.Text("id"));

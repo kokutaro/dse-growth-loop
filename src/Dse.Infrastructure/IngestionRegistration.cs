@@ -31,6 +31,7 @@ public static class IngestionRegistration
         services.AddSingleton<ConversationService>();
         services.AddSingleton<ChatAssistanceService>();
         services.AddSingleton<DocumentUploads>(); services.AddSingleton<JobNotifications>();
+        services.AddSingleton<ReextractionGenerations>();
         services.AddSingleton<IngestionRetry>(); services.AddSingleton<IngestionProcessor>();
         return services;
     }

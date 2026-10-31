@@ -23,6 +23,7 @@ public static class AiRegistration
             return new AiHttpTransport(http, new AzureAiCredentials(http, credential, config), sp.GetRequiredService<TimeProvider>(), config);
         });
         services.AddSingleton<AiService>();
+        services.AddSingleton<IWorkbookStructurer>(sp => sp.GetRequiredService<AiService>());
         services.AddSingleton<ITextStructurer>(sp => sp.GetRequiredService<AiService>());
         services.AddSingleton<IConcreteSkillExtractor>(sp => sp.GetRequiredService<AiService>());
         services.AddSingleton<IDecisionProvider>(sp => sp.GetRequiredService<AiService>());

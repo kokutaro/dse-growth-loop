@@ -43,13 +43,13 @@ public sealed class SpecificSkillsTests
         Assert.Empty(Retriever.Search([unit],Query("software"),new("demo",["demo"])).Candidates);
         Assert.Empty(Retriever.Search([unit],Query("Azure"),new("demo",["demo"])).Candidates);
     }
-    private sealed class Extractor(string quote, bool corruptSibling = false) : IConcreteSkillExtractor
+    private sealed class Extractor(string quote, bool corruptSibling = false, string? evidenceId = null) : IConcreteSkillExtractor
     {
         public int Calls;
         public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext context,string text,CancellationToken ct)
         {
             Calls++;
-            return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new("C#","C#",context.Evidence[0].Id,quote){Basis="experience"}, ..(corruptSibling ? new SpecificSkill[] { new("Azure",null,"invented","Azureで構築した。"){Basis="experience"} } : [])]),"skill-run-test",null));
+            return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new("C#","C#",evidenceId ?? context.Evidence[0].Id,quote){Basis="experience"}, ..(corruptSibling ? new SpecificSkill[] { new("Azure",null,"invented","Azureで構築した。"){Basis="experience"} } : [])]),"skill-run-test",null));
         }
     }
     [Fact]
@@ -87,11 +87,12 @@ public sealed class SpecificSkillsTests
         cells["F24"]="≪担当業務≫C#で回帰試験を共同実施した。";cells["I23"]="C#";cells["L23"]="Azure";
         var upload=await h.Upload(bytes:InternalResumeFixture.Package(cells),excel:true);await h.Processor.RunOnceAsync(default);
         var doc=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),upload.Body!["documentId"]!.GetValue<string>(),default))!;
-        var reference=Assert.Single(doc.Value["resumeImport"]!["projects"]!.AsArray())!["evidenceIds"]![0]!.GetValue<string>();
+        var sourceRows=await h.Repo.QueryAsync(RecordPartition.Catalog("demo"),"evidenceSpan","documentId",doc.Value.Text("id"),100,null,default);
+        var reference=sourceRows.Items.Single(r=>r.Value.Text("text").Contains("共同実施した",StringComparison.Ordinal)).Value.Text("id");
         var source=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),reference,default))!.Value.Text("text");
         var quote=System.Text.RegularExpressions.Regex.Matches(source,@"[^。！？\r\n]+[。！？]?")
             .Single(m=>m.Value.Contains("共同実施した",StringComparison.Ordinal)).Value.Trim();
-        var ai=new PipelineAi();var extractor=new Extractor(quote);
+        var ai=new PipelineAi();var extractor=new Extractor(quote,evidenceId:reference);
         var config=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?> { ["Data:Mode"]="Demo",["Ai:Mode"]="Mock" }).Build();
         var pipeline=new ProfilePipeline(h.Repo,h.Store,new(h.Repo),ai,ai,new(config),config,h.Clock,extractor);
         await pipeline.CommitAsync(await pipeline.BuildAsync(Jobs.Create(doc.Value,"enrichment",h.Clock.GetUtcNow()),default),[],default);
@@ -104,6 +105,7 @@ public sealed class SpecificSkillsTests
         var units=(await h.Store.QueryAsync(RecordPartition.Catalog("demo"),"searchUnit","entityId","demo-person-01",100,null,default)).Items.Select(r=>r.Value.Deserialize<SearchUnit>(new JsonSerializerOptions(JsonSerializerDefaults.Web))!).ToArray();
         Assert.Single(Retriever.Search(units,new([],[],[]) { SpecificSkills=["C#"] },IdentityResolver.Demo.Search).Candidates);
         Assert.Empty(Retriever.Search(units,new([],[],[]) { SpecificSkills=["Azure"] },IdentityResolver.Demo.Search).Candidates);
-        Assert.Contains(units,u=>u.NormalizedTerms.Contains("azure")); // lexical hints remain explicitly separate
+        Assert.DoesNotContain(units,u=>u.NormalizedTerms.Contains("azure")); // Workbook technology hints are knowledge, not a person-experience search route.
+        Assert.Empty(Retriever.Search(units,new([],[],["Azure"]),IdentityResolver.Demo.Search).Candidates);
     }
 }

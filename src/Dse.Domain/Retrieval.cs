@@ -67,7 +67,7 @@ public static class Retriever
         request.Validate();
         rules?.Validate();
         var terms = request.Terms.Select(Normalize).ToHashSet(StringComparer.Ordinal);
-        var skills = request.SpecificSkills.Select(SpecificSkillRules.Normalize).ToHashSet(StringComparer.Ordinal);
+        var skills = request.SpecificSkills.Concat(request.Terms).Select(SpecificSkillRules.Normalize).ToHashSet(StringComparer.Ordinal);
         var hits = source.Where(u => u.TenantId == access.TenantId && u.ScopeIds.Intersect(access.ScopeIds).Any()
                 && u.Status == "active" && u.Available && u.TaxonomyVersion == TaxonomyVersion && u.SyntheticTest == request.SyntheticOnly)
             .Select(u => new
@@ -77,7 +77,7 @@ public static class Retriever
                     && c.Probability >= request.ProbabilityThreshold).ToArray(),
                 Noul = u.ExperienceSignals.Any(s => request.SignalIds.Contains(s.SignalId)
                     && s.EvidenceState == "supported" && s.YesProbability >= request.NoulThreshold),
-                Skills = u.SpecificSkills?.Version == SpecificSkillRules.Version && u.SpecificSkills.State == "extracted" ? u.SpecificSkills.TermsFor(u.EntityType).Count(skills.Contains) : 0,
+                Skills = u.SpecificSkills?.Version == SpecificSkillRules.Version && u.SpecificSkills.State == "extracted" ? skills.Count(q => u.SpecificSkills.TermsFor(u.EntityType).Any(t => SkillTextMatch.Matches(t, q))) : 0,
                 Terms = u.NormalizedTerms.Count(terms.Contains)
             }).Where(h => h.Categories.Length > 0 || h.Noul || h.Terms > 0 || h.Skills > 0).ToArray();
         var candidates = hits.GroupBy(h => (h.Unit.EntityType, h.Unit.EntityId)).Select(g =>

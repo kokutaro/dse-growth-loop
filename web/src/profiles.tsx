@@ -4,7 +4,7 @@ import { authSessionSignal, getToken, type AppConfig } from "./auth";
 
 type Period = { start: string | null; end: string | null; precision: string; months: number | null };
 type Decisions = { choices: Record<string, { probabilities: Record<string, number>; confidence: number }>; nouls: Record<string, { state: number; yesProbability: number | null }> };
-type Experience = { id: string; documentId: string; description: string; period: Period; confirmationState: string; correctionState: string; pendingExtraction?: { description: string }; evidenceRefs: { id: string }[]; decisions?: Decisions; specificSkills?: SpecificSkills };
+type Experience = { periodEndState?: "dated" | "ongoing" | "unknown"; periodWarnings?: string[]; workbookSectionKind?: "project" | "context"; id: string; documentId: string; description: string; period: Period; confirmationState: string; correctionState: string; pendingExtraction?: { description: string }; evidenceRefs: { id: string }[]; decisions?: Decisions; specificSkills?: SpecificSkills };
 type Person = { id: string; displayName: string; available: boolean; publicationState?: string; confirmationState: string; sourceVersion: number; activeVersion: number | null; projectionJobId?: string; totalExperienceMonths?: number | null };
 const isCalendarMonth = (period: Period) => period.precision === "month" && (!period.start || period.start.length === 7) && (!period.end || period.end.length === 7);
 export function Profiles({ config, person: demoPerson }: { config: AppConfig; person?: string }) {
@@ -99,9 +99,12 @@ export function Profiles({ config, person: demoPerson }: { config: AppConfig; pe
       <p>公開状態：{person.publicationState === "withdrawn" ? "撤回済み" : "公開"} ／ 日付から算出した経験月数（重複除外）：{person.totalExperienceMonths ?? "不明"}</p>
       <p>Probabilityは分類への適合度で、経験年数・経験割合・熟練度ではありません。Confidenceは分類の確信度です。</p>
       {experiences.map(row => <article className="profile-experience" data-testid={row.documentId} key={row.id}>
+        {row.workbookSectionKind === "context" && <p>案件外の原文文脈（自己PR・記入例・補足等）。案件経験や具体技能の検索には公開しません。</p>}
         <label>経験の説明<textarea value={row.description} maxLength={8000} onChange={e => edit(row.id, { description: e.target.value })} /></label>
         <label>{isCalendarMonth(row.period) ? "開始月" : "開始日"}<input type={isCalendarMonth(row.period) ? "month" : "date"} value={row.period.start ?? ""} onChange={e => periodDate(row, "start", e.target.value)} /></label>
         <label>{isCalendarMonth(row.period) ? "終了月（この月を含む）" : "終了日"}<input type={isCalendarMonth(row.period) ? "month" : "date"} value={row.period.end ?? ""} onChange={e => periodDate(row, "end", e.target.value)} /></label>
+        <p>期間精度：{row.period.precision === "month" ? "月" : row.period.precision === "day" ? "日" : "不明"} ／ 終了状態：{row.periodEndState === "ongoing" ? "継続中（終了日・月数は未確定）" : row.periodEndState === "unknown" ? "不明" : row.period.end ? "終了日付あり" : "不明"}</p>
+        {(row.periodWarnings?.length ?? 0) > 0 && <p>期間は原文確認が必要：{row.periodWarnings!.join("、")}</p>}
         <p>月数：{row.period.months ?? "不明"} ／ {row.confirmationState} ／ 根拠：{row.evidenceRefs.map(r => r.id).join("、")}</p>
         <SkillDetails value={row.specificSkills} />
         {row.pendingExtraction && <p>再取込との差分確認：{row.pendingExtraction.description}（現在の本人訂正を保持。確認または訂正を保存すると差分を解消します）</p>}

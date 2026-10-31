@@ -11,6 +11,7 @@ namespace Dse.Infrastructure;
 public static class SyntheticImportBudget
 {
     public static string Id(string documentId) => "test-budget-" + OfficeExtractor.Hash(Encoding.UTF8.GetBytes(documentId));
+    public static JsonObject Configuration(IConfiguration? config) => Snapshot(config);
     private static JsonObject Snapshot(IConfiguration? config)
     {
         try { return SnapshotCore(config); }
@@ -23,17 +24,17 @@ public static class SyntheticImportBudget
         if(limits.Attempts!=1)throw new DomainException(409,"TEST_SINGLE_ATTEMPT_REQUIRED");
         var foundry=AiModel.Read(config,"Foundry",limits.OutputTokens);var jev=AiModel.Read(config,"Jev",limits.OutputTokens);
         // Pin provider/version/rates and call bounds, without storing credentials.
-        return new(){["inputTokens"]=limits.InputTokens,["outputTokens"]=limits.OutputTokens,
+        return new(){["budgetVersion"]="workbook-import-v2",["inputTokens"]=limits.InputTokens,["outputTokens"]=limits.OutputTokens,
             ["foundry"]=JsonSerializer.SerializeToNode(foundry,ProjectionRules.Json),["jev"]=JsonSerializer.SerializeToNode(jev,ProjectionRules.Json),
-            ["maximumUsd"]=(2m*(limits.InputTokens*foundry.InputUsdPerMillion+limits.OutputTokens*foundry.OutputUsdPerMillion)+
-                2m*(limits.InputTokens*jev.InputUsdPerMillion+limits.OutputTokens*jev.OutputUsdPerMillion))/1000000m};
+            ["maximumUsd"]=(4m*(limits.InputTokens*foundry.InputUsdPerMillion+limits.OutputTokens*foundry.OutputUsdPerMillion)+
+                3m*(limits.InputTokens*jev.InputUsdPerMillion+limits.OutputTokens*jev.OutputUsdPerMillion))/1000000m};
     }
     public static JsonObject Describe(IConfiguration config)
     {
         try
         {
             var snapshot=Snapshot(config);
-            return new(){["maxCalls"]=4,["foundryCalls"]=2,["jevCalls"]=2,["mode"]=config["Ai:Mode"],
+            return new(){["maxCalls"]=7,["foundryCalls"]=4,["jevCalls"]=3,["structureCalls"]=1,["maximumSections"]=3,["maximumProjects"]=2,["mode"]=config["Ai:Mode"],
                 ["inputTokensPerCall"]=snapshot["inputTokens"]?.DeepClone(),["outputTokensPerCall"]=snapshot["outputTokens"]?.DeepClone(),
                 ["maximumUsd"]=snapshot["maximumUsd"]?.DeepClone(),["billingVerified"]=false};
         }
@@ -49,7 +50,7 @@ public static class SyntheticImportBudget
         IReadOnlyCollection<string> documentIds,string operation,string prompt,string runId,int attempt,CancellationToken ct)
     {
         if(documentIds.Count==0)return;
-        if(documentIds.Count!=1 || attempt!=1 || !(operation=="extractSkills"&&prompt==SpecificSkillRules.Version || operation=="decide"&&prompt==ProfilePipeline.PromptVersion))
+        if(documentIds.Count!=1 || attempt!=1 || !(operation=="extractSkills"&&prompt==WorkbookRules.CellSkillPrompt || operation=="structureWorkbook"&&prompt==WorkbookRules.Version || operation=="decide"&&prompt==ProfilePipeline.PromptVersion))
             throw new AiException(AiFailure.Budget);
         var documentId=documentIds.Single();var p=RecordPartition.Catalog(actor.TenantId);
         var doc=(await repository.ReadAsync(p,documentId,ct))?.Value??throw new DomainException(409,"SOURCE_REVOKED");
@@ -59,7 +60,7 @@ public static class SyntheticImportBudget
         var dispatches=row.Value["dispatches"]!.AsObject();
         var key=runId+":"+attempt;
         // An existing dispatch is uncertain/consumed, never permission to send again.
-        if(dispatches.ContainsKey(key) || dispatches.Count(x=>x.Value!.GetValue<string>()==operation)>=2)throw new AiException(AiFailure.Budget);
+        if(dispatches.ContainsKey(key) || dispatches.Count(x=>x.Value!.GetValue<string>()==operation)>=(operation=="structureWorkbook"?1:3))throw new AiException(AiFailure.Budget);
         dispatches[key]=operation;
         await repository.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],ct);
     }

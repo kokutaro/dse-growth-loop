@@ -17,7 +17,7 @@ public sealed class IngestionOptions
     public int Entries { get; init; } = 10000;
     public int ProcessingSeconds { get; init; } = 120;
     public int Attempts { get; init; } = 3;
-    public const string ProcessorVersion = "openxml-2";
+    public const string ProcessorVersion = "openxml-3";
     public static IngestionOptions Read(IConfiguration config)
     {
         var o = config.GetSection("Ingestion").Get<IngestionOptions>() ?? new();
@@ -27,8 +27,17 @@ public sealed class IngestionOptions
         return o;
     }
 }
-public sealed record ExtractedSpan(string Type, string Label, string Text);
-public sealed record Extraction(ExtractedSpan[] Spans, string[] Warnings, ResumeImport? ResumeImport = null);
+public sealed record CellSource(string Sheet, string Address, string? MergeRange, string SheetState,
+    bool HiddenRow, bool HiddenColumn, string ValueType, string RawValue, string Text, string? NumberFormat, bool Formula, string ValueState);
+public sealed record WorkbookCapture(string Version, string[] Sheets, CellSource[] Cells, string[] Warnings);
+public sealed record ExtractedSpan(string Type, string Label, string Text)
+{
+    public CellSource? Cell { get; init; }
+}
+public sealed record Extraction(ExtractedSpan[] Spans, string[] Warnings, ResumeImport? ResumeImport = null)
+{
+    public WorkbookCapture? Workbook { get; init; }
+}
 
 // Reads Office Open XML parts only. Never invokes Office, formulas, relationships or embedded code.
 public sealed class OfficeExtractor(IngestionOptions options)
@@ -114,10 +123,10 @@ public sealed class OfficeExtractor(IngestionOptions options)
     public Extraction Extract(byte[] bytes, string filename, string mime, CancellationToken ct)
     {
         var parts = Validate(bytes, filename, mime, ct);
-        List<ExtractedSpan> spans = []; HashSet<string> warnings = [];
+        List<ExtractedSpan> spans = []; HashSet<string> warnings = []; List<CellSource> capturedCells = []; List<string> capturedSheets = [];
         if (parts.Keys.Any(x => x.Contains("/media/"))) warnings.Add("IMAGES_NOT_OCR");
         if (parts.Keys.Where(x => x.EndsWith(".rels")).Any(x => Xml(parts, x).Descendants().Any(e => (string?)e.Attribute("TargetMode") == "External"))) warnings.Add("EXTERNAL_LINKS_IGNORED");
-        void Add(string type, string label, string text)
+        void Add(string type, string label, string text, CellSource? cell = null)
         {
             ct.ThrowIfCancellationRequested();
             if (string.IsNullOrWhiteSpace(text)) return;
@@ -128,12 +137,12 @@ public sealed class OfficeExtractor(IngestionOptions options)
             {
                 if (count == 8000)
                 {
-                    if (!string.IsNullOrWhiteSpace(buffer.ToString())) spans.Add(new(type, $"{label} / offset {offset}", buffer.ToString()));
+                    if (!string.IsNullOrWhiteSpace(buffer.ToString())) spans.Add(new(type, $"{label} / offset {offset}", buffer.ToString()) { Cell = cell });
                     buffer.Clear(); offset += count; count = 0; ct.ThrowIfCancellationRequested();
                 }
                 buffer.Append(rune); count++;
             }
-            if (!string.IsNullOrWhiteSpace(buffer.ToString())) spans.Add(new(type, offset == 0 ? label : $"{label} / offset {offset}", buffer.ToString()));
+            if (!string.IsNullOrWhiteSpace(buffer.ToString())) spans.Add(new(type, offset == 0 ? label : $"{label} / offset {offset}", buffer.ToString()) { Cell = cell });
         }
         if (mime == WordMime)
         {
@@ -169,14 +178,24 @@ public sealed class OfficeExtractor(IngestionOptions options)
                 if (!rels.TryGetValue((string?)sheet.Attribute(R + "id") ?? "", out var part)) throw new DomainException(400, "INVALID_PACKAGE");
                 var xml = Xml(parts, part);
                 if (xml.Root?.Name != S + "worksheet" || ((string?)sheet.Attribute("name")) is not { Length: > 0 and <= 31 }) throw new DomainException(400, "INVALID_PACKAGE");
+                capturedSheets.Add((string)sheet.Attribute("name")!);
+                var seen = new HashSet<string>();
                 var merged = xml.Descendants(S + "mergeCell").Select(x => (string?)x.Attribute("ref") ?? "").ToArray();
                 foreach (var cell in xml.Descendants(S + "c"))
                 {
                     ct.ThrowIfCancellationRequested();
                     var address = (string?)cell.Attribute("r") ?? throw new DomainException(400, "INVALID_PACKAGE");
-                    if (!ValidAddress(address)) throw new DomainException(400, "INVALID_PACKAGE");
+                    if (!ValidAddress(address) || !seen.Add(address)) throw new DomainException(400, "INVALID_PACKAGE");
                     var value = (string?)cell.Element(S + "v") ?? "";
                     var type = (string?)cell.Attribute("t");
+                    var rawValue = value;
+                    var hasFormula = cell.Element(S + "f") is not null;
+                    var valueState = hasFormula && cell.Element(S + "v") is null ? "formula_cache_missing" : "available";
+                    var styleIndex = (int?)cell.Attribute("s") ?? 0;
+                    var numberFormat = styleIndex >= 0 && styleIndex < xfs.Length ? xfs[styleIndex] : 0;
+                    var formatCode = formats.GetValueOrDefault(numberFormat);
+                    if (numberFormat != 0 && !(numberFormat is >= 14 and <= 22 or >= 45 and <= 47 || formatCode is not null && IsDate(formatCode)))
+                        warnings.Add("NUMBER_DISPLAY_FORMAT_NOT_RENDERED");
                     if (cell.Element(S + "f") is not null) { warnings.Add("FORMULA_CACHED_VALUES_ONLY"); if (value.Length == 0) warnings.Add("FORMULA_CACHE_MISSING"); }
                     if (type == "s")
                     {
@@ -199,14 +218,33 @@ public sealed class OfficeExtractor(IngestionOptions options)
                             }
                         }
                     }
-                    var range = merged.FirstOrDefault(x => x.Split(':')[0] == address);
-                    Add("cells", $"{part} / {(string?)sheet.Attribute("name")}!{range ?? address}", value);
+                    var range = merged.FirstOrDefault(x => InRange(address, x));
+                    var column = ColumnNumber(address);
+                    var cellSource = new CellSource((string)sheet.Attribute("name")!, address, range,
+                        (string?)sheet.Attribute("state") ?? "visible", (string?)cell.Parent?.Attribute("hidden") is "1" or "true",
+                        xml.Descendants(S + "col").Any(c => (string?)c.Attribute("hidden") is "1" or "true" &&
+                            (int?)c.Attribute("min") <= column && (int?)c.Attribute("max") >= column),
+                        type ?? "n", rawValue, value, formatCode ?? numberFormat.ToString(CultureInfo.InvariantCulture), hasFormula, valueState);
+                    capturedCells.Add(cellSource);
+                    if (capturedCells.Count > 50000) throw new DomainException(422, "WORKBOOK_CAPTURE_CELL_LIMIT");
+                    Add("cells", $"{part} / {(string?)sheet.Attribute("name")}!{(range?.Split(':')[0] == address ? range : address)}", value, cellSource);
                 }
+                foreach (var text in xml.Descendants().Where(e => e.Name.LocalName is "oddHeader" or "evenHeader" or "firstHeader" or "oddFooter" or "evenFooter" or "firstFooter"))
+                    Add("sheetText", $"{part} / {(string?)sheet.Attribute("name")} / {text.Name.LocalName}", text.Value);
+            }
+            // Notes/drawing text is retained as auxiliary context, not interpreted as executable content.
+            foreach (var part in parts.Keys.Where(p => p.StartsWith("xl/comments", StringComparison.Ordinal) && p.EndsWith(".xml", StringComparison.Ordinal) || p.StartsWith("xl/drawings/", StringComparison.Ordinal) && p.EndsWith(".xml", StringComparison.Ordinal)))
+            {
+                var xml = Xml(parts, part); int n = 0;
+                foreach (var text in xml.Descendants().Where(e => e.Name.LocalName is "t" or "text" && !e.Elements().Any()))
+                    Add("sheetText", $"{part} / text {++n}", text.Value);
             }
         }
         if (spans.Count == 0) warnings.Add("EMPTY_DOCUMENT");
-        var extraction = new Extraction(spans.ToArray(), warnings.Order().ToArray());
-        return mime == ExcelMime ? InternalResumeSheet.Adapt(extraction, ct) : extraction;
+        var extraction = new Extraction(spans.ToArray(), warnings.Order().ToArray()) {
+            Workbook = mime == ExcelMime ? new("workbook-cells-v1", capturedSheets.ToArray(), capturedCells.ToArray(), warnings.Order().ToArray()) : null
+        };
+        return extraction; // All sheets/cells are authoritative; no template adapter discards them.
     }
     // ZipArchive does not reject every encryption flag or validate every stored-entry CRC.
     // Inspect central AND local headers, then check the actual decompressed bytes ourselves.
@@ -253,6 +291,15 @@ public sealed class OfficeExtractor(IngestionOptions options)
         if (!match.Success) return false;
         int column = 0; foreach (var c in match.Groups[1].Value) column = column * 26 + c - 'A' + 1;
         return column <= 16384 && int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture) <= 1048576;
+    }
+    private static int ColumnNumber(string address) => address.TakeWhile(char.IsAsciiLetter).Aggregate(0, (n, c) => n * 26 + c - 'A' + 1);
+    private static bool InRange(string address, string range)
+    {
+        var bounds = range.Split(':');
+        if (bounds.Length is < 1 or > 2 || !bounds.All(ValidAddress)) throw new DomainException(400, "INVALID_PACKAGE");
+        if (bounds.Length == 1) return address == bounds[0];
+        int Row(string a) => int.Parse(new string(a.SkipWhile(char.IsAsciiLetter).ToArray()), CultureInfo.InvariantCulture);
+        return ColumnNumber(address) >= ColumnNumber(bounds[0]) && ColumnNumber(address) <= ColumnNumber(bounds[1]) && Row(address) >= Row(bounds[0]) && Row(address) <= Row(bounds[1]);
     }
     private static bool IsDate(string format)
     {
