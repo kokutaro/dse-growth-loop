@@ -915,21 +915,44 @@
                 "type": "null"
               }
             ]
+          },
+          "basis": {
+            "enum": [
+              "experience",
+              "knowledge",
+              "qualification",
+              "not_experience",
+              "uncertain"
+            ]
           }
         },
         "required": [
           "raw",
           "normalizationCandidate",
           "evidenceId",
-          "quote",
-          "participation"
+          "quote"
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "basis"
+            ]
+          },
+          {
+            "required": [
+              "participation"
+            ]
+          }
         ]
       },
       "SkillAnalysis": {
         "type": "object",
         "properties": {
           "version": {
-            "const": "skill-elements-v1"
+            "enum": [
+              "skill-elements-v1",
+              "skill-elements-v2"
+            ]
           },
           "quoteState": {
             "enum": [
@@ -1095,6 +1118,15 @@
               "$ref": "#/components/schemas/SkillSlice"
             },
             "maxItems": 2
+          },
+          "basis": {
+            "enum": [
+              "experience",
+              "knowledge",
+              "qualification",
+              "not_experience",
+              "uncertain"
+            ]
           }
         },
         "required": [
@@ -1104,7 +1136,6 @@
           "conditions",
           "kind",
           "subjectScope",
-          "participation",
           "conceptId",
           "conceptState",
           "slices"

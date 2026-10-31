@@ -9,70 +9,47 @@ namespace Dse.Tests;
 
 public sealed class SpecificSkillsTests
 {
+
     [Theory]
-    [InlineData("C#で回帰試験を実施した。", "performed", true)]
-    [InlineData("C#で回帰試験を共同実施した。", "joint", true)]
-    [InlineData("C#で回帰試験を実施した。", "joint", false)]
-    [InlineData("C#で回帰試験の補助を実施した。", "assisted", true)]
-    [InlineData("C#で回帰試験を共同実施した。", "performed", false)]
-    [InlineData("C#を実装したい。", "performed", false)]
-    [InlineData("C#を実装したい。", "aspiration", true)]
-    [InlineData("C#で実装した人に相談した。", "performed", false)]
-    [InlineData("C#で実装した人に相談した。", "consultation", true)]
-    [InlineData("同僚がC#で実装した。", "performed", false)]
-    [InlineData("同僚がC#で実装した。", "other_person", true)]
-    [InlineData("C#を担当していない。", "performed", false)]
-    [InlineData("C#を担当していない。", "negated", true)]
-    [InlineData("技術欄：C#、Azure", "performed", false)]
-    [InlineData("技術欄：C#、Azure", "unclear", true)]
-    public void Ownership_and_context_gate_personal_tags(string text, string participation, bool valid)
+    [InlineData("experience", "C#で共同実施した。", true)]
+    [InlineData("experience", "C#の検証を補助した。", true)]
+    [InlineData("knowledge", "C#の資料を読んだ。", false)]
+    [InlineData("not_experience", "C#で実装したい。", false)]
+    [InlineData("not_experience", "C#は未経験。", false)]
+    [InlineData("uncertain", "C#について記載。", false)]
+    public void Ai_context_controls_experience_without_involvement_subtypes(string basis,string text,bool eligible)
     {
-        var result = new SpecificSkills(SpecificSkillRules.Version, "extracted", [new("C#", "sales", "e1", text, participation)]);
-        if (!valid) { Assert.Throws<ArgumentException>(() => SpecificSkillRules.Validate(result, new Dictionary<string, string> { ["e1"] = text })); return; }
-        SpecificSkillRules.Validate(result, new Dictionary<string, string> { ["e1"] = text });
-        Assert.Equal(SpecificSkillRules.IsExperience(result.Items![0]) ? new[] { "c#" } : [], result.SearchTerms);
-        Assert.DoesNotContain("sales", result.SearchTerms); // unapproved normalization proposal is not indexed
+        var value=SpecificSkillRules.Assess(new(SpecificSkillRules.Version,"extracted",[new("C#","Azure","e1",text){Basis=basis}]),new Dictionary<string,string>{{"e1",text}});
+        Assert.Equal(eligible,value.SearchTerms.Length==1);Assert.DoesNotContain("azure",value.SearchTerms);Assert.Null(value.Items![0].Participation);
     }
-
     [Fact]
-    public void Quotes_cannot_cherry_pick_and_missing_empty_unknown_remain_distinct()
+    public void Source_integrity_and_null_empty_contract_are_preserved()
     {
-        const string source = "C#で実装した人に相談した。";
-        Assert.Throws<ArgumentException>(() => SpecificSkillRules.Validate(new(SpecificSkillRules.Version, "extracted", [new("C#", null, "e1", "C#で実装した", "performed")]), new Dictionary<string,string> { ["e1"] = source }));
-        SpecificSkillRules.Validate(new(SpecificSkillRules.Version, "extracted", []), new Dictionary<string,string>());
-        SpecificSkillRules.Validate(new(SpecificSkillRules.Version, "unknown", null), new Dictionary<string,string>());
-        Assert.Throws<ArgumentException>(() => SpecificSkillRules.Validate(new(SpecificSkillRules.Version, "unknown", []), new Dictionary<string,string>()));
-        Assert.Throws<ArgumentException>(() => SpecificSkillRules.Validate(new(SpecificSkillRules.Version, "extracted", null), new Dictionary<string,string>()));
-        var positive = new SpecificSkills(SpecificSkillRules.Version, "extracted", [new("C#", "C#", "e1", "C#で実装した。", "performed")]);
-        SpecificSkillRules.Validate(positive, new Dictionary<string,string> { ["e1"] = "C#で実装した。Azureを学習したい。" });
-        Assert.Throws<ArgumentException>(() => SpecificSkillRules.Validate(positive, new Dictionary<string,string> { ["e1"] = "他人の資料。C#で実装した。本人の担当は案内のみ。" }));
+        SpecificSkills Value(string quote,string id="e1")=>new(SpecificSkillRules.Version,"extracted",[new("C#",null,id,quote){Basis="experience"}]);
+        Assert.Throws<ArgumentException>(()=>SpecificSkillRules.Validate(Value("C#で改ざんした。"),new Dictionary<string,string>{{"e1","C#で実装した。"}}));
+        Assert.Throws<ArgumentException>(()=>SpecificSkillRules.Validate(Value("C#で実装した。","wrong"),new Dictionary<string,string>{{"e1","C#で実装した。"}}));
+        SpecificSkillRules.Validate(new(SpecificSkillRules.Version,"extracted",[]),new Dictionary<string,string>());
+        SpecificSkillRules.Validate(new(SpecificSkillRules.Version,"unknown",null),new Dictionary<string,string>());
+        Assert.Throws<ArgumentException>(()=>SpecificSkillRules.Validate(new(SpecificSkillRules.Version,"unknown",[]),new Dictionary<string,string>()));
+        Assert.Throws<ArgumentException>(()=>SpecificSkillRules.Validate(new(SpecificSkillRules.Version,"extracted",null),new Dictionary<string,string>()));
     }
-
     [Fact]
-    public void Concrete_search_is_separate_from_legacy_domain_ids_and_lexical_hints()
+    public void Concrete_search_is_separate_from_domain_ids_and_unapproved_normalization()
     {
-        var unit = new SearchUnit("unit", "person", "person", "demo", "exp", "架空", "架空", ["demo"], "active", true, "taxonomy-v1", [new("domain","software",.9)], [], ["azure"], [new("e1","fixture","p1","C#で実装した。")], "ai_unconfirmed")
-        { SkillIds = ["software"], SpecificSkills = new(SpecificSkillRules.Version,"extracted",[new("C#", "Azure", "e1","C#で実装した。","performed")]) };
-        SearchRequest Skill(string text) => new([], [], []) { SpecificSkills = [text] };
-        var hit=Retriever.Search([unit],Skill("Ｃ＃"),new("demo",["demo"]));
-        Assert.Contains("specificSkills",Assert.Single(hit.Candidates).Routes);
-        Assert.Equal(0,hit.Candidates[0].TermMatches);Assert.Equal(1,hit.Candidates[0].SpecificSkillMatches);
-        Assert.Contains("specificSkillMatches",JsonSerializer.Serialize(hit.Candidates[0],new JsonSerializerOptions(JsonSerializerDefaults.Web)));
-        Assert.DoesNotContain("specificSkillMatches",JsonSerializer.Serialize(hit.Candidates[0] with { SpecificSkillMatches=0 },new JsonSerializerOptions(JsonSerializerDefaults.Web)));
-        Assert.Empty(Retriever.Search([unit],Skill("software"),new("demo",["demo"])).Candidates);
-        Assert.Empty(Retriever.Search([unit],Skill("Azure"),new("demo",["demo"])).Candidates);
-        Assert.Empty(Retriever.Search([unit with { SpecificSkills = null }],Skill("C#"),new("demo",["demo"])).Candidates);
-        var query=CosmosCatalog.BuildQuery(Skill("C#"),new("demo",["demo"]));
-        Assert.Contains("u.specificSkills.searchTerms",query.QueryText); Assert.DoesNotContain("skillIds",query.QueryText);
+        var skills=SpecificSkillRules.Assess(new(SpecificSkillRules.Version,"extracted",[new("C#","Azure","e1","C#で実装した。"){Basis="experience"}]),new Dictionary<string,string>{{"e1","C#で実装した。"}});
+        var unit=new SearchUnit("unit","person","person","demo","exp","架空","架空",["demo"],"active",true,"taxonomy-v1",[new("domain","software",.9)],[],["azure"],[new("e1","fixture","p1","C#で実装した。")],"ai_unconfirmed"){SkillIds=["software"],SpecificSkills=skills};
+        SearchRequest Query(string v)=>new([],[],[]){SpecificSkills=[v]};
+        Assert.Single(Retriever.Search([unit],Query("Ｃ＃"),new("demo",["demo"])).Candidates);
+        Assert.Empty(Retriever.Search([unit],Query("software"),new("demo",["demo"])).Candidates);
+        Assert.Empty(Retriever.Search([unit],Query("Azure"),new("demo",["demo"])).Candidates);
     }
-
-    private sealed class Extractor(string quote, string participation = "performed", bool corruptSibling = false) : IConcreteSkillExtractor
+    private sealed class Extractor(string quote, bool corruptSibling = false) : IConcreteSkillExtractor
     {
         public int Calls;
         public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext context,string text,CancellationToken ct)
         {
             Calls++;
-            return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new("C#","C#",context.Evidence[0].Id,quote,participation), ..(corruptSibling ? new SpecificSkill[] { new("Azure",null,"invented","Azureで構築した。","performed") } : [])]),"skill-run-test",null));
+            return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new("C#","C#",context.Evidence[0].Id,quote){Basis="experience"}, ..(corruptSibling ? new SpecificSkill[] { new("Azure",null,"invented","Azureで構築した。"){Basis="experience"} } : [])]),"skill-run-test",null));
         }
     }
     [Fact]
@@ -114,7 +91,7 @@ public sealed class SpecificSkillsTests
         var source=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),reference,default))!.Value.Text("text");
         var quote=System.Text.RegularExpressions.Regex.Matches(source,@"[^。！？\r\n]+[。！？]?")
             .Single(m=>m.Value.Contains("共同実施した",StringComparison.Ordinal)).Value.Trim();
-        var ai=new PipelineAi();var extractor=new Extractor(quote,"joint");
+        var ai=new PipelineAi();var extractor=new Extractor(quote);
         var config=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?> { ["Data:Mode"]="Demo",["Ai:Mode"]="Mock" }).Build();
         var pipeline=new ProfilePipeline(h.Repo,h.Store,new(h.Repo),ai,ai,new(config),config,h.Clock,extractor);
         await pipeline.CommitAsync(await pipeline.BuildAsync(Jobs.Create(doc.Value,"enrichment",h.Clock.GetUtcNow()),default),[],default);
@@ -123,7 +100,7 @@ public sealed class SpecificSkillsTests
         Assert.Equal("extracted",person["specificSkills"]!["state"]!.GetValue<string>());
         Assert.Equal("C#",Assert.Single(person["specificSkills"]!["items"]!.AsArray())!["raw"]!.GetValue<string>());
         var skill=Assert.Single(exp["specificSkills"]!["items"]!.AsArray())!;
-        Assert.Equal("joint",skill["participation"]!.GetValue<string>());Assert.Equal(reference,skill["evidenceId"]!.GetValue<string>());
+        Assert.Equal("experience",skill["basis"]!.GetValue<string>());Assert.Null(skill["participation"]);Assert.Equal(reference,skill["evidenceId"]!.GetValue<string>());
         var units=(await h.Store.QueryAsync(RecordPartition.Catalog("demo"),"searchUnit","entityId","demo-person-01",100,null,default)).Items.Select(r=>r.Value.Deserialize<SearchUnit>(new JsonSerializerOptions(JsonSerializerDefaults.Web))!).ToArray();
         Assert.Single(Retriever.Search(units,new([],[],[]) { SpecificSkills=["C#"] },IdentityResolver.Demo.Search).Candidates);
         Assert.Empty(Retriever.Search(units,new([],[],[]) { SpecificSkills=["Azure"] },IdentityResolver.Demo.Search).Candidates);

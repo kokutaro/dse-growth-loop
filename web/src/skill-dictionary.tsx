@@ -2,17 +2,19 @@ import {useEffect,useRef,useState} from 'react';
 import {SkillSuggestionPanel,type SkillSuggestion} from './skill-suggestion';
 import {authSessionSignal,getToken,type AppConfig} from './auth';
 
-type Element={label:string;object:string|null;conditions:string[];kind:string;subjectScope:string;participation:string};
+type Element={label:string;object:string|null;conditions:string[];kind:string;subjectScope:string;participation?:string;basis?:string};
 type Concept={id:string;name:string;definition:string;boundary:string;scopeIds:string[];state:string;redirectId:string|null;aliases:{text:string;kind:string;object:string|null;conditions:string[]}[]};
 type Dictionary={version:number;currentVersion:number;etag:string;concepts:Concept[]};
-type Candidate={sourceStatus?:string;reviewable?:boolean;candidateType?:string;sourceInputState?:string;id:string;etag:string;state:string;conceptId:string|null;fragmentId:string;scopeIds:string[];element:Element|null;item:{raw:string;quote:string;evidenceId:string;participation:string;normalizationCandidate:string|null;analysis:{experienceState:string;quoteState:string;semanticSupport:string}}|null};
+type Candidate={sourceStatus?:string;reviewable?:boolean;candidateType?:string;sourceInputState?:string;id:string;etag:string;state:string;conceptId:string|null;fragmentId:string;scopeIds:string[];element:Element|null;item:{raw:string;quote:string;evidenceId:string;participation?:string;basis?:string;normalizationCandidate:string|null;analysis:{experienceState:string;quoteState:string;semanticSupport:string}}|null};
 type ReviewCandidate=Candidate & {element:Element;item:NonNullable<Candidate['item']>};
-type SourceReview={candidateId:string;fragmentId:string;sourceStatus:string;currentFingerprint:string;guardVersion:string;inputState:string;acceptedCount:number;currentText:string;evidence:{id:string;text:string}[];rejected:{reason:string;raw:string|null;participation:string}[]};
+type SourceReview={candidateId:string;fragmentId:string;sourceStatus:string;currentFingerprint:string;guardVersion:string;inputState:string;acceptedCount:number;currentText:string;evidence:{id:string;text:string}[];rejected:{reason:string;raw:string|null;participation?:string;basis?:string}[]};
 const holdReasons:Record<string,string>={raw_not_in_quote:'元表現が引用内にない',quote_not_in_source:'引用が原文と一致しない',not_in_fragment:'元表現が現在の実績本文にない',incomplete_passage:'文の一部だけの引用',no_completed_assertion:'実施を確定できない',negated_assertion:'実施の否定',reported_or_intended:'希望・計画・相談・伝聞',other_actor:'他者の実績',duplicate_candidate:'重複候補',unknown_evidence:'根拠IDが現在の原文根拠に含まれない'};
 type Write={path:string;key:string;etag?:string;body:unknown};
-const labels:Record<string,string>={pending:'未登録・確認待ち',matched:'既存技能に対応',registered:'新規登録済み',alias:'別名承認済み',merged:'統合済み',not_skill:'技能ではない',deferred:'保留',practice:'実務',knowledge:'知識',reference:'参照',qualification:'資格',performed:'実施（抽出値）',joint:'共同（抽出値）',assisted:'補助（抽出値）',aspiration:'希望',consultation:'相談',other_person:'他者経験',negated:'否定',unclear:'不明',eligible:'経験候補・本人未確認',content_only:'知識内容のみ',pending_eligibility:'本人関与未確定'};
+const labels:Record<string,string>={pending:'未登録・確認待ち',matched:'既存技能に対応',registered:'新規登録済み',alias:'別名承認済み',merged:'統合済み',not_skill:'技能ではない',deferred:'保留',practice:'作業・技術',knowledge:'知識',reference:'参照',qualification:'資格',eligible:'経験候補・本人未確認',content_only:'知識内容のみ',pending_eligibility:'文脈未確定'};
 const name=(s:string)=>s==='non_practice'?'実務経験としては扱わない':labels[s]??s;
 class ApiError extends Error{constructor(public status:number,public code:string){super(code);}}
+const contextLabels:Record<string,string>={experience:'経験内容',knowledge:'知識・学習',qualification:'資格',not_experience:'未実施・希望等',uncertain:'文脈未確定'};
+const contextName=(basis?:string)=>contextLabels[basis??'']??'旧版の抽出（新方式で未評価）';
 export function SkillDictionary({config}:{config:AppConfig}){
  const [sourceReview,setSourceReview]=useState<SourceReview>();const sourceEpoch=useRef(0);const sending=useRef(false);
  const [suggestion,setSuggestion]=useState<SkillSuggestion>();
@@ -65,7 +67,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
  const canSave=selected&&dictionary&&!busy&&!uncertain&&reason.trim()&&(action==='merge'?selected.conceptId&&target&&target!==selected.conceptId:allowed)&&(action==='new'?standard.trim()&&definition.trim()&&boundary.trim():action==='alias'?target:true);
  return <div className="skill-dictionary"><h1>共通技能辞書と候補レビュー</h1>
  {config.mode==='Demo'&&<p className="note">ローカルの仮データ検証画面です。実AIの精度評価ではありません。</p>}
- <p>原文と関与を確認し、人が辞書を育てます。辞書登録は人物経験の認定・公開ではありません。正解データと既存の検索語も変更しません。</p>
+ <p>原文と文脈を確認し、人が辞書を育てます。辞書登録は人物経験の認定・公開ではありません。正解データと既存の検索語も変更しません。</p>
  {error&&<p role="alert">{error}</p>}{message&&<p role="status">{message}</p>}
  {uncertain&&<button disabled={busy} onClick={()=>pending.current&&void send(pending.current)}>同じ操作を再送</button>}
  {!dictionary?<button onClick={()=>void read(refresh)} disabled={busy}>権限を確認して読み込む</button>:<>
@@ -73,9 +75,9 @@ export function SkillDictionary({config}:{config:AppConfig}){
  <label>実績・知識ID<input value={fragment} onChange={e=>setFragment(e.target.value)}/></label><button disabled={busy||uncertain||!fragment.trim()} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:fragment}})}>保存済み抽出を収集</button>
  </section>
  <section className="panel"><h2>候補一覧</h2><p>未登録は誤りではありません。判断不能と該当なしは収集状態で区別します。</p>
- <div style={{overflowX:'auto'}}><table><thead><tr><th>選択</th><th>元表現・比較要素</th><th>種別・関与</th><th>状態</th><th>確認</th></tr></thead><tbody>{items.map(c=><tr key={c.id}>
+ <div style={{overflowX:'auto'}}><table><thead><tr><th>選択</th><th>元表現・比較要素</th><th>種別・抽出文脈</th><th>状態</th><th>確認</th></tr></thead><tbody>{items.map(c=><tr key={c.id}>
  <td><input type="checkbox" disabled={c.reviewable===false} aria-label={`候補 ${c.id} をプレビュー`} checked={checked.includes(c.id)} onChange={e=>setChecked(xs=>e.target.checked?[...xs,c.id]:xs.filter(x=>x!==c.id))}/></td>
- <td>{c.item?.raw??'現在の根拠の再確認が必要'}<br/><small>{c.element&&<>要素：{c.element.label}<br/></>}元資料：{c.fragmentId}</small></td><td>{c.element?`${name(c.element.kind)} ／ ${name(c.element.participation)}`:'技能の認定前'}</td><td>{c.sourceStatus==='changed'?'根拠更新・再収集が必要':c.candidateType==='collection'?`収集の確認待ち（${c.sourceInputState}）`:name(c.state)}</td><td><button onClick={()=>choose(c)} disabled={busy||uncertain}>この候補を確認</button></td></tr>)}</tbody></table></div>
+ <td>{c.item?.raw??'現在の根拠の再確認が必要'}<br/><small>{c.element&&<>要素：{c.element.label}<br/></>}元資料：{c.fragmentId}</small></td><td>{c.element?`${name(c.element.kind)} ／ ${contextName(c.item?.basis)}`:'技能の認定前'}</td><td>{c.sourceStatus==='changed'?'根拠更新・再収集が必要':c.candidateType==='collection'?`収集の確認待ち（${c.sourceInputState}）`:name(c.state)}</td><td><button onClick={()=>choose(c)} disabled={busy||uncertain}>この候補を確認</button></td></tr>)}</tbody></table></div>
  {items.length===0&&<p>現在の権限で確認できる候補はありません。</p>}{cursor&&<button disabled={busy} onClick={()=>void read(async()=>{const list=await request('skill-candidates?continuationToken='+encodeURIComponent(cursor));setItems(xs=>[...xs,...list.items]);setCursor(list.continuationToken);})}>次の候補を読む</button>}
  </section>
  {sourceReview&&<section className="panel source-review"><h2>現在の根拠を再確認・再収集</h2>
@@ -84,18 +86,18 @@ export function SkillDictionary({config}:{config:AppConfig}){
  <h3>現在の本文</h3><blockquote>{sourceReview.currentText}</blockquote>
  <details><summary>現在アクセス可能な原文根拠</summary>{sourceReview.evidence.map(e=><div key={e.id}><p>根拠ID：{e.id}</p><blockquote>{e.text}</blockquote></div>)}</details>
  <p>現在の検証で保持した抽出 {sourceReview.acceptedCount} 件。保留 {sourceReview.rejected.length} 件。</p>
- <ul>{sourceReview.rejected.map((r,i)=><li key={i}>{r.raw??'原文に一致する元表現を確認できません'} ／ {holdReasons[r.reason]??'検証保留'}（{r.reason}） ／ {name(r.participation)}</li>)}</ul>
+ <ul>{sourceReview.rejected.map((r,i)=><li key={i}>{r.raw??'原文に一致する元表現を確認できません'} ／ {holdReasons[r.reason]??'検証保留'}（{r.reason}） ／ {contextName(r.basis)}</li>)}</ul>
  <p>原文や保存済み抽出の修正はこの画面では行いません。再収集は現在の根拠で再検証し、解消していない保留は残します。AI追加実行・辞書承認・人物経験の認定は行いません。</p>
  <button disabled={busy||uncertain} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:sourceReview.fragmentId,expectedFingerprint:sourceReview.currentFingerprint}})}>現在の根拠で再収集</button>
  <button disabled={busy} onClick={()=>{sourceEpoch.current++;setSourceReview(undefined);}}>一覧へ戻る</button>
  </section>}
  {selected&&<section className="panel candidate-review"><h2>根拠と辞書を比較</h2><button disabled={busy} onClick={()=>{sourceEpoch.current++;setSelected(undefined);setSuggestion(undefined);setHistory(undefined);}}>一覧へ戻る</button>
- <div className="skill-review-columns"><div><h3>抽出候補</h3><strong>{selected.item.raw}</strong><p>要素：{selected.element.label} ／ 対象：{selected.element.object??'明記なし'}</p><p>条件：{selected.element.conditions.join('、')||'明記なし'}</p>
- <p>{name(selected.element.kind)} ／ {name(selected.element.participation)} ／ 主体：{selected.element.subjectScope}</p><p>経験判定：{selected.item.analysis.experienceState==='pending'?name('pending_eligibility'):name(selected.item.analysis.experienceState)}</p>
+ <div className="skill-review-columns"><div><h3>抽出候補</h3><strong>{selected.item.raw}</strong><p>要素：{selected.element.label} ／ 対象：{selected.element.object??'原文引用で確認（自動分解なし）'}</p><p>条件：{selected.element.conditions.join('、')||'原文引用で確認（自動分解なし）'}</p>
+ <p>{name(selected.element.kind)} ／ {contextName(selected.item.basis)} ／ 主体：{selected.element.subjectScope}</p><p>抽出文脈：{selected.item.analysis.experienceState==='pending'?name('pending_eligibility'):name(selected.item.analysis.experienceState)}</p>
  <blockquote>{selected.item.quote}</blockquote><p>根拠ID：{selected.item.evidenceId}</p><p>引用整合性：{selected.item.analysis.quoteState==='quote_verified'?'原文一致（機械検証）':'未確認'}。意味支持・本人経験の確認とは別です。</p><p>AI正規化案（未承認）：{selected.item.normalizationCandidate??'なし'}</p></div>
  <div><h3>既存の承認済み辞書</h3><p>共有範囲と種別が同じ技能だけを選択できます。範囲は元資料から広げません。</p><label>比較・統合先の技能<select value={target} onChange={e=>setTarget(e.target.value)}><option value="">選択してください</option>{targets.map(c=><option key={c.id} value={c.id}>{c.name} ({c.id})</option>)}</select></label>
  {targetConcept?<><p>標準名：{targetConcept.name}</p><p>定義：{targetConcept.definition}</p><p>境界：{targetConcept.boundary}</p><p>別名：{targetConcept.aliases.map(a=>a.text).join('、')}</p></>:<p>同じ上位カテゴリだけでは統合しません。</p>}
- <p>辞書版 {dictionary.version} に対する判断です。種別・対象・条件・役割は候補に残ります。</p></div></div>
+ <p>辞書版 {dictionary.version} に対する判断です。種別と原文引用を保持します。対象・条件・案件の役割は原文を確認してください。</p></div></div>
  <SkillSuggestionPanel value={suggestion} currentVersion={dictionary.version} disabled={busy||uncertain||!allowed} onRequest={()=>void send({path:`skill-candidates/${selected.id}/suggest`,key:crypto.randomUUID(),etag:selected.etag,body:{version:dictionary.version,dictionaryETag:dictionary.etag}})} onReload={()=>void read(async()=>setSuggestion(await request(`skill-candidates/${selected.id}/suggestion?version=${dictionary.version}`)))} onCompare={id=>{if(targets.some(c=>c.id===id)&&!suggestion?.stale&&suggestion?.dictionaryVersion===dictionary.version)setTarget(id);}}/>
  <label>レビュー判断<select value={action} onChange={e=>setAction(e.target.value)}><option value="defer">保留</option><option value="alias">既存技能の別名として承認</option><option value="new">新しい技能として登録</option><option value="merge">既存技能を統合（旧IDを保持）</option><option value="not_skill">技能ではない</option></select></label>
  {action==='new'&&<><label>標準名<input value={standard} maxLength={100} onChange={e=>setStandard(e.target.value)}/></label><label>技能の定義<textarea value={definition} maxLength={500} onChange={e=>setDefinition(e.target.value)}/></label><label>含む範囲・含めない範囲<textarea value={boundary} maxLength={500} onChange={e=>setBoundary(e.target.value)}/></label></>}

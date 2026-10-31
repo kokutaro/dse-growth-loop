@@ -81,13 +81,14 @@ public static class CosmosCatalog
         if (request.Terms.Length > 0)
             routes.Add("EXISTS(SELECT VALUE t FROM t IN u.normalizedTerms WHERE ARRAY_CONTAINS(@terms, t))");
         if (request.SpecificSkills.Length > 0)
-            routes.Add("(u.specificSkills.version = 'specific-skills-v1' AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE ARRAY_CONTAINS(@specificSkills, t)) OR (u.entityType = 'knowledge' AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE ARRAY_CONTAINS(@specificSkills, t)))))");
+            routes.Add("(u.specificSkills.version = @specificSkillVersion AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE ARRAY_CONTAINS(@specificSkills, t)) OR (u.entityType = 'knowledge' AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE ARRAY_CONTAINS(@specificSkills, t)))))");
         var query = new QueryDefinition("SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s)) AND (" + string.Join(" OR ", routes) + ")")
             .WithParameter("@tenant", access.TenantId).WithParameter("@taxonomy", Retriever.TaxonomyVersion)
             .WithParameter("@scopes", access.ScopeIds).WithParameter("@probability", request.ProbabilityThreshold)
             .WithParameter("@signals", request.SignalIds).WithParameter("@noul", request.NoulThreshold)
             .WithParameter("@terms", request.Terms.Select(Retriever.Normalize).ToArray())
-            .WithParameter("@specificSkills", request.SpecificSkills.Select(SpecificSkillRules.Normalize).ToArray());
+            .WithParameter("@specificSkills", request.SpecificSkills.Select(SpecificSkillRules.Normalize).ToArray())
+            .WithParameter("@specificSkillVersion", SpecificSkillRules.Version);
         foreach (var (name, value) in parameters) query.WithParameter(name, value);
         return query;
     }

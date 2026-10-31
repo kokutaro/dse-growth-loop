@@ -11,7 +11,7 @@ public sealed partial class SkillDictionaryService
         :f["evidenceRefs"]?.Deserialize<EvidenceReference[]>(ProjectionRules.Json)??[];
     private static string SnapshotHash(SkillDictionarySnapshot s)=>Hash(RecordJson.Canonical(Node(s)));
     private static string CandidateSetHash(ActorAccess a,JsonObject c,SkillDictionarySnapshot s)=>Hash(RecordJson.Canonical(Node(SkillChoiceMatching.Applicable(s,c.Strings("scopeIds"),a.ScopeIds).Select(x=>x.Id).ToArray())));
-    private static string SuggestionId(ActorAccess a,JsonObject c,SkillDictionarySnapshot s)=>"skill-proposal-"+Hash(a.PrincipalId+":"+c.Text("id")+":"+c.Text("sourceFingerprint")+":"+SnapshotHash(s)+":"+SkillChoiceMatching.Version+":"+SkillSemanticBudget.Version+":"+SkillChoiceWire.Version+":"+ChoiceProbabilityRules.Version+":"+CandidateSetHash(a,c,s));
+    private static string SuggestionId(ActorAccess a,JsonObject c,SkillDictionarySnapshot s,string? policy=null)=>"skill-proposal-"+Hash(a.PrincipalId+":"+c.Text("id")+":"+c.Text("sourceFingerprint")+":"+SnapshotHash(s)+":"+(policy??SkillChoiceMatching.Version)+":"+SkillSemanticBudget.Version+":"+SkillChoiceWire.Version+":"+ChoiceProbabilityRules.Version+":"+CandidateSetHash(a,c,s));
     private static string NoulSuggestionId(ActorAccess a,JsonObject c,SkillDictionarySnapshot s,bool legacy)=>"skill-proposal-"+Hash(a.PrincipalId+":"+c.Text("id")+":"+c.Text("sourceFingerprint")+":"+SnapshotHash(s)+":"+SkillSemanticMatching.Version+(legacy?"":":"+SkillSemanticBudget.Version));
     private static void CompleteProposal(JsonObject p,SkillSuggestionDecision decision,string? aiRun=null,bool uncertain=false)
     {
@@ -19,7 +19,7 @@ public sealed partial class SkillDictionaryService
     }
     private static JsonObject View(JsonObject p,SkillDictionarySnapshot snapshot,bool stale)
     {
-        var choice=p.Text("policyVersion")==SkillChoiceMatching.Version;
+        var choice=SkillChoiceMatching.IsVersion(p.Text("policyVersion"));
         return new(){
             ["proposalId"]=p["id"]!.DeepClone(),["candidateId"]=p["candidateId"]!.DeepClone(),["dictionaryVersion"]=snapshot.Version,
             ["method"]=choice?"choice":"noul",["wireVersion"]=p["wireVersion"]?.DeepClone(),["probabilityPolicyVersion"]=p["probabilityPolicyVersion"]?.DeepClone(),["policyVersion"]=p["policyVersion"]?.DeepClone()??JsonValue.Create(SkillSemanticMatching.Version),["inputVersion"]=p["inputVersion"]?.DeepClone()??JsonValue.Create("legacy-json-string-v1"),
@@ -42,7 +42,7 @@ public sealed partial class SkillDictionaryService
         var (_,snapshot)=await Snapshot(actor.TenantId,row.Value.Number("dictionaryVersion"),ct);
         var element=candidate.Value["element"]!.Deserialize<SkillElement>(ProjectionRules.Json)!;
         if(SnapshotHash(snapshot)!=row.Value.Text("snapshotHash"))throw new DomainException(409,"SKILL_PROPOSAL_INVALID");
-        if(row.Value.Text("policyVersion")==SkillChoiceMatching.Version)
+        if(SkillChoiceMatching.IsVersion(row.Value.Text("policyVersion")))
         {
             var all=SkillChoiceMatching.Applicable(snapshot,candidate.Value.Strings("scopeIds"),actor.ScopeIds);
             var expected=all.Length>SkillChoiceMatching.MaxConcepts?Array.Empty<string>():all.Select(c=>c.Id).ToArray();
@@ -76,6 +76,8 @@ public sealed partial class SkillDictionaryService
         if(row is null)result=new(){["phase"]="not_evaluated",["method"]="choice",["policyVersion"]=SkillChoiceMatching.Version,["outcome"]="requires_review",["dictionaryVersion"]=version,["reason"]="NOT_REQUESTED",["requiresHumanApproval"]=true};
         else {var valid=await ValidateProposal(actor,row.Value.Text("id"),ct);result=View(valid.Row.Value,valid.Snapshot,head.Version!=snapshot.Version);}
         var previous=new JsonArray();
+        var oldChoice=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),SuggestionId(actor,candidate.Value,snapshot,"skill-catalogue-choice-v1"),ct);
+        if(oldChoice is not null){var valid=await ValidateProposal(actor,oldChoice.Value.Text("id"),ct);previous.Add(View(valid.Row.Value,valid.Snapshot,head.Version!=snapshot.Version));}
         foreach(var legacy in new[]{false,true})
         {
             var old=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),NoulSuggestionId(actor,candidate.Value,snapshot,legacy),ct);
