@@ -29,8 +29,8 @@ public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence f
         if(testPersonId is not null)
         {
             if(mime!=OfficeExtractor.ExcelMime)throw new DomainException(400,"TEST_RESUME_REQUIRED");
-            var parsed=extractor.Extract(bytes,name,mime,timeout.Token).ResumeImport;
-            if(parsed is null || parsed.Projects.Length is <1 or >2)throw new DomainException(422,"TEST_PROJECT_LIMIT");
+            var capture=extractor.Extract(bytes,name,mime,timeout.Token);
+            if(capture.Workbook is null || capture.Spans.Length == 0)throw new DomainException(422,"TEST_RESUME_REQUIRED");
         }
         var hash = OfficeExtractor.Hash(bytes);
         var input = new JsonObject { ["title"] = title, ["documentType"] = type, ["sha256"] = hash, ["mediaType"] = mime, ["processorVersion"] = IngestionOptions.ProcessorVersion };
@@ -169,6 +169,7 @@ public sealed class IngestionRetry(IPrimaryRepository repository, AccessFence fe
                 if (job.ETag != etag) throw new DomainException(412, "STALE_VERSION");
                 var now = clock.GetUtcNow();
                 var doc = await repository.ReadAsync(partition, job.Value.Text("aggregateId"), token) ?? throw new DomainException(404, "NOT_FOUND");
+                if(doc.Value.Text("generationParentId")!="")throw new DomainException(409,"REEXTRACTION_RETRY_REQUIRES_REVIEW");
                 if(SyntheticTestAccess.IsTest(doc.Value))
                 {
                     actor=await new AuthorityProvider(repository).RequireAsync(actor,token);

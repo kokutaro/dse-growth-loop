@@ -35,7 +35,7 @@ public static class RecordEndpoints
                 var filter = $"experience:{id}:id:{pageSize ?? 20}";
                 var page = await repository.QueryAsync(RecordPartition.Catalog(actor.TenantId), "experience", "personId", id,
                     pageSize ?? 20, cursors.Decode(actor, filter, continuationToken), token);
-                return Results.Ok(new { items = page.Items.Where(x => AccessPolicy.CanRead(actor, x.Value)).Select(x => x.Value),
+                return Results.Ok(new { items = page.Items.Where(x => AccessPolicy.CanRead(actor, x.Value) && x.Value.Text("generationSupersededBy")=="").Select(x => x.Value),
                     continuationToken = cursors.Encode(actor, filter, page.ContinuationToken) });
             }, ct));
         api.MapGet("/documents/{id}", (string id, HttpContext context, IPrimaryRepository repository, AccessFence fence, CancellationToken ct) =>
@@ -75,7 +75,12 @@ public static class RecordEndpoints
                 var runs = job is null ? null : await repository.QueryAsync(partition, "aiRun", "jobId", jobId, 100, null, token);
                 return Results.Ok(new { runs = runs?.Items.Select(r => r.Value), moreRuns = runs?.ContinuationToken is not null,
                     extractionState = doc.Value.Text("extractionState"), aiState = doc.Value.Text("aiState"),
+                    workbookCapture = doc.Value["workbookCapture"] is JsonObject capture ? new JsonObject {
+                        ["version"] = capture["version"]?.DeepClone(), ["sheets"] = capture["sheets"]?.DeepClone(),
+                        ["cellCount"] = capture["cellCount"]?.DeepClone(), ["spanCount"] = capture["spanCount"]?.DeepClone(),
+                        ["warnings"] = capture["warnings"]?.DeepClone() } : null,
                     processingMode = doc.Value.Text("processingMode"), sourceVersion = doc.Value.Number("sourceVersion"),
+                    generation = doc.Value.Text("generationParentId")=="" ? null : new JsonObject { ["id"]=doc.Value.Text("id"),["parentDocumentId"]=doc.Value.Text("generationParentId"),["state"]=doc.Value.Text("generationState"),["failure"]=doc.Value["generationFailure"]?.DeepClone(),["estimate"]=doc.Value["generationEstimate"]?.DeepClone() },
                     resultId = doc.Value.Text("profileResultId"), job = job?.Value });
             }, ct));
         api.MapGet("/jobs/{id}", (string id, string? sessionId, HttpContext context, IPrimaryRepository repository, AccessFence fence, CancellationToken ct) =>

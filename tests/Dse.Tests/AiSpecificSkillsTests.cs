@@ -54,4 +54,36 @@ public partial class AiTests
         using var service=Service(Config(),store,handler);var result=await service.ExtractSkillsAsync(Context() with {PromptVersion=SpecificSkillRules.Version},"C#",default);
         Assert.Equal(AiStatus.Failed,result.Status);Assert.Equal(1,handler.Calls);
     }
+    [Theory]
+    [InlineData("C#","experience",true)]
+    [InlineData("C#","not_experience",true)]
+    [InlineData("C#","knowledge",true)]
+    [InlineData("担当者を調査","experience",false)]
+    [InlineData("C#","experience",false,true)]
+    public async Task Workbook_cell_reference_attaches_exact_full_source_without_provider_quote(string raw,string basis,bool accepted,bool wrongId=false)
+    {
+        const string source="C#で担当者と共同で原因を調査した。\n構成設計は未実施。";
+        var store=new MemoryRecordStore();await DemoRecords.SeedAsync(store,"demo",default);
+        var unit=(await new MemoryProjectionRepository(store).FindAsync(new([],[],["dummy"]),IdentityResolver.Demo.Search,default))[0];
+        var span=(await store.ReadAsync(RecordPartition.Catalog("demo"),unit.EvidenceRefs![0].Id,default))!;
+        span.Value["text"]=source;await store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(span.Value,span.ETag)],default);
+        var handler=new Handler(async(req,ct)=>{
+            var body=JsonNode.Parse(await req.Content!.ReadAsStringAsync(ct))!;
+            var schema=body["response_format"]!["json_schema"]!["schema"]!;
+            Assert.Null(schema["properties"]!["items"]!["items"]!["properties"]!["quote"]);
+            var input=JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!;
+            Assert.Equal(source,input["cells"]!["c0"]!["text"]!.GetValue<string>());
+            Assert.True(input["cells"]!.AsObject().ContainsKey("c0"));
+            Assert.Null(input["evidence"]);
+            var content=new JsonObject { ["state"]="extracted",["items"]=new JsonArray(new JsonObject {
+                ["raw"]=raw,["normalizationCandidate"]=null,["evidenceId"]=wrongId?unit.EvidenceRefs[0].Id:"c0",["basis"]=basis }) };
+            return Response(Foundry(content.ToJsonString()));
+        });
+        using var service=Service(Config(),store,handler);
+        var result=await service.ExtractSkillsAsync(Context() with{Evidence=unit.EvidenceRefs,PromptVersion=WorkbookRules.CellSkillPrompt},source,default);
+        Assert.Equal(AiStatus.Succeeded,result.Status);Assert.Equal(1,handler.Calls);
+        if(accepted){var item=Assert.Single(result.Value!.Items!);Assert.Equal(source,item.Quote);Assert.Equal(unit.EvidenceRefs[0].Id,item.EvidenceId);}
+        else Assert.Equal(wrongId?"unknown_evidence":"raw_not_in_quote",Assert.Single(result.Value!.RejectedItems!).Reason);
+    }
+
 }

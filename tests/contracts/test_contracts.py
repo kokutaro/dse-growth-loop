@@ -47,14 +47,27 @@ class ContractsTests(unittest.TestCase):
                 validate_invariants(row["schema"], row["value"], self.taxonomy)
 
     def test_generated_internal_resume_contracts(self):
-        path = ROOT / 'tests/Dse.Tests/TestResults/internal-resume-contract.json'
+        path = ROOT / 'tests/Dse.Tests/TestResults/workbook-capture-contract.json'
         self.assertTrue(path.exists(), 'Run InternalResumeTests first')
         rows = json.loads(path.read_text())
-        self.assertTrue(any(r['schema'] == 'Document' and 'resumeImport' in r['value'] for r in rows))
+        self.assertTrue(any(r['schema'] == 'Document' and 'workbookCapture' in r['value'] for r in rows))
         for row in rows:
             with self.subTest(schema=row['schema'], id=row['value']['id']):
                 self.validator(row['schema']).validate(row['value'])
                 validate_invariants(row['schema'], row['value'], self.taxonomy)
+
+    def test_reextraction_generation_contracts(self):
+        path = ROOT / 'tests/Dse.Tests/TestResults/reextraction-contract.json'
+        self.assertTrue(path.exists(), 'Run ReextractionGenerationTests first')
+        for row in json.loads(path.read_text()):
+            with self.subTest(schema=row['schema'], id=row['value']['id']):
+                self.validator(row['schema']).validate(row['value'])
+        api = read('openapi-synthetic-tests-v1.json')
+        validate(api)
+        start = api['paths']['/api/v1/admin/test-people/{id}/documents/{documentId}/reextractions']['post']
+        self.assertTrue(start['security'])
+        self.assertEqual(['member', 'operator'], start['x-required-roles'])
+        self.assertTrue(start['x-current-owner-and-scope-required'])
 
     def test_knowledge_runtime_openapi(self):
         api = read("openapi-knowledge-v1.json")

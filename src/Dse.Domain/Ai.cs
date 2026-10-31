@@ -13,6 +13,7 @@ public sealed record AiResult<T>(AiStatus Status, T? Value, string RunId, AiFail
 public sealed record AiContext(ActorAccess Actor, string JobId, string PromptVersion, string TaxonomyVersion,
     int DataVersion, EvidenceReference[] Evidence, SearchUnit[] Candidates, string? SessionId = null)
 {
+    public string? WorkbookSectionKind { get; init; }
     public int? ChatMembershipVersion { get; init; }
     public int? ChatLastSequence { get; init; }
     public string[]? ConversationEvidenceIds { get; init; }

@@ -8,7 +8,7 @@ type Dictionary={version:number;currentVersion:number;etag:string;concepts:Conce
 type Candidate={syntheticTest?:boolean;sourceStatus?:string;reviewable?:boolean;candidateType?:string;sourceInputState?:string;id:string;etag:string;state:string;conceptId:string|null;fragmentId:string;scopeIds:string[];element:Element|null;item:{raw:string;quote:string;evidenceId:string;participation?:string;basis?:string;normalizationCandidate:string|null;analysis:{experienceState:string;quoteState:string;semanticSupport:string}}|null};
 type ReviewCandidate=Candidate & {element:Element;item:NonNullable<Candidate['item']>};
 type SourceReview={candidateId:string;fragmentId:string;sourceStatus:string;currentFingerprint:string;guardVersion:string;inputState:string;acceptedCount:number;currentText:string;evidence:{id:string;text:string}[];rejected:{reason:string;raw:string|null;participation?:string;basis?:string}[]};
-const holdReasons:Record<string,string>={raw_not_in_quote:'元表現が引用内にない',quote_not_in_source:'引用が原文と一致しない',not_in_fragment:'元表現が現在の実績本文にない',incomplete_passage:'文の一部だけの引用',no_completed_assertion:'実施を確定できない',negated_assertion:'実施の否定',reported_or_intended:'希望・計画・相談・伝聞',other_actor:'他者の実績',duplicate_candidate:'重複候補',unknown_evidence:'根拠IDが現在の原文根拠に含まれない'};
+const holdReasons:Record<string,string>={generation_superseded:'抽出世代が置き換え済みです。人物画面の現在の実績IDから収集してください',raw_not_in_quote:'元表現が引用内にない',quote_not_in_source:'引用が原文と一致しない',not_in_fragment:'元表現が現在の実績本文にない',incomplete_passage:'文の一部だけの引用',no_completed_assertion:'実施を確定できない',negated_assertion:'実施の否定',reported_or_intended:'希望・計画・相談・伝聞',other_actor:'他者の実績',duplicate_candidate:'重複候補',unknown_evidence:'根拠IDが現在の原文根拠に含まれない'};
 type Write={path:string;key:string;etag?:string;body:unknown};
 const labels:Record<string,string>={pending:'未登録・確認待ち',matched:'既存技能に対応',registered:'新規登録済み',alias:'別名承認済み',merged:'統合済み',not_skill:'技能ではない',deferred:'保留',practice:'作業・技術',knowledge:'知識',reference:'参照',qualification:'資格',eligible:'経験候補・本人未確認',content_only:'知識内容のみ',pending_eligibility:'文脈未確定'};
 const name=(s:string)=>s==='non_practice'?'実務経験としては扱わない':labels[s]??s;
@@ -88,7 +88,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
  <p>現在の検証で保持した抽出 {sourceReview.acceptedCount} 件。保留 {sourceReview.rejected.length} 件。</p>
  <ul>{sourceReview.rejected.map((r,i)=><li key={i}>{r.raw??'原文に一致する元表現を確認できません'} ／ {holdReasons[r.reason]??'検証保留'}（{r.reason}） ／ {contextName(r.basis)}</li>)}</ul>
  <p>原文や保存済み抽出の修正はこの画面では行いません。再収集は現在の根拠で再検証し、解消していない保留は残します。AI追加実行・辞書承認・人物経験の認定は行いません。</p>
- <button disabled={busy||uncertain} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:sourceReview.fragmentId,expectedFingerprint:sourceReview.currentFingerprint}})}>現在の根拠で再収集</button>
+ <button disabled={busy||uncertain||sourceReview.rejected.some(r=>r.reason==='generation_superseded')} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:sourceReview.fragmentId,expectedFingerprint:sourceReview.currentFingerprint}})}>現在の根拠で再収集</button>
  <button disabled={busy} onClick={()=>{sourceEpoch.current++;setSourceReview(undefined);}}>一覧へ戻る</button>
  </section>}
  {selected&&<section className="panel candidate-review"><h2>根拠と辞書を比較</h2><button disabled={busy} onClick={()=>{sourceEpoch.current++;setSelected(undefined);setSuggestion(undefined);setHistory(undefined);}}>一覧へ戻る</button>

@@ -391,6 +391,162 @@
           }
         }
       }
+    },
+    "/api/v1/admin/test-people/{id}/documents/{documentId}/reextraction-estimate": {
+      "get": {
+        "summary": "原本と旧検索を維持する別世代の見積（版・上限を固定）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "費用・原本ETag・対象版・適用済み状態"
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証なし"
+          },
+          "403": {
+            "description": "operator以外／権限失効"
+          },
+          "404": {
+            "description": "管理対象外"
+          },
+          "409": {
+            "description": "停止・上限・競合"
+          },
+          "412": {
+            "description": "古いETag"
+          }
+        },
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-current-owner-and-scope-required": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/test-people/{id}/documents/{documentId}/reextractions": {
+      "post": {
+        "summary": "見積を明示確認して新generationを一度だけ受理（成功時のみ検索切替）",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "費用・原本ETag・対象版・適用済み状態"
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証なし"
+          },
+          "403": {
+            "description": "operator以外／権限失効"
+          },
+          "404": {
+            "description": "管理対象外"
+          },
+          "409": {
+            "description": "原本/権限失効・未終端/不明実行・人の確認済み断片は要レビュー。旧検索は維持"
+          },
+          "412": {
+            "description": "古いETag"
+          },
+          "202": {
+            "description": "同じ原本hash・実装/モデル/価格/入出力版は同じ世代/Job/独立予算へ戻る。失敗時の枠補充なし"
+          }
+        },
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-current-owner-and-scope-required": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "estimateId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "maximumUsd": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "estimateId",
+                  "maximumUsd",
+                  "reason"
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -398,6 +554,24 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
       }
     }
   }

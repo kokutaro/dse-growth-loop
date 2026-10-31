@@ -3042,7 +3042,7 @@
             "$ref": "#/components/responses/503"
           },
           "200": {
-            "description": "処理段階、処理方式、版、結果ID、ジョブ"
+            "description": "処理段階、処理方式、版、結果ID、ジョブ、全シートの取得範囲と警告（原本のACLを適用）"
           }
         }
       }
@@ -3827,7 +3827,8 @@
             "enum": [
               "not_started",
               "queued",
-              "complete"
+              "complete",
+              "failed"
             ]
           },
           "warnings": {
@@ -3857,6 +3858,168 @@
           },
           "resumeImport": {
             "$ref": "#/components/schemas/ResumeImport"
+          },
+          "workbookCapture": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "const": "workbook-cells-v1"
+              },
+              "sheets": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "cellCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "spanCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "manifestBlobKey": {
+                "type": "string"
+              },
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "version",
+              "sheets",
+              "cellCount",
+              "spanCount",
+              "manifestBlobKey",
+              "warnings"
+            ],
+            "additionalProperties": false
+          },
+          "workbookStructure": {
+            "type": "object",
+            "properties": {
+              "sections": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "project",
+                        "context"
+                      ]
+                    },
+                    "evidenceIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "minItems": 1
+                    },
+                    "startEvidenceId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "endEvidenceId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "precision": {
+                      "enum": [
+                        "unknown",
+                        "month",
+                        "day"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "evidenceIds",
+                    "startEvidenceId",
+                    "endEvidenceId",
+                    "precision"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "sections"
+            ],
+            "additionalProperties": false
+          },
+          "workbookStructureRunId": {
+            "type": "string"
+          },
+          "workbookStructureVersion": {
+            "const": "workbook-context-v1"
+          },
+          "generationParentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationOriginalVersionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationRootId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationIngestionJobId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationParentEtag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "generationOriginalVersionEtag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "generationImplementationVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "generationFailure": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "generationSourceSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "generationTargetFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "generationState": {
+            "enum": [
+              "staging",
+              "published",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "generationEstimate": {
+            "$ref": "#/components/schemas/ReextractionEstimate"
+          },
+          "generationPublishedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "required": [
@@ -4009,6 +4172,68 @@
               "validated",
               "rejected"
             ]
+          },
+          "sourceCell": {
+            "type": "object",
+            "properties": {
+              "sheet": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "sheetState": {
+                "type": "string"
+              },
+              "valueType": {
+                "type": "string"
+              },
+              "rawValue": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "valueState": {
+                "type": "string"
+              },
+              "hiddenRow": {
+                "type": "boolean"
+              },
+              "hiddenColumn": {
+                "type": "boolean"
+              },
+              "formula": {
+                "type": "boolean"
+              },
+              "mergeRange": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "numberFormat": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "sheet",
+              "address",
+              "sheetState",
+              "valueType",
+              "rawValue",
+              "text",
+              "valueState",
+              "hiddenRow",
+              "hiddenColumn",
+              "formula",
+              "mergeRange",
+              "numberFormat"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -4150,6 +4375,10 @@
           },
           "registrationFingerprint": {
             "type": "string"
+          },
+          "pendingGenerationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
           }
         },
         "required": [
@@ -4302,6 +4531,25 @@
           },
           "skillRunId": {
             "type": "string"
+          },
+          "workbookSectionKind": {
+            "enum": [
+              "project",
+              "context"
+            ]
+          },
+          "workbookStructureVersion": {
+            "const": "workbook-context-v1"
+          },
+          "periodState": {
+            "const": "retained_in_source_not_inferred"
+          },
+          "skillQuotePolicy": {
+            "const": "specific-skills-cell-v1"
+          },
+          "generationSupersededBy": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
           }
         },
         "required": [
@@ -10466,9 +10714,10 @@
           },
           "dispatches": {
             "type": "object",
-            "maxProperties": 4,
+            "maxProperties": 7,
             "additionalProperties": {
               "enum": [
+                "structureWorkbook",
                 "extractSkills",
                 "decide"
               ]
@@ -10482,6 +10731,95 @@
           "dispatches"
         ],
         "unevaluatedProperties": false
+      },
+      "ReextractionEstimate": {
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "targetFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceDocumentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationRootId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceEtag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "implementationVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "processorVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "structureVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "skillPromptVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "maxCalls": {
+            "const": 7
+          },
+          "foundryMax": {
+            "const": 4
+          },
+          "jevMax": {
+            "const": 3
+          },
+          "maximumUsd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "alreadyApplied": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "estimateId",
+          "targetFingerprint",
+          "sourceSha256",
+          "sourceDocumentId",
+          "generationId",
+          "generationRootId",
+          "sourceEtag",
+          "implementationVersion",
+          "processorVersion",
+          "structureVersion",
+          "skillPromptVersion",
+          "maxCalls",
+          "foundryMax",
+          "jevMax",
+          "maximumUsd",
+          "alreadyApplied"
+        ]
       }
     },
     "parameters": {
