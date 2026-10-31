@@ -77,7 +77,7 @@ public sealed class SkillDictionaryTests
     }
     [Theory]
     [InlineData("knowledge","content_only")]
-    [InlineData("wish","pending")]
+    [InlineData("wish","non_practice")]
     public async Task Dictionary_registration_never_recognizes_personal_experience(string fragment,string eligibility)
     {
         var f=await SkillDictionaryFixture.Create();var c=await Candidate(f,fragment);var before=RecordJson.Canonical((await f.Repo.ReadAsync(RecordPartition.Catalog("demo"),"fragment-"+fragment,default))!.Value);await Review(f,c,"new");

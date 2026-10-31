@@ -36,7 +36,7 @@ public sealed record SkillDictionaryFixture(IRecordStore Store,IPrimaryRepositor
         var evidence=Row("evidenceSpan","ev-"+id);evidence["documentId"]=doc.Text("id");evidence["documentVersionId"]=ver.Text("id");evidence["validationState"]="validated";evidence["text"]=text;
         var fragment=Row("experience","fragment-"+id);fragment["personId"]=Curator.PersonId;fragment["description"]=text;
         fragment["evidenceRefs"]=JsonSerializer.SerializeToNode(new[]{new EvidenceReference(evidence.Text("id"),ver.Text("id"),1)},new JsonSerializerOptions(JsonSerializerDefaults.Web));
-        var skills=new SpecificSkills(SpecificSkillRules.Version,state,state=="extracted"?(raw is null?[]:[new(raw,null,evidence.Text("id"),text,role)]):null);
+        var skills=new SpecificSkills(SpecificSkillRules.Version,state,state=="extracted"?(raw is null?[]:[new(raw,null,evidence.Text("id"),text){Basis=id=="knowledge"?"knowledge":role=="aspiration"?"not_experience":"experience"}]):null);
         fragment["specificSkills"]=JsonSerializer.SerializeToNode(SpecificSkillRules.Assess(skills,new Dictionary<string,string>{{evidence.Text("id"),text}},text),new JsonSerializerOptions(JsonSerializerDefaults.Web));
         await Store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Create(doc),RecordWrite.Create(ver),RecordWrite.Create(evidence),RecordWrite.Create(fragment)],default);
     }

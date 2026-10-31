@@ -33,16 +33,19 @@ public sealed class MockAiTransport : IAiTransport
         JsonObject content;
         if (operation == "extractSkills")
         {
-            // A deliberately small fixture, not a model-quality implementation.
-            var examples = new[] { "C#", "Azure", "回帰試験", "回帰テスト" };
+            // Explicit canned examples, never a semantic/ownership classifier or quality claim.
+            var examples = new[] {
+                (Text: "C#で回帰試験を実施した。", Raw: new[]{"C#","回帰試験"}, Basis:"experience"),
+                (Text: "Azureを利用したい。", Raw: new[]{"Azure"}, Basis:"not_experience"),
+                (Text: "同僚が回帰試験を実施した。", Raw: new[]{"回帰試験"}, Basis:"not_experience") };
             var items = new JsonArray();
             foreach (var e in input["evidence"]!.AsArray())
             {
                 var text = e!["text"]!.GetValue<string>();
-                foreach (var raw in examples.Where(text.Contains))
-                    items.Add(new JsonObject {
-                        ["raw"] = raw, ["normalizationCandidate"] = Dse.Domain.SpecificSkillRules.Normalize(raw),
-                        ["evidenceId"] = e["id"]!.DeepClone(), ["quote"] = text, ["participation"] = text.Contains("共同", StringComparison.Ordinal) ? "joint" : text.Contains("補助", StringComparison.Ordinal) || text.Contains("支援", StringComparison.Ordinal) ? "assisted" : "performed" });
+                foreach (var example in examples.Where(x=>text.Contains(x.Text,StringComparison.Ordinal)))
+                    foreach(var raw in example.Raw)
+                        items.Add(new JsonObject { ["raw"]=raw,["normalizationCandidate"]=null,
+                            ["evidenceId"]=e["id"]!.DeepClone(),["quote"]=example.Text,["basis"]=example.Basis });
             }
             content = new() { ["state"] = "extracted", ["items"] = items };
         }

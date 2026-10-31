@@ -7,6 +7,17 @@ namespace Dse.Tests;
 public class QueryTests
 {
     [Fact]
+    public void Specific_skill_query_uses_the_same_current_extraction_version_as_local_retrieval()
+    {
+        var query=CosmosCatalog.BuildQuery(new SearchRequest([],[],[]) { SpecificSkills=[" Ｃ＃ "] },new SearchAccess("demo",["demo"]));
+        Assert.Contains("u.specificSkills.version = @specificSkillVersion",query.QueryText);
+        Assert.DoesNotContain("specific-skills-v1",query.QueryText);
+        Assert.Equal(SpecificSkillRules.Version,query.GetQueryParameters().Single(x=>x.Name=="@specificSkillVersion").Value);
+        Assert.Equal(["c#"],Assert.IsType<string[]>(query.GetQueryParameters().Single(x=>x.Name=="@specificSkills").Value));
+        Assert.Contains("u.available = true",query.QueryText);
+        Assert.Contains("ARRAY_CONTAINS(@scopes, s)",query.QueryText);
+    }
+    [Fact]
     public void Query_parameterizes_values_and_correlates_category_probability()
     {
         var request = new SearchRequest([new("domain", "x' OR 1=1")], ["handover"], [" ＡＢＣ "]);

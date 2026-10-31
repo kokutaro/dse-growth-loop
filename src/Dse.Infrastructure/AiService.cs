@@ -33,7 +33,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         if (ids.Length is < 1 or > 100 || ids.Any(x => !RecordJson.IsId(x)) || ids.Distinct().Count() != ids.Length ||
             choices.Any(x => string.IsNullOrWhiteSpace(x.Instructions) || x.Options.Count is < 2 or > 255 || x.Options.Any(p => !RecordJson.IsId(p.Key) || string.IsNullOrWhiteSpace(p.Value))) ||
             nouls.Any(x => string.IsNullOrWhiteSpace(x.Instructions))) throw new ArgumentException("Invalid AI questions");
-        return RunAsync(context, "decide", text, choices, nouls, (body, model, _, _) => AiCodecs.Decisions(body, model, choices, nouls,context.PromptVersion==SkillChoiceMatching.Version), ct);
+        return RunAsync(context, "decide", text, choices, nouls, (body, model, _, _) => AiCodecs.Decisions(body, model, choices, nouls,SkillChoiceMatching.IsVersion(context.PromptVersion)), ct);
     }
 
     private Task<AiResult<T>> RunAsync<T>(AiContext context, string operation, string text, ChoiceQuestion[] choices, NoulQuestion[] nouls,
@@ -52,7 +52,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         Func<JsonObject, AiModel, HashSet<string>, IReadOnlyDictionary<string, HashSet<string>>, T> parse, CancellationToken ct)
     {
         var actor = await authorityProvider.RequireAsync(context.Actor, ct);
-        if (context.PromptVersion is SkillSemanticMatching.Version or SkillChoiceMatching.Version)
+        if (context.PromptVersion == SkillSemanticMatching.Version || SkillChoiceMatching.IsVersion(context.PromptVersion))
             await new SkillDictionaryService(repository,fence,new(repository,clock),clock).RequireSemanticInputUnderFenceAsync(context,text,choices,nouls,ct);
         var searchRerank = operation == "rerank" && context.PromptVersion is "search-rerank-v1" or "search-rerank-v2";
         ChatAccess? chat = null;
@@ -128,8 +128,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var evidenceIds = context.Evidence.Select(x => x.Id).Concat(conversationEvidence.Select(x => x!["id"]!.GetValue<string>())).Concat(candidateEvidence.Values.SelectMany(x => x)).ToHashSet();
         if (evidenceIds.Count > 100 || snapshots.Distinct().Count() > 100) throw new ArgumentException("Too many AI sources");
         var input = new JsonObject { ["text"] = text, ["evidence"] = evidence, ["candidates"] = candidates };
-        if (context.PromptVersion is SkillSemanticMatching.Version or SkillChoiceMatching.Version) input = SkillSemanticBudget.Prepare(input, context.Evidence);
-        if(context.PromptVersion==SkillChoiceMatching.Version)input=SkillChoiceWire.Prepare(input,choices.Single());
+        if (context.PromptVersion == SkillSemanticMatching.Version || SkillChoiceMatching.IsVersion(context.PromptVersion)) input = SkillSemanticBudget.Prepare(input, context.Evidence);
+        if(SkillChoiceMatching.IsVersion(context.PromptVersion))input=SkillChoiceWire.Prepare(input,choices.Single());
         if (searchRerank) input["groundingPolicy"] = "Reason must be an exact contiguous quotation from one cited evidence text. Omit unsuitable candidates; an empty items array means all unsuitable. Do not infer missing role or dates.";
         var hashMaterial = new JsonObject { ["input"] = input.DeepClone(), ["choices"] = AiCodecs.Node(choices), ["nouls"] = AiCodecs.Node(nouls),
             ["snapshots"] = AiCodecs.Node(snapshots.Distinct().ToArray()), ["operation"] = operation, ["prompt"] = context.PromptVersion,
@@ -207,14 +207,14 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                 // UTF-8 byte count plus framing allowance is a conservative estimate, not measured tokens.
                 var inputBound = Encoding.UTF8.GetByteCount(AiCodecs.SerializeRequest(body)) + 256;
                 trace["inputByteBound"] = inputBound;
-                if (context.PromptVersion is SkillSemanticMatching.Version or SkillChoiceMatching.Version) trace["inputBudgetVersion"] = SkillSemanticBudget.Version;
+                if (context.PromptVersion == SkillSemanticMatching.Version || SkillChoiceMatching.IsVersion(context.PromptVersion)) trace["inputBudgetVersion"] = SkillSemanticBudget.Version;
                 if (inputBound > limits.InputTokens) throw new AiException(AiFailure.InputLimit);
                 if (operation == "decide")
                 {
                     // Jev has no max-output parameter. Bound its fixed-shape response before sending.
-                    var outputBound = context.PromptVersion==SkillChoiceMatching.Version?SkillChoiceWire.OutputBound(model,choices.Single()):AiCodecs.JevOutputBound(choices, nouls);
+                    var outputBound = SkillChoiceMatching.IsVersion(context.PromptVersion)?SkillChoiceWire.OutputBound(model,choices.Single()):AiCodecs.JevOutputBound(choices, nouls);
                     trace["outputByteBound"]=outputBound;
-                    if(context.PromptVersion==SkillChoiceMatching.Version){trace["choiceWireVersion"]=SkillChoiceWire.Version;trace["choiceWireMapHash"]=Hash(RecordJson.Canonical(AiCodecs.Node(SkillChoiceWire.IdMap(choices.Single()))));trace["choiceNumericBytes"]=SkillChoiceWire.NumericBytes;}
+                    if(SkillChoiceMatching.IsVersion(context.PromptVersion)){trace["choiceWireVersion"]=SkillChoiceWire.Version;trace["choiceWireMapHash"]=Hash(RecordJson.Canonical(AiCodecs.Node(SkillChoiceWire.IdMap(choices.Single()))));trace["choiceNumericBytes"]=SkillChoiceWire.NumericBytes;}
                     if (outputBound > limits.OutputTokens) throw new AiException(AiFailure.OutputLimit);
                 }
                 var key = Hash(inputHash + RecordJson.Canonical(AiCodecs.Node(model)) + actor.TenantId + ":" + actor.PrincipalId + ":" + context.SessionId);

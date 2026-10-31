@@ -6037,14 +6037,34 @@
               "type": "null"
             }
           ]
+        },
+        "basis": {
+          "enum": [
+            "experience",
+            "knowledge",
+            "qualification",
+            "not_experience",
+            "uncertain"
+          ]
         }
       },
       "required": [
         "raw",
         "normalizationCandidate",
         "evidenceId",
-        "quote",
-        "participation"
+        "quote"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "basis"
+          ]
+        },
+        {
+          "required": [
+            "participation"
+          ]
+        }
       ]
     },
     "SpecificSkills": {
@@ -6052,7 +6072,10 @@
       "additionalProperties": false,
       "properties": {
         "version": {
-          "const": "specific-skills-v1"
+          "enum": [
+            "specific-skills-v1",
+            "specific-skills-v2"
+          ]
         },
         "state": {
           "enum": [
@@ -6083,7 +6106,8 @@
           "enum": [
             "scoped-assertion-v2",
             "scoped-assertion-v3",
-            "scoped-assertion-v4"
+            "scoped-assertion-v4",
+            "source-integrity-v1"
           ]
         },
         "rejectedItems": {
@@ -6289,6 +6313,15 @@
             "$ref": "#/$defs/SkillSlice"
           },
           "maxItems": 2
+        },
+        "basis": {
+          "enum": [
+            "experience",
+            "knowledge",
+            "qualification",
+            "not_experience",
+            "uncertain"
+          ]
         }
       },
       "required": [
@@ -6298,7 +6331,6 @@
         "conditions",
         "kind",
         "subjectScope",
-        "participation",
         "conceptId",
         "conceptState",
         "slices"
@@ -6309,7 +6341,10 @@
       "type": "object",
       "properties": {
         "version": {
-          "const": "skill-elements-v1"
+          "enum": [
+            "skill-elements-v1",
+            "skill-elements-v2"
+          ]
         },
         "quoteState": {
           "enum": [
@@ -6915,7 +6950,8 @@
         "policyVersion": {
           "enum": [
             "skill-catalogue-semantic-v1",
-            "skill-catalogue-choice-v1"
+            "skill-catalogue-choice-v1",
+            "skill-catalogue-choice-v2"
           ]
         },
         "phase": {
@@ -7041,7 +7077,7 @@
           "if": {
             "properties": {
               "policyVersion": {
-                "const": "skill-catalogue-choice-v1"
+                "enum": ["skill-catalogue-choice-v1", "skill-catalogue-choice-v2"]
               }
             },
             "required": [

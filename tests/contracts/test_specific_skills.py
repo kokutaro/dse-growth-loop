@@ -33,3 +33,12 @@ class SpecificSkillContracts(unittest.TestCase):
         self.assertTrue(validator.is_valid(value))
         value['rejectedItems'][0]['reason'] = 'silent_drop'
         self.assertFalse(validator.is_valid(value))
+
+    def test_v2_ai_basis_and_legacy_roles_remain_distinct(self):
+        schema = json.loads((Path(__file__).resolve().parents[2] / 'docs/specs/contracts.schema.json').read_text())
+        validator = Draft202012Validator({'$ref': '#/$defs/SpecificSkills', '$defs': schema['$defs']})
+        for basis in ('experience','knowledge','qualification','not_experience','uncertain'):
+            value = dict(version='specific-skills-v2', state='extracted', searchTerms=[], guardVersion='source-integrity-v1', items=[dict(raw='C#', normalizationCandidate=None,evidenceId='e1',quote='C#の原文',basis=basis)])
+            self.assertTrue(validator.is_valid(value))
+        value['items'][0]['basis']='lead'
+        self.assertFalse(validator.is_valid(value))

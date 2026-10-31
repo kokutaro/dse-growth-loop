@@ -94,4 +94,14 @@ public sealed class SkillSemanticServiceTests
         var (f,j,c,d,_)=await Setup();await Suggest(f,c,d);var p=RecordPartition.Catalog("demo");var row=Assert.Single((await f.Repo.QueryAsync(p,"skillMatchProposal",null,null,100,null,default)).Items);row.Value["targetIds"]=RecordJson.Array(["invented-foreign-id"]);await f.Store.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],default);
         var e=await Assert.ThrowsAsync<DomainException>(()=>f.Fence.RunAsync("demo",ct=>f.Service.ReadSuggestionUnderFenceAsync(A,c.Value.Text("id"),1,ct),default));Assert.Equal("SKILL_PROPOSAL_INVALID",e.Code);Assert.Equal(1,j.Calls);
     }
+
+    [Fact]
+    public async Task Previous_choice_version_is_read_only_history_not_a_noul_score()
+    {
+        var(f,j,c,d,_)=await Setup();await Suggest(f,c,d);var p=RecordPartition.Catalog("demo");var current=Assert.Single((await f.Repo.QueryAsync(p,"skillMatchProposal",null,null,100,null,default)).Items).Value;
+        var previous=current.Copy();previous["policyVersion"]="skill-catalogue-choice-v1";previous["id"]="skill-proposal-"+ConversationService.Hash(A.PrincipalId+":"+c.Value.Text("id")+":"+current.Text("sourceFingerprint")+":"+current.Text("snapshotHash")+":skill-catalogue-choice-v1:"+SkillSemanticBudget.Version+":"+SkillChoiceWire.Version+":"+ChoiceProbabilityRules.Version+":"+current.Text("candidateSetHash"));
+        await f.Store.CommitAsync(p,[RecordWrite.Create(previous)],default);
+        var view=await f.Fence.RunAsync("demo",t=>f.Service.ReadSuggestionUnderFenceAsync(A,c.Value.Text("id"),d.Number("version"),t),default);
+        var old=Assert.Single(view["previousProposals"]!.AsArray())!;Assert.Equal("choice",old["method"]!.GetValue<string>());Assert.Null(old["threshold"]);Assert.NotNull(old["choice"]);Assert.Equal(1,j.Calls);
+    }
 }

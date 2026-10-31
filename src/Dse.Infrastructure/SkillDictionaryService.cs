@@ -107,7 +107,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             foreach(var item in source.Skills.Items??[])
             foreach(var element in item.Analysis?.Elements??[])
             {
-                var id="skill-candidate-"+Hash(input.FragmentId+":"+source.Fingerprint+":"+RecordJson.Canonical(Node(new{item.Raw,item.Quote,item.EvidenceId,item.Participation,element})));
+                var id="skill-candidate-"+Hash(input.FragmentId+":"+source.Fingerprint+":"+RecordJson.Canonical(Node(new{item.Raw,item.Quote,item.EvidenceId,item.Basis,element})));
                 var match=SkillDictionaryRules.Match(snapshot,element,source.Fragment.Value.Strings("scopeIds"));
                 var existing=await repository.ReadAsync(p,id,token);
                 if(existing is null)
@@ -156,7 +156,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             // Explain the failure without echoing a fabricated/withdrawn quote.
             rejected.Add(new JsonObject{["reason"]=r.Reason,
                 ["raw"]=text?.Contains(r.Item.Raw,StringComparison.Ordinal)==true?r.Item.Raw:null,
-                ["participation"]=r.Item.Participation});
+                ["basis"]=r.Item.Basis});
         }
         return new(){["candidateId"]=id,["fragmentId"]=row.Value.Text("fragmentId"),
             ["sourceStatus"]=source.Fingerprint==row.Value.Text("sourceFingerprint")?"current":"changed",

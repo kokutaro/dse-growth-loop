@@ -21,7 +21,7 @@ export function SkillSuggestionPanel({value,currentVersion,disabled,onRequest,on
  {!legacy&&<><button disabled={disabled||pending} onClick={onRequest}>AIで既存技能の候補を照会</button>
  {pending&&onReload&&<button disabled={disabled} onClick={onReload}>保存された照会状態を再読込</button>}
  <p>閲覧可能で原文と同じ共有範囲の辞書全体をChoiceへ渡します。文字top3で絞り込みません。同じ方式・候補・辞書版の結果を再利用し、自動再送はしません。</p></>}
- {value&&<><h4>{title}</h4><p>辞書版 {value.dictionaryVersion} ／ 現在版 {currentVersion} ／ {legacy?'過去のnoul系処理（Choiceとは別方式）':'Choice・単一選択の参考結果'}</p>
+ {value&&<><h4>{title}</h4><p>方式版 {value.policyVersion} ／ 辞書版 {value.dictionaryVersion} ／ 現在版 {currentVersion} ／ {legacy?'過去のnoul系処理（Choiceとは別方式）':'Choice・単一選択の参考結果'}</p>
  <p>{pending?'照会後の結果を確認しています。新しいキーでも同じ推論を再送しません。':value.reason==='AI_INPUTLIMIT'&&value.inferenceNotDispatched?'比較する原文・定義・条件を省略せず送信枠に収められませんでした。AIには送信していません。内容を人が確認してください。':value.reason==='AI_OUTPUTLIMIT'&&value.inferenceNotDispatched?'全選択肢の応答が既存の出力枠に収まることを確認できませんでした。AIには送信していません。':reasons[value.reason]??`判定を完了できませんでした：${value.reason}`}</p>
  {value.providerExecutionUncertain&&<p role="alert">プロバイダー側の実行結果が不明です。新規技能とは扱わず、再実行を停止しています。</p>}
  {value.stale&&<p role="alert">過去版の提案です。現在版の確認なしに承認へ使えません。</p>}
@@ -35,6 +35,6 @@ export function SkillSuggestionPanel({value,currentVersion,disabled,onRequest,on
  {legacy?<p>過去のnoulの0.8・双方向minを、Choiceの確率やconfidenceの基準へ流用しません。</p>:<p>確率・confidence・順位差は参考値です。自動承認の閾値は設けず、人が原文と辞書の定義を確認します。</p>}
  {value.aiRunId&&<small>照会記録：{value.aiRunId}</small>}
  </>}
- {!!value?.previousProposals?.length&&<details><summary>過去のnoul提案を見る（新しいChoiceに流用しません）</summary>{value.previousProposals.map((p,i)=><SkillSuggestionPanel key={i} value={p} currentVersion={currentVersion} disabled onRequest={()=>{}} onCompare={()=>{}}/>)}</details>}
+ {!!value?.previousProposals?.length&&<details><summary>過去の提案を見る（新しい方式に流用しません）</summary>{value.previousProposals.map((p,i)=><SkillSuggestionPanel key={i} value={p} currentVersion={currentVersion} disabled onRequest={()=>{}} onCompare={()=>{}}/>)}</details>}
  </section>;
 }

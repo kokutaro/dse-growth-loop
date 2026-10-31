@@ -22,8 +22,8 @@ public sealed class SkillChoiceTests
  [Fact]
  public void Shared_definition_and_boundary_are_lossless_and_candidate_negation_conditions_and_role_stay_verbatim()
  {
-  var source="私は通常拠点を使用しない試験を補助した。設計は行っていない。";var concepts=new[]{Concept(0),Concept(1)};var item=new SpecificSkill("試験",null,"ev",source,"assisted");
-  var n=JsonNode.Parse(SkillChoiceMatching.Input(item,Element,concepts))!;Assert.Equal(source,n["candidate"]!["quote"]!.GetValue<string>());Assert.Equal("assisted",n["candidate"]!["participation"]!.GetValue<string>());Assert.Equal("通常拠点を使用しない",n["candidate"]!["conditions"]![0]!.GetValue<string>());
+  var source="私は通常拠点を使用しない試験を補助した。設計は行っていない。";var concepts=new[]{Concept(0),Concept(1)};var item=new SpecificSkill("試験",null,"ev",source){Basis="experience"};
+  var n=JsonNode.Parse(SkillChoiceMatching.Input(item,Element,concepts))!;Assert.Equal(source,n["candidate"]!["quote"]!.GetValue<string>());Assert.Null(n["candidate"]!["participation"]);Assert.Equal("experience",n["candidate"]!["basis"]!.GetValue<string>());Assert.Equal("通常拠点を使用しない",n["candidate"]!["conditions"]![0]!.GetValue<string>());
   foreach(var c in concepts){var entry=n["dictionary"]![c.Id]!;Assert.Equal(c.Definition,(entry["definition"]??n["sharedDefinition"])!.GetValue<string>());Assert.Equal(c.Boundary,(entry["boundary"]??n["sharedBoundary"])!.GetValue<string>());Assert.True(JsonNode.DeepEquals(N(c.Aliases),entry["aliases"]));}
   var unique=JsonNode.Parse(SkillChoiceMatching.Input(item,Element,[Concept(0),Concept(1) with{Definition="別の対象限定",Boundary="他者のみ"}]))!;Assert.Null(unique["sharedDefinition"]);Assert.Equal("他者のみ",unique["dictionary"]!["choice-001"]!["boundary"]!.GetValue<string>());
  }

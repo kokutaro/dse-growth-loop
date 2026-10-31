@@ -14,12 +14,13 @@ test("具体スキルを大分類から分け、本人の実施だけを根拠�
   await expect(rows).toHaveCount(3);
   for (const row of await rows.all()) await row.locator(".specific-skills summary").click();
   await expect(page.locator(".profiles .specific-skills")).toContainText(["具体スキル", "具体スキル", "具体スキル"]);
-  await expect(page.locator(".profiles .specific-skills strong")).toHaveText(["C#", "回帰試験"]);
-  await expect(page.locator(".profiles .specific-skills").filter({ hasText: "C#" })).toContainText("本人実施");
+  // Profiles are ordered by stable generated IDs, not by the input sentence order.
+  await expect.poll(async () => (await page.locator(".profiles .specific-skills strong").allTextContents()).sort())
+    .toEqual(["C#", "回帰試験", "Azure", "回帰試験"].sort());
+  await expect(page.locator(".profiles .specific-skills").filter({ hasText: "C#" })).toContainText("経験として抽出");
   await expect(page.locator(".profiles .specific-skills").filter({ hasText: "C#" })).toContainText("根拠ID：");
-  await expect(page.locator(".profiles .quarantined-skills")).toHaveCount(2);
-  await expect(page.locator(".profiles .specific-skills").filter({ hasText: "候補はすべて保留中" })).toHaveCount(2);
-  await expect(page.locator(".profiles .quarantined-skills")).toContainText(["本人の経験タグ・検索には採用しません", "本人の経験タグ・検索には採用しません"]);
+  await expect(page.locator(".profiles .quarantined-skills")).toHaveCount(0);
+  await expect(page.locator(".profiles .specific-skills").filter({ hasText: "未実施・希望等" })).toHaveCount(2);
   await page.getByLabel("分野", { exact: true }).selectOption("");
   await page.getByLabel("検索語", { exact: true }).fill("");
   await page.getByLabel("引き継ぎ経験の補助判定を加える").uncheck();

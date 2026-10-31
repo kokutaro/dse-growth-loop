@@ -1,3 +1,5 @@
+> 現行の抽出設計は [specific-skills-v2.md](specific-skills-v2.md)。本書は旧v1の契約・評価経緯として保持する。
+
 # 大分類と具体スキルの分離
 
 ## 契約
