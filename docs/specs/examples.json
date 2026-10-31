@@ -2168,5 +2168,37 @@
       "inferenceNotDispatched": false,
       "wireVersion": "skill-choice-wire-v1"
     }
+  },
+  {
+    "name": "SyntheticImportBudget",
+    "schema": "SyntheticImportBudget",
+    "value": {
+      "tenantId": "demo-tenant",
+      "ownerId": "principal-demo-01",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "createdAt": "2026-09-23T00:00:00Z",
+      "updatedAt": "2026-09-23T00:00:00Z",
+      "createdBy": {
+        "type": "principal",
+        "id": "principal-demo-01"
+      },
+      "correctedBy": null,
+      "etag": "\"etag-1\"",
+      "id": "test-budget-example",
+      "kind": "syntheticImportBudget",
+      "syntheticTest": true,
+      "managedByPersonId": "principal-person-fixture",
+      "testPersonId": "test-person-example",
+      "documentId": "test-document-example",
+      "configuration": {
+        "mode": "Mock"
+      },
+      "dispatches": {}
+    }
   }
 ]

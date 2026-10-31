@@ -90,7 +90,8 @@ public sealed partial class SkillDictionaryService
         IdempotencyExecutor.ValidateHeaders(key,etag,true);
         var proposalId=await fence.RunAsync(actor.TenantId,async token=>
         {
-            actor=await Operator(actor,token);if(!actor.HasRole("member"))throw new DomainException(403,"FORBIDDEN");var candidate=await Candidate(actor,candidateId,token);var source=await ReadSource(actor,candidate.Value.Text("fragmentId"),token);
+            actor=await Operator(actor,token);if(!actor.HasRole("member"))throw new DomainException(403,"FORBIDDEN");var candidate=await Candidate(actor,candidateId,token);
+            if(SyntheticTestAccess.IsTest(candidate.Value))throw new DomainException(409,"TEST_DICTIONARY_REVIEW_DISABLED");var source=await ReadSource(actor,candidate.Value.Text("fragmentId"),token);
             var (head,snapshot)=await Snapshot(actor.TenantId,input.Version,token);var current=head?.Value.Number("version")??0;
             if(current!=input.Version||(head?.ETag??EmptyETag)!=input.DictionaryETag)throw new DomainException(412,"STALE_SKILL_DICTIONARY");
             var p=RecordPartition.Catalog(actor.TenantId);var id=SuggestionId(actor,candidate.Value,snapshot);

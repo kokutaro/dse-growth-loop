@@ -52,6 +52,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         Func<JsonObject, AiModel, HashSet<string>, IReadOnlyDictionary<string, HashSet<string>>, T> parse, CancellationToken ct)
     {
         var actor = await authorityProvider.RequireAsync(context.Actor, ct);
+        HashSet<string> testDocuments = [];
         if (context.PromptVersion == SkillSemanticMatching.Version || SkillChoiceMatching.IsVersion(context.PromptVersion))
             await new SkillDictionaryService(repository,fence,new(repository,clock),clock).RequireSemanticInputUnderFenceAsync(context,text,choices,nouls,ct);
         var searchRerank = operation == "rerank" && context.PromptVersion is "search-rerank-v1" or "search-rerank-v2";
@@ -95,6 +96,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         foreach (var unit in context.Candidates)
         {
             var validated = await guard.RequireAsync(actor, unit, ct);
+            if(validated.Unit.SyntheticTest)throw new DomainException(409,"TEST_AI_OPERATION_NOT_ALLOWED");
             foreach (var participant in sharedActors) await guard.RequireAsync(participant, unit, ct);
             if (chat is not null && unit.EntityType != "knowledge") throw new DomainException(409, "SOURCE_REVOKED");
             snapshots.AddRange(validated.Snapshots);
@@ -118,6 +120,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         foreach (var reference in context.Evidence.Distinct())
         {
             var source = await guard.EvidenceAsync(actor, reference, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
+            if(SyntheticTestAccess.IsTest(source.Document))testDocuments.Add(source.Document.Text("id"));
             foreach (var participant in sharedActors)
                 if (await guard.EvidenceAsync(participant, reference, ct) is null) throw new DomainException(409, "SOURCE_REVOKED");
             var doc = source.Document;
@@ -230,6 +233,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         deadline.Token.ThrowIfCancellationRequested();
                         var currentLimits = AiLimits.Read(config);
                         if (currentLimits.Stopped || !mock && !currentLimits.LiveOptIn) throw new AiException(AiFailure.Stopped);
+                        if(!mock)await SyntheticImportBudget.ReserveAsync(repository,config,actor,testDocuments,operation,context.PromptVersion,runId,attempt,deadline.Token);
                         AiReservation? reservation = mock ? null : await ledger.ReserveAsync(actor.TenantId, runId, model, limits, limits.InputTokens, limits.OutputTokens, deadline.Token);
                         attempts++;
                         trace["modelId"] = model.ModelId; trace["modelVersion"] = model.ModelVersion; trace["region"] = model.Region; trace["sku"] = model.Sku;

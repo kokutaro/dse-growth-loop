@@ -41,7 +41,10 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         var fragment=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),id,ct)??throw new DomainException(404,"NOT_FOUND");
         var value=fragment.Value;
         if(value.Text("kind") is not ("experience" or "knowledge" or "departmentActivity"))throw new DomainException(404,"NOT_FOUND");
-        AccessPolicy.RequireRead(actor,value); // Includes private experience's self boundary; operator is not a bypass.
+        AccessPolicy.RequireRead(actor,value);
+        try { await SyntheticTestAccess.RequireLinkedAsync(repository,actor,value,ct); }
+        catch(DomainException e) when(e.Status is 403 or 404 or 409) { throw new DomainException(404,"NOT_FOUND"); }
+        // // Includes private experience's self boundary; operator is not a bypass.
         if(value.Text("kind")!="experience"&&!AccessPolicy.CanUse(actor,value))throw new DomainException(404,"NOT_FOUND");
         var refs=value["evidenceRefs"]?.Deserialize<EvidenceReference[]>(ProjectionRules.Json)??[];
         if(value.Text("kind")=="knowledge")refs=[new(id,id,value.Number("activeVersion"))];
@@ -89,6 +92,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                     ["state"]=row.Value.Text("state"),["candidateType"]=row.Value.Text("candidateType"),
                     ["item"]=null,["element"]=null
                 }:row.Value.Copy();
+                SyntheticTestAccess.Mark(value,source.Fragment.Value);
                 value["etag"]=row.ETag;value["sourceStatus"]=changed?"changed":"current";
                 value["reviewable"]=!changed&&row.Value.Text("candidateType")!="collection";
                 items.Add(value);
@@ -113,6 +117,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                 if(existing is null)
                 {
                     var value=RecordJson.New("skillCandidate",id,actor.TenantId,actor.PrincipalId,source.Fragment.Value.Strings("scopeIds"),clock.GetUtcNow());
+                    SyntheticTestAccess.Mark(value,source.Fragment.Value);
                     value["fragmentId"]=input.FragmentId;value["sourceFingerprint"]=source.Fingerprint;value["sourceInputState"]=source.Skills.State;
                     value["item"]=Node(item);value["element"]=Node(element);value["dictionaryVersionAtCollection"]=snapshot.Version;
                     value["state"]=match.State=="mapped"?"matched":"pending";value["conceptId"]=match.ConceptId;value["history"]=new JsonArray();writes.Add(RecordWrite.Create(value));
@@ -128,6 +133,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                 if(await repository.ReadAsync(p,collectionId,token) is null)
                 {
                     var notice=RecordJson.New("skillCandidate",collectionId,actor.TenantId,actor.PrincipalId,source.Fragment.Value.Strings("scopeIds"),clock.GetUtcNow());
+                    SyntheticTestAccess.Mark(notice,source.Fragment.Value);
                     notice["candidateType"]="collection";notice["fragmentId"]=input.FragmentId;notice["sourceFingerprint"]=source.Fingerprint;
                     notice["sourceInputState"]=source.Skills.State;notice["item"]=null;notice["element"]=null;notice["conceptId"]=null;
                     notice["state"]="collection_held";notice["dictionaryVersionAtCollection"]=snapshot.Version;notice["history"]=new JsonArray();
@@ -170,6 +176,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
     {
         actor=await Operator(actor,token);var row=await Candidate(actor,id,token);var p=RecordPartition.Catalog(actor.TenantId);
         IdempotencyExecutor.ValidateHeaders(key,etag,true);
+        if(SyntheticTestAccess.IsTest(row.Value) && input.Action is not ("defer" or "not_skill"))throw new DomainException(409,"TEST_DICTIONARY_REVIEW_DISABLED");
         return await idempotency.ExecuteAsync(p,actor,"POST","skill-candidates/"+id+"/review",key,etag,Node(input),async()=>
         {
             if(row.ETag!=etag)throw new DomainException(412,"STALE_SKILL_CANDIDATE");

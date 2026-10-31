@@ -29,7 +29,9 @@ public static class RecordEndpoints
             {
                 var actor = Actor(context);
                 var person = await Read(repository, actor, "person", id, token, !demo);
-                AccessPolicy.RequireSelf(actor, person.Value);
+                if(SyntheticTestAccess.IsTest(person.Value))
+                    await SyntheticTestAccess.RequireAsync(repository,actor,id,token);
+                else AccessPolicy.RequireSelf(actor, person.Value);
                 var filter = $"experience:{id}:id:{pageSize ?? 20}";
                 var page = await repository.QueryAsync(RecordPartition.Catalog(actor.TenantId), "experience", "personId", id,
                     pageSize ?? 20, cursors.Decode(actor, filter, continuationToken), token);
@@ -88,6 +90,7 @@ public static class RecordEndpoints
                 if (sessionId is not null) await context.RequestServices.GetRequiredService<ConversationService>().SessionAsync(actor, sessionId, token);
                 var job = await repository.ReadAsync(partition, id, token);
                 if (job is null || job.Value.Text("kind") != "job") throw new DomainException(404, "NOT_FOUND");
+                if (SyntheticTestAccess.IsTest(job.Value)) actor = await new AuthorityProvider(repository).RequireAsync(actor, token);
                 AccessPolicy.RequireRead(actor, job.Value);
                 context.Response.Headers.ETag = job.ETag;
                 // Operational metadata can identify its owner; production access is self/operator only.
@@ -100,6 +103,7 @@ public static class RecordEndpoints
         var value = await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), id, ct);
         if (value is null || value.Value.Text("kind") != kind) throw new DomainException(404, "NOT_FOUND");
         AccessPolicy.RequireRead(actor, value.Value);
+        await SyntheticTestAccess.RequireLinkedAsync(repository,actor,value.Value,ct);
         if (selfOnly && !actor.HasRole("operator"))
         {
             if (kind == "person" && (value.Value.Text("ownerId") != actor.PrincipalId || value.Value.Text("id") != actor.PersonId)) throw new DomainException(404, "NOT_FOUND");

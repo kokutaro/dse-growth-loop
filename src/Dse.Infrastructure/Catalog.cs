@@ -43,7 +43,7 @@ public sealed class ValidatedCatalog(IProjectionRepository projections, SourceGu
     public async Task SearchAndConsumeAsync(SearchRequest request, ActorAccess actor, Func<SearchResult, CancellationToken, Task> consume, CancellationToken ct)
     {
         request.Validate();
-        if (!actor.HasRole("member")) throw new DomainException(403, "FORBIDDEN");
+        if (!actor.HasRole("member") || request.SyntheticOnly && !actor.HasRole("operator")) throw new DomainException(403, "FORBIDDEN");
         using var budget = new SearchBudget();
         var units = await projections.FindAsync(request, actor.Search, ct);
         await fence.RunAsync(actor.TenantId, async token =>
@@ -82,7 +82,7 @@ public static class CosmosCatalog
             routes.Add("EXISTS(SELECT VALUE t FROM t IN u.normalizedTerms WHERE ARRAY_CONTAINS(@terms, t))");
         if (request.SpecificSkills.Length > 0)
             routes.Add("(u.specificSkills.version = @specificSkillVersion AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE ARRAY_CONTAINS(@specificSkills, t)) OR (u.entityType = 'knowledge' AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE ARRAY_CONTAINS(@specificSkills, t)))))");
-        var query = new QueryDefinition("SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s)) AND (" + string.Join(" OR ", routes) + ")")
+        var query = new QueryDefinition("SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s)) AND " + (request.SyntheticOnly ? "u.syntheticTest = true" : "(NOT IS_DEFINED(u.syntheticTest) OR u.syntheticTest = false)") + " AND (" + string.Join(" OR ", routes) + ")")
             .WithParameter("@tenant", access.TenantId).WithParameter("@taxonomy", Retriever.TaxonomyVersion)
             .WithParameter("@scopes", access.ScopeIds).WithParameter("@probability", request.ProbabilityThreshold)
             .WithParameter("@signals", request.SignalIds).WithParameter("@noul", request.NoulThreshold)
@@ -142,6 +142,7 @@ public static class InfrastructureRegistration
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IdempotencyExecutor>();
         services.AddSingleton<ProfileService>();
+        services.AddSingleton<SyntheticTestProfiles>();
         services.AddSingleton<DocumentAcceptance>();
         services.AddSingleton<ProjectionActivation>();
         services.AddSingleton<SourceUseService>();

@@ -6,16 +6,32 @@ using Dse.Domain;
 namespace Dse.Infrastructure;
 
 public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence fence, IdempotencyExecutor idempotency,
-    IIngestionBlobs blobs, OfficeExtractor extractor, IngestionOptions options, JobNotifications notifications, TimeProvider clock)
+    IIngestionBlobs blobs, OfficeExtractor extractor, IngestionOptions options, JobNotifications notifications, TimeProvider clock, Microsoft.Extensions.Configuration.IConfiguration? configuration = null)
 {
     public async Task<MutationResponse> UploadAsync(ActorAccess actor, string title, string type, string name, string mime, byte[] bytes, string key, CancellationToken ct)
+        => await UploadCoreAsync(actor, null, title, type, name, mime, bytes, key, ct);
+    public Task<MutationResponse> UploadTestAsync(ActorAccess actor, string personId, string name, string mime, byte[] bytes, string key, CancellationToken ct) =>
+        UploadCoreAsync(actor, personId, SyntheticTestAccess.Label + personId, "profile", name, mime, bytes, key, ct);
+    private async Task<MutationResponse> UploadCoreAsync(ActorAccess actor, string? testPersonId, string title, string type, string name, string mime, byte[] bytes, string key, CancellationToken ct)
     {
+        async Task<JsonObject> Target(CancellationToken token)
+        {
+            if(testPersonId is null) return await RequireSelfAsync(actor,token);
+            actor=await new AuthorityProvider(repository,configuration).RequireAsync(actor,token);
+            return await SyntheticTestAccess.RequireAsync(repository,actor,testPersonId,token);
+        }
         IdempotencyExecutor.ValidateHeaders(key, null, false);
         if (string.IsNullOrWhiteSpace(title) || title.EnumerateRunes().Count() > 300 || type is not ("profile" or "report" or "case")) throw new DomainException(400, "INVALID_INPUT");
-        await RequireSelfAsync(actor, ct);
+        await Target(ct);
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct); timeout.CancelAfter(TimeSpan.FromSeconds(options.ProcessingSeconds));
         try { await Task.Run(() => extractor.Validate(bytes, name, mime, timeout.Token), timeout.Token); }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested) { throw new DomainException(400, "PROCESSING_TIMEOUT"); }
+        if(testPersonId is not null)
+        {
+            if(mime!=OfficeExtractor.ExcelMime)throw new DomainException(400,"TEST_RESUME_REQUIRED");
+            var parsed=extractor.Extract(bytes,name,mime,timeout.Token).ResumeImport;
+            if(parsed is null || parsed.Projects.Length is <1 or >2)throw new DomainException(422,"TEST_PROJECT_LIMIT");
+        }
         var hash = OfficeExtractor.Hash(bytes);
         var input = new JsonObject { ["title"] = title, ["documentType"] = type, ["sha256"] = hash, ["mediaType"] = mime, ["processorVersion"] = IngestionOptions.ProcessorVersion };
         var digest = OfficeExtractor.Hash(Encoding.UTF8.GetBytes(actor.TenantId + "\n" + actor.PrincipalId + "\n" + RecordJson.Canonical(input)));
@@ -25,11 +41,12 @@ public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence f
         await blobs.PutAsync("originals", blobKey, bytes, ct);
         var response = await fence.RunAsync(actor.TenantId, async token =>
         {
-            var person = await RequireSelfAsync(actor, token);
+            var person = await Target(token);
             var partition = RecordPartition.Catalog(actor.TenantId);
             var existing = await repository.ReadAsync(partition, documentId, token);
             if (existing is not null) AccessPolicy.RequireRead(actor, existing.Value);
-            return await idempotency.ExecuteAsync(partition, actor, "POST", "/api/v1/documents", key, null, input, async () =>
+            if(testPersonId is not null && existing is null && person["documentHeads"]?.AsObject().Count>0)throw new DomainException(409,"TEST_DOCUMENT_LIMIT");
+            return await idempotency.ExecuteAsync(partition, actor, "POST", testPersonId is null ? "/api/v1/documents" : "/api/v1/admin/test-people/"+testPersonId+"/documents", key, null, input, async () =>
             {
                 if (existing is not null)
                 {
@@ -41,15 +58,24 @@ public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence f
                 var importKey = OfficeExtractor.Hash(Encoding.UTF8.GetBytes(type + "\n" + title));
                 doc["importKey"] = importKey;
                 doc["title"] = title; doc["documentType"] = type; doc["status"] = "queued"; doc["accessVersion"] = 1;
-                doc["personId"] = actor.PersonId; doc["departmentId"] = person.Text("departmentId"); doc["extractionState"] = "pending"; doc["aiState"] = "not_started";
+                doc["personId"] = person.Text("id"); SyntheticTestAccess.Mark(doc,person); doc["departmentId"] = person.Text("departmentId"); doc["extractionState"] = "pending"; doc["aiState"] = "not_started";
                 var version = RecordJson.New("documentVersion", documentId + "-v1", actor.TenantId, actor.PrincipalId, doc.Strings("scopeIds"), now);
+                SyntheticTestAccess.Mark(version,person);
                 doc["currentVersionId"] = version.Text("id");
                 var job = Jobs.Create(doc, "ingestion", now);
                 version["documentId"] = documentId; version["blobKey"] = blobKey; version["sha256"] = hash; version["mediaType"] = mime;
                 version["bytes"] = bytes.Length; version["status"] = "queued"; version["jobId"] = job.Text("id"); version["processorVersion"] = IngestionOptions.ProcessorVersion;
                 person["documentHeads"] ??= new JsonObject();
                 person["documentHeads"]![importKey] = documentId;
-                return new MutationPlan([RecordWrite.Create(doc), RecordWrite.Create(version), RecordWrite.Create(job), RecordWrite.Replace(person, person.Text("etag"))], null, Accepted(doc, job.Text("id")));
+                SyntheticTestAccess.Mark(job,person);
+                List<RecordWrite> writes=[RecordWrite.Create(doc), RecordWrite.Create(version), RecordWrite.Create(job), RecordWrite.Replace(person, person.Text("etag"))];
+                if(testPersonId is not null)
+                {
+                    writes.Add(RecordWrite.Create(SyntheticImportBudget.Create(doc,configuration,now)));
+                    var audit=RecordJson.New("audit","audit-"+Guid.NewGuid().ToString("N"),actor.TenantId,actor.PrincipalId,doc.Strings("scopeIds"),now);
+                    audit["action"]="test_document_accepted";audit["aggregateId"]=documentId;audit["sha256"]=hash;SyntheticTestAccess.Mark(audit,person);writes.Add(RecordWrite.Create(audit));
+                }
+                return new MutationPlan(writes.ToArray(), null, Accepted(doc, job.Text("id")));
             }, token);
         }, ct);
         // Best effort after commit. Pending remains recoverable if the queue or response is lost.
@@ -143,6 +169,11 @@ public sealed class IngestionRetry(IPrimaryRepository repository, AccessFence fe
                 if (job.ETag != etag) throw new DomainException(412, "STALE_VERSION");
                 var now = clock.GetUtcNow();
                 var doc = await repository.ReadAsync(partition, job.Value.Text("aggregateId"), token) ?? throw new DomainException(404, "NOT_FOUND");
+                if(SyntheticTestAccess.IsTest(doc.Value))
+                {
+                    actor=await new AuthorityProvider(repository).RequireAsync(actor,token);
+                    await SyntheticTestAccess.RequireLinkedAsync(repository,actor,doc.Value,token);
+                }
                 if (doc.Value.Number("sourceVersion") != job.Value.Number("aggregateVersion")) throw new DomainException(409, "SOURCE_REVOKED");
                 if (job.Value.Text("status") == "ready" || job.Value.Text("status") == "cancelled" && job.Value.Text("jobType") == "ingestion") throw new DomainException(409, "INVALID_TRANSITION");
                 if (job.Value.Text("status") == "processing" && (job.Value["leaseUntil"]!.Deserialize<DateTimeOffset>() > now || !actor.HasRole("operator"))) throw new DomainException(409, "INVALID_TRANSITION");

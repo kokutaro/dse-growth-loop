@@ -13,6 +13,7 @@ public sealed record SearchUnit(string Id, string EntityId, string EntityType, s
     SourceRef[] SourceRefs, string ConfirmationState)
 {
     public string Kind => "searchUnit";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool SyntheticTest { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string[]? SkillIds { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public SpecificSkills? SpecificSkills { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ProcessingMode { get; init; }
@@ -28,6 +29,7 @@ public sealed record SearchRequest(CategoryKey[] Categories, string[] SignalIds,
     double ProbabilityThreshold = 0.2, double NoulThreshold = 0.5, int Limit = 20)
 {
     public string[] SpecificSkills { get; init; } = [];
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool SyntheticOnly { get; init; }
     public void Validate()
     {
         if (Categories is null || SignalIds is null || Terms is null || SpecificSkills is null || SpecificSkills.Length > 20 || SpecificSkills.Any(Invalid) ||
@@ -67,7 +69,7 @@ public static class Retriever
         var terms = request.Terms.Select(Normalize).ToHashSet(StringComparer.Ordinal);
         var skills = request.SpecificSkills.Select(SpecificSkillRules.Normalize).ToHashSet(StringComparer.Ordinal);
         var hits = source.Where(u => u.TenantId == access.TenantId && u.ScopeIds.Intersect(access.ScopeIds).Any()
-                && u.Status == "active" && u.Available && u.TaxonomyVersion == TaxonomyVersion)
+                && u.Status == "active" && u.Available && u.TaxonomyVersion == TaxonomyVersion && u.SyntheticTest == request.SyntheticOnly)
             .Select(u => new
             {
                 Unit = u,

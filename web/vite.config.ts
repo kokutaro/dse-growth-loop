@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, "index.html"),
         validation: resolve(import.meta.dirname, "validation.html"),
+        testProfiles: resolve(import.meta.dirname, "test-profiles.html"),
         skillDictionary: resolve(import.meta.dirname, "skill-dictionary.html"),
         redirect: resolve(import.meta.dirname, "redirect.html"),
       },

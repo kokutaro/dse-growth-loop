@@ -1,0 +1,404 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "検証専用の架空人物・資料取込",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/v1/admin/test-people": {
+      "get": {
+        "summary": "管理中の合成人物。停止履歴も保持",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態・再送結果"
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証なし"
+          },
+          "403": {
+            "description": "operator以外／権限失効"
+          },
+          "404": {
+            "description": "管理対象外"
+          },
+          "409": {
+            "description": "停止・上限・競合"
+          },
+          "412": {
+            "description": "古いETag"
+          }
+        },
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-current-owner-and-scope-required": true
+      },
+      "post": {
+        "summary": "認証主体を作らず最大3名を登録",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態・再送結果"
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証なし"
+          },
+          "403": {
+            "description": "operator以外／権限失効"
+          },
+          "404": {
+            "description": "管理対象外"
+          },
+          "409": {
+            "description": "停止・上限・競合"
+          },
+          "412": {
+            "description": "古いETag"
+          },
+          "201": {
+            "description": "検証人物の登録完了"
+          }
+        },
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-current-owner-and-scope-required": true,
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "reference": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]{0,39}$"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "scopeId": {
+                    "type": "string"
+                  },
+                  "syntheticDeclaration": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "reference",
+                  "displayName",
+                  "scopeId",
+                  "syntheticDeclaration"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/test-people/{id}/documents": {
+      "post": {
+        "summary": "合成XLSX1冊・最大2案件を既存取り込みへ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態・再送結果"
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証なし"
+          },
+          "403": {
+            "description": "operator以外／権限失効"
+          },
+          "404": {
+            "description": "管理対象外"
+          },
+          "409": {
+            "description": "停止・上限・競合"
+          },
+          "412": {
+            "description": "古いETag"
+          },
+          "202": {
+            "description": "受理済みJobのURL"
+          }
+        },
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-current-owner-and-scope-required": true,
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "syntheticDeclaration": {
+                    "const": "true"
+                  }
+                },
+                "required": [
+                  "file",
+                  "syntheticDeclaration"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/test-people/{id}/withdraw": {
+      "post": {
+        "summary": "削除せず利用停止。以後の根拠利用・再送を停止",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態・再送結果"
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証なし"
+          },
+          "403": {
+            "description": "operator以外／権限失効"
+          },
+          "404": {
+            "description": "管理対象外"
+          },
+          "409": {
+            "description": "停止・上限・競合"
+          },
+          "412": {
+            "description": "古いETag"
+          }
+        },
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-current-owner-and-scope-required": true,
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "reason"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/test-people/search": {
+      "post": {
+        "summary": "検証人物専用の通常検索ロジック。追加AIなし",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "現在状態・再送結果"
+          },
+          "400": {
+            "description": "入力不正"
+          },
+          "401": {
+            "description": "認証なし"
+          },
+          "403": {
+            "description": "operator以外／権限失効"
+          },
+          "404": {
+            "description": "管理対象外"
+          },
+          "409": {
+            "description": "停止・上限・競合"
+          },
+          "412": {
+            "description": "古いETag"
+          }
+        },
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-current-owner-and-scope-required": true,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "signalIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "terms": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "specificSkills": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "axis": {
+                          "type": "string"
+                        },
+                        "categoryId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "axis",
+                        "categoryId"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "categories",
+                  "signalIds",
+                  "terms"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

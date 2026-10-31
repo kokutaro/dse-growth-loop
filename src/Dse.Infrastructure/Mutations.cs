@@ -64,6 +64,7 @@ public static class Jobs
     {
         var partition = RecordPartition.For(aggregate);
         var job = RecordJson.New("job", id ?? "job-" + Guid.NewGuid().ToString("N"), aggregate.Text("tenantId"), aggregate.Text("ownerId"), aggregate.Strings("scopeIds"), now);
+        SyntheticTestAccess.Mark(job,aggregate);
         job["container"] = partition.Container; job["sessionId"] = partition.Container == "conversations" ? partition.Key : null;
         job["jobType"] = type; job["aggregateId"] = aggregate.Text("id"); job["aggregateVersion"] = aggregate.Number("sourceVersion");
         job["payloadVersion"] = "1.0"; job["dedupKey"] = $"{type}:{aggregate.Text("id")}:{aggregate.Number("sourceVersion")}";

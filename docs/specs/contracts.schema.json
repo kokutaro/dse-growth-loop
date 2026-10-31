@@ -932,6 +932,12 @@
         },
         "skillRunId": {
           "type": "string"
+        },
+        "registrationReference": {
+          "type": "string"
+        },
+        "registrationFingerprint": {
+          "type": "string"
         }
       },
       "required": [
@@ -1712,6 +1718,15 @@
         },
         "specificSkills": {
           "$ref": "#/$defs/SpecificSkills"
+        },
+        "syntheticTest": {
+          "type": "boolean"
+        },
+        "managedByPersonId": {
+          "type": "string"
+        },
+        "testPersonId": {
+          "type": "string"
         }
       },
       "required": [
@@ -3507,6 +3522,10 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 100
+        },
+        "syntheticOnly": {
+          "type": "boolean",
+          "default": false
         }
       },
       "required": [
@@ -4130,6 +4149,15 @@
               "type": "null"
             }
           ]
+        },
+        "syntheticTest": {
+          "type": "boolean"
+        },
+        "managedByPersonId": {
+          "type": "string"
+        },
+        "testPersonId": {
+          "type": "string"
         }
       },
       "required": [
@@ -7077,7 +7105,10 @@
           "if": {
             "properties": {
               "policyVersion": {
-                "enum": ["skill-catalogue-choice-v1", "skill-catalogue-choice-v2"]
+                "enum": [
+                  "skill-catalogue-choice-v1",
+                  "skill-catalogue-choice-v2"
+                ]
               }
             },
             "required": [
@@ -7203,6 +7234,42 @@
         "probabilityValidation"
       ],
       "additionalProperties": false
+    },
+    "SyntheticImportBudget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "properties": {
+        "kind": {
+          "const": "syntheticImportBudget"
+        },
+        "documentId": {
+          "type": "string"
+        },
+        "configuration": {
+          "type": "object"
+        },
+        "dispatches": {
+          "type": "object",
+          "maxProperties": 4,
+          "additionalProperties": {
+            "enum": [
+              "extractSkills",
+              "decide"
+            ]
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "documentId",
+        "configuration",
+        "dispatches"
+      ],
+      "unevaluatedProperties": false
     }
   },
   "oneOf": [

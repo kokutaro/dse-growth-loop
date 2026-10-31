@@ -14,7 +14,7 @@ public static partial class RecordJson
 {
     public static readonly IReadOnlyDictionary<string, string> ContractKinds = new Dictionary<string, string>
     {
-        ["document"] = "Document", ["documentVersion"] = "DocumentVersion", ["evidenceSpan"] = "EvidenceSpan",
+        ["syntheticImportBudget"] = "SyntheticImportBudget", ["document"] = "Document", ["documentVersion"] = "DocumentVersion", ["evidenceSpan"] = "EvidenceSpan",
         ["person"] = "Person", ["experience"] = "Experience", ["departmentActivity"] = "DepartmentActivity",
         ["classificationResult"] = "ClassificationResult", ["experienceSignal"] = "ExperienceSignal",
         ["searchUnit"] = "SearchUnit", ["challenge"] = "Challenge", ["participation"] = "Participation",

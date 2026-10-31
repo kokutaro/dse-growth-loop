@@ -86,6 +86,8 @@ jobs:
         working-directory: web
       - run: npm run test:e2e:dictionary -- --trace retain-on-failure
         working-directory: web
+      - run: npm run test:e2e:synthetic -- --trace retain-on-failure
+        working-directory: web
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
