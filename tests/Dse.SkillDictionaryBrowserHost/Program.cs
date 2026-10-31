@@ -18,6 +18,15 @@ await fixture.Source("semantic-oversize","装置の検証","私は装置の検�
 await fixture.Source("choice-outside","辞書外の調査","私は辞書外の調査を実施した。");
 await fixture.Source("choice-compound","回帰試験と性能計測","私は回帰試験と性能計測を実施した。");
 await fixture.Source("choice-legacy","過去方式の試験","私は過去方式の試験を実施した。");
+await fixture.Source("recovery-stale","旧い候補","私は旧い候補を実施した。");
+await fixture.Source("recovery-held","性能計測","私は性能計測を実施した。");
+await fixture.Source("recovery-revoke","権限試験","私は権限試験を実施した。");
+foreach(var id in new[]{"recovery-stale","recovery-revoke"})await fixture.Service.CollectAsync(SkillDictionaryFixture.Curator,Guid.NewGuid().ToString("N"),new("fragment-"+id),default);
+async Task Change(string id,Action<JsonObject> change){var p=RecordPartition.Catalog("demo");var row=(await fixture.Repo.ReadAsync(p,id,default))!;var v=row.Value.Copy();change(v);await fixture.Store.CommitAsync(p,[RecordWrite.Replace(v,row.ETag)],default);}
+await Change("fragment-recovery-stale",v=>{v["description"]="私は現在の候補を実施した。";v["specificSkills"]!["items"]![0]!["raw"]="現在の候補";v["specificSkills"]!["items"]![0]!["quote"]="私は現在の候補を実施した。";});
+await Change("ev-recovery-stale",v=>v["text"]="私は現在の候補を実施した。");
+await Change("fragment-recovery-held",v=>v["specificSkills"]!["items"]![0]!["quote"]="私は原文にない捏造技能を実施した。");
+await fixture.Service.CollectAsync(SkillDictionaryFixture.Curator,Guid.NewGuid().ToString("N"),new("fragment-recovery-held"),default);
 var wire=new SkillSemanticTestRuntime.Wire();var aiConfig=SkillSemanticTestRuntime.Config();aiConfig["AiUsage:MaxInputTokens"]="8000";
 var ai=SkillSemanticTestRuntime.Ai(fixture,aiConfig,wire);
 builder.Services.AddSingleton(new SkillDictionaryService(fixture.Repo,fixture.Fence,new(fixture.Repo,TimeProvider.System),TimeProvider.System,()=>ai));
@@ -40,6 +49,9 @@ app.MapPost("/api/test/seed-noul",async(string candidateId)=>{
  var row=RecordJson.New("skillMatchProposal",id,"demo",SkillDictionaryFixture.Curator.PrincipalId,["demo"],DateTimeOffset.UtcNow);row["candidateId"]=candidateId;row["sourceFingerprint"]=candidate.Value.Text("sourceFingerprint");row["dictionaryVersion"]=version;row["snapshotHash"]=hash;row["policyVersion"]=SkillSemanticMatching.Version;row["phase"]="complete";row["outcome"]="existing_candidate";row["reason"]="SEMANTIC_PROPOSAL_ONLY";row["basis"]="semantic_noul";row["targetIds"]=RecordJson.Array(selected.Select(c=>c.Id));row["applicableCount"]=selected.Length;row["shortlistComplete"]=true;row["comparisons"]=JsonSerializer.SerializeToNode(selected.Select(c=>new SkillEquivalence(c.Id,.91,.92,.91,true)),browserJson);row["providerExecutionUncertain"]=false;row["aiRunId"]=null;
  await fixture.Store.CommitAsync(p,[RecordWrite.Create(row)],default);return Results.Ok(new{proposalId=id});
 });
+// Test-only mutation, loopback memory fixture only. Production endpoints stay read/collect.
+app.MapPost("/api/test/recovery-revoke",async()=>{await Change("doc-recovery-revoke",v=>v["activeVersion"]=null);return Results.Ok();});
+app.MapPost("/api/test/recovery-change",async()=>{await Change("doc-recovery-stale",v=>v["accessVersion"]=v.Number("accessVersion")+1);return Results.Ok();});
 app.MapGet("/health/live",()=>Results.Ok("test-only"));
 app.MapGet("/api/config",()=>Results.Ok(new{mode="Demo",tenantId="demo",clientId="",scope="",dictionaryFixture=true}));
 app.MapGroup("/api/v1").MapSkillDictionary();

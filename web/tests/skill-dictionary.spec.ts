@@ -24,7 +24,7 @@ test('仮データの収集から人の承認、統合、固定版プレビュ�
  let dictionary=await (await request.get('/api/v1/skill-dictionary')).json();expect(dictionary.version).toBe(1);expect(dictionary.concepts).toHaveLength(1);const canonical=dictionary.concepts[0].id;
  await collect('alias');await choose('リグレッション試験');await form('alias');await page.getByLabel('比較・統合先の技能').selectOption(canonical);await save(2);
  await collect('regression-alt');await choose('退行試験');await form('new');await save(3);
- const list=await (await request.get('/api/v1/skill-candidates')).json();const alt=list.items.find((c:{item:{raw:string}})=>c.item.raw==='退行試験');const oldId=alt.conceptId;
+ const list=await (await request.get('/api/v1/skill-candidates')).json();const alt=list.items.find((c:{item:{raw:string}})=>c.item?.raw==='退行試験');const oldId=alt.conceptId;
  await choose('退行試験');await form('merge','同じ回帰試験を指す仮の重複技能。定義と境界を照合して統合する。');await page.getByLabel('比較・統合先の技能').selectOption(canonical);await save(4);
  await collect('knowledge');await choose('性能計測');await form('new','知識資料の技能概念を登録する。本人経験は認定しない。');await page.getByLabel('標準名').fill('知識資料の性能計測');await save(5);
  await collect('performance');await choose('性能計測','実務');await form('defer');await save(5);
@@ -103,4 +103,27 @@ test('Choiceの該当なし・複合技能の保留を人の承認と分け、�
  const after=await(await request.get('/api/test/semantic-audit')).json();expect(after.calls-audit.calls).toBe(1);expect(await(await request.get('/api/v1/skill-dictionary')).json()).toEqual(before);
  await panel.screenshot({path:'test-results/skill-dictionary/choice-rounded.png'});
  await panel.locator('summary').click();await expect(panel.getByRole('heading',{name:'過去のnoul系提案'})).toBeVisible();await expect(panel.getByRole('columnheader',{name:'最小値'})).toBeVisible();await panel.locator('details').screenshot({path:'test-results/skill-dictionary/choice-noul-history.png'});
+});
+
+test('古い候補と収集保留を現在の原文から再確認し、二重再収集・途中の原文変更・権限撤回を安全に扱う',async({page,request})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/skill-dictionary.html');
+ await expect(page.getByRole('button',{name:'保存済み抽出を収集',exact:true})).toBeVisible();
+ const old=(await(await request.get('/api/v1/skill-candidates')).json()).items.find((x:{fragmentId:string})=>x.fragmentId==='fragment-recovery-stale');
+ expect(old.sourceStatus).toBe('changed');expect(old.item).toBeNull();
+ const row=page.locator('tbody tr').filter({hasText:'fragment-recovery-stale'}).first();await expect(row).toContainText('再収集が必要');await expect(row.getByRole('checkbox')).toBeDisabled();
+ await row.getByRole('button',{name:'この候補を確認'}).click();const panel=page.locator('.source-review');await expect(panel).toContainText('私は現在の候補を実施した。');await expect(panel).not.toContainText('旧い候補');await expect(page.getByRole('button',{name:'判断を承認して保存'})).toHaveCount(0);
+ await panel.getByRole('button',{name:'一覧へ戻る'}).click();await expect(panel).toHaveCount(0);
+ await row.getByRole('button',{name:'この候補を確認'}).click();await expect(panel).toBeVisible();
+ await request.post('/api/test/recovery-change');await panel.getByRole('button',{name:'現在の根拠で再収集'}).click();await expect(page.getByRole('alert')).toContainText('再確認');
+ await row.getByRole('button',{name:'この候補を確認'}).click();await expect(panel).toBeVisible();
+ // Lose the committed response; retry keeps the exact idempotency key and fingerprint.
+ let count=0;let firstKey='';await page.route('**/api/v1/skill-candidates/collect',async route=>{count++;const key=route.request().headers()['idempotency-key'];if(count===1){firstKey=key;const response=await route.fetch();expect(response.status()).toBe(200);await route.abort('failed');}else{expect(key).toBe(firstKey);await route.continue();}});
+ await panel.getByRole('button',{name:'現在の根拠で再収集'}).evaluate((b:HTMLButtonElement)=>{b.click();b.click();});await expect(page.getByRole('alert')).toContainText('結果を確認できません');expect(count).toBe(1);
+ await page.getByRole('button',{name:'同じ操作を再送'}).click();await expect(page.getByRole('status')).toContainText('収集状態');await expect(panel).toHaveCount(0);await expect(page.getByRole('button',{name:'この候補を確認'}).first()).toBeEnabled();expect(count).toBe(2);await page.unroute('**/api/v1/skill-candidates/collect');
+ const current=(await(await request.get('/api/v1/skill-candidates')).json()).items.filter((x:{fragmentId:string})=>x.fragmentId==='fragment-recovery-stale');expect(current).toHaveLength(2);expect(current.filter((x:{sourceStatus:string})=>x.sourceStatus==='current')).toHaveLength(1);
+ await page.locator('tbody tr').filter({hasText:'fragment-recovery-held'}).getByRole('button',{name:'この候補を確認'}).click();await expect(panel).toContainText('引用が原文と一致しない');await expect(panel).not.toContainText('捏造技能');await expect(panel).toContainText('保留 1 件');await panel.screenshot({path:'test-results/skill-dictionary/recovery-held.png'});
+ await panel.getByRole('button',{name:'現在の根拠で再収集'}).click();await expect(panel).toHaveCount(0);await expect(page.getByRole('status')).toContainText('新規候補 0 件');
+ const revokeRow=page.locator('tbody tr').filter({hasText:'権限試験'}).first();await revokeRow.getByRole('button',{name:'この候補を確認'}).click();await expect(page.getByRole('button',{name:'承認履歴を見る'})).toBeEnabled();await request.post('/api/test/recovery-revoke');await page.getByRole('button',{name:'承認履歴を見る'}).click();await expect(page.getByRole('alert')).toContainText('閲覧条件');await expect(page.getByText('私は権限試験を実施した。',{exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'権限を確認して読み込む'}).click();await expect(page.locator('tbody tr').filter({hasText:'権限試験'})).toHaveCount(0);expect(errors).toEqual([]);
+ await page.locator('tbody tr').filter({hasText:'fragment-recovery-stale'}).first().getByRole('button',{name:'この候補を確認'}).click();await expect(panel).toBeVisible();await panel.screenshot({path:'test-results/skill-dictionary/recovery-stale.png'});
 });

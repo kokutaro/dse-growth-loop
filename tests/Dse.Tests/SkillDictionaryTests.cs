@@ -126,6 +126,7 @@ public sealed class SkillDictionaryTests
         var writes=new Writes();var f=await SkillDictionaryFixture.Create(writes);writes.Kinds.Clear();var c=await Candidate(f,"knowledge");await Review(f,c,"new");await f.Service.PreviewUnderFenceAsync(A,new(1,[c.Text("id")]),default);
         Assert.All(writes.Kinds,k=>Assert.Contains(k,new[]{"skillCandidate","skillDictionaryHead","skillDictionaryVersion","skillDictionaryReview","idempotency","accessFence"}));
         Assert.DoesNotContain("experience",writes.Kinds);Assert.DoesNotContain("searchUnit",writes.Kinds);Assert.DoesNotContain("job",writes.Kinds);Assert.DoesNotContain("aiRun",writes.Kinds);
+        await f.Source("contract-held","原文外の技能","私は別の作業を実施した。");await f.Service.CollectAsync(A,Key(),new("fragment-contract-held"),default);
         var examples=new JsonArray();
         foreach(var (kind,schema) in new[]{("skillCandidate","SkillCandidate"),("skillDictionaryHead","SkillDictionaryHead"),("skillDictionaryVersion","SkillDictionaryVersion"),("skillDictionaryReview","SkillDictionaryReview")})
         {
