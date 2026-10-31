@@ -24,7 +24,7 @@ public static class SyntheticImportBudget
         if(limits.Attempts!=1)throw new DomainException(409,"TEST_SINGLE_ATTEMPT_REQUIRED");
         var foundry=AiModel.Read(config,"Foundry",limits.OutputTokens);var jev=AiModel.Read(config,"Jev",limits.OutputTokens);
         // Pin provider/version/rates and call bounds, without storing credentials.
-        return new(){["budgetVersion"]="workbook-import-v1",["inputTokens"]=limits.InputTokens,["outputTokens"]=limits.OutputTokens,
+        return new(){["budgetVersion"]="workbook-import-v2",["inputTokens"]=limits.InputTokens,["outputTokens"]=limits.OutputTokens,
             ["foundry"]=JsonSerializer.SerializeToNode(foundry,ProjectionRules.Json),["jev"]=JsonSerializer.SerializeToNode(jev,ProjectionRules.Json),
             ["maximumUsd"]=(4m*(limits.InputTokens*foundry.InputUsdPerMillion+limits.OutputTokens*foundry.OutputUsdPerMillion)+
                 3m*(limits.InputTokens*jev.InputUsdPerMillion+limits.OutputTokens*jev.OutputUsdPerMillion))/1000000m};

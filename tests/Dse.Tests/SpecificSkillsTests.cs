@@ -105,6 +105,7 @@ public sealed class SpecificSkillsTests
         var units=(await h.Store.QueryAsync(RecordPartition.Catalog("demo"),"searchUnit","entityId","demo-person-01",100,null,default)).Items.Select(r=>r.Value.Deserialize<SearchUnit>(new JsonSerializerOptions(JsonSerializerDefaults.Web))!).ToArray();
         Assert.Single(Retriever.Search(units,new([],[],[]) { SpecificSkills=["C#"] },IdentityResolver.Demo.Search).Candidates);
         Assert.Empty(Retriever.Search(units,new([],[],[]) { SpecificSkills=["Azure"] },IdentityResolver.Demo.Search).Candidates);
-        Assert.Contains(units,u=>u.NormalizedTerms.Contains("azure")); // lexical hints remain explicitly separate
+        Assert.DoesNotContain(units,u=>u.NormalizedTerms.Contains("azure")); // Workbook technology hints are knowledge, not a person-experience search route.
+        Assert.Empty(Retriever.Search(units,new([],[],["Azure"]),IdentityResolver.Demo.Search).Candidates);
     }
 }

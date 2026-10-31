@@ -34,7 +34,7 @@ public sealed class MockAiTransport : IAiTransport
         var evidenceIds = input["evidence"]!.AsArray().Select(x => x!["id"]!.GetValue<string>()).ToArray();
         JsonObject content;
         if (operation == "structureWorkbook")
-            content = new() { ["sections"] = new JsonArray(new JsonObject { ["kind"] = "context", ["evidenceIds"] = Dse.Domain.RecordJson.Array(evidenceIds), ["startEvidenceId"] = null, ["endEvidenceId"] = null, ["precision"] = "unknown" }) };
+            content = new() { ["sections"] = new JsonArray(new JsonObject { ["kind"] = "context", ["evidenceIds"] = Dse.Domain.RecordJson.Array(evidenceIds), ["startEvidenceId"] = null, ["endEvidenceId"] = null, ["precision"] = "unknown", ["endState"]="unknown" }) };
         else if (operation == "extractSkills")
         {
             // Explicit canned examples, never a semantic/ownership classifier or quality claim.

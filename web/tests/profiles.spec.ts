@@ -183,3 +183,18 @@ for (const boundary of ['logout', 'navigation', 'account'] as const) {
     expect(attempts).toBe(1);
   });
 }
+
+
+test("月精度と継続中・期間確認警告を日精度に見せず表示する", async ({ page }) => {
+  await page.route('**/api/v1/upload-context', route => route.fulfill({ json: { personId: 'period-fixture', departmentId: 'fixture', scopeIds: [] } }));
+  await page.route('**/api/v1/people/period-fixture', route => route.fulfill({ headers: { ETag: '"period-etag"' }, json: { id: 'period-fixture', displayName: '架空期間', available: true, publicationState: 'published', sourceVersion: 1, activeVersion: 1, confirmationState: 'ai_unconfirmed' } }));
+  await page.route('**/api/v1/people/period-fixture/experiences*', route => route.fulfill({ json: { items: [{ id: 'period-1', documentId: 'period-doc', description: '原文を保持', period: { start: '2024-01', end: null, precision: 'month', months: null }, periodEndState: 'ongoing', periodWarnings: ['WORKBOOK_PRECISION_FROM_SOURCE'], confirmationState: 'ai_unconfirmed', correctionState: 'none', evidenceRefs: [{ id: 'date-source' }] }], continuationToken: null } }));
+  await page.goto('/#profile');
+  await page.getByRole('button', { name: 'プロフィールを更新', exact: true }).click();
+  const row=page.getByTestId('period-doc');
+  await expect(row.getByLabel('開始月', {exact: true})).toHaveAttribute('type','month');
+  await expect(row.getByLabel('終了月（この月を含む）', {exact: true})).toHaveValue('');
+  await expect(row).toContainText('継続中（終了日・月数は未確定）');
+  await expect(row).toContainText('期間は原文確認が必要：WORKBOOK_PRECISION_FROM_SOURCE');
+  await expect(row).toContainText('月数：不明');
+});

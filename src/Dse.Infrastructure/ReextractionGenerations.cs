@@ -34,7 +34,7 @@ public sealed class ReextractionGenerations(IPrimaryRepository repository, Acces
         if(allowance["available"]?.GetValue<bool>()==false)throw new DomainException(409,"TEST_BUDGET_CONFIGURATION_INVALID");
         var configuration=SyntheticImportBudget.Configuration(config);
         var target=Hash(RecordJson.Canonical(new JsonObject{["implementation"]=ImplementationVersion,["processor"]=IngestionOptions.ProcessorVersion,["structure"]=WorkbookRules.Version,
-            ["skills"]=WorkbookRules.CellSkillPrompt,["guard"]=SpecificSkillRules.GuardVersion,["wire"]="workbook-wire-v1",["configuration"]=configuration}));
+            ["skills"]=WorkbookRules.CellSkillPrompt,["guard"]=SpecificSkillRules.GuardVersion,["wire"]=WorkbookWire.Version,["configuration"]=configuration}));
         var root=doc.Value.Text("generationRootId") is {Length:>0} id?id:doc.Value.Text("id");
         var generationId="doc-generation-"+Hash(root+":"+version.Value.Text("sha256")+":"+target);
         return new(){["estimateId"]=Hash(doc.ETag+":"+version.ETag+":"+generationId),["sourceEtag"]=doc.ETag,["sourceDocumentId"]=doc.Value.Text("id"),

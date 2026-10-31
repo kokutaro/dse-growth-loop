@@ -144,7 +144,8 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 var fragmentRefs = group.Select(row => new EvidenceReference(row.Value.Text("id"), version.Value.Text("id"), row.Value.Number("sourceVersion"))).ToArray();
                 var reference = fragmentRefs[0];
                 // Dates and cells stay mechanical. Only prose without a recognizable date range needs structuring.
-                var period = project?.Period ?? (workbook ? WorkbookPeriod(sections[group.Key], group) : ProfileExtraction.Period(text));
+                var workbookPeriod=workbook?WorkbookDates.Resolve(sections[group.Key],group):null;
+                var period = project?.Period ?? workbookPeriod?.Period ?? ProfileExtraction.Period(text);
                 period.Validate();
                 string? structureRun = null;
                 if (group.Count() == 1 && span.Value["location"]?["type"]?.GetValue<string>() == "paragraph" && period.Precision == "unknown")
@@ -183,7 +184,8 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 {
                     value["workbookSectionKind"] = sections[group.Key].Kind;
                     value["workbookStructureVersion"] = WorkbookRules.Version;
-                    value["periodState"] = "retained_in_source_not_inferred";
+                    value["periodState"] = workbookPeriod!.Warnings.Length==0?"source_precision_resolved":"source_precision_review";
+                    value["periodWarnings"]=RecordJson.Array(workbookPeriod.Warnings);value["periodEndState"]=workbookPeriod.EndState;value["workbookPeriodVersion"]=WorkbookDates.Version;
                     value["skillQuotePolicy"] = WorkbookRules.CellSkillPrompt;
                 }
                 value["personId"] = personId; value["documentId"] = document.Value.Text("id"); value["structureRunId"] = structureRun;
@@ -350,7 +352,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 fragment.Text("workbookSectionKind") != "context" && (department || entity["available"]!.GetValue<bool>()), Retriever.TaxonomyVersion,
                 answer.Choices.SelectMany(q => q.Value.Probabilities.Select(p => new CategoryProbability(q.Key, p.Key, p.Value))).ToArray(),
                 answer.Nouls.Select(p => new ExperienceSignal(p.Key, p.Value.YesProbability, p.Value.State switch { NoulState.Supported => "supported", NoulState.Unknown => "unknown", _ => "not_evaluated" })).ToArray(),
-                ProfileExtraction.Terms(fragment.Text("description")).Concat(importedLexicalTerms.Select(Retriever.Normalize)).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray(),
+                (fragment.Text("workbookSectionKind") is "project" or "context" ? specific.SearchTerms : ProfileExtraction.Terms(fragment.Text("description")).Concat(importedLexicalTerms.Select(Retriever.Normalize))).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray(),
                 await SourceRefs(evidence), fragment.Text("confirmationState"))
             { SourceVersion = entity.Number("sourceVersion"), ProjectionVersion = entity.Number("sourceVersion"), AccessVersion = entity.Number("accessVersion"), ProjectionState = "ready", EvidenceRefs = evidence,
                 SpecificSkills = specific, SyntheticTest = SyntheticTestAccess.IsTest(entity), ProcessingMode = entity.Text("processingMode") };
@@ -384,26 +386,6 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             document.Value["aiState"] = "complete"; document.Value["processingMode"] = entity.Text("processingMode"); document.Value["profileResultId"] = entity.Text("id"); Write(document.Value);
         }
         return new(tenant, expected, writes.Values.ToArray(), entity.Text("id"));
-    }
-    private static ExperiencePeriod WorkbookPeriod(WorkbookSection section, IEnumerable<StoredRecord> cells)
-    {
-        if (section.Precision == "unknown") return new(null,null,"unknown",null);
-        var sources=cells.ToDictionary(c=>c.Value.Text("id"),c=>c.Value.Text("text"));
-        string? Date(string? id)
-        {
-            if(id is null)return null;
-            var raw=sources[id];
-            if(section.Precision=="month")return InternalResumeSheet.Month(raw) ?? throw new DomainException(422,"WORKBOOK_PERIOD_UNRESOLVED");
-            return DateTime.TryParseExact(raw,["yyyy-MM-dd","yyyy-MM-dd'T'HH:mm:ss"],System.Globalization.CultureInfo.InvariantCulture,System.Globalization.DateTimeStyles.None,out var date)
-                ? date.ToString("yyyy-MM-dd",System.Globalization.CultureInfo.InvariantCulture) : throw new DomainException(422,"WORKBOOK_PERIOD_UNRESOLVED");
-        }
-        var start=Date(section.StartEvidenceId);var end=Date(section.EndEvidenceId);int? months=null;
-        if(start is not null&&end is not null)
-        {
-            if(string.CompareOrdinal(start,end)>0)throw new DomainException(422,"WORKBOOK_PERIOD_UNRESOLVED");
-            months=section.Precision=="month"?(int.Parse(end[..4])-int.Parse(start[..4]))*12+int.Parse(end[5..7])-int.Parse(start[5..7])+1:ProfileExtraction.Period(start+"〜"+end).Months;
-        }
-        return new(start,end,section.Precision,months);
     }
     private static string RowKey(StoredRecord span)
     {

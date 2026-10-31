@@ -3938,6 +3938,13 @@
                         "month",
                         "day"
                       ]
+                    },
+                    "endState": {
+                      "enum": [
+                        "dated",
+                        "ongoing",
+                        "unknown"
+                      ]
                     }
                   },
                   "required": [
@@ -3960,7 +3967,10 @@
             "type": "string"
           },
           "workbookStructureVersion": {
-            "const": "workbook-context-v1"
+            "enum": [
+              "workbook-context-v1",
+              "workbook-context-v2"
+            ]
           },
           "generationParentId": {
             "type": "string",
@@ -4539,10 +4549,17 @@
             ]
           },
           "workbookStructureVersion": {
-            "const": "workbook-context-v1"
+            "enum": [
+              "workbook-context-v1",
+              "workbook-context-v2"
+            ]
           },
           "periodState": {
-            "const": "retained_in_source_not_inferred"
+            "enum": [
+              "retained_in_source_not_inferred",
+              "source_precision_resolved",
+              "source_precision_review"
+            ]
           },
           "skillQuotePolicy": {
             "const": "specific-skills-cell-v1"
@@ -4550,6 +4567,22 @@
           "generationSupersededBy": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "periodWarnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "periodEndState": {
+            "enum": [
+              "dated",
+              "ongoing",
+              "unknown"
+            ]
+          },
+          "workbookPeriodVersion": {
+            "const": "workbook-period-v1"
           }
         },
         "required": [
