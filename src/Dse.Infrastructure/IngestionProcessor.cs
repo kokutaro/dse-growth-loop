@@ -115,6 +115,14 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                 return true;
             }
             var doc = await repository.ReadAsync(partition, job.Value.Text("aggregateId"), processing.Token) ?? throw new DomainException(409, "SOURCE_REVOKED");
+            async Task CheckSynthetic(JsonObject value,CancellationToken token)
+            {
+                if(!SyntheticTestAccess.IsTest(value))return;
+                var manager=await new AuthorityProvider(repository).PersonAsync(notice.TenantId,value.Text("managedByPersonId"),token)??throw new DomainException(409,"SOURCE_REVOKED");
+                try { await SyntheticTestAccess.RequireLinkedAsync(repository,manager,value,token); }
+                catch(DomainException) { throw new DomainException(409,"SOURCE_REVOKED"); }
+            }
+            await CheckSynthetic(doc.Value,processing.Token);
             var ver = await repository.ReadAsync(partition, doc.Value.Text("currentVersionId"), processing.Token) ?? throw new DomainException(409, "SOURCE_REVOKED");
             if (doc.Value.Number("sourceVersion") != notice.Version || ver.Value.Text("jobId") != notice.JobId) throw new DomainException(409, "SOURCE_REVOKED");
             if (ver.Value.Text("processorVersion") != IngestionOptions.ProcessorVersion) throw new DomainException(400, "PROCESSOR_VERSION_UNSUPPORTED");
@@ -142,6 +150,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                             continue;
                         }
                         var evidence = RecordJson.New("evidenceSpan", id, notice.TenantId, doc.Value.Text("ownerId"), doc.Value.Strings("scopeIds"), now);
+                        SyntheticTestAccess.Mark(evidence,doc.Value);
                         evidence["documentId"] = doc.Value.Text("id"); evidence["documentVersionId"] = ver.Value.Text("id"); evidence["sourceVersion"] = notice.Version;
                         evidence["location"] = new JsonObject { ["type"] = span.Type, ["label"] = span.Label };
                         evidence["text"] = span.Text; evidence["textHash"] = OfficeExtractor.Hash(Encoding.UTF8.GetBytes(span.Text)); evidence["validationState"] = "validated";
@@ -160,6 +169,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                     var current = await Owned(token);
                     var latest = await repository.ReadAsync(partition, doc.Value.Text("id"), token) ?? throw new DomainException(409, "SOURCE_REVOKED");
                     var latestVersion = await repository.ReadAsync(partition, ver.Value.Text("id"), token) ?? throw new DomainException(409, "SOURCE_REVOKED");
+                    await CheckSynthetic(latest.Value,token);
                     if (latest.ETag != doc.ETag || latestVersion.ETag != ver.ETag || latest.Value.Number("sourceVersion") != notice.Version || latestVersion.Value.Text("jobId") != notice.JobId)
                         throw new DomainException(409, "SOURCE_REVOKED");
                     var status = extraction.Spans.Length == 0 ? "needs_review" : "ready";
@@ -183,6 +193,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                     if (profiles is not null && extraction.Spans.Length > 0)
                     {
                         var next = Jobs.Create(latest.Value, "enrichment", clock.GetUtcNow());
+                        SyntheticTestAccess.Mark(next,latest.Value);
                         latest.Value["enrichmentJobId"] = next.Text("id"); latest.Value["aiState"] = "queued";
                         completion.Add(RecordWrite.Create(next));
                     }

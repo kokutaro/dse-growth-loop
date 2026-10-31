@@ -359,6 +359,7 @@ function App() {
         {config && <Conversations config={config} candidates={result?.candidates ?? []} onKnowledgeChanged={invalidateKnowledge} />}
         {config && <Documents config={config} />}
         {config && <Profiles config={config} />}
+        {config && <p><a href="/test-profiles.html">検証専用の架空人物・資料取込（運用者専用）</a></p>}
         {config && <p><a href="/skill-dictionary.html">共通技能辞書と候補レビュー（既存の運用者権限が必要）</a></p>}
       </main>}
       <footer>

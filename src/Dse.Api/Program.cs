@@ -96,7 +96,7 @@ app.Use(async (context, next) =>
 });
 app.Use(async (context, next) =>
 {
-    var limit = context.Request.Path == "/api/v1/documents" && HttpMethods.IsPost(context.Request.Method) ? uploadLimits.OriginalBytes + 65536 : 32 * 1024;
+    var limit = (context.Request.Path == "/api/v1/documents" || context.Request.Path.StartsWithSegments("/api/v1/admin/test-people") && context.Request.Path.Value!.EndsWith("/documents",StringComparison.Ordinal)) && HttpMethods.IsPost(context.Request.Method) ? uploadLimits.OriginalBytes + 65536 : 32 * 1024;
     var feature = context.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>();
     if (feature is { IsReadOnly: false }) feature.MaxRequestBodySize = limit;
     if (context.Request.ContentLength > limit) { await ApiProblem.Result(context, 413).ExecuteAsync(context); return; }
@@ -143,6 +143,7 @@ var search = app.MapPost("/api/search", (SearchRequest request, HttpContext cont
 var records = app.MapGroup("/api/v1").RequireRateLimiting("records");
 records.MapRecords(demo);
 records.MapDocuments(demo);
+records.MapSyntheticTests();
 var legacyRecords = app.MapGroup("/api/v1").RequireRateLimiting("records").WithMetadata(new LegacyWorkspaceEndpoint());
 legacyRecords.MapConversations(demo);
 legacyRecords.MapKnowledge();

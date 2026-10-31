@@ -4144,6 +4144,12 @@
           },
           "skillRunId": {
             "type": "string"
+          },
+          "registrationReference": {
+            "type": "string"
+          },
+          "registrationFingerprint": {
+            "type": "string"
           }
         },
         "required": [
@@ -4924,6 +4930,15 @@
           },
           "specificSkills": {
             "$ref": "#/components/schemas/SpecificSkills"
+          },
+          "syntheticTest": {
+            "type": "boolean"
+          },
+          "managedByPersonId": {
+            "type": "string"
+          },
+          "testPersonId": {
+            "type": "string"
           }
         },
         "required": [
@@ -6719,6 +6734,10 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 100
+          },
+          "syntheticOnly": {
+            "type": "boolean",
+            "default": false
           }
         },
         "required": [
@@ -7342,6 +7361,15 @@
                 "type": "null"
               }
             ]
+          },
+          "syntheticTest": {
+            "type": "boolean"
+          },
+          "managedByPersonId": {
+            "type": "string"
+          },
+          "testPersonId": {
+            "type": "string"
           }
         },
         "required": [
@@ -10418,6 +10446,42 @@
           "probabilityValidation"
         ],
         "additionalProperties": false
+      },
+      "SyntheticImportBudget": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PersistedMetadata"
+          }
+        ],
+        "properties": {
+          "kind": {
+            "const": "syntheticImportBudget"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "configuration": {
+            "type": "object"
+          },
+          "dispatches": {
+            "type": "object",
+            "maxProperties": 4,
+            "additionalProperties": {
+              "enum": [
+                "extractSkills",
+                "decide"
+              ]
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "documentId",
+          "configuration",
+          "dispatches"
+        ],
+        "unevaluatedProperties": false
       }
     },
     "parameters": {

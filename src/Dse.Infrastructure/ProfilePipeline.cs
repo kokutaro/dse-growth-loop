@@ -35,11 +35,17 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
         var document = enrichment ? aggregate : null;
         var personId = enrichment ? aggregate.Value.Text("personId") : aggregate.Value.Text("id");
         _ = identities.Configuration;
-        var actor = await new AuthorityProvider(repository,config).PersonAsync(tenant,personId,ct);
-        await Read(AuthorityProvider.ControlId); await Read(AuthorityProvider.PersonId(personId));
+        var managerId = SyntheticTestAccess.IsTest(aggregate.Value) ? aggregate.Value.Text("managedByPersonId") : personId;
+        var actor = await new AuthorityProvider(repository,config).PersonAsync(tenant,managerId,ct);
+        await Read(AuthorityProvider.ControlId); await Read(AuthorityProvider.PersonId(managerId));
         if (actor is null || actor.PrincipalId != aggregate.Value.Text("ownerId")) throw new DomainException(409, "SOURCE_REVOKED");
         var person = enrichment ? await Read(personId) ?? throw new DomainException(409, "SOURCE_REVOKED") : aggregate;
-        AccessPolicy.RequireSelf(actor, person.Value);
+        if(SyntheticTestAccess.IsTest(aggregate.Value))
+        {
+            await SyntheticTestAccess.RequireAsync(repository,actor,personId,ct);
+            await SyntheticTestAccess.RequireLinkedAsync(repository,actor,aggregate.Value,ct);
+        }
+        else AccessPolicy.RequireSelf(actor, person.Value);
         if (person.Value.Text("publicationState") == "withdrawn") throw new DomainException(409, "SOURCE_REVOKED");
         var department = enrichment && document!.Value.Text("documentType") == "report";
         StoredRecord? departmentRecord = null;
@@ -130,6 +136,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                     value["description"] = text; value["period"] = Node(period); value["evidenceRefs"] = Node(fragmentRefs);
                     value["confirmationState"] = "ai_unconfirmed"; value["correctionState"] = "none"; value["pendingAiVersion"] = null;
                 }
+                SyntheticTestAccess.Mark(value,person.Value);
                 value["importKey"] = document.Value.Text("importKey");
                 value["title"] = document.Value.Text("title");
                 value["personId"] = personId; value["documentId"] = document.Value.Text("id"); value["structureRunId"] = structureRun;
@@ -295,10 +302,11 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 ProfileExtraction.Terms(fragment.Text("description")).Concat(importedLexicalTerms.Select(Retriever.Normalize)).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray(),
                 await SourceRefs(evidence), fragment.Text("confirmationState"))
             { SourceVersion = entity.Number("sourceVersion"), ProjectionVersion = entity.Number("sourceVersion"), AccessVersion = entity.Number("accessVersion"), ProjectionState = "ready", EvidenceRefs = evidence,
-                SpecificSkills = specific, ProcessingMode = entity.Text("processingMode") };
+                SpecificSkills = specific, SyntheticTest = SyntheticTestAccess.IsTest(entity), ProcessingMode = entity.Text("processingMode") };
             var projection = Node(unit).AsObject();
             foreach (var pair in RecordJson.New("searchUnit", unitId, tenant, actor.PrincipalId, entity.Strings("scopeIds"), clock.GetUtcNow()))
                 if (!projection.ContainsKey(pair.Key)) projection[pair.Key] = pair.Value?.DeepClone();
+            SyntheticTestAccess.Mark(projection,entity);
             projection["classificationResultIds"] = RecordJson.Array([fingerprint]); Write(projection); projectionIds.Add(unitId);
             if (!department && fragment != entity && !searchOnlyIds.Contains(fragment.Text("id"))) Write(fragment);
         }

@@ -17,6 +17,9 @@ public static class AccessPolicy
     public static bool CanRead(ActorAccess actor, JsonObject value)
     {
         if (!InScope(actor, value)) return false;
+        if (value["syntheticTest"]?.GetValue<bool>() == true)
+            return actor.HasRole("member") && actor.HasRole("operator") && value.Text("ownerId") == actor.PrincipalId &&
+                value.Text("managedByPersonId") == actor.PersonId && value.Strings("scopeIds").All(actor.ScopeIds.Contains);
         var owner = value.Text("ownerId") == actor.PrincipalId;
         return value.Text("kind") switch
         {

@@ -165,11 +165,13 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
         var source = (await repository.ReadAsync(partition, unit.EntityId, ct))?.Value;
         if (source is null || source.Text("kind") != unit.EntityType || !AccessPolicy.CanUse(actor, source) ||
             source.Number("activeVersion") != unit.SourceVersion || source.Number("accessVersion") != unit.AccessVersion) return null;
-        if (source.Text("kind") == "person")
+        if (source.Text("kind") == "person" && !SyntheticTestAccess.IsTest(source))
         {
             var person = await new AuthorityProvider(repository,configuration).PersonAsync(actor.TenantId,source.Text("id"),ct);
             if (person is null || !person.HasRole("member") || person.PrincipalId != source.Text("ownerId")) return null;
         }
+        try { await SyntheticTestAccess.RequireLinkedAsync(repository,actor,source,ct); }
+        catch(DomainException) { return null; }
         if (source.Text("kind") == "knowledge" && source.Text("contractVersion") == "knowledge-v1" &&
             await CurrentKnowledgeAuthorityAsync(actor, source, unit.SourceVersion.Value, ct) is null) return null;
         if (source.Text("kind") == "knowledge" && !await new AuthorityProvider(repository,configuration).CurrentTokenAsync(actor.TenantId,source,ct)) return null;
@@ -187,7 +189,7 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
             try { unit = unit with { SpecificSkills = SpecificSkillRules.Assess(unit.SpecificSkills, refs.ToDictionary(r => r.Id, r => r.Text), unit.Summary, unit.EntityType) }; }
             catch (ArgumentException) { return null; }
         }
-        return new(unit with { SourceRefs = refs.ToArray() }, snapshots.Distinct().ToArray());
+        return new(unit with { SyntheticTest = SyntheticTestAccess.IsTest(source), SourceRefs = refs.ToArray() }, snapshots.Distinct().ToArray());
     }
     public async Task<(JsonObject Span, JsonObject Document)?> EvidenceAsync(ActorAccess actor, EvidenceReference reference, CancellationToken ct)
     {
@@ -209,6 +211,11 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
             span.Number("sourceVersion") != reference.SourceVersion || version.Number("sourceVersion") != reference.SourceVersion ||
             !AccessPolicy.CanRead(actor, span) || !AccessPolicy.CanRead(actor, version)) return null;
         var document = (await repository.ReadAsync(partition, version.Text("documentId"), ct))?.Value;
+        if(document is not null)
+        {
+            try { await SyntheticTestAccess.RequireLinkedAsync(repository,actor,document,ct); }
+            catch(DomainException) { return null; }
+        }
         return document is not null && document.Text("kind") == "document" && AccessPolicy.CanUse(actor, document) &&
             document.Number("activeVersion") == reference.SourceVersion ? (span, document) : null;
     }
@@ -218,11 +225,12 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
         foreach (var snapshot in snapshots)
         {
             var current = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), snapshot.Id, ct))?.Value;
-            if (current?.Text("kind") == "person")
+            if (current?.Text("kind") == "person" && !SyntheticTestAccess.IsTest(current))
             {
                 var person = await new AuthorityProvider(repository,configuration).PersonAsync(actor.TenantId,snapshot.Id,ct);
                 if (person is null || !person.HasRole("member") || person.PrincipalId != current.Text("ownerId")) throw new DomainException(409,"SOURCE_REVOKED");
             }
+            if(current is not null)await SyntheticTestAccess.RequireLinkedAsync(repository,actor,current,ct);
             if (current is null || !AccessPolicy.CanUse(actor, current) || Snapshot(current) != snapshot ||
                 current.Text("kind") == "knowledge" && !await new AuthorityProvider(repository,configuration).CurrentTokenAsync(actor.TenantId,current,ct) ||
                 current.Text("kind") == "knowledge" && current.Text("contractVersion") == "knowledge-v1" &&

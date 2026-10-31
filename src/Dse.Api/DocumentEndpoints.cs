@@ -33,6 +33,7 @@ public static class DocumentEndpoints
                 var doc = await repository.ReadAsync(partition, id, token);
                 if (doc?.Value.Text("kind") != "document") throw new DomainException(404, "NOT_FOUND");
                 AccessPolicy.RequireRead(actor, doc.Value);
+                await SyntheticTestAccess.RequireLinkedAsync(repository,actor,doc.Value,token);
                 if (!demo && !actor.HasRole("operator") && doc.Value.Text("ownerId") != actor.PrincipalId)
                     throw new DomainException(404, "NOT_FOUND");
                 var version = await repository.ReadAsync(partition, doc.Value.Text("currentVersionId"), token);
