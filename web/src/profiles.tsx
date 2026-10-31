@@ -4,7 +4,7 @@ import { authSessionSignal, getToken, type AppConfig } from "./auth";
 
 type Period = { start: string | null; end: string | null; precision: string; months: number | null };
 type Decisions = { choices: Record<string, { probabilities: Record<string, number>; confidence: number }>; nouls: Record<string, { state: number; yesProbability: number | null }> };
-type Experience = { id: string; documentId: string; description: string; period: Period; confirmationState: string; correctionState: string; pendingExtraction?: { description: string }; evidenceRefs: { id: string }[]; decisions?: Decisions; specificSkills?: SpecificSkills };
+type Experience = { workbookSectionKind?: "project" | "context"; id: string; documentId: string; description: string; period: Period; confirmationState: string; correctionState: string; pendingExtraction?: { description: string }; evidenceRefs: { id: string }[]; decisions?: Decisions; specificSkills?: SpecificSkills };
 type Person = { id: string; displayName: string; available: boolean; publicationState?: string; confirmationState: string; sourceVersion: number; activeVersion: number | null; projectionJobId?: string; totalExperienceMonths?: number | null };
 const isCalendarMonth = (period: Period) => period.precision === "month" && (!period.start || period.start.length === 7) && (!period.end || period.end.length === 7);
 export function Profiles({ config, person: demoPerson }: { config: AppConfig; person?: string }) {
@@ -99,6 +99,7 @@ export function Profiles({ config, person: demoPerson }: { config: AppConfig; pe
       <p>公開状態：{person.publicationState === "withdrawn" ? "撤回済み" : "公開"} ／ 日付から算出した経験月数（重複除外）：{person.totalExperienceMonths ?? "不明"}</p>
       <p>Probabilityは分類への適合度で、経験年数・経験割合・熟練度ではありません。Confidenceは分類の確信度です。</p>
       {experiences.map(row => <article className="profile-experience" data-testid={row.documentId} key={row.id}>
+        {row.workbookSectionKind === "context" && <p>案件外の原文文脈（自己PR・記入例・補足等）。案件経験や具体技能の検索には公開しません。</p>}
         <label>経験の説明<textarea value={row.description} maxLength={8000} onChange={e => edit(row.id, { description: e.target.value })} /></label>
         <label>{isCalendarMonth(row.period) ? "開始月" : "開始日"}<input type={isCalendarMonth(row.period) ? "month" : "date"} value={row.period.start ?? ""} onChange={e => periodDate(row, "start", e.target.value)} /></label>
         <label>{isCalendarMonth(row.period) ? "終了月（この月を含む）" : "終了日"}<input type={isCalendarMonth(row.period) ? "month" : "date"} value={row.period.end ?? ""} onChange={e => periodDate(row, "end", e.target.value)} /></label>

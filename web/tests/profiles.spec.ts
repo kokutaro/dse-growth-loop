@@ -1,30 +1,23 @@
 import { test, expect } from "@playwright/test";
 import path from "node:path";
 
-test("社内形式XLSXを7案件に分け年月精度と未確認候補を表示し訂正できる", async ({ page }) => {
+test("全セル上限を超えるXLSXは原文を保持して理由付き保留となり部分案件を公開しない", async ({ page, request }) => {
   await page.goto("/validation.html");
-  await page.getByLabel("文書名", { exact: true }).fill("社内形式の架空プロフィール");
+  await page.getByLabel("文書名", { exact: true }).fill("全テキスト上限の架空プロフィール");
   await page.getByLabel("原本ファイル").setInputFiles(path.resolve("tests/fixtures/internal-resume.xlsx"));
   const accepted = page.waitForResponse(r => r.url().endsWith("/api/v1/documents") && r.request().method() === "POST");
   await page.getByRole("button", { name: "アップロード", exact: true }).click();
   const { documentId } = await (await accepted).json();
-  await expect(page.locator(".documents")).toContainText("検索投影済み", { timeout: 30000 });
-  await page.getByText("社内形式の抽出候補（本人未確認）", { exact: true }).click();
-  await expect(page.locator(".documents")).toContainText("PostgreSQL 16");
-  await expect(page.locator(".documents")).toContainText("日付なしの自己申告（案件経験と分離）");
+  await expect(page.locator(".documents")).toContainText("WORKBOOK_AI_EVIDENCE_LIMIT", { timeout: 30000 });
+  await expect(page.locator(".documents")).toContainText("説明タブ専用スキル");
+  await expect(page.locator(".documents")).toContainText("Postgre SQL 16");
+  const pipeline = await (await request.get(`/api/v1/documents/${documentId}/pipeline`)).json();
+  expect(pipeline.workbookCapture.sheets).toEqual(["説明専用", "02. スキル記入シート(例つき)", "説明補足"]);
+  expect(pipeline.workbookCapture.spanCount).toBeGreaterThan(100);
+  expect(pipeline.job.status).toBe("needs_review");
+  expect(pipeline.job.lastErrorCode).toBe("WORKBOOK_AI_EVIDENCE_LIMIT");
   await page.getByRole("button", { name: "プロフィールを更新", exact: true }).click();
-  const experiences = page.getByTestId(documentId);
-  await expect(experiences).toHaveCount(7);
-  await expect(page.locator(".profiles")).toContainText("経験月数（重複除外）：3");
-  await expect(experiences.first().getByLabel("開始月", { exact: true })).toHaveValue("2020-01");
-  await expect(experiences.first().getByLabel("終了月（この月を含む）", { exact: true })).toHaveValue("2020-03");
-  await expect(experiences.first()).toContainText("ai_unconfirmed");
-  expect(await experiences.first().getByLabel("経験の説明").inputValue()).not.toContain("希望専用");
-  await experiences.first().getByLabel("終了月（この月を含む）", { exact: true }).fill("2020-02");
-  await page.getByRole("button", { name: "訂正を保存", exact: true }).click();
-  await expect(page.locator(".profiles")).toContainText("保存しました");
-  await expect(experiences.first()).toContainText("月数：2");
-  await expect(experiences.first()).toContainText("self_corrected");
+  await expect(page.getByTestId(documentId)).toHaveCount(0);
 });
 
 test("副業務を原文付きの検索断片として追加し経験月数を重複加算しない", async ({ page }) => {
@@ -54,7 +47,7 @@ test("副業務を原文付きの検索断片として追加し経験月数を�
 });
 
 for (const extension of ["docx", "xlsx"]) {
-  test(`${extension}から本人訂正と手動一次検索までfake AIで通る`, async ({ page }) => {
+  test(`${extension}の原文・本人訂正を保ち、mockの案件外文脈を検索経験へ昇格しない`, async ({ page }) => {
     await page.goto("/validation.html");
     await page.getByLabel("文書名", { exact: true }).fill(`プロフィール統合 ${extension}`);
     await page.getByLabel("原本ファイル").setInputFiles(path.resolve(`tests/fixtures/profile.${extension}`));
@@ -65,7 +58,7 @@ for (const extension of ["docx", "xlsx"]) {
     await expect(page.locator(".documents")).toContainText("fixture（fake AI）");
     await page.getByRole("button", { name: "プロフィールを更新", exact: true }).click();
     await expect(page.getByTestId(documentId).getByLabel("経験の説明").first()).toBeVisible();
-    await expect(page.locator(".profiles")).toContainText("日付から算出した経験月数（重複除外）：84");
+    await expect(page.locator(".profiles")).toContainText(`日付から算出した経験月数（重複除外）：${extension === "xlsx" ? "不明" : "84"}`);
     await page.getByTestId(documentId).getByLabel("経験の説明").first().fill(`本人訂正${extension} ソフトウェア`);
     await page.getByRole("button", { name: "訂正を保存", exact: true }).click();
     await expect(page.locator(".profiles")).toContainText("保存しました");
@@ -75,7 +68,12 @@ for (const extension of ["docx", "xlsx"]) {
     }).toContain("有効版：");
     await page.getByLabel("検索語", { exact: true }).fill(`本人訂正${extension}`);
     await page.getByRole("button", { name: "相談候補を探す", exact: true }).click();
-    await expect(page.getByRole("region", { name: "相談候補と参考事例" })).toContainText(`本人訂正${extension}`, { timeout: 15000 });
+    if (extension === "docx") await expect(page.getByRole("region", { name: "相談候補と参考事例" })).toContainText(`本人訂正${extension}`, { timeout: 15000 });
+    else {
+      // The canned workbook mock selects context; editing text does not turn it into a project.
+      await expect(page.getByRole("region", { name: "相談候補と参考事例" })).not.toContainText(`本人訂正${extension}`);
+      await expect(page.locator(".profiles")).toContainText("案件外の原文文脈（自己PR・記入例・補足等）。案件経験や具体技能の検索には公開しません。");
+    }
     await page.screenshot({ path: `test-results/profile-${extension}.png`, fullPage: true });
   });
 }
