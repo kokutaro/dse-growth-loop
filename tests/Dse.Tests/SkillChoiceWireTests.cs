@@ -8,6 +8,17 @@ namespace Dse.Tests;
 public sealed class SkillChoiceWireTests
 {
  [Fact]
+ public void Evidence_keeps_every_id_text_and_document_version_while_sharing_identical_provenance()
+ {
+  var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);
+  var item=new SpecificSkill("技能",null,"e","原文末尾：未実施","experience");var e=new SkillElement("技能",null,null,[],"practice","person","explicit",null,"unmapped",[]);
+  var evidence=new JsonArray(Enumerable.Range(0,5).Select(i=>(JsonNode)new JsonObject{["id"]="e"+i,["text"]="原文末尾：未実施"+i,["documentVersionId"]="immutable-doc-v1",["sourceVersion"]=7}).ToArray());
+  var input=new JsonObject{["text"]=JsonNode.Parse(SkillChoiceMatching.Input(item,e,concepts)),["evidence"]=evidence.DeepClone()};
+  var packed=SkillChoiceWire.Prepare(input,q);var docs=packed["evidenceDocuments"]!.AsArray();Assert.Single(docs);
+  foreach(var row in packed["evidence"]!.AsArray()){var doc=docs[row!["document"]!.GetValue<int>()]!;var before=evidence.Single(x=>x!["id"]!.ToString()==row["id"]!.ToString())!;Assert.Equal(before["text"]!.ToString(),row["text"]!.ToString());Assert.Equal(before["documentVersionId"]!.ToString(),doc[0]!.ToString());Assert.Equal(7,doc[1]!.GetValue<int>());}
+  Assert.True(JsonNode.DeepEquals(evidence,input["evidence"]));
+ }
+ [Fact]
  public void Repeated_catalogue_rows_are_shared_without_filtering_any_option_or_alias()
  {
   var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);
@@ -65,7 +76,7 @@ public sealed class SkillChoiceWireTests
   var input=new JsonObject{["text"]=JsonNode.Parse(SkillChoiceMatching.Input(item,element,concepts))};var packed=SkillChoiceWire.Prepare(input,q);var table=packed["text"]!;var map=SkillChoiceWire.IdMap(q);var options=SkillChoiceWire.Options(q);
   foreach(var(wire,id)in map.Where(x=>x.Value is not (SkillChoiceMatching.None or SkillChoiceMatching.Uncertain)))
   {
-   var c=concepts.Single(x=>x.Id==id);var row=table["dictionary"]![wire]!;Assert.Equal(c.Name,options[wire]);Assert.Equal(c.Definition,(row[0]??table["sharedDefinition"])!.GetValue<string>());Assert.Equal(c.Boundary,(row[1]??table["sharedBoundary"])!.GetValue<string>());
+   var c=concepts.Single(x=>x.Id==id);var row=table["dictionaryRows"]![table["dictionary"]![wire]!.GetValue<int>()]!;Assert.Equal(c.Name,options[wire]);Assert.Equal(c.Definition,(row[0]??table["sharedDefinition"])!.GetValue<string>());Assert.Equal(c.Boundary,(row[1]??table["sharedBoundary"])!.GetValue<string>());
    var aliases=row[2]!.AsArray();Assert.Equal(c.Aliases.Length,aliases.Count);for(var j=0;j<aliases.Count;j++){var a=aliases[j]!;Assert.Equal(c.Aliases[j].Text,a[0]?.GetValue<string>()??options[wire]);Assert.Equal(c.Aliases[j].Kind,a[1]!.GetValue<string>());Assert.Equal(c.Aliases[j].Object,a[2]?.GetValue<string>());Assert.Equal(c.Aliases[j].Conditions,a[3]!.Deserialize<string[]>(J));}
   }
   Assert.True(JsonNode.DeepEquals(input["text"]!["candidate"],table["candidate"]));Assert.Equal(50,table["dictionary"]!.AsObject().Count);
