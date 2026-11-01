@@ -9,6 +9,15 @@ namespace Dse.Tests;
 
 public class WorkbookDateSearchTests
 {
+    [Theory]
+    [InlineData("2024-02-01T00:00:00.000Z","yyyy年m月","2024-02","month")]
+    [InlineData("2024-02-01T00:30:00.1234567+09:00","yyyy-mm-dd","2024-02-01","day")]
+    [InlineData("2024-01-31T23:30:00-08:00","yyyy-mm","2024-01","month")]
+    [InlineData("2024-02-29T00:00:00Z","yyyy-mm-dd","2024-02-29","day")]
+    public void Typed_iso_dates_preserve_the_written_calendar_without_timezone_conversion(string raw,string format,string value,string precision)
+    {
+        var actual=WorkbookDates.Read(raw,Cell(format,"d"));Assert.Equal(value,actual.Value);Assert.Equal(precision,actual.Precision);
+    }
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     private static CellSource Cell(string format, string type="n", string state="available") => new("any","AZ900",null,"visible",false,false,type,"", "",format,false,state);
     private static StoredRecord Row(string id,string text,CellSource? cell=null) => new(new JsonObject{["id"]=id,["text"]=text,["sourceCell"]=JsonSerializer.SerializeToNode(cell,Json)},"etag");

@@ -7,6 +7,15 @@ using Xunit;
 namespace Dse.Tests;
 public sealed class SkillChoiceWireTests
 {
+ [Fact]
+ public void Repeated_catalogue_rows_are_shared_without_filtering_any_option_or_alias()
+ {
+  var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);
+  var item=new SpecificSkill("技能",null,"e","原文","experience");var e=new SkillElement("技能",null,null,[],"practice","self","explicit",null,"unmapped",[]);
+  var packed=SkillChoiceWire.Prepare(new JsonObject{["text"]=JsonNode.Parse(SkillChoiceMatching.Input(item,e,concepts))},q);
+  Assert.Equal(50,packed["text"]!["dictionary"]!.AsObject().Count);
+  Assert.Single(packed["text"]!["dictionaryRows"]!.AsArray());
+ }
  private static readonly ActorAccess A=SkillDictionaryFixture.Curator;
  private static readonly JsonSerializerOptions J=new(JsonSerializerDefaults.Web);
  // Generated contract fixtures, independent of the private evaluation catalogue.
