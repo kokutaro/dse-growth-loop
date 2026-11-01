@@ -26,18 +26,22 @@ public sealed class PrimaryRepository(IRecordStore store) : IPrimaryRepository
 {
     public async Task<StoredRecord?> ReadAsync(RecordPartition partition, string id, CancellationToken ct)
     {
-        var result = await store.ReadAsync(partition, id, ct);
-        return result?.Value.Text("kind") == "searchUnit" ? null : result;
+        using var measurement=PipelineDiagnostics.Repository("read");
+        try { var result=await store.ReadAsync(partition,id,ct);return result?.Value.Text("kind")=="searchUnit"?null:result; }
+        catch { measurement.Fail();throw; }
     }
     public async Task CommitAsync(RecordPartition partition, IReadOnlyList<RecordWrite> writes, CancellationToken ct)
     {
-        if (writes.Any(w => w.Value.Text("kind") == "searchUnit")) throw new ArgumentException("Use projection repository");
-        await store.CommitAsync(partition, writes, ct);
+        FencedReadPhase.RequireWritable();
+        using var measurement=PipelineDiagnostics.Repository("write");
+        try { if(writes.Any(w=>w.Value.Text("kind")=="searchUnit"))throw new ArgumentException("Use projection repository");await store.CommitAsync(partition,writes,ct); }
+        catch { measurement.Fail();throw; }
     }
-    public Task<RecordPage> QueryAsync(RecordPartition partition, string kind, string? field, string? parent, int size, string? token, CancellationToken ct)
+    public async Task<RecordPage> QueryAsync(RecordPartition partition,string kind,string? field,string? parent,int size,string? token,CancellationToken ct)
     {
-        if (!RecordJson.ContractKinds.ContainsKey(kind) || kind == "searchUnit") throw new ArgumentException("Invalid primary kind");
-        return store.QueryAsync(partition, kind, field, parent, size, token, ct);
+        using var measurement=PipelineDiagnostics.Repository("query");
+        try { if(!RecordJson.ContractKinds.ContainsKey(kind)||kind=="searchUnit")throw new ArgumentException("Invalid primary kind");return await store.QueryAsync(partition,kind,field,parent,size,token,ct); }
+        catch { measurement.Fail();throw; }
     }
 }
 
@@ -63,6 +67,7 @@ public sealed class MemoryRecordStore : IRecordStore
     }
     public Task CommitAsync(RecordPartition partition, IReadOnlyList<RecordWrite> writes, CancellationToken ct)
     {
+        FencedReadPhase.RequireWritable();
         ct.ThrowIfCancellationRequested();
         BatchRules.Validate(partition, writes);
         lock (sync)
@@ -137,6 +142,7 @@ public sealed class CosmosRecordStore(CosmosClient client, IConfiguration config
     }
     public async Task CommitAsync(RecordPartition partition, IReadOnlyList<RecordWrite> writes, CancellationToken ct)
     {
+        FencedReadPhase.RequireWritable();
         using var measurement = OperationMeasurements.Start(OperationMeasurementKinds.Write(writes), cosmosSdk: true);
         try
         {

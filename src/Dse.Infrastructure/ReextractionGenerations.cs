@@ -8,8 +8,8 @@ namespace Dse.Infrastructure;
 public sealed record ReextractionConfirmation(string EstimateId, decimal MaximumUsd, string Reason);
 
 // The old document/head/projections remain active until ProfilePipeline commits the complete new generation.
-public sealed class ReextractionGenerations(IPrimaryRepository repository, AccessFence fence, IdempotencyExecutor idempotency,
-    JobNotifications notifications, IConfiguration config, TimeProvider clock)
+public sealed partial class ReextractionGenerations(IPrimaryRepository repository, AccessFence fence, IdempotencyExecutor idempotency,
+    JobNotifications notifications, IConfiguration config, TimeProvider clock,IRecordStore? operationalStore=null)
 {
     public static string ImplementationVersion => typeof(ProfilePipeline).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false).OfType<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion;
     private static string Hash(string s) => OfficeExtractor.Hash(Encoding.UTF8.GetBytes(s));
@@ -87,6 +87,7 @@ public sealed class ReextractionGenerations(IPrimaryRepository repository, Acces
                 }
                 var now=clock.GetUtcNow();var doc=source.Document.Value.Copy();doc.Remove("etag");doc["id"]=generationId;doc["sourceVersion"]=1;doc["activeVersion"]=null;
                 doc["status"]="queued";doc["extractionState"]="pending";doc["aiState"]="not_started";doc["currentVersionId"]=generationId+"-v1";
+                // Drop unsupported derived attributes only from the new child; the parent/history is unchanged.
                 foreach(var field in new[]{"resumeImport","workbookCapture","workbookStructure","workbookStructureRunId","workbookStructureVersion","profileResultId","enrichmentJobId","warnings"})doc.Remove(field);
                 doc["generationParentId"]=documentId;doc["generationParentEtag"]=source.Document.ETag;doc["generationOriginalVersionId"]=source.Version.Value.Text("id");doc["generationOriginalVersionEtag"]=source.Version.ETag;doc["generationImplementationVersion"]=ImplementationVersion;
                 doc["generationSourceSha256"]=source.Version.Value.Text("sha256");doc["generationRootId"]=quote["generationRootId"]!.DeepClone();

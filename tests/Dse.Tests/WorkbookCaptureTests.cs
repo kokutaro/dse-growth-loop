@@ -17,7 +17,7 @@ public sealed class FixtureWorkbookSections(IPrimaryRepository repo) : IWorkbook
             var s=(await repo.ReadAsync(RecordPartition.Catalog(c.Actor.TenantId),e.Id,ct))!.Value;
             var cell=s["sourceCell"]?.Deserialize<CellSource>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
             var row=cell is null?0:int.Parse(new string(cell.Address.SkipWhile(char.IsAsciiLetter).ToArray()));
-            var group=cell?.Sheet==InternalResumeSheet.SheetName&&row is >=23 and <=26?"one":cell?.Sheet==InternalResumeSheet.SheetName&&row is >=27 and <=30?"two":"context";
+            var group=cell?.Sheet==WorkbookTextFixture.SheetName&&row is >=23 and <=26?"one":cell?.Sheet==WorkbookTextFixture.SheetName&&row is >=27 and <=30?"two":"context";
             ids[group].Add(e.Id);
         }
         return new(AiStatus.Succeeded,new(ids.Where(p=>p.Value.Count>0).Select(p=>new WorkbookSection(p.Key=="context"?"context":"project",p.Value.ToArray())).ToArray()),"fixture-workbook",null);
@@ -50,7 +50,7 @@ public sealed class WorkbookCaptureTests
     {
         var bytes=OfficeFixtures.Package(true, $"<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData><row r=\"501\" hidden=\"1\"><c r=\"{address}\" t=\"inlineStr\"><is><t>自己PR：共同で検証した。希望は未実施。</t></is></c></row></sheetData></worksheet>");
         var result=new OfficeExtractor(new()).Extract(bytes,"test.xlsx",OfficeExtractor.ExcelMime,default);
-        Assert.Null(result.ResumeImport); Assert.Equal("workbook-cells-v1",result.Workbook!.Version);
+        Assert.Equal("workbook-cells-v1",result.Workbook!.Version);
         Assert.Equal("自己PR：共同で検証した。希望は未実施。",Assert.Single(result.Spans).Text);
         var cell=Assert.Single(result.Workbook.Cells);Assert.Equal(address,cell.Address);Assert.True(cell.HiddenRow);
     }
@@ -88,7 +88,7 @@ public sealed class WorkbookCaptureTests
     [Fact]
     public async Task Complete_capture_exceeds_AI_capacity_without_partial_publication_or_paid_calls()
     {
-        using var h=new IngestionHarness();var upload=await h.Upload(bytes:InternalResumeFixture.Package(),excel:true);await h.Processor.RunOnceAsync(default);
+        using var h=new IngestionHarness();var upload=await h.Upload(bytes:WorkbookTextFixture.Package(),excel:true);await h.Processor.RunOnceAsync(default);
         var doc=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),upload.Body!["documentId"]!.GetValue<string>(),default))!.Value;
         var before=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),"demo-person-01",default))!;
         var ai=new PipelineAi();var pipeline=ProfilePipelineTests.Create(h,ai);

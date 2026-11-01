@@ -83,9 +83,9 @@ public sealed class SpecificSkillsTests
     [Fact]
     public async Task Imported_technology_columns_do_not_bypass_the_same_evidence_and_involvement_contract()
     {
-        using var h=new IngestionHarness(); var cells=InternalResumeFixture.ShiftedCells(23,1);
+        using var h=new IngestionHarness(); var cells=WorkbookTextFixture.ShiftedCells(23,1);
         cells["F24"]="≪担当業務≫C#で回帰試験を共同実施した。";cells["I23"]="C#";cells["L23"]="Azure";
-        var upload=await h.Upload(bytes:InternalResumeFixture.Package(cells),excel:true);await h.Processor.RunOnceAsync(default);
+        var upload=await h.Upload(bytes:WorkbookTextFixture.Package(cells),excel:true);await h.Processor.RunOnceAsync(default);
         var doc=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),upload.Body!["documentId"]!.GetValue<string>(),default))!;
         var sourceRows=await h.Repo.QueryAsync(RecordPartition.Catalog("demo"),"evidenceSpan","documentId",doc.Value.Text("id"),100,null,default);
         var reference=sourceRows.Items.Single(r=>r.Value.Text("text").Contains("共同実施した",StringComparison.Ordinal)).Value.Text("id");

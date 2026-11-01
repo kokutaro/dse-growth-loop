@@ -3204,6 +3204,364 @@
           }
         }
       }
+    },
+    "/api/v1/admin/test-people/{personId}/documents/{documentId}/reextraction-estimate": {
+      "get": {
+        "operationId": "estimateReextraction",
+        "summary": "新しい抽出世代の見積",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "原本・版と固定した費用枠の見積",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionEstimate"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/test-people/{personId}/documents/{documentId}/reextractions": {
+      "post": {
+        "operationId": "startReextraction",
+        "summary": "新しい抽出世代を明示受付",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-requires-current-version": true,
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionAccepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReextractionConfirmation"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/test-people/{personId}/documents/{generationId}/reextraction-retry-estimate": {
+      "get": {
+        "operationId": "estimateReextractionRetry",
+        "summary": "同一世代の未送信再試行見積",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "原本・版と固定した費用枠の見積",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionRetryEstimate"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/test-people/{personId}/documents/{generationId}/reextraction-retries": {
+      "post": {
+        "operationId": "retryReextraction",
+        "summary": "未送信を検証した同一世代の明示再試行",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-requires-current-version": true,
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionAccepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReextractionConfirmation"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3726,6 +4084,20 @@
           },
           "choiceNumericBytes": {
             "const": 32
+          },
+          "preparationMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "pipelineDiagnostics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PipelineDiagnostics"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -3855,9 +4227,6 @@
           "profileResultId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-          },
-          "resumeImport": {
-            "$ref": "#/components/schemas/ResumeImport"
           },
           "workbookCapture": {
             "type": "object",
@@ -4030,6 +4399,9 @@
           "generationPublishedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "generationRetry": {
+            "$ref": "#/components/schemas/ReextractionRetry"
           }
         },
         "required": [
@@ -5450,6 +5822,9 @@
           "ownerAccessEpoch": {
             "type": "string",
             "pattern": "^[0-9a-f]{32}$"
+          },
+          "processingDiagnostics": {
+            "$ref": "#/components/schemas/PipelineDiagnostics"
           }
         },
         "required": [
@@ -9277,240 +9652,6 @@
           }
         ]
       },
-      "ResumeCell": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "maxLength": 20
-          },
-          "text": {
-            "type": "string",
-            "maxLength": 8000
-          },
-          "location": {
-            "type": "string",
-            "maxLength": 300
-          }
-        },
-        "required": [
-          "address",
-          "text",
-          "location"
-        ],
-        "additionalProperties": false
-      },
-      "ResumeSkill": {
-        "type": "object",
-        "properties": {
-          "raw": {
-            "type": "string",
-            "maxLength": 8000
-          },
-          "normalized": {
-            "type": "string",
-            "maxLength": 8000
-          },
-          "columnHint": {
-            "type": "string",
-            "maxLength": 80
-          },
-          "location": {
-            "type": "string",
-            "maxLength": 300
-          },
-          "needsReview": {
-            "const": true
-          }
-        },
-        "required": [
-          "raw",
-          "normalized",
-          "columnHint",
-          "location",
-          "needsReview"
-        ],
-        "additionalProperties": false
-      },
-      "ResumeDeclaration": {
-        "type": "object",
-        "properties": {
-          "kind": {
-            "enum": [
-              "self_reported_technology",
-              "self_reported_work",
-              "qualification",
-              "self_promotion"
-            ]
-          },
-          "text": {
-            "type": "string",
-            "maxLength": 8000
-          },
-          "location": {
-            "type": "string",
-            "maxLength": 300
-          },
-          "confirmationState": {
-            "const": "ai_unconfirmed"
-          }
-        },
-        "required": [
-          "kind",
-          "text",
-          "location",
-          "confirmationState"
-        ],
-        "additionalProperties": false
-      },
-      "ResumeProject": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "maxLength": 30
-          },
-          "location": {
-            "type": "string",
-            "maxLength": 300
-          },
-          "description": {
-            "type": "string",
-            "maxLength": 8000
-          },
-          "start": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "end": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "precision": {
-            "const": "month"
-          },
-          "months": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "minimum": 1
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "skills": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "maxLength": 8000
-            },
-            "maxItems": 100
-          },
-          "domain": {
-            "type": "null"
-          },
-          "evidenceIds": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
-            },
-            "maxItems": 100
-          },
-          "skillCandidates": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ResumeSkill"
-            },
-            "maxItems": 100
-          },
-          "sourceCells": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ResumeCell"
-            },
-            "maxItems": 100
-          },
-          "warnings": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "maxLength": 80
-            },
-            "maxItems": 100
-          }
-        },
-        "required": [
-          "key",
-          "location",
-          "description",
-          "start",
-          "end",
-          "precision",
-          "months",
-          "skills",
-          "domain",
-          "evidenceIds",
-          "skillCandidates",
-          "sourceCells",
-          "warnings"
-        ],
-        "additionalProperties": false
-      },
-      "ResumeImport": {
-        "type": "object",
-        "properties": {
-          "format": {
-            "const": "internal-resume-v1"
-          },
-          "projects": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ResumeProject"
-            },
-            "maxItems": 20,
-            "minItems": 1
-          },
-          "selfDeclarations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ResumeDeclaration"
-            },
-            "maxItems": 4
-          },
-          "warnings": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "maxLength": 80
-            },
-            "maxItems": 100
-          }
-        },
-        "required": [
-          "format",
-          "projects",
-          "selfDeclarations",
-          "warnings"
-        ],
-        "additionalProperties": false
-      },
       "SpecificSkill": {
         "type": "object",
         "additionalProperties": false,
@@ -10853,6 +10994,477 @@
           "maximumUsd",
           "alreadyApplied"
         ]
+      },
+      "PipelineStage": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "enum": [
+              "ai_operation",
+              "source_preparation",
+              "ai_execution",
+              "fence_acquire",
+              "ai_settlement",
+              "post_response_sources",
+              "lease_renewal",
+              "profile_build",
+              "profile_publish",
+              "original_blob_read",
+              "native_capture",
+              "failure_persistence",
+              "provider_attempt",
+              "job_claim",
+              "profile_dependencies",
+              "profile_projection_sources",
+              "profile_secondary_sources",
+              "fence_wait"
+            ]
+          },
+          "operation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "aiRunId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fenceHolder": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fenceEtag": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "durationMs": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "repositoryReads": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "repositoryQueries": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "repositoryWrites": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "repositoryFailedCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "readCacheHits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "repositoryMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "sdkInternalRetryCount": {
+            "type": "null"
+          },
+          "transportCalls": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "stage",
+          "operation",
+          "aiRunId",
+          "fenceHolder",
+          "fenceEtag",
+          "status",
+          "durationMs",
+          "repositoryReads",
+          "repositoryQueries",
+          "repositoryWrites",
+          "repositoryFailedCalls",
+          "readCacheHits",
+          "repositoryMs",
+          "sdkInternalRetryCount",
+          "transportCalls"
+        ],
+        "additionalProperties": false
+      },
+      "PipelineDiagnostics": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": "pipeline-stages-v1"
+          },
+          "correlationId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "aggregateId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "jobCreatedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "processingStartedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "elapsedMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "cancellationReason": {
+            "enum": [
+              null,
+              "source_preparation_cancelled_before_effects",
+              "job_or_caller_cancelled",
+              "ai_deadline",
+              "job_deadline",
+              "lease_renewal_failed",
+              "service_stopping",
+              "caller_cancelled",
+              "provider_timeout"
+            ]
+          },
+          "droppedStages": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sdkInternalRetryCount": {
+            "type": "null"
+          },
+          "stages": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "$ref": "#/components/schemas/PipelineStage"
+            }
+          },
+          "scopeStartedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "admissionExhaustedBeforeEntry": {
+            "type": "boolean"
+          },
+          "contentionCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "blockedHolderHash": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "blockedFenceEtag": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "version",
+          "correlationId",
+          "jobId",
+          "aggregateId",
+          "jobCreatedAt",
+          "processingStartedAt",
+          "elapsedMs",
+          "cancellationReason",
+          "droppedStages",
+          "sdkInternalRetryCount",
+          "stages",
+          "scopeStartedAt"
+        ],
+        "additionalProperties": false
+      },
+      "ReextractionRetryEstimate": {
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceEtag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "generationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceDocumentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "previousJobId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "proofSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "implementationVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "implementationSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "targetFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "retryVersion": {
+            "const": "pre-dispatch-generation-retry-v1"
+          },
+          "maximumUsd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "remainingCalls": {
+            "const": 7
+          },
+          "spentCalls": {
+            "const": 0
+          }
+        },
+        "required": [
+          "estimateId",
+          "sourceEtag",
+          "generationId",
+          "sourceDocumentId",
+          "sourceSha256",
+          "previousJobId",
+          "proofSha256",
+          "implementationVersion",
+          "implementationSha256",
+          "targetFingerprint",
+          "retryVersion",
+          "maximumUsd",
+          "remainingCalls",
+          "spentCalls"
+        ],
+        "additionalProperties": false
+      },
+      "ReextractionRetry": {
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceEtag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "generationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceDocumentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "previousJobId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "proofSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "implementationVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "implementationSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "targetFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "retryVersion": {
+            "const": "pre-dispatch-generation-retry-v1"
+          },
+          "maximumUsd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "remainingCalls": {
+            "const": 7
+          },
+          "spentCalls": {
+            "const": 0
+          },
+          "jobId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "previousGenerationState": {
+            "const": "failed"
+          },
+          "previousFailure": {
+            "const": "ACCESS_BUSY"
+          },
+          "previousImplementationVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "previousTargetFingerprint": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "acceptedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "estimateId",
+          "sourceEtag",
+          "generationId",
+          "sourceDocumentId",
+          "sourceSha256",
+          "previousJobId",
+          "proofSha256",
+          "implementationVersion",
+          "implementationSha256",
+          "targetFingerprint",
+          "retryVersion",
+          "maximumUsd",
+          "remainingCalls",
+          "spentCalls",
+          "jobId",
+          "previousGenerationState",
+          "previousFailure",
+          "previousImplementationVersion",
+          "previousTargetFingerprint",
+          "acceptedAt"
+        ],
+        "additionalProperties": false
+      },
+      "ReextractionConfirmation": {
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "maximumUsd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "estimateId",
+          "maximumUsd",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "ReextractionAccepted": {
+        "type": "object",
+        "properties": {
+          "documentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "jobId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationState": {
+            "enum": [
+              "staging",
+              "published",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "statusUrl": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "documentId",
+          "generationId",
+          "jobId",
+          "generationState",
+          "statusUrl"
+        ],
+        "additionalProperties": false
       }
     },
     "parameters": {

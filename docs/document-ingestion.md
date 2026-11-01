@@ -1,6 +1,6 @@
 # Office文書取込（Issue #6）
 
-社内の「02. スキル記入シート(例つき)」は、Google SheetsからXLSXへ書き出して同じ本人アップロードへ登録できる。[社内形式の入口・項目・制限](internal-resume-ingestion.md)を参照。URLの直接取込・元シート更新は行わない。
+Excelは[全テキスト取込](full-workbook-ingestion.md)へ一本化する。固定帳票の行・列・シート名から案件を判定せず、全セル根拠をAIで構造化する。旧テンプレート互換は提供しない。原本・人の確認・ACL・版の照合を維持する。
 
 全件ダミー用途。docx/xlsxを機械抽出し、原本と抽出JSONを非公開Blobへ、Document・DocumentVersion・Job・EvidenceSpanをcatalogへ保存する。機械抽出後は #10 の構造化・分類・検索投影ジョブへ接続する。[プロフィール手順](profile-pipeline.md)を参照。取込Jobの `ready` は機械抽出の完了、enrichment Jobの `ready` は検索投影の完了であり、画面でも区別する。
 

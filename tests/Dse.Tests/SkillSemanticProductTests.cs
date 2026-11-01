@@ -31,7 +31,11 @@ public sealed class SkillSemanticProductTests
  public async Task Unknown_dispatched_execution_stays_pending_and_new_keys_never_repeat_it()
  {
   var(f,c,d)=await Setup();var wire=new SkillSemanticTestRuntime.Wire{Failure=AiFailure.Unavailable};using var ai=SkillSemanticTestRuntime.Ai(f,SkillSemanticTestRuntime.Config(),wire);var s=new SkillDictionaryService(f.Repo,f.Fence,new(f.Repo,TimeProvider.System),TimeProvider.System,()=>ai);
-  var r=await Suggest(s,c,d);Assert.Equal("requires_review",r.Text("outcome"));Assert.True(r["providerExecutionUncertain"]!.GetValue<bool>(),r.ToJsonString());await Suggest(s,c,d);Assert.Equal(1,wire.Calls);
+  // Unknown inference now keeps the tenant fence closed as well as the AI slot.
+  Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>Suggest(s,c,d))).Code);
+  Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>Suggest(s,c,d))).Code);Assert.Equal(1,wire.Calls);
+  var saved=Assert.Single((await f.Store.QueryAsync(RecordPartition.Catalog("demo"),"skillMatchProposal",null,null,100,null,default)).Items);
+  Assert.Equal("dispatching",saved.Value.Text("phase"));Assert.Equal(c.ETag,(await f.Repo.ReadAsync(RecordPartition.Catalog("demo"),c.Value.Text("id"),default))!.ETag);
   var p=RecordPartition.Catalog("demo");Assert.Single((await f.Repo.ReadAsync(p,"system-ai-gate",default))!.Value.Strings("active"));Assert.Equal("pending",Assert.Single((await f.Store.QueryAsync(p,"aiExecution",null,null,100,null,default)).Items).Value.Text("state"));
  }
  [Theory]

@@ -52,8 +52,13 @@ public partial class AiTests
         {
             Assert.Equal(AiFailure.Timeout,(await Decide(service).WaitAsync(TimeSpan.FromSeconds(5))).Failure);Assert.Equal(0,handler.Calls);
             Assert.Empty((await store.ReadAsync(RecordPartition.Catalog("demo"),"system-ai-gate",default))!.Value.Strings("active"));
-            credentials.Fetch=_=>Task.FromResult("dummy-credential");Assert.Equal(AiStatus.Succeeded,(await Decide(service,Context() with {JobId="credential-timeout-fixed"})).Status);
-            delayed.TrySetResult("late-credential");await Task.Yield();Assert.Equal(1,handler.Calls);
+            // Audit/reservation already exist: a timeout is not the new read-only cancellation case.
+            var held=(await store.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!;Assert.NotNull(held.Value["holder"]);
+            Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>Decide(service,Context() with {JobId="credential-timeout-fixed"}))).Code);
+            delayed.TrySetResult("late-credential");await Task.Yield();Assert.Equal(0,handler.Calls);
+            // Test-controlled credential completion + abandoned dispatch + empty gate; explicit offline recovery only.
+            await new FenceRecovery(store).RecoverAsync("demo",held.ETag,[],default);
+            credentials.Fetch=_=>Task.FromResult("dummy-credential");Assert.Equal(AiStatus.Succeeded,(await Decide(service,Context() with {JobId="credential-timeout-recovered"})).Status);Assert.Equal(1,handler.Calls);
         }
         finally {delayed.TrySetResult("late-credential");}
     }
@@ -163,9 +168,9 @@ public partial class AiTests
         Assert.Equal(AiFailure.Timeout,(await Decide(service,ct:caller.Token)).Failure);Assert.False(caller.IsCancellationRequested);Assert.Equal(1,handler.Calls);
         var kind=disabled?"aiExecution":"aiReservation";var pending=Assert.Single((await store.QueryAsync(RecordPartition.Catalog("demo"),kind,null,null,100,null,default)).Items);
         Assert.Equal("pending",pending.Value.Text("state"));Assert.Contains(pending.Value.Text("id"),(await store.ReadAsync(RecordPartition.Catalog("demo"),"system-ai-gate",default))!.Value.Strings("active"));
-        Assert.Equal(AiFailure.Busy,(await Decide(service,Context() with {JobId="after-independent-cancel"})).Failure);Assert.Equal(1,handler.Calls);
+        Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>Decide(service,Context() with {JobId="after-independent-cancel"}))).Code);Assert.Equal(1,handler.Calls);
         using var otherMode=Service(disabled?Config():AccountingOff(),store,new Handler((_,_)=>throw new InvalidOperationException("Must remain blocked across modes")));
-        Assert.Equal(AiFailure.Busy,(await Decide(otherMode,Context() with {JobId="other-mode-after-independent-cancel"})).Failure);
+        Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>Decide(otherMode,Context() with {JobId="other-mode-after-independent-cancel"}))).Code);
     }
     [Fact]
     public async Task Disabled_accounting_timeout_keeps_execution_slot_and_never_retries_even_if_transport_ignores_cancellation()
@@ -176,7 +181,7 @@ public partial class AiTests
         try
         {
             var result=await Decide(service).WaitAsync(TimeSpan.FromSeconds(5));Assert.Equal(AiFailure.Timeout,result.Failure);Assert.Equal(1,wire.Calls);
-            Assert.Equal(AiFailure.Busy,(await Decide(service,Context() with {JobId="job-other"})).Failure);Assert.Equal(1,wire.Calls);
+            Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>Decide(service,Context() with {JobId="job-other"}))).Code);Assert.Equal(1,wire.Calls);
             var execution=Assert.Single((await memory.QueryAsync(RecordPartition.Catalog("demo"),"aiExecution",null,null,100,null,default)).Items);
             Assert.Equal("pending",execution.Value.Text("state"));
             var ledger=new AiLedger(memory,TimeProvider.System);

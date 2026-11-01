@@ -43,6 +43,32 @@ test.describe.serial('検証人物の製品APIとモック取込',()=>{
   await page.goto('/test-profiles.html');await expect(page.getByRole('alert')).toContainText('403');
   await expect(page.getByRole('button',{name:'[検証専用・架空] 合成 A',exact:true})).toHaveCount(0);
  });
+ test('再試行の画面：明示確認・二重クリック・応答不明の同一キー再送・戻る',async({page})=>{
+  // UI-only transport fixture. Actual authorization/atomic persistence is covered by PreDispatchRetryTests.
+  const p={id:'retry-ui-person',displayName:'[検証専用・架空] 再試行UI',etag:'person-etag',publicationState:'published',syntheticTest:true,documentHeads:{fixture:'old-doc'},pendingGenerationId:'same-generation'};
+  const q={estimateId:'f'.repeat(64),sourceEtag:'generation-etag',generationId:'same-generation',previousJobId:'failed-job',maximumUsd:0.02914304,remainingCalls:7,spentCalls:0,implementationVersion:'fixture-build',implementationSha256:'a'.repeat(64)};
+  let posts=0;const keys:string[]=[];
+  await page.route('**/api/v1/**',async route=>{
+   const url=new URL(route.request().url());let body:unknown={};
+   if(url.pathname.endsWith('/reextraction-retries')){posts++;keys.push(route.request().headers()['idempotency-key']);expect(route.request().headers()['if-match']).toBe(q.sourceEtag);expect(route.request().postDataJSON().maximumUsd).toBe(q.maximumUsd);if(posts===1){await route.abort('failed');return;}body={generationId:q.generationId,jobId:'retry-job'};}
+   else if(url.pathname.endsWith('/reextraction-retry-estimate'))body=q;
+   else if(url.pathname.endsWith('/admin/test-people'))body={items:[p],scopeIds:['demo'],importAllowance:{mode:'Mock'}};
+   else if(url.pathname.endsWith('/pipeline'))body={job:{status:'failed',lastErrorCode:'ACCESS_BUSY'}};
+   else if(url.pathname.endsWith('/experiences'))body={items:[]};
+   await route.fulfill({status:200,json:body});
+  });
+  await page.goto('/test-profiles.html');await page.getByRole('button',{name:p.displayName,exact:true}).click();await page.getByRole('button',{name:'未送信の失敗を同じ費用枠で再確認',exact:true}).click();
+  const send=page.getByRole('button',{name:'未消費枠内で1回だけ再試行',exact:true});await expect(send).toBeDisabled();await expect(page.getByText('元の失敗Job：',{exact:false})).toContainText('消費済み0回・残り7回');
+  await page.getByLabel('再試行理由',{exact:true}).fill('未送信の確認済み競合を再確認');await page.getByLabel('原本・実装・未消費の上限を確認しました').check();
+  await send.evaluate((button:HTMLButtonElement)=>{button.click();button.click();});await expect(page.getByRole('alert')).toBeVisible();expect(posts).toBe(1);
+  await send.click();await expect(page.getByRole('status')).toContainText('同じ世代の再試行受付 retry-job');expect(posts).toBe(2);expect(keys[0]).toBe(keys[1]);
+  await page.getByRole('button',{name:'未送信の失敗を同じ費用枠で再確認',exact:true}).click();await page.screenshot({path:path.join(root,'same-generation-retry-confirmation.png'),fullPage:true});await page.getByRole('button',{name:'一覧に戻る',exact:true}).click();await expect(send).toHaveCount(0);
+ });
+ test('再試行の確認中に権限撤回された場合は根拠・見積をクリア',async({page})=>{
+  const p={id:'revoked-retry-person',displayName:'[検証専用・架空] 撤回UI',etag:'etag',publicationState:'published',syntheticTest:true,documentHeads:{fixture:'old'},pendingGenerationId:'generation'};
+  await page.route('**/api/v1/**',async route=>{const path=new URL(route.request().url()).pathname;if(path.endsWith('/reextraction-retry-estimate')){await route.fulfill({status:403,json:{code:'FORBIDDEN'}});return;}await route.fulfill({status:200,json:path.endsWith('/admin/test-people')?{items:[p],scopeIds:['demo']}:path.endsWith('/pipeline')?{job:{status:'failed',lastErrorCode:'ACCESS_BUSY'}}:{items:[]}});});
+  await page.goto('/test-profiles.html');await page.getByRole('button',{name:p.displayName,exact:true}).click();await page.getByRole('button',{name:'未送信の失敗を同じ費用枠で再確認',exact:true}).click();await expect(page.getByRole('alert')).toContainText('403');await expect(page.getByRole('heading',{name:p.displayName,exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'未消費枠内で1回だけ再試行',exact:true})).toHaveCount(0);
+ });
  test('閲覧中にoperator権限が撤回されたら機微な表示をクリア',async({page,request})=>{
   await page.goto('/test-profiles.html');await expect(page.getByRole('button',{name:'[検証専用・架空] 合成 A',exact:true})).toBeVisible();
   await request.post('/api/test/revoke');await page.getByRole('button',{name:'最新状態を確認'}).click();await expect(page.getByRole('alert')).toContainText('403');await expect(page.getByRole('button',{name:'[検証専用・架空] 合成 A',exact:true})).toHaveCount(0);

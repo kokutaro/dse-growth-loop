@@ -17,6 +17,11 @@ def read(name):
 
 
 class ContractsTests(unittest.TestCase):
+    def test_same_generation_retry_contract_fixture(self):
+        rows = json.loads((ROOT / 'tests/Dse.Tests/TestResults/retry-contract.json').read_text())
+        for row in rows:
+            self.validator(row['schema']).validate(row['value'])
+
     @classmethod
     def setUpClass(cls):
         cls.schema = read("contracts.schema.json")
@@ -28,6 +33,22 @@ class ContractsTests(unittest.TestCase):
             {"$ref": f"#/$defs/{definition}", "$defs": self.schema["$defs"]},
             format_checker=FormatChecker(),
         )
+
+    def test_generated_pipeline_deadline_diagnostics(self):
+        for case in ('success', 'job_deadline', 'lease_renewal', 'ai_timeout', 'unknown'):
+            path = ROOT / 'tests/Dse.Tests/TestResults' / f'pipeline-deadline-{case}.json'
+            self.assertTrue(path.exists(), 'Run PipelineDeadlineReplayTests first')
+            value = json.loads(path.read_text())
+            self.validator('Job').validate(value['job'])
+            self.validator('PipelineDiagnostics').validate(value['summary'])
+            self.assertEqual(value['job']['id'], value['summary']['jobId'])
+            self.assertEqual(value['job']['aggregateId'], value['summary']['aggregateId'])
+            self.assertIsNone(value['summary']['sdkInternalRetryCount'])
+            self.assertIsNotNone(value['summary']['processingStartedAt'])
+            self.assertEqual((120, 60, 7), (value['jobSeconds'], value['aiSeconds'], value['maximumCalls']))
+            if case == 'success':
+                self.assertEqual(7, value['actualFixtureCalls'])
+                self.assertTrue(any(s['readCacheHits'] for s in value['summary']['stages']))
 
     def test_generated_chat_assistance_contracts(self):
         path = ROOT / "tests/Dse.Tests/TestResults/chat-assistance-contract.json"
@@ -46,9 +67,15 @@ class ContractsTests(unittest.TestCase):
                 self.validator(row["schema"]).validate(row["value"])
                 validate_invariants(row["schema"], row["value"], self.taxonomy)
 
-    def test_generated_internal_resume_contracts(self):
+    def test_fixed_template_contract_is_not_offered(self):
+        self.assertNotIn('resumeImport', self.schema['$defs']['Document']['properties'])
+        self.assertFalse(any(k.startswith('Resume') for k in self.schema['$defs']))
+        api = read('openapi.json')
+        self.assertFalse(any(k.startswith('Resume') for k in api['components']['schemas']))
+
+    def test_generated_workbook_capture_contracts(self):
         path = ROOT / 'tests/Dse.Tests/TestResults/workbook-capture-contract.json'
-        self.assertTrue(path.exists(), 'Run InternalResumeTests first')
+        self.assertTrue(path.exists(), 'Run WorkbookTextFixtureTests first')
         rows = json.loads(path.read_text())
         self.assertTrue(any(r['schema'] == 'Document' and 'workbookCapture' in r['value'] for r in rows))
         for row in rows:
