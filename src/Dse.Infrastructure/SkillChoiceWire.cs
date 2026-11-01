@@ -33,6 +33,18 @@ public static class SkillChoiceWire
         copy["text"]!["dictionaryLayout"]=new JsonArray("definitionOrShared","boundaryOrShared","aliases");
         copy["text"]!["aliasLayout"]=new JsonArray("text","kind","object","conditions");
         copy["text"]!["layoutPolicy"]="dictionary値はdictionaryRowsの0始まり行番号。各行はdictionaryLayout順、別名はaliasLayout順。名前は同じIDのcriteria全文。定義/境界nullはsharedDefinition/sharedBoundary全文、別名text=nullはその名前全文。共有は完全一致のみ・省略/要約なし。";
+        if(copy["evidence"] is JsonArray evidence && evidence.Count>0)
+        {
+            var documents=new JsonArray();var documentIds=new Dictionary<string,int>(StringComparer.Ordinal);
+            foreach(var entry in evidence.Select(x=>x!.AsObject()))
+            {
+                var document=new JsonArray(entry["documentVersionId"]!.DeepClone(),entry["sourceVersion"]!.DeepClone());var key=RecordJson.Canonical(document);
+                if(!documentIds.TryGetValue(key,out var index)){index=documents.Count;documentIds[key]=index;documents.Add(document);}
+                entry.Remove("documentVersionId");entry.Remove("sourceVersion");entry["document"]=index;
+            }
+            copy["evidenceDocuments"]=documents;
+            copy["evidenceLayoutPolicy"]="evidence.documentはevidenceDocumentsの0始まり行番号。行は[documentVersionId,sourceVersion]。id/text全文と出典を全件保持。";
+        }
         copy["choiceWireVersion"]=Version;return copy;
     }
     // A shape estimate for the bounded response contract, using the exact wire IDs.
