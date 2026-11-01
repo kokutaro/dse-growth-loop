@@ -13,7 +13,7 @@ public sealed class RegressionDictionaryScopeTests
         var other=concept with{Id="other",Name="別技能"};var prior=new SkillDictionarySnapshot(1,[concept,other]);
         var next=RegressionDictionaryScope.IncludeMigrationDevelopment(prior,concept.Id);
         Assert.Equal(1,prior.Version);Assert.Equal("旧定義",prior.Concepts[0].Definition);Assert.Equal("旧境界",prior.Concepts[0].Boundary);
-        Assert.Equal(2,next.Version);var changed=next.Concepts.Single(x=>x.Id==concept.Id);Assert.Equal(2,changed.Version);
+        Assert.Equal(2,next.Version);var changed=next.Concepts.Single(x=>x.Id==concept.Id);Assert.Equal(concept.IntroducedVersion,changed.IntroducedVersion);
         Assert.Equal(concept.Aliases,changed.Aliases);Assert.Equal(concept.ScopeIds,changed.ScopeIds);Assert.Equal(concept.State,changed.State);
         Assert.Contains("開発",changed.Definition);Assert.Contains("実施したことは必須としない",changed.Definition);
         Assert.Contains("移行実行経験を認定しない",changed.Boundary);Assert.Same(other,next.Concepts[1]);
