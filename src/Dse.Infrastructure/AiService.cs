@@ -195,7 +195,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var trace = new JsonObject
         {
             ["modelId"] = null, ["promptVersion"] = context.PromptVersion, ["taxonomyVersion"] = context.TaxonomyVersion,
-            ["dataVersion"] = context.DataVersion, ["inputHash"] = inputHash, ["evidenceIds"] = RecordJson.Array(evidenceIds.Order()),
+            ["dataVersion"] = context.DataVersion, ["inputHash"] = inputHash, ["evidenceIds"] = RecordJson.Array(evidenceIds.Order(StringComparer.Ordinal)),
             ["inputTokens"] = 0L, ["outputTokens"] = 0L, ["requestUnits"] = 0, ["retryCount"] = 0,
             ["estimatedCostJpy"] = limits.AccountingEnabled ? JsonValue.Create(0m) : null, ["pricingVersion"] = string.IsNullOrWhiteSpace(limits.PriceVersion) ? "unapproved" : limits.PriceVersion,
             ["fxVersion"] = limits.FxVersion, ["accountingMode"] = limits.AccountingEnabled ? "Ledger" : "Disabled", ["durationMs"] = 0L, ["attemptCount"] = 0, ["usageEstimated"] = false,

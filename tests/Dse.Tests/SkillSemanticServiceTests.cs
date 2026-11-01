@@ -98,6 +98,7 @@ public sealed class SkillSemanticServiceTests
     [Theory]
     [InlineData("skill-catalogue-choice-v1","skill-choice-wire-v1")][InlineData("skill-catalogue-choice-v1","skill-choice-wire-v2")]
     [InlineData("skill-catalogue-choice-v2","skill-choice-wire-v1")][InlineData("skill-catalogue-choice-v2","skill-choice-wire-v2")]
+    [InlineData("skill-catalogue-choice-v3","skill-choice-wire-v1")][InlineData("skill-catalogue-choice-v3","skill-choice-wire-v2")]
     public async Task Previous_choice_version_is_read_only_history_not_a_noul_score(string policy,string wire)
     {
         var(f,j,c,d,_)=await Setup();await Suggest(f,c,d);var p=RecordPartition.Catalog("demo");var current=Assert.Single((await f.Repo.QueryAsync(p,"skillMatchProposal",null,null,100,null,default)).Items).Value;

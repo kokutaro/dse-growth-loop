@@ -7,6 +7,19 @@ using Xunit;
 namespace Dse.Tests;
 public sealed class SkillChoiceWireTests
 {
+ [Theory]
+ [InlineData("unknown")][InlineData("duplicate")][InlineData("conflicting_quote")]
+ public void Invalid_source_references_cannot_be_hidden_by_request_local_ids(string mutation)
+ {
+  var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);var item=new SpecificSkill("確認した",null,"source-a","記録を確認した"){Basis="experience"};
+  var source=new JsonObject{["text"]=SkillChoiceMatching.Input(item,Assert.Single(SkillElements.Atomize(item)),concepts),["evidence"]=new JsonArray(new JsonObject{["id"]="source-a",["text"]=item.Quote,["documentVersionId"]="immutable-v1",["sourceVersion"]=1},new JsonObject{["id"]="source-b",["text"]=item.Quote,["documentVersionId"]="immutable-v2",["sourceVersion"]=2})};
+  var input=SkillSemanticBudget.Prepare(source,[new("source-a","immutable-v1",1),new("source-b","immutable-v2",2)]);
+  if(mutation=="unknown")input["text"]!["candidate"]!["evidenceId"]="missing";
+  else if(mutation=="duplicate")input["evidence"]![1]!["id"]="source-a";
+  else input["text"]!["candidate"]!["quote"]!["evidenceId"]="source-b";
+  Assert.Throws<ArgumentException>(()=>SkillChoiceWire.Prepare(input,q));
+ }
+
  [Fact]
  public void Request_local_evidence_ids_keep_distinct_sources_and_full_text_without_changing_authoritative_input()
  {
@@ -28,11 +41,11 @@ public sealed class SkillChoiceWireTests
  public void Evidence_keeps_every_id_text_and_document_version_while_sharing_identical_provenance()
  {
   var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);
-  var item=new SpecificSkill("技能",null,"e","原文末尾：未実施","experience");var e=new SkillElement("技能",null,null,[],"practice","person","explicit",null,"unmapped",[]);
+  var item=new SpecificSkill("技能",null,"e0","原文末尾：未実施","experience");var e=new SkillElement("技能",null,null,[],"practice","person","explicit",null,"unmapped",[]);
   var evidence=new JsonArray(Enumerable.Range(0,5).Select(i=>(JsonNode)new JsonObject{["id"]="e"+i,["text"]="原文末尾：未実施"+i,["documentVersionId"]="immutable-doc-v1",["sourceVersion"]=7}).ToArray());
   var input=new JsonObject{["text"]=JsonNode.Parse(SkillChoiceMatching.Input(item,e,concepts)),["evidence"]=evidence.DeepClone()};
   var packed=SkillChoiceWire.Prepare(input,q);var docs=packed["evidenceDocuments"]!.AsArray();Assert.Single(docs);
-  foreach(var row in packed["evidence"]!.AsArray()){var doc=docs[row!["document"]!.GetValue<int>()]!;var before=evidence.Single(x=>x!["id"]!.ToString()==row["id"]!.ToString())!;Assert.Equal(before["text"]!.ToString(),row["text"]!.ToString());Assert.Equal(before["documentVersionId"]!.ToString(),doc[0]!.ToString());Assert.Equal(7,doc[1]!.GetValue<int>());}
+  foreach(var row in packed["evidence"]!.AsArray()){var doc=docs[row!["document"]!.GetValue<int>()]!;var index=int.Parse(row["id"]!.ToString()[1..]);var before=evidence[index]!;Assert.Equal(before["text"]!.ToString(),row["text"]!.ToString());Assert.Equal(before["documentVersionId"]!.ToString(),doc[0]!.ToString());Assert.Equal(7,doc[1]!.GetValue<int>());}
   Assert.True(JsonNode.DeepEquals(evidence,input["evidence"]));
  }
  [Fact]
