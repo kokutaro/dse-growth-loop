@@ -7,6 +7,17 @@ using Xunit;
 namespace Dse.Tests;
 public sealed class SkillChoiceWireTests
 {
+ [Fact]
+ public void Common_definitions_stay_shared_when_one_concept_has_an_explicit_approved_override()
+ {
+  var original=Dictionary().Concepts;var concepts=original.Select((c,i)=>i==0?c with{Definition="固有の対象・開発・実行の区別を含む定義",Boundary="固有の除外条件"}:c with{Aliases=[new("表記"+i,"practice","対象"+i,[])]}).ToArray();
+  var item=new SpecificSkill("確認した",null,"ev","確認した"){Basis="experience"};var input=JsonNode.Parse(SkillChoiceMatching.Input(item,Assert.Single(SkillElements.Atomize(item)),concepts))!;
+  Assert.Equal(original[1].Definition,input["sharedDefinition"]!.GetValue<string>());Assert.Equal(original[1].Boundary,input["sharedBoundary"]!.GetValue<string>());
+  Assert.Equal(concepts[0].Definition,input["dictionary"]![concepts[0].Id]!["definition"]!.GetValue<string>());
+  Assert.Equal(concepts[0].Boundary,input["dictionary"]![concepts[0].Id]!["boundary"]!.GetValue<string>());
+  foreach(var c in concepts.Skip(1)){Assert.Null(input["dictionary"]![c.Id]!["definition"]);Assert.Null(input["dictionary"]![c.Id]!["boundary"]);}
+ }
+
  [Theory]
  [InlineData("unknown")][InlineData("duplicate")][InlineData("conflicting_quote")]
  public void Invalid_source_references_cannot_be_hidden_by_request_local_ids(string mutation)
