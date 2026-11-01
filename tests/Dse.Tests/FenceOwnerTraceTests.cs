@@ -8,6 +8,19 @@ namespace Dse.Tests;
 
 public sealed class FenceOwnerTraceTests
 {
+    [Fact]
+    public async Task Api_with_ai_reuses_http_measurement_id_and_keeps_route_and_pipeline_links()
+    {
+        var repo=new PrimaryRepository(new MemoryRecordStore());var actor=new ActorAccess("demo","operator","person",["member","operator"],["demo"]);
+        using var http=OperationMeasurements.Begin(MeasurementEvidence.Fixture);
+        using var api=FenceOwnerTrace.BeginApi("POST /api/v2/search",actor);
+        using var pipeline=PipelineDiagnostics.Begin("query-job","query-aggregate",TimeProvider.System);
+        using var stage=PipelineDiagnostics.Measure("ai_operation","decide");
+        await new AccessFence(repo).RunAsync("demo",_=>Task.FromResult(1),default);
+        var owner=(await repo.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!.Value["ownerTrace"]!.AsObject();
+        Assert.Equal(http.RunId,owner.Text("correlationId"));Assert.Equal("api",owner.Text("origin"));Assert.Equal("POST /api/v2/search",owner.Text("operation"));
+        Assert.Equal(pipeline.CorrelationId,owner.Text("pipelineCorrelationId"));Assert.Equal("decide",owner.Text("aiOperation"));
+    }
     private sealed class CaptureLog:ILogger<AccessFence>
     {
         public List<(LogLevel Level,string Text)> Rows{get;}=[];
