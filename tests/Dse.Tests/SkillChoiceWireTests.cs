@@ -8,6 +8,23 @@ namespace Dse.Tests;
 public sealed class SkillChoiceWireTests
 {
  [Fact]
+ public void Request_local_evidence_ids_keep_distinct_sources_and_full_text_without_changing_authoritative_input()
+ {
+  var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);const string text="記録を照合した。実機運転は未実施。";
+  var ids=Enumerable.Range(0,20).Select(i=>"source-"+new string('a',70)+i.ToString("D3")).ToArray();
+  var item=new SpecificSkill("記録を照合した","記録照合",ids[19],text){Basis="experience"};var element=Assert.Single(SkillElements.Atomize(item));
+  var evidence=new JsonArray(ids.Reverse().Select(id=>(JsonNode)new JsonObject{["id"]=id,["text"]=text,["documentVersionId"]="immutable-v1",["sourceVersion"]=7}).ToArray());
+  var source=new JsonObject{["text"]=SkillChoiceMatching.Input(item,element,concepts),["evidence"]=evidence.DeepClone()};
+  var input=SkillSemanticBudget.Prepare(source,ids.Select(id=>new EvidenceReference(id,"immutable-v1",7)).ToArray());var before=input.ToJsonString();var packed=SkillChoiceWire.Prepare(input,q);
+  Assert.Equal("skill-choice-wire-v3",SkillChoiceWire.Version);Assert.Equal("e019",packed["text"]!["candidate"]!["evidenceId"]!.GetValue<string>());
+  Assert.Equal("e019",packed["text"]!["candidate"]!["quote"]!["evidenceId"]!.GetValue<string>());
+  Assert.Equal(ids.Length,packed["evidence"]!.AsArray().Select(x=>x!["id"]!.ToString()).Distinct().Count());
+  Assert.Equal(Enumerable.Range(0,20).Reverse().Select(i=>"e"+i.ToString("D3")),packed["evidence"]!.AsArray().Select(x=>x!["id"]!.ToString()));
+  Assert.All(packed["evidence"]!.AsArray(),x=>Assert.Equal(text,x!["text"]!.GetValue<string>()));Assert.Equal(before,input.ToJsonString());
+  Assert.True(Encoding.UTF8.GetByteCount(SkillSemanticBudget.Serialize(packed))<Encoding.UTF8.GetByteCount(SkillSemanticBudget.Serialize(input))-1000);
+ }
+
+ [Fact]
  public void Evidence_keeps_every_id_text_and_document_version_while_sharing_identical_provenance()
  {
   var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);
