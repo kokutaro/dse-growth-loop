@@ -54,14 +54,17 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
         {
             await queue.RenewAsync(delivery, job.Value["availableAt"]!.Deserialize<DateTimeOffset>() - now, ct); return true;
         }
+        using var diagnostics=PipelineDiagnostics.Begin(notice.JobId,job.Value.Text("aggregateId"),clock,logger,job.Value["createdAt"] is JsonNode created?created.Deserialize<DateTimeOffset>().ToString("O"):null);
         var owner = Guid.NewGuid().ToString("N");
         var exhausted = job.Value.Number("attempt") >= options.Attempts;
         job.Value["status"] = "processing"; job.Value["leaseOwner"] = owner; job.Value["leaseUntil"] = now + Visibility;
         if (!exhausted) job.Value["attempt"] = job.Value.Number("attempt") + 1;
-        try { await repository.CommitAsync(partition, [RecordWrite.Replace(job.Value, job.ETag)], ct); }
+        try { using var claimStage=PipelineDiagnostics.Measure("job_claim");await repository.CommitAsync(partition,[RecordWrite.Replace(job.Value,job.ETag)],ct); }
         catch (StoreConflictException) { return true; }
-        using var processing = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        processing.CancelAfter(TimeSpan.FromSeconds(options.ProcessingSeconds));
+        diagnostics.ProcessingStarted();
+        using var jobDeadline=new CancellationTokenSource(TimeSpan.FromSeconds(options.ProcessingSeconds),clock);
+        using var processing=CancellationTokenSource.CreateLinkedTokenSource(ct,jobDeadline.Token);
+        var renewalFailed=0;
         using var renewalStop = CancellationTokenSource.CreateLinkedTokenSource(ct);
         using var gate = new SemaphoreSlim(1);
         async Task<StoredRecord> Owned(CancellationToken token)
@@ -77,7 +80,8 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
             {
                 while (true)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(20), renewalStop.Token);
+                    await Task.Delay(TimeSpan.FromSeconds(20),clock,renewalStop.Token);
+                    using var renewalStage=PipelineDiagnostics.Measure("lease_renewal");
                     await gate.WaitAsync(renewalStop.Token);
                     try
                     {
@@ -86,11 +90,12 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                         current.Value["leaseUntil"] = clock.GetUtcNow() + Visibility;
                         await repository.CommitAsync(partition, [RecordWrite.Replace(current.Value, current.ETag)], renewalStop.Token);
                     }
+                    catch(Exception error){renewalStage.Failed(error);throw;}
                     finally { gate.Release(); }
                 }
             }
             catch (OperationCanceledException) when (renewalStop.IsCancellationRequested) { }
-            catch (Exception) { processing.Cancel(); }
+            catch (Exception) { Interlocked.Exchange(ref renewalFailed,1);PipelineDiagnostics.Cancel("lease_renewal_failed");processing.Cancel(); }
         }
         var renewal = Renew();
         bool delete = false;
@@ -100,7 +105,8 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
             if (job.Value.Text("jobType") is "enrichment" or "projection")
             {
                 if (profiles is null) throw new DomainException(422, "PIPELINE_UNAVAILABLE");
-                var plan = await profiles.BuildAsync(job.Value, processing.Token);
+                var plan=await PipelineDiagnostics.DuringAsync("profile_build",()=>profiles.BuildAsync(job.Value,processing.Token));
+                using var publishStage=PipelineDiagnostics.Measure("profile_publish");
                 await gate.WaitAsync(processing.Token);
                 try
                 {
@@ -108,8 +114,10 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                     current.Value["status"] = "ready"; current.Value["resultId"] = plan.ResultId;
                     current.Value["leaseUntil"] = null; current.Value["leaseOwner"] = null;
                     current.Value["lastErrorCode"] = null;
+                    current.Value["processingDiagnostics"]=diagnostics.Export();
                     await profiles.CommitAsync(plan, [RecordWrite.Replace(current.Value, current.ETag)], processing.Token);
                 }
+                catch(Exception error){publishStage.Failed(error);throw;}
                 finally { gate.Release(); }
                 await queue.DeleteAsync(delivery, ct);
                 return true;
@@ -126,10 +134,10 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
             var ver = await repository.ReadAsync(partition, doc.Value.Text("currentVersionId"), processing.Token) ?? throw new DomainException(409, "SOURCE_REVOKED");
             if (doc.Value.Number("sourceVersion") != notice.Version || ver.Value.Text("jobId") != notice.JobId) throw new DomainException(409, "SOURCE_REVOKED");
             if (ver.Value.Text("processorVersion") != IngestionOptions.ProcessorVersion) throw new DomainException(400, "PROCESSOR_VERSION_UNSUPPORTED");
-            var bytes = await blobs.GetAsync("originals", ver.Value.Text("blobKey"), processing.Token);
+            var bytes=await PipelineDiagnostics.DuringAsync("original_blob_read",()=>blobs.GetAsync("originals",ver.Value.Text("blobKey"),processing.Token));
             if (OfficeExtractor.Hash(bytes) != ver.Value.Text("sha256")) throw new DomainException(400, "HASH_MISMATCH");
             var mime = ver.Value.Text("mediaType");
-            var extraction = await Task.Run(() => extractor.Extract(bytes, mime == OfficeExtractor.WordMime ? "source.docx" : "source.xlsx", mime, processing.Token), processing.Token);
+            var extraction=await PipelineDiagnostics.DuringAsync("native_capture",()=>Task.Run(()=>extractor.Extract(bytes,mime==OfficeExtractor.WordMime?"source.docx":"source.xlsx",mime,processing.Token),processing.Token));
             var extractedKey = $"{notice.TenantId}/{ver.Value.Text("id")}/{IngestionOptions.ProcessorVersion}.json";
             await blobs.PutAsync("extracted", extractedKey, JsonSerializer.SerializeToUtf8Bytes(extraction), processing.Token);
             // Stable IDs + job ETag in every batch: stale workers cannot write after takeover.
@@ -179,20 +187,10 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                             ["sheets"] = RecordJson.Array(extraction.Workbook.Sheets), ["cellCount"] = extraction.Workbook.Cells.Length,
                             ["spanCount"] = extraction.Spans.Length, ["manifestBlobKey"] = extractedKey,
                             ["warnings"] = RecordJson.Array(extraction.Warnings) };
-                        latest.Value.Remove("resumeImport");
                     }
                     var status = extraction.Spans.Length == 0 ? "needs_review" : "ready";
                     latest.Value["status"] = status; latest.Value["activeVersion"] = extraction.Spans.Length == 0 ? null : notice.Version;
                     latest.Value["extractionState"] = "complete"; latest.Value["aiState"] = "not_started";
-                    if (extraction.ResumeImport is { } resume)
-                        latest.Value["resumeImport"] = JsonSerializer.SerializeToNode(resume with
-                        {
-                            Projects = resume.Projects.Select(p => p with
-                            {
-                                EvidenceIds = extraction.Spans.Select((s, i) => (s, i)).Where(x => x.s.Label == p.Location)
-                                    .Select(x => $"{ver.Value.Text("id")}-e{x.i:D8}").ToArray()
-                            }).ToArray()
-                        }, new JsonSerializerOptions(JsonSerializerDefaults.Web));
                     latestVersion.Value["status"] = status; latestVersion.Value["extractedBlobKey"] = extractedKey;
                     latestVersion.Value["warnings"] = RecordJson.Array(extraction.Warnings); latest.Value["warnings"] = RecordJson.Array(extraction.Warnings);
                     latestVersion.Value["evidenceCount"] = extraction.Spans.Length;
@@ -218,21 +216,26 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
             }
             finally { gate.Release(); }
         }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested) { PipelineDiagnostics.Cancel("service_stopping");throw; }
         catch (Exception error)
         {
+            var cancellationReason=Volatile.Read(ref renewalFailed)!=0?"lease_renewal_failed":jobDeadline.IsCancellationRequested?"job_deadline":processing.IsCancellationRequested?"caller_cancelled":null;
+            if(cancellationReason is not null)PipelineDiagnostics.Cancel(cancellationReason);
+            using var failureStage=PipelineDiagnostics.Measure("failure_persistence");
             await gate.WaitAsync(ct);
             try
             {
                 var current = await Owned(ct);
                 var invalidPackage = error is System.Xml.XmlException or InvalidDataException or FormatException or ArgumentException or OverflowException;
-                var code = error is DomainException de ? de.Code : error is OperationCanceledException ? "PROCESSING_TIMEOUT" : invalidPackage ? "INVALID_PACKAGE" : "DEPENDENCY_UNAVAILABLE";
+                var code = cancellationReason=="lease_renewal_failed"?"LEASE_RENEWAL_FAILED":cancellationReason=="job_deadline"?"PROCESSING_TIMEOUT":
+                    error is DomainException de?de.Code:error is OperationCanceledException?"PROCESSING_CANCELLED":invalidPackage?"INVALID_PACKAGE":"DEPENDENCY_UNAVAILABLE";
                 var permanent = error is DomainException { Status: < 500 } || invalidPackage;
                 var terminal = permanent || current.Value.Number("attempt") >= options.Attempts;
                 var profileJob = current.Value.Text("jobType") is "enrichment" or "projection";
                 current.Value["status"] = code == "SOURCE_REVOKED" ? "cancelled" : code == "AI_BUDGET_STOPPED" ? "budget_stopped" :
                     profileJob && permanent ? "needs_review" : terminal ? "failed" : "queued";
                 current.Value["lastErrorCode"] = code; current.Value["leaseUntil"] = null; current.Value["leaseOwner"] = null;
+                current.Value["processingDiagnostics"]=diagnostics.Export();
                 var delay = TimeSpan.FromSeconds(10 * Math.Pow(2, current.Value.Number("attempt") - 1));
                 if (error is RequestFailedException request && request.GetRawResponse()?.Headers.TryGetValue("Retry-After", out var retry) == true && int.TryParse(retry, out var seconds)) delay = TimeSpan.FromSeconds(Math.Clamp(seconds, 1, 604800));
                 if (error is DependencyRetryException dependency && dependency.RetryAfter > delay) delay = dependency.RetryAfter;
@@ -265,7 +268,8 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                 else delivery = await queue.RenewAsync(delivery, delay, ct);
                 logger.LogWarning("Ingestion {JobId} Attempt={Attempt} Code={Code}", notice.JobId, current.Value.Number("attempt"), code);
             }
-            catch (Exception e) when (e is StoreConflictException or DomainException { Code: "LEASE_LOST" }) { }
+            catch (Exception e) when (e is StoreConflictException or DomainException { Code: "LEASE_LOST" }) { failureStage.Failed(e); }
+            catch(Exception e){failureStage.Failed(e);throw;}
             finally { gate.Release(); }
         }
         finally

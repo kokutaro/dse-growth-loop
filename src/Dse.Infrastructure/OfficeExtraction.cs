@@ -34,7 +34,7 @@ public sealed record ExtractedSpan(string Type, string Label, string Text)
 {
     public CellSource? Cell { get; init; }
 }
-public sealed record Extraction(ExtractedSpan[] Spans, string[] Warnings, ResumeImport? ResumeImport = null)
+public sealed record Extraction(ExtractedSpan[] Spans, string[] Warnings)
 {
     public WorkbookCapture? Workbook { get; init; }
 }

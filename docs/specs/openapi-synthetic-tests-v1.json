@@ -547,6 +547,187 @@
           }
         }
       }
+    },
+    "/api/v1/admin/test-people/{id}/documents/{documentId}/reextraction-retry-estimate": {
+      "get": {
+        "operationId": "estimateReextractionRetry",
+        "summary": "同一世代の未送信再試行見積",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "原本・版と固定した費用枠の見積",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionRetryEstimate"
+                }
+              }
+            }
+          }
+        },
+        "x-current-owner-and-scope-required": true
+      }
+    },
+    "/api/v1/admin/test-people/{id}/documents/{documentId}/reextraction-retries": {
+      "post": {
+        "operationId": "retryReextraction",
+        "summary": "未送信を検証した同一世代の明示再試行",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "member",
+          "operator"
+        ],
+        "x-requires-current-version": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionAccepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReextractionConfirmation"
+              }
+            }
+          }
+        },
+        "x-current-owner-and-scope-required": true
+      }
     }
   },
   "components": {
@@ -571,6 +752,322 @@
         "required": true,
         "schema": {
           "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "\\S"
+          },
+          "status": {
+            "enum": [
+              400,
+              401,
+              403,
+              404,
+              409,
+              412,
+              413,
+              429,
+              503
+            ]
+          },
+          "code": {
+            "enum": [
+              "INVALID_INPUT",
+              "UNAUTHENTICATED",
+              "FORBIDDEN",
+              "NOT_FOUND",
+              "INVALID_TRANSITION",
+              "CORRECTION_CONFLICT",
+              "IDEMPOTENCY_CONFLICT",
+              "STALE_VERSION",
+              "PAYLOAD_TOO_LARGE",
+              "RATE_LIMITED",
+              "AI_FAILED",
+              "NO_MATCH",
+              "AI_BUDGET_STOPPED",
+              "SAVE_FAILED",
+              "SOURCE_REVOKED",
+              "DEPENDENCY_UNAVAILABLE"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "pattern": "\\S"
+          },
+          "traceId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "detail",
+          "traceId",
+          "retryable"
+        ],
+        "additionalProperties": false
+      },
+      "ReextractionAccepted": {
+        "type": "object",
+        "properties": {
+          "documentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "jobId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "generationState": {
+            "enum": [
+              "staging",
+              "published",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "statusUrl": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "documentId",
+          "generationId",
+          "jobId",
+          "generationState",
+          "statusUrl"
+        ],
+        "additionalProperties": false
+      },
+      "ReextractionConfirmation": {
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "maximumUsd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "estimateId",
+          "maximumUsd",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "ReextractionRetryEstimate": {
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceEtag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "generationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceDocumentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "sourceSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "previousJobId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "proofSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "implementationVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "implementationSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "targetFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "retryVersion": {
+            "const": "pre-dispatch-generation-retry-v1"
+          },
+          "maximumUsd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "remainingCalls": {
+            "const": 7
+          },
+          "spentCalls": {
+            "const": 0
+          }
+        },
+        "required": [
+          "estimateId",
+          "sourceEtag",
+          "generationId",
+          "sourceDocumentId",
+          "sourceSha256",
+          "previousJobId",
+          "proofSha256",
+          "implementationVersion",
+          "implementationSha256",
+          "targetFingerprint",
+          "retryVersion",
+          "maximumUsd",
+          "remainingCalls",
+          "spentCalls"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "入力・必須ヘッダー不正",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "未認証",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "操作権限なし",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "存在しない、または閲覧不可",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "状態・冪等性・本人訂正の競合",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "412": {
+        "description": "ETag不一致",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "413": {
+        "description": "容量上限超過",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "429": {
+        "description": "レートまたはAI予算上限",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "headers": {
+          "Retry-After": {
+            "description": "再試行までの秒数。",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      },
+      "503": {
+        "description": "保存先または依存サービス利用不可",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
         }
       }
     }

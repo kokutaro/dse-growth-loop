@@ -33,7 +33,7 @@ rawは引用の部分文字列、引用はそのevidenceIdの原文と完全一�
 
 ## 社内経歴書と検索
 
-社内経歴書の `ResumeSkill` / `skillCandidates` は入力された未確認のヒント。セル位置と表記を保持する。同じ通常抽出経路で原本セルの本文と本人の担当記述を検証してから具体スキルにする。技術欄に名前があるだけでは経験タグを作らない。既存の `ResumeProject.skills` は旧クライアント向けの未確認語彙であり、具体スキル・熟練度の確定値ではない。
+Excelは全シートの元セル本文・結合・出典を保持し、通常のAI抽出と根拠検証を通す。固定の技術列から技能候補や人物経験を生成しない。技術名が列挙されているだけでは経験タグを作らず、自己PR・知識・計画等も原文の文脈で区別する。
 
 従来の社内経歴書候補の語彙一致は `normalizedTerms` / `terms` に互換性のため保持するが、これは説明文中の通常の語検索と同じ経路であり、本人経験の確定には使わない。専用の `SearchRequest.specificSkills` は `specificSkills.searchTerms` だけを検索し、応答のrouteも `specificSkills` と明示する。一致件数も `specificSkillMatches` と通常の `termMatches` を別に保持する。大分類の `categories`、補助判定の `signalIds`、通常語の `terms` と混ぜない。NFKC等による同じ正規化をメモリ検索とCosmosクエリに適用する。
 

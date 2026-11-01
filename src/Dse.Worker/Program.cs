@@ -38,7 +38,7 @@ if (args.Length == 1 && command.StartsWith("--organization-", StringComparison.O
     await OrganizationCommands.RunAsync(command, local.Configuration, local.Environment.IsDevelopment(), deadline.Token);
     return;
 }
-if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--chat-smoke" or "--connection-smoke" or "--recover-ai-slot" or "--publish-knowledge" or "--analyze-business" or "--inspect-business-analysis-recovery" or "--recover-business-analysis"))
+if (args.Length > 1 || command is not ("--consume" or "--once" or "--seed-demo" or "--recover-fence" or "--reconcile" or "--jobs" or "--cleanup-staging" or "--ai-smoke" or "--chat-smoke" or "--connection-smoke" or "--recover-ai-slot" or "--publish-knowledge" or "--analyze-business" or "--inspect-business-analysis-recovery" or "--recover-business-analysis" or "--inspect-generation"))
     throw new ArgumentException("--consume / --once / --seed-demo / --recover-fence / --reconcile / --jobs / --cleanup-staging / --ai-smoke / --connection-smoke / --recover-ai-slot / --publish-knowledge / --analyze-business / --inspect-business-analysis-recovery / --recover-business-analysis");
 var builder = Host.CreateApplicationBuilder([]);
 // Validate offline/Live switches before creating storage, credentials, or transports.
@@ -66,6 +66,13 @@ using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(command == 
 var ct = timeout.Token;
 switch (command)
 {
+    case "--inspect-generation":
+        var inspectPerson=builder.Configuration["Recovery:PersonId"];
+        var inspectGeneration=builder.Configuration["Recovery:GenerationId"];
+        if(!RecordJson.IsId(inspectPerson??"")||!RecordJson.IsId(inspectGeneration??""))throw new ArgumentException("Recovery__PersonId / GenerationId required");
+        var inspectionActor=await host.Services.GetRequiredService<AuthorityProvider>().PersonAsync(tenant,inspectPerson!,ct)??throw new DomainException(403,"FORBIDDEN");
+        Console.WriteLine((await new GenerationDiagnostics(host.Services.GetRequiredService<IRecordStore>(),builder.Configuration).InspectAsync(inspectionActor,inspectGeneration!,ct)).ToJsonString());
+        break;
     case "--analyze-business":
         var analysisPerson = builder.Configuration["BusinessAnalysis:PersonId"];
         var analysisRun = builder.Configuration["BusinessAnalysis:RunId"];

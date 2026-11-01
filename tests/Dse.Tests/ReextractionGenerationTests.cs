@@ -111,4 +111,31 @@ public sealed class ReextractionGenerationTests
         Assert.Equal(doc.Text("id"),(await h.Read(p.Text("id")))["documentHeads"]![doc.Text("importKey")]!.GetValue<string>());
     }
 
+
+    private sealed class UnknownPublicationStore(IRecordStore inner,bool committed):IRecordStore
+    {
+        public Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)=>inner.ReadAsync(p,id,ct);
+        public Task<RecordPage> QueryAsync(RecordPartition p,string kind,string? field,string? parent,int size,string? cursor,CancellationToken ct)=>inner.QueryAsync(p,kind,field,parent,size,cursor,ct);
+        public async Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite> writes,CancellationToken ct)
+        {
+            if(committed)await inner.CommitAsync(p,writes,ct);
+            throw new OperationCanceledException("fixture unknown atomic publication result");
+        }
+    }
+    [Theory]
+    [InlineData(false)][InlineData(true)]
+    public async Task Unknown_atomic_publication_preserves_either_complete_old_or_complete_new_state_and_keeps_fence(bool committed)
+    {
+        using var h=new SyntheticHarness();var (person,original)=await Baseline(h);var old=await Visible(h,person);
+        var accepted=await Start(h,person,original);var id=accepted.Body!["generationId"]!.GetValue<string>();await h.Processor.RunOnceAsync(default);var generation=await h.Read(id);
+        var plan=await h.Pipeline.BuildAsync(await h.Read(generation.Text("enrichmentJobId")),default);
+        var ai=new PipelineAi();var pipeline=new ProfilePipeline(h.Repo,new UnknownPublicationStore(h.Store,committed),h.Fence,ai,ai,new(h.Config),h.Config,TimeProvider.System,new SyntheticFixtureSkills(),new FixtureWorkbookSections(h.Repo));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(()=>pipeline.CommitAsync(plan,[],default));
+        var current=await h.Read(person.Text("id"));Assert.Equal(committed?id:original.Text("id"),current["documentHeads"]![original.Text("importKey")]!.GetValue<string>());
+        Assert.Equal(committed?"published":"staging",(await h.Read(id)).Text("generationState"));
+        var visible=await Visible(h,person);if(committed)Assert.DoesNotContain(visible,u=>old.Any(p=>p.Id==u.Id));else Assert.Equal(old.Select(u=>u.Id),visible.Select(u=>u.Id));
+        Assert.NotNull((await h.Read("system-access-fence"))["holder"]);
+        Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>h.Fence.RunAsync("demo",_=>Task.FromResult(true),default))).Code);
+        Assert.Equal(original.Text("etag"),(await h.Read(original.Text("id"))).Text("etag"));
+    }
 }

@@ -40,7 +40,7 @@ public sealed class SyntheticHarness : IDisposable
         Processor=new(Repo,blobs,queue,extractor,options,Fence,clock,NullLogger<IngestionProcessor>.Instance,Pipeline,notices);
     }
     public async Task<JsonObject> Person(string reference="a") => (await Service.RegisterAsync(Operator,new(reference,"架空担当 "+reference,"demo",true),Guid.NewGuid().ToString("N"),default)).Body!.AsObject();
-    public async Task<MutationResponse> Upload(JsonObject person,byte[]? bytes=null,string? key=null) => await Uploads.UploadTestAsync(Operator,person.Text("id"),"synthetic.xlsx",OfficeExtractor.ExcelMime,bytes??InternalResumeFixture.Package(InternalResumeFixture.Cells(count:2)),key??Guid.NewGuid().ToString("N"),default);
+    public async Task<MutationResponse> Upload(JsonObject person,byte[]? bytes=null,string? key=null) => await Uploads.UploadTestAsync(Operator,person.Text("id"),"synthetic.xlsx",OfficeExtractor.ExcelMime,bytes??WorkbookTextFixture.Package(WorkbookTextFixture.Cells(count:2)),key??Guid.NewGuid().ToString("N"),default);
     public async Task<JsonObject> Read(string id)=>(await Repo.ReadAsync(RecordPartition.Catalog("demo"),id,default))!.Value;
     public async Task Revoke(bool scopes=false)
     {
@@ -86,7 +86,7 @@ public sealed class SyntheticTestProfileTests
     {
         using var h=new SyntheticHarness();var p=await h.Person();var actor=mode=="member"?SyntheticHarness.Member:mode=="scope"?SyntheticHarness.Other:SyntheticHarness.Operator with{TenantId="other"};
         await Assert.ThrowsAsync<DomainException>(()=>h.Service.RegisterAsync(actor,new("bad","架空","demo",true),Guid.NewGuid().ToString("N"),default));
-        await Assert.ThrowsAsync<DomainException>(()=>h.Uploads.UploadTestAsync(actor,p.Text("id"),"a.xlsx",OfficeExtractor.ExcelMime,InternalResumeFixture.Package(),Guid.NewGuid().ToString("N"),default));
+        await Assert.ThrowsAsync<DomainException>(()=>h.Uploads.UploadTestAsync(actor,p.Text("id"),"a.xlsx",OfficeExtractor.ExcelMime,WorkbookTextFixture.Package(),Guid.NewGuid().ToString("N"),default));
     }
     [Fact]
     public async Task Same_scope_other_operator_does_not_own_profile_and_self_boundary_stays_closed()
@@ -104,9 +104,9 @@ public sealed class SyntheticTestProfileTests
         Assert.Equal(r.Body!.ToJsonString(),replay.Body!.ToJsonString());
         Assert.Single((await h.Repo.QueryAsync(RecordPartition.Catalog("demo"),"document",null,null,100,null,default)).Items);
         Assert.Single((await h.Repo.QueryAsync(RecordPartition.Catalog("demo"),"syntheticImportBudget",null,null,100,null,default)).Items);
-        var cells=InternalResumeFixture.Cells(count:2);cells["F24"]="≪担当業務≫変更された業務";
-        Assert.Equal("TEST_DOCUMENT_LIMIT",(await Assert.ThrowsAsync<DomainException>(()=>h.Upload(p,InternalResumeFixture.Package(cells)))).Code);
-        await Assert.ThrowsAsync<DomainException>(()=>h.Upload(p,InternalResumeFixture.Package())); // seven projects
+        var cells=WorkbookTextFixture.Cells(count:2);cells["F24"]="≪担当業務≫変更された業務";
+        Assert.Equal("TEST_DOCUMENT_LIMIT",(await Assert.ThrowsAsync<DomainException>(()=>h.Upload(p,WorkbookTextFixture.Package(cells)))).Code);
+        await Assert.ThrowsAsync<DomainException>(()=>h.Upload(p,WorkbookTextFixture.Package())); // seven projects
     }
     [Fact]
     public async Task Xlsx_ingestion_enrichment_and_dedicated_search_use_real_operator_not_fake_identity()
@@ -219,7 +219,7 @@ public sealed class SyntheticTestProfileTests
         await h.Store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(real,before.Text("etag"))],default);
         var r=await h.Uploads.UploadAsync(actor,"本人資料","profile","self.docx",OfficeExtractor.WordMime,OfficeFixtures.Package(),Guid.NewGuid().ToString("N"),default);
         var doc=await h.Read(r.Body!["documentId"]!.GetValue<string>());Assert.Equal(actor.PersonId,doc.Text("personId"));Assert.False(SyntheticTestAccess.IsTest(doc));
-        await Assert.ThrowsAsync<DomainException>(()=>h.Uploads.UploadTestAsync(actor,actor.PersonId,"a.xlsx",OfficeExtractor.ExcelMime,InternalResumeFixture.Package(InternalResumeFixture.Cells(count:2)),Guid.NewGuid().ToString("N"),default));
+        await Assert.ThrowsAsync<DomainException>(()=>h.Uploads.UploadTestAsync(actor,actor.PersonId,"a.xlsx",OfficeExtractor.ExcelMime,WorkbookTextFixture.Package(WorkbookTextFixture.Cells(count:2)),Guid.NewGuid().ToString("N"),default));
     }
     [Fact]
     public async Task Queue_failure_after_acceptance_is_recoverable_by_same_upload_without_new_document_or_allowance()

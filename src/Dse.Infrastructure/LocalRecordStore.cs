@@ -15,7 +15,8 @@ public sealed class LocalRecordStore(LocalIngestionFiles files) : IRecordStore
         return result;
     }, ct);
     public Task<StoredRecord?> ReadAsync(RecordPartition partition, string id, CancellationToken ct) => Run(store => store.ReadAsync(partition, id, ct), false, ct);
-    public Task CommitAsync(RecordPartition partition, IReadOnlyList<RecordWrite> writes, CancellationToken ct) => Run(async store => { await store.CommitAsync(partition, writes, ct); return true; }, true, ct);
+    public Task CommitAsync(RecordPartition partition,IReadOnlyList<RecordWrite> writes,CancellationToken ct)
+    { FencedReadPhase.RequireWritable();return Run(async store=>{await store.CommitAsync(partition,writes,ct);return true;},true,ct); }
     public Task<RecordPage> QueryAsync(RecordPartition partition, string kind, string? parentField, string? parentId, int size, string? token, CancellationToken ct) => Run(store => store.QueryAsync(partition, kind, parentField, parentId, size, token, ct), false, ct);
 }
 public sealed record LocalRecordSnapshot(long Version, LocalStoredRecord[] Records);

@@ -31,7 +31,8 @@ public static class WorkbookDates
         // A text date needs an explicit four-digit year and unambiguous component order.
         if(Regex.IsMatch(raw,@"^\d{4}(?:-\d{1,2}|年\d{1,2}月)$",RegexOptions.CultureInvariant,TimeSpan.FromMilliseconds(100)))
         {
-            var m=InternalResumeSheet.Month(raw);return m is null?new(null,"unknown",null):new(m,"month",raw);
+            return DateTime.TryParseExact(raw,["yyyy-M","yyyy-MM","yyyy年M月","yyyy年MM月"],CultureInfo.InvariantCulture,DateTimeStyles.None,out var month) && month.Year<=9998
+                ? new(month.ToString("yyyy-MM",CultureInfo.InvariantCulture),"month",raw) : new(null,"unknown",null);
         }
         if(DateTime.TryParseExact(raw,["yyyy-MM-dd","yyyy-M-d","yyyy年M月d日"],CultureInfo.InvariantCulture,DateTimeStyles.None,out var day))
             return new(day.ToString("yyyy-MM-dd",CultureInfo.InvariantCulture),"day",raw);

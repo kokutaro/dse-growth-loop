@@ -81,7 +81,7 @@ Noulは別型。`supported`は根拠ありでyesProbabilityが0〜1（0も有効
 
 Periodはstart/end/precision/months。unknownではすべてnull。年/月だけの記載は下限日を保存してprecisionで精度を保持し、端数・不明を0年にしない。monthsは暦上の計算結果でAI値を採用しない。複数案件の重複期間は和集合で数え、単純合算しない。基準日不明なら終了・期間はnull。
 
-2026-10-24の[社内帳票](../internal-resume-ingestion.md)は、月精度を `YYYY-MM` で保存し両端月を含む。開始・終了の一方が不明でも精度はmonth、monthsはnull。旧 `YYYY-MM-DD` のmonth精度・経過月数契約は維持する。新しいDocumentの任意 `resumeImport` は8項目候補、元セル、未確認の技術表記候補、日付なし自己申告を保持する。業務領域domainはnullのままで、既存技術分類のdomainと混同しない。
+Excelは[全テキスト取込](../full-workbook-ingestion.md)へ一本化する。案件はAIが全根拠をproject/contextへ構造化し、期間は選択した同一案件内の元セルの型・表示精度を検証する。月精度はYYYY-MMで両端月を含む。不明・継続中を現在日で補わない。固定帳票の専用Document属性・技術列ヒント契約は廃止し、原本・世代・監査は保持する。Word等の既存日付契約と、人の確認・認可・整合性の境界は維持する。
 
 `taxonomy-v1`は既存domainのsales/operations/manufacturing/mechanical/softwareにunknownを加え、signalはhandover。未知の自然言語分類はunknownへ、未知の機械IDや欠けた分布は不正入力として扱う。taxonomy追加は版更新と再分類計画を必要とする。
 

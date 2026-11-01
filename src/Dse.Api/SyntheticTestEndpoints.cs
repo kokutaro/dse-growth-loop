@@ -40,6 +40,15 @@ public static class SyntheticTestEndpoints
             var r=await s.StartAsync(RecordEndpoints.Actor(c),personId,documentId,input,c.Request.Headers["Idempotency-Key"].ToString(),c.Request.Headers.IfMatch.ToString(),ct);
             c.Response.Headers.CacheControl="no-store";return Results.Json(r.Body,statusCode:r.Status);
         }).RequireRateLimiting("upload");
+        api.MapGet("/admin/test-people/{personId}/documents/{generationId}/reextraction-retry-estimate",async(string personId,string generationId,HttpContext c,ReextractionGenerations s,CancellationToken ct)=>
+        {
+            c.Response.Headers.CacheControl="no-store";return Results.Ok(await s.EstimateRetryAsync(RecordEndpoints.Actor(c),personId,generationId,ct));
+        });
+        api.MapPost("/admin/test-people/{personId}/documents/{generationId}/reextraction-retries",async(string personId,string generationId,ReextractionConfirmation input,HttpContext c,ReextractionGenerations s,CancellationToken ct)=>
+        {
+            var r=await s.RetryAsync(RecordEndpoints.Actor(c),personId,generationId,input,c.Request.Headers["Idempotency-Key"].ToString(),c.Request.Headers.IfMatch.ToString(),ct);
+            c.Response.Headers.CacheControl="no-store";return Results.Json(r.Body,statusCode:r.Status);
+        }).RequireRateLimiting("upload");
         api.MapPost("/admin/test-people/search",async(SearchRequest request,HttpContext c,SyntheticTestProfiles s,ICatalog catalog,CancellationToken ct)=>
         {
             var actor=await s.OperatorAsync(RecordEndpoints.Actor(c),ct);c.Response.Headers.CacheControl="no-store";

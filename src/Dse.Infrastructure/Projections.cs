@@ -112,6 +112,7 @@ public sealed record ValidatedSource(SearchUnit Unit, SourceSnapshot[] Snapshots
 
 public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? configuration = null)
 {
+    internal SourceGuard WithReadRepository(IPrimaryRepository reads)=>new(reads,configuration);
     public async Task<SearchUnit[]> FilterAsync(ActorAccess actor, IEnumerable<SearchUnit> units, CancellationToken ct)
     {
         List<SearchUnit> result = [];

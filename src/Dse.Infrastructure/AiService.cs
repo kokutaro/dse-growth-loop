@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -6,13 +5,13 @@ using System.Text.Json.Nodes;
 using Dse.Domain;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Dse.Infrastructure;
 
 public sealed class AiService(IConfiguration config, IPrimaryRepository repository, SourceGuard guard,
-    AccessFence fence, AiLedger ledger, IAiTransport transport, TimeProvider clock) : IWorkbookStructurer, ITextStructurer, IConcreteSkillExtractor, IDecisionProvider, IReranker, ISummarizer, IKnowledgeDrafter, IDisposable
+    AccessFence fence, AiLedger ledger, IAiTransport transport, TimeProvider clock, ILogger<AiService>? logger = null) : IWorkbookStructurer, ITextStructurer, IConcreteSkillExtractor, IDecisionProvider, IReranker, ISummarizer, IKnowledgeDrafter, IDisposable
 {
-    private readonly AuthorityProvider authorityProvider = new(repository, config);
     private readonly MemoryCache cache = new(new MemoryCacheOptions { SizeLimit = 128 });
     private sealed record Cached(byte[] Value, string RunId);
     public void Dispose() => cache.Dispose();
@@ -48,45 +47,63 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             context.WorkbookSectionKind is not (null or "project" or "context") || context.Evidence.Length > 100 || context.Candidates.Length > 100 || text.Length > 64000 ||
             context.ConversationEvidenceIds is { Length: > 100 } || context.SessionId is not null && !RecordJson.IsId(context.SessionId)) throw new ArgumentException("Invalid AI context");
         // Protect both a fresh send and a cache hit against concurrent revocation.
-        return fence.RunAsync(context.Actor.TenantId, token => RunProtectedAsync(context, operation, text, choices, nouls, parse, token), ct);
+        return RunMeasuredAsync(context,operation,text,choices,nouls,parse,ct);
     }
 
-    private async Task<AiResult<T>> RunProtectedAsync<T>(AiContext context, string operation, string text, ChoiceQuestion[] choices, NoulQuestion[] nouls,
-        Func<JsonObject, AiModel, HashSet<string>, IReadOnlyDictionary<string, HashSet<string>>, T> parse, CancellationToken ct)
+    private sealed record PreparedAiInput(ActorAccess Actor,HashSet<string> TestDocuments,List<SourceSnapshot> Snapshots,
+        Dictionary<string,HashSet<string>> CandidateEvidence,JsonArray Candidates,JsonArray Evidence,HashSet<string> EvidenceIds,
+        JsonObject Input,Dictionary<string,string>? WorkbookWireMap,bool SearchRerank,List<EvidenceCut> Cuts,JsonObject HashMaterial,string InputHash,double PreparationMs);
+    private async Task<AiResult<T>> RunMeasuredAsync<T>(AiContext context,string operation,string text,ChoiceQuestion[] choices,NoulQuestion[] nouls,
+        Func<JsonObject,AiModel,HashSet<string>,IReadOnlyDictionary<string,HashSet<string>>,T> parse,CancellationToken ct)
     {
-        var actor = await authorityProvider.RequireAsync(context.Actor, ct);
+        using var diagnostics=PipelineDiagnostics.BeginIfMissing(context.JobId,clock,logger);
+        var runId="ai-run-"+Guid.NewGuid().ToString("N");
+        using var stage=PipelineDiagnostics.Measure("ai_operation",operation,runId);
+        try { var result=await fence.PrepareThenRunAsync(context.Actor.TenantId,
+            (reads,token)=>PrepareAsync(context,operation,text,choices,nouls,reads,token),
+            (prepared,token)=>ExecutePreparedAsync(context,operation,choices,nouls,parse,prepared,runId,token),ct);
+            if(result.Status is AiStatus.Failed or AiStatus.BudgetStopped)stage.Failed();return result; }
+        catch(Exception error) { stage.Failed(error);throw; }
+    }
+    private async Task<PreparedAiInput> PrepareAsync(AiContext context,string operation,string text,ChoiceQuestion[] choices,NoulQuestion[] nouls,
+        IPrimaryRepository preparationRepository,CancellationToken ct)
+    {
+        var preparationStarted=clock.GetTimestamp();
+        var preparationAuthority=new AuthorityProvider(preparationRepository,config);
+        var preparationGuard=guard.WithReadRepository(preparationRepository);
+        var actor = await preparationAuthority.RequireAsync(context.Actor, ct);
         HashSet<string> testDocuments = [];
         if (context.PromptVersion == SkillSemanticMatching.Version || SkillChoiceMatching.IsVersion(context.PromptVersion))
-            await new SkillDictionaryService(repository,fence,new(repository,clock),clock).RequireSemanticInputUnderFenceAsync(context,text,choices,nouls,ct);
+            await new SkillDictionaryService(preparationRepository,fence,new(preparationRepository,clock),clock).RequireSemanticInputUnderFenceAsync(context,text,choices,nouls,ct);
         var searchRerank = operation == "rerank" && context.PromptVersion is "search-rerank-v1" or "search-rerank-v2";
         ChatAccess? chat = null;
         ActorAccess[] sharedActors = [];
         if (context.ChatMembershipVersion is not null)
         {
-            chat = new(repository, guard, new IdentityResolver(config), config);
+            chat = new(preparationRepository, preparationGuard, new IdentityResolver(config), config);
             (_, sharedActors) = await chat.RequireAsync(context, ct);
             if (text != await chat.ContextTextAsync(context, ct)) throw new DomainException(409, "SOURCE_REVOKED");
         }
         var conversationEvidence = new JsonArray();
         if (context.SessionId is not null)
         {
-            var session = (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, context.SessionId), context.SessionId, ct))?.Value
+            var session = (await preparationRepository.ReadAsync(RecordPartition.Conversation(actor.TenantId, context.SessionId), context.SessionId, ct))?.Value
                 ?? throw new DomainException(404, "NOT_FOUND");
             AccessPolicy.RequireRead(actor, session);
-            await authorityProvider.RequireSessionAsync(actor, session, ct);
+            await preparationAuthority.RequireSessionAsync(actor, session, ct);
             if (operation == "knowledgeDraft" && context.PromptVersion == "knowledge-draft-v1")
             {
                 if (session.Text("ownerId") != actor.PrincipalId || session.Number("sourceVersion") != context.DataVersion || context.ConversationEvidenceIds is not { Length: > 0 }) throw new DomainException(409, "SOURCE_REVOKED");
                 foreach (var id in context.ConversationEvidenceIds.Distinct())
                 {
-                    var record = (await repository.ReadAsync(RecordPartition.Conversation(actor.TenantId, context.SessionId), id, ct))?.Value;
+                    var record = (await preparationRepository.ReadAsync(RecordPartition.Conversation(actor.TenantId, context.SessionId), id, ct))?.Value;
                     if (record is null || record.Text("sessionId") != context.SessionId || record.Text("kind") is not ("message" or "outcome") || record.Text("kind") == "message" && record.Text("authorType") != "human") throw new DomainException(409, "SOURCE_REVOKED");
                     conversationEvidence.Add(new JsonObject { ["id"] = id, ["text"] = record.Text("kind") == "message" ? record.Text("body") : record.Text("resolution") + ": " + record.Text("result") });
                 }
             }
             else if (context.PromptVersion == "knowledge-classify-v1")
             {
-                var approved = await KnowledgeService.PublishedAsync(repository, actor.TenantId, context.SessionId, context.KnowledgeVersion ?? 0, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
+                var approved = await KnowledgeService.PublishedAsync(preparationRepository, actor.TenantId, context.SessionId, context.KnowledgeVersion ?? 0, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
                 var summary = new KnowledgeSummary(approved["sections"]!.Deserialize<SummarySection[]>(AiCodecs.Json)!);
                 if (text != summary.Text) throw new DomainException(409, "SOURCE_REVOKED");
             }
@@ -98,9 +115,9 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         List<EvidenceCut> cuts = [];
         foreach (var unit in context.Candidates)
         {
-            var validated = await guard.RequireAsync(actor, unit, ct);
+            var validated = await preparationGuard.RequireAsync(actor, unit, ct);
             if(validated.Unit.SyntheticTest)throw new DomainException(409,"TEST_AI_OPERATION_NOT_ALLOWED");
-            foreach (var participant in sharedActors) await guard.RequireAsync(participant, unit, ct);
+            foreach (var participant in sharedActors) await preparationGuard.RequireAsync(participant, unit, ct);
             if (chat is not null && unit.EntityType != "knowledge") throw new DomainException(409, "SOURCE_REVOKED");
             snapshots.AddRange(validated.Snapshots);
             var bounded = EvidenceBudget.Trim(validated.Unit.SourceRefs, context.EvidenceBytesPerCandidate, unit.Id, cuts);
@@ -113,7 +130,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                 }
             if (!candidateEvidence.TryAdd(unit.Id, bounded.Select(x => x.Id).ToHashSet())) throw new ArgumentException("Duplicate candidate");
             // Use authoritative evidence text, never the projection's cached summary.
-            var fragment = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), unit.UnitId, ct))?.Value;
+            var fragment = (await preparationRepository.ReadAsync(RecordPartition.Catalog(actor.TenantId), unit.UnitId, ct))?.Value;
             var role = fragment?.Text("role");
             if (searchRerank && role is not null) SearchInput.RequireSafe(role);
             candidates.Add(new JsonObject { ["id"] = unit.Id, ["entityType"] = unit.EntityType, ["evidence"] = searchRerank ? AiCodecs.Node(bounded.Select(e => new { e.Id, e.Text })) : AiCodecs.Node(bounded),
@@ -122,13 +139,13 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var evidence = conversationEvidence;
         foreach (var reference in context.Evidence.Distinct())
         {
-            var source = await guard.EvidenceAsync(actor, reference, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
+            var source = await preparationGuard.EvidenceAsync(actor, reference, ct) ?? throw new DomainException(409, "SOURCE_REVOKED");
             if(SyntheticTestAccess.IsTest(source.Document))testDocuments.Add(source.Document.Text("id"));
             foreach (var participant in sharedActors)
-                if (await guard.EvidenceAsync(participant, reference, ct) is null) throw new DomainException(409, "SOURCE_REVOKED");
+                if (await preparationGuard.EvidenceAsync(participant, reference, ct) is null) throw new DomainException(409, "SOURCE_REVOKED");
             var doc = source.Document;
             if(doc.Text("generationParentId")!=""&&doc.Text("generationState")!="published")
-                await GenerationAccess.RequireProcessingAsync(repository,actor,doc,ct);
+                await GenerationAccess.RequireProcessingAsync(preparationRepository,actor,doc,ct);
             snapshots.Add(new(doc.Text("id"), doc.Number("sourceVersion"), doc.Number("activeVersion"), doc.Number("accessVersion")));
             evidence.Add(new JsonObject { ["id"] = reference.Id, ["documentVersionId"] = reference.DocumentVersionId,
                 ["sourceVersion"] = reference.SourceVersion, ["text"] = source.Span.Text("text") });
@@ -142,7 +159,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             input["sectionKind"] = context.WorkbookSectionKind;
             foreach (var entry in evidence)
             {
-                var span = (await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), entry!["id"]!.GetValue<string>(), ct))!.Value;
+                var span = (await preparationRepository.ReadAsync(RecordPartition.Catalog(actor.TenantId), entry!["id"]!.GetValue<string>(), ct))!.Value;
                 entry["location"] = span["location"]?.DeepClone();
                 entry["sourceCell"] = span["sourceCell"]?.DeepClone();
             }
@@ -158,8 +175,17 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             ["taxonomy"] = context.TaxonomyVersion, ["dataVersion"] = context.DataVersion, ["membershipVersion"] = context.ChatMembershipVersion, ["lastSequence"] = context.ChatLastSequence };
         if(choices.Length>0)hashMaterial["choiceProbabilityVersion"]=ChoiceProbabilityRules.Version;
         var inputHash = Hash(RecordJson.Canonical(hashMaterial));
+        return new(actor,testDocuments,snapshots,candidateEvidence,candidates,evidence,evidenceIds,input,workbookWireMap,searchRerank,cuts,hashMaterial,inputHash,clock.GetElapsedTime(preparationStarted).TotalMilliseconds);
+    }
+    private async Task<AiResult<T>> ExecutePreparedAsync<T>(AiContext context,string operation,ChoiceQuestion[] choices,NoulQuestion[] nouls,
+        Func<JsonObject,AiModel,HashSet<string>,IReadOnlyDictionary<string,HashSet<string>>,T> parse,PreparedAiInput prepared,string runId,CancellationToken ct)
+    {
+        using var executionStage=PipelineDiagnostics.Measure("ai_execution",operation,runId);
+        var actor=prepared.Actor;var testDocuments=prepared.TestDocuments;var snapshots=prepared.Snapshots;
+        var candidateEvidence=prepared.CandidateEvidence;var candidates=prepared.Candidates;var evidence=prepared.Evidence;
+        var evidenceIds=prepared.EvidenceIds;var input=prepared.Input;var workbookWireMap=prepared.WorkbookWireMap;
+        var searchRerank=prepared.SearchRerank;var cuts=prepared.Cuts;var hashMaterial=prepared.HashMaterial;var inputHash=prepared.InputHash;
         var limits = AiLimits.Read(config);
-        var runId = "ai-run-" + Guid.NewGuid().ToString("N");
         var partition = context.SessionId is null ? RecordPartition.Catalog(actor.TenantId) : RecordPartition.Conversation(actor.TenantId, context.SessionId);
         var run = RecordJson.New("aiRun", runId, actor.TenantId, actor.PrincipalId, actor.ScopeIds, clock.GetUtcNow());
         run["container"] = partition.Container; run["sessionId"] = context.SessionId; run["jobId"] = context.JobId;
@@ -185,7 +211,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             run["updatedAt"] = clock.GetUtcNow();
             await repository.CommitAsync(partition, [RecordWrite.Replace(run, stored.ETag)], token);
         }
-        var start = Stopwatch.GetTimestamp();
+        var start = clock.GetTimestamp();
         var attempts = 0;
         AiFailure? failure = null;
         var inferenceNotDispatched=true;var providerRejected=false;
@@ -193,8 +219,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var cacheHit = false;
         var status = AiStatus.NotEvaluated;
         string? pendingCacheKey = null;
-        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        deadline.CancelAfter(TimeSpan.FromSeconds(limits.TimeoutSeconds));
+        using var providerDeadline=new CancellationTokenSource(TimeSpan.FromSeconds(limits.TimeoutSeconds),clock);
+        using var deadline=CancellationTokenSource.CreateLinkedTokenSource(ct,providerDeadline.Token);
         try
         {
             var mock = config["Ai:Mode"] == "Mock";
@@ -259,12 +285,17 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         trace["attemptCount"] = attempts; trace["retryCount"] = attempts - 1;
                         AiUsage? usage = null;
                         AiException? retry = null;
+                        var auditSaveCompleted=false;
                         var requestSent = false; var responseReceived = false; var uncertain = false; var notDispatched = false;
                         var dispatch = !mock && transport is IDispatchTrackingAiTransport ? new AiDispatchState() : null;
+                        PipelineDiagnostics.Stage? providerStage=null;
                         try
                         {
+                            providerStage=PipelineDiagnostics.Measure("provider_attempt",operation,runId);
                             await Save(deadline.Token);
+                            auditSaveCompleted=true;
                             requestSent = true;
+                            providerStage.TransportCalled();
                             var request = dispatch is not null
                                 ? ((IDispatchTrackingAiTransport)transport).SendAsync(model, body, limits.OutputTokens * 16 + 4096, deadline.Token, dispatch)
                                 : (mock ? MockAiTransport.Instance : transport).SendAsync(model, body, limits.OutputTokens * 16 + 4096, deadline.Token);
@@ -306,26 +337,32 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         { retry = new(AiFailure.SchemaMismatch, validationIssue: AiValidationIssue.ResponseShape); }
                         finally
                         {
+                            if(retry?.Failure is AiFailure.Timeout or AiFailure.Cancelled)providerStage?.Cancelled();else if(retry is not null)providerStage?.Failed(retry);
+                            providerStage?.Dispose();
+                            using var settlementStage=PipelineDiagnostics.Measure("ai_settlement",operation,runId);
                             using var settlement = new CancellationTokenSource(TimeSpan.FromSeconds(10));
                             notDispatched = dispatch?.TryAbandonBeforeDispatch() == true || retry?.InferenceNotDispatched == true;
                             inferenceNotDispatched &= notDispatched;providerRejected |= retry?.ProviderRejected==true;
                             if (notDispatched) usage = new(0, 0, false);
                             uncertain = !notDispatched && retry?.ProviderRejected != true && requestSent && !responseReceived &&
                                 (deadline.IsCancellationRequested || retry?.Failure is AiFailure.Timeout or AiFailure.Cancelled or AiFailure.Unavailable or AiFailure.OutputLimit);
-                            if (reservation is not null && !uncertain) await ledger.SettleAsync(reservation, usage, model, limits, settlement.Token);
+                            if(uncertain)AccessFence.MarkUncertainResult();
+                            if(!auditSaveCompleted)AccessFence.MarkUncertainResult();
                             var charged = mock ? new AiUsage(0, 0, false) : usage ?? new(limits.InputTokens, limits.OutputTokens, true);
                             trace["inputTokens"] = trace["inputTokens"]!.GetValue<long>() + charged.Input;
                             trace["outputTokens"] = trace["outputTokens"]!.GetValue<long>() + charged.Output;
                             trace["estimatedCostJpy"] = limits.AccountingEnabled ? trace["estimatedCostJpy"]!.GetValue<decimal>() + model.Cost(charged.Input, charged.Output, limits) : null;
                             trace["usageEstimated"] = trace["usageEstimated"]!.GetValue<bool>() || charged.Estimated;
-                            await Save(settlement.Token);
+                            try { if(reservation is not null&&!uncertain)await ledger.SettleAsync(reservation,usage,model,limits,settlement.Token); }
+                            catch(Exception error){settlementStage.Failed(error);AccessFence.MarkUncertainResult();throw;}
+                            finally { await Save(settlement.Token); }
                         }
                         if ((uncertain || notDispatched) && retry is not null) throw retry;
                         if (retry is null) break;
                         if (!retry.Retryable || attempt == limits.Attempts) throw retry;
                         var delay = retry.RetryAfter ?? TimeSpan.FromSeconds(Math.Pow(2, attempt - 1));
-                        if (delay > TimeSpan.FromSeconds(limits.TimeoutSeconds) - Stopwatch.GetElapsedTime(start)) throw retry;
-                        await Task.Delay(delay, deadline.Token);
+                        if (delay > TimeSpan.FromSeconds(limits.TimeoutSeconds) - clock.GetElapsedTime(start)) throw retry;
+                        await Task.Delay(delay,clock,deadline.Token);
                     }
                     if (status == AiStatus.Succeeded)
                         pendingCacheKey = key;
@@ -335,26 +372,30 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                 trace["choiceProbabilityValidationVersion"]=ChoiceProbabilityRules.Version;
             if(result is Decisions validDecisions && validDecisions.Choices.Count>0)
                 trace["choiceProbabilityValidation"]=AiCodecs.Node(validDecisions.Choices.ToDictionary(p=>p.Key,p=>ChoiceProbabilityRules.Validate(p.Value.Probabilities.Values)));
-            await guard.RequireSnapshotsAsync(actor, snapshots, deadline.Token);
+            using(var validationStage=PipelineDiagnostics.Measure("post_response_sources",operation,runId))
+                await guard.RequireSnapshotsAsync(actor,snapshots.Distinct(),deadline.Token);
             if (pendingCacheKey is not null)
                 cache.Set(pendingCacheKey, new Cached(JsonSerializer.SerializeToUtf8Bytes(result, AiCodecs.Json), runId), new MemoryCacheEntryOptions { Size = 1, AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
         }
-        catch (AiException e) { failure = e.Failure; if (e.ValidationIssue is not null) trace["validationIssue"] = e.ValidationIssue.ToString(); }
-        catch (OperationCanceledException) { failure = ct.IsCancellationRequested ? AiFailure.Cancelled : AiFailure.Timeout; }
-        catch (Azure.RequestFailedException) { failure = AiFailure.Unavailable; }
+        catch (AiException e) { failure = e.Failure;if(e.Failure is AiFailure.Timeout or AiFailure.Cancelled)AccessFence.MarkUncertainResult();if(e.Failure is AiFailure.Timeout or AiFailure.Cancelled)PipelineDiagnostics.Cancel(ct.IsCancellationRequested?"job_or_caller_cancelled":providerDeadline.IsCancellationRequested?"ai_deadline":"provider_timeout"); if (e.ValidationIssue is not null) trace["validationIssue"] = e.ValidationIssue.ToString(); }
+        catch (OperationCanceledException) { AccessFence.MarkUncertainResult();PipelineDiagnostics.Cancel(ct.IsCancellationRequested?"job_or_caller_cancelled":"ai_deadline");failure = ct.IsCancellationRequested ? AiFailure.Cancelled : AiFailure.Timeout; }
+        catch (Azure.RequestFailedException) { AccessFence.MarkUncertainResult();failure = AiFailure.Unavailable; }
         catch (Exception e) when (e is Azure.Identity.AuthenticationFailedException or Azure.Identity.CredentialUnavailableException)
         { failure = AiFailure.Unauthorized; }
         catch (Exception e) when (e is InvalidOperationException or FormatException or UriFormatException or OverflowException)
         { failure = AiFailure.Configuration; }
         if (failure is not null)
         {
+            executionStage.Failed();
             result = default;
             cacheHit = false;
             status = attempts == 0 && failure is AiFailure.Stopped or AiFailure.Budget or AiFailure.Busy ? AiStatus.BudgetStopped : AiStatus.Failed;
         }
         run["status"] = status switch { AiStatus.Succeeded => "succeeded", AiStatus.BudgetStopped => "budget_stopped", AiStatus.NotEvaluated => "not_evaluated", _ => "failed" };
         run["errorCode"] = status == AiStatus.BudgetStopped ? "AI_BUDGET_STOPPED" : failure is null ? null : "AI_" + failure.ToString()!.ToUpperInvariant();
-        trace["durationMs"] = (long)Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+        trace["durationMs"] = (long)clock.GetElapsedTime(start).TotalMilliseconds;
+        trace["preparationMs"]=prepared.PreparationMs;
+        trace["pipelineDiagnostics"]=PipelineDiagnostics.Snapshot();
         using var finalSave = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         await Save(finalSave.Token);
         return new(cacheHit ? AiStatus.Succeeded : status, result, runId, failure, cacheHit){InferenceNotDispatched=inferenceNotDispatched,ProviderRejected=providerRejected};
