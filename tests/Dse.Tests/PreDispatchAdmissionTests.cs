@@ -44,6 +44,23 @@ public sealed class PreDispatchAdmissionTests
         public Task<RecordPage> QueryAsync(RecordPartition p,string k,string? f,string? id,int n,string? c,CancellationToken ct)=>inner.QueryAsync(p,k,f,id,n,c,ct);
         public async Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite>w,CancellationToken ct){Writes++;await inner.CommitAsync(p,w,ct);throw new IOException("fixture unknown response");}
     }
+    private sealed class SlowBusyRead(IPrimaryRepository inner,ManualPipelineClock clock):IPrimaryRepository
+    {
+        public int Reads;
+        public Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)
+        {
+            Reads++;clock.Advance(TimeSpan.FromSeconds(6));ct.ThrowIfCancellationRequested();return inner.ReadAsync(p,id,ct);
+        }
+        public Task<RecordPage> QueryAsync(RecordPartition p,string k,string? f,string? id,int n,string? c,CancellationToken ct)=>inner.QueryAsync(p,k,f,id,n,c,ct);
+        public Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite>w,CancellationToken ct)=>throw new Exception("Busy read must not write");
+    }
+    [Fact]
+    public async Task Admission_wait_expiry_does_not_cancel_an_inflight_acquisition_or_disguise_known_busy()
+    {
+        using var h=new SyntheticHarness();var held=await Block(h);var clock=new ManualPipelineClock();var repo=new SlowBusyRead(h.Repo,clock);var entered=false;
+        var failure=await Assert.ThrowsAsync<DomainException>(()=>new AccessFence(repo,clock).BeforeEffectsAsync("demo",_=>{entered=true;return Task.FromResult(true);},default));
+        Assert.Equal("ACCESS_BUSY",failure.Code);Assert.False(entered);Assert.Equal(1,repo.Reads);Assert.Equal(held.ETag,(await h.Read("system-access-fence")).Text("etag"));
+    }
     [Fact]
     public async Task An_unknown_acquisition_write_is_neither_retried_nor_released()
     {

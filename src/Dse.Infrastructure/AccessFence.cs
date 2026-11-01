@@ -48,23 +48,20 @@ public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admi
     internal async Task<T> BeforeEffectsAsync<T>(string tenant,Func<CancellationToken,Task<T>> action,CancellationToken ct)
     {
         var clock=admissionClock??TimeProvider.System;var started=clock.GetTimestamp();var maximum=TimeSpan.FromSeconds(5);
-        using var bounded=new CancellationTokenSource(maximum,clock);
-        using var admission=CancellationTokenSource.CreateLinkedTokenSource(ct,bounded.Token);
         DomainException? last=null;var attempts=0;
         while(true)
         {
             ct.ThrowIfCancellationRequested();
-            if(last is not null&&(bounded.IsCancellationRequested||clock.GetElapsedTime(started)>=maximum))
+            if(last is not null&&clock.GetElapsedTime(started)>=maximum)
             { PipelineDiagnostics.AdmissionExhausted();throw last; }
             var entered=false;
             try
             {
                 return await RunAsync(tenant,token=>
                 {
-                    entered=true;bounded.Dispose();
-                    // The five-second admission timer cannot cancel work after successful admission.
+                    entered=true;
                     return action(ct);
-                },admission.Token);
+                },ct);
             }
             catch(DomainException e)when(e.Status==503&&e.Code=="ACCESS_BUSY"&&!entered)
             {

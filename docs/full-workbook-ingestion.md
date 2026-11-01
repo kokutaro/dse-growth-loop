@@ -83,10 +83,12 @@ IDは呼出内だけ短縮した全単射。Jevの既存domain分類でもセル
 
 ## 未送信競合の同一世代再試行
 
-AIの送信前準備と根拠参照の取得は、コールバック開始前の`ACCESS_BUSY`だけを最大5秒のadmission枠で待機する。待機はJobの120秒の内側で行い、AI提供元の既存60秒上限を延長しない。取得できた後は権限・原文版・親世代を毎回確認する。コールバック開始後、取得書込みの結果不明、取消による不明結果は再実行しない。
+AIの送信前準備と根拠参照の取得は、コールバック開始前の`ACCESS_BUSY`だけを再試行待ちを最大5秒のadmission枠で待機する。待機はJobの120秒の内側で行い、AI提供元の既存60秒上限を延長しない。取得できた後は権限・原文版・親世代を毎回確認する。コールバック開始後、取得書込みの結果不明、取消による不明結果は再実行しない。
 
 再抽出の失敗を通常のJob retryへ流さない。operatorはテスト人物画面で`reextraction-retry-estimate`を取得し、理由・原本・実装digest・未消費枠を確認して`reextraction-retries`へ明示POSTする。同じ世代・原本・予算を使い、新しいenrichment Jobだけを作る。旧失敗Job、受付receipt、受理監査、予算は残す。同一見積への再送は同じJobを返す。各世代でこの安全な再試行は1回まで。
 
 対象は最初の構造化のfence取得前に終端`ACCESS_BUSY`となったものだけ。診断、全世代Job終端、AiRun無し、dispatch無し、provider実行/予約pending無し、gate空、受付receipt complete、元文書/版/設定/親ETag一致を必須とする。旧pipeline-stages-v1の診断は、ai_operationがstructureWorkbook一つだけ・fence read1/write0・実行/送信/準備の記録無しという限定形を照合する。取消・保存不明・送信済み・証拠欠落は人の再確認へ戻す。共有fenceの解除、消費履歴の巻戻し、versionの捏造はしない。
 
 実際の新コードを同一世代で実行するため、generationImplementationVersionと実行対象fingerprintは新しい実装へ更新し、元の実装版/fingerprint・失敗理由をgenerationRetryと監査に保持する。世代ID、原文sourceVersion、原本hash、native版、消費済み枠を変えない。見積には現在の実装DLLのSHA256も含め、ソフトウェア版文字列だけに依存しない。未知結果の復旧や送信済み世代の再試行、大量の一括再処理はこの入口の対象外。
+
+取得中のI/OにはJobの取消だけを渡す。待機枠の期限を理由に取得書込みを途中取消して結果不明を作らない。5秒は再試行を開始する待機枠で、進行中の取得I/Oを含む実時間の強制打切りではない。Job120秒・AI60秒は延長しない。
