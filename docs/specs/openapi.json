@@ -30,30 +30,6 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UploadAccepted"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -80,6 +56,30 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadAccepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -119,24 +119,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Document"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -163,6 +145,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Document"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -198,24 +198,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EvidencePage"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -242,6 +224,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidencePage"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -271,24 +271,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Person"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -315,6 +297,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Person"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -348,24 +348,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Person"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -392,6 +374,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Person"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -425,24 +425,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SearchResponse"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -469,6 +451,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -502,30 +502,6 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Challenge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -552,6 +528,30 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "201": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Challenge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -586,6 +586,33 @@
           }
         ],
         "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "412": {
+            "$ref": "#/components/responses/412"
+          },
+          "413": {
+            "$ref": "#/components/responses/413"
+          },
+          "429": {
+            "$ref": "#/components/responses/429"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
           "200": {
             "description": "成功",
             "content": {
@@ -613,33 +640,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
-          },
-          "403": {
-            "$ref": "#/components/responses/403"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "412": {
-            "$ref": "#/components/responses/412"
-          },
-          "413": {
-            "$ref": "#/components/responses/413"
-          },
-          "429": {
-            "$ref": "#/components/responses/429"
-          },
-          "503": {
-            "$ref": "#/components/responses/503"
           }
         }
       }
@@ -669,24 +669,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Challenge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -713,6 +695,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Challenge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -742,24 +742,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Session"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -786,6 +768,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -819,16 +819,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "永続確定した変更。次のIf-Matchは対象リソースをGETして取得する。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommittedChange"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -855,6 +845,16 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "永続確定した変更。次のIf-Matchは対象リソースをGETして取得する。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommittedChange"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -900,16 +900,6 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -936,6 +926,16 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "201": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -988,16 +988,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessagePage"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1024,6 +1014,16 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagePage"
+                }
+              }
+            }
           }
         }
       }
@@ -1059,24 +1059,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Outcome"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1103,6 +1085,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Outcome"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1140,24 +1140,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Outcome"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1184,6 +1166,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Outcome"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1219,30 +1219,6 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Feedback"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1269,6 +1245,30 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "201": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Feedback"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1305,30 +1305,6 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "元Sessionと受付Jobを永続確定。catalogへの作成は非同期。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Accepted"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1355,6 +1331,30 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "元Sessionと受付Jobを永続確定。catalogへの作成は非同期。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1394,24 +1394,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Knowledge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1438,6 +1420,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -1471,24 +1471,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Knowledge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1515,6 +1497,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1560,24 +1560,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Knowledge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1604,6 +1586,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1649,24 +1649,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Knowledge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1693,6 +1675,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1738,24 +1738,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Knowledge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1782,6 +1764,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1828,24 +1828,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Knowledge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1872,6 +1854,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1917,24 +1917,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Knowledge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -1961,6 +1943,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Knowledge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2006,24 +2006,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Challenge"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2050,6 +2032,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Challenge"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2083,30 +2083,6 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Accepted"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2133,6 +2109,30 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2169,24 +2169,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpportunityPage"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2213,6 +2195,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpportunityPage"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -2242,24 +2242,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Opportunity"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2286,6 +2268,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Opportunity"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -2319,24 +2319,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Job"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2363,6 +2345,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -2402,30 +2402,6 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Accepted"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2452,6 +2428,30 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2497,24 +2497,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ExperiencePage"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2541,6 +2523,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperiencePage"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -2570,25 +2570,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2615,6 +2596,25 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -2634,24 +2634,6 @@
         "x-requires-current-version": false,
         "parameters": [],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UploadContext"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2678,6 +2660,24 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadContext"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -2713,16 +2713,6 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "永続確定した変更。次のIf-Matchは対象リソースをGETして取得する。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommittedChange"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2749,6 +2739,16 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "201": {
+            "description": "永続確定した変更。次のIf-Matchは対象リソースをGETして取得する。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommittedChange"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2786,31 +2786,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Participation"
-                      }
-                    },
-                    "continuationToken": {
-                      "type": "null"
-                    }
-                  },
-                  "required": [
-                    "items",
-                    "continuationToken"
-                  ]
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2837,6 +2812,31 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Participation"
+                      }
+                    },
+                    "continuationToken": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "continuationToken"
+                  ]
+                }
+              }
+            }
           }
         }
       }
@@ -2872,16 +2872,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "永続確定した変更。次のIf-Matchは対象リソースをGETして取得する。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommittedChange"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2908,6 +2898,16 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "永続確定した変更。次のIf-Matchは対象リソースをGETして取得する。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommittedChange"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2937,28 +2937,6 @@
         "x-requires-current-version": false,
         "parameters": [],
         "responses": {
-          "200": {
-            "description": "成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "principalId": {
-                      "type": "string"
-                    },
-                    "personId": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "principalId",
-                    "personId"
-                  ]
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2985,6 +2963,28 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "principalId": {
+                      "type": "string"
+                    },
+                    "personId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "principalId",
+                    "personId"
+                  ]
+                }
+              }
+            }
           }
         }
       }
@@ -3014,9 +3014,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "処理段階、処理方式、版、結果ID、ジョブ、全シートの取得範囲と警告（原本のACLを適用）"
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -3043,6 +3040,9 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "処理段階、処理方式、版、結果ID、ジョブ、全シートの取得範囲と警告（原本のACLを適用）"
           }
         }
       }
@@ -3085,9 +3085,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "保存済みフィードバック"
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -3114,6 +3111,9 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "保存済みフィードバック"
           }
         },
         "requestBody": {
@@ -3172,9 +3172,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "事例本文と出典（撤回後は拒否）"
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -3201,6 +3198,9 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "事例本文と出典（撤回後は拒否）"
           }
         }
       }
@@ -3239,16 +3239,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "原本・版と固定した費用枠の見積",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReextractionEstimate"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -3275,6 +3265,16 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "原本・版と固定した費用枠の見積",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionEstimate"
+                }
+              }
+            }
           }
         }
       }
@@ -3320,30 +3320,6 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReextractionAccepted"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -3370,6 +3346,30 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionAccepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -3418,16 +3418,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "原本・版と固定した費用枠の見積",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReextractionRetryEstimate"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -3454,6 +3444,16 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "200": {
+            "description": "原本・版と固定した費用枠の見積",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionRetryEstimate"
+                }
+              }
+            }
           }
         }
       }
@@ -3499,30 +3499,6 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReextractionAccepted"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -3549,6 +3525,30 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
+          },
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionAccepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -4076,10 +4076,7 @@
             "minimum": 1
           },
           "choiceWireVersion": {
-            "enum": [
-              "skill-choice-wire-v1",
-              "skill-choice-wire-v2"
-            ]
+            "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2"]
           },
           "choiceWireMapHash": {
             "type": "string",
@@ -10713,10 +10710,7 @@
             ]
           },
           "wireVersion": {
-            "enum": [
-              "skill-choice-wire-v1",
-              "skill-choice-wire-v2"
-            ]
+            "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2"]
           }
         },
         "required": [
