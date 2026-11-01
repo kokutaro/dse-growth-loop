@@ -1,0 +1,15 @@
+<Project>
+  <!-- Hash the common processing sources, not .git or a caller supplied version.
+       Both container builds copy this exact set. No local path enters the digest. -->
+  <Target Name="DseProcessingIdentity" BeforeTargets="GetAssemblyAttributes" Condition="'$(MSBuildProjectName)' == 'Dse.Infrastructure'">
+    <ItemGroup>
+      <_DseSource Include="$(MSBuildThisFileDirectory)src/Dse.Domain/**/*.cs;$(MSBuildThisFileDirectory)src/Dse.Domain/*.csproj;$(MSBuildThisFileDirectory)src/Dse.Domain/packages.lock.json;$(MSBuildThisFileDirectory)src/Dse.Infrastructure/**/*.cs;$(MSBuildThisFileDirectory)src/Dse.Infrastructure/*.csproj;$(MSBuildThisFileDirectory)src/Dse.Infrastructure/packages.lock.json;$(MSBuildThisFileDirectory)Directory.Build.props;$(MSBuildThisFileFullPath);$(MSBuildThisFileDirectory)global.json"
+        Exclude="$(MSBuildThisFileDirectory)src/**/obj/**;$(MSBuildThisFileDirectory)src/**/bin/**" />
+      <_DseSource Update="@(_DseSource)"><LogicalName>$([MSBuild]::MakeRelative('$(MSBuildThisFileDirectory)', '%(_DseSource.FullPath)'))</LogicalName></_DseSource>
+    </ItemGroup>
+    <GetFileHash Files="@(_DseSource)" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="_DseHashed" /></GetFileHash>
+    <WriteLinesToFile File="$(IntermediateOutputPath)dse-processing-inputs.txt" Lines="schema=1;configuration=$(Configuration);framework=$(TargetFramework);sdk=$(NETCoreSdkVersion);@(_DseHashed->'%(LogicalName):%(FileHash)')" Overwrite="true" WriteOnlyWhenDifferent="true" Encoding="UTF-8" />
+    <GetFileHash Files="$(IntermediateOutputPath)dse-processing-inputs.txt" Algorithm="SHA256"><Output TaskParameter="Hash" PropertyName="_DseProcessingHash" /></GetFileHash>
+    <ItemGroup><AssemblyMetadata Include="Dse.ProcessingSourceSha256" Value="$(_DseProcessingHash)" /></ItemGroup>
+  </Target>
+</Project>

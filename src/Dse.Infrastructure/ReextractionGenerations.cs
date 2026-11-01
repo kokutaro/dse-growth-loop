@@ -11,7 +11,7 @@ public sealed record ReextractionConfirmation(string EstimateId, decimal Maximum
 public sealed partial class ReextractionGenerations(IPrimaryRepository repository, AccessFence fence, IdempotencyExecutor idempotency,
     JobNotifications notifications, IConfiguration config, TimeProvider clock,IRecordStore? operationalStore=null)
 {
-    public static string ImplementationVersion => typeof(ProfilePipeline).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false).OfType<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion;
+    public static string ImplementationVersion => ProcessingBuildIdentity.Current;
     private static string Hash(string s) => OfficeExtractor.Hash(Encoding.UTF8.GetBytes(s));
     private async Task<(ActorAccess Actor, JsonObject Person, StoredRecord Document, StoredRecord Version)> Source(ActorAccess actor,string personId,string documentId,CancellationToken ct)
     {
@@ -47,7 +47,11 @@ public sealed partial class ReextractionGenerations(IPrimaryRepository repositor
     {
         var source=await Source(actor,personId,documentId,token);
         if(source.Person["documentHeads"]?[source.Document.Value.Text("importKey")]?.GetValue<string>()!=documentId)throw new DomainException(409,"SKILL_SOURCE_CHANGED");
-        return Quote(source.Document,source.Version);
+        var quote=Quote(source.Document,source.Version);
+        var existing=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),quote.Text("generationId"),token);
+        if(existing is not null)await SyntheticTestAccess.RequireLinkedAsync(repository,actor,existing.Value,token);
+        quote["availability"]=quote["alreadyApplied"]!.GetValue<bool>()?"already_applied":existing is null?"new":ExistingAcceptance(existing.Value);
+        return quote;
     },ct);
     public async Task<MutationResponse> StartAsync(ActorAccess actor,string personId,string documentId,ReextractionConfirmation input,string key,string etag,CancellationToken ct)
     {
@@ -64,11 +68,11 @@ public sealed partial class ReextractionGenerations(IPrimaryRepository repositor
                 if(existing is not null)
                 {
                     await SyntheticTestAccess.RequireLinkedAsync(repository,actor,existing.Value,token);
-                    return new MutationPlan([],null,Accepted(existing.Value,existing.Value.Text("generationIngestionJobId"))); // global dedup survives receipt expiry and a different key
+                    return new MutationPlan([],null,Accepted(existing.Value,existing.Value.Text("generationIngestionJobId"),ExistingAcceptance(existing.Value))); // no new job or budget
                 }
                 if(source.Document.ETag!=etag)throw new DomainException(412,"STALE_VERSION");
                 if(input.EstimateId!=quote.Text("estimateId")||input.MaximumUsd!=quote["maximumUsd"]!.GetValue<decimal>())throw new DomainException(412,"REEXTRACTION_ESTIMATE_CHANGED");
-                if(quote["alreadyApplied"]!.GetValue<bool>())return new MutationPlan([],null,Accepted(source.Document.Value));
+                if(quote["alreadyApplied"]!.GetValue<bool>())return new MutationPlan([],null,Accepted(source.Document.Value,null,"already_applied"));
                 if(source.Person["documentHeads"]?[source.Document.Value.Text("importKey")]?.GetValue<string>()!=documentId)throw new DomainException(409,"SKILL_SOURCE_CHANGED");
                 if(source.Person.Text("pendingGenerationId") is {Length:>0} pending)
                 {
@@ -104,10 +108,11 @@ public sealed partial class ReextractionGenerations(IPrimaryRepository repositor
                 return new MutationPlan([RecordWrite.Create(doc),RecordWrite.Create(version),RecordWrite.Create(job),RecordWrite.Create(SyntheticImportBudget.Create(doc,config,now)),RecordWrite.Replace(person,personEtag),RecordWrite.Create(audit)],null,Accepted(doc,job.Text("id")));
             },token);
         },ct);
-        if(response.Body?["jobId"]?.GetValue<string>() is {Length:>0} jobId)await notifications.TrySendAsync(actor.TenantId,jobId,ct);
+        if(response.Body?["acceptance"]?.GetValue<string>()=="new"&&response.Body?["jobId"]?.GetValue<string>() is {Length:>0} jobId)await notifications.TrySendAsync(actor.TenantId,jobId,ct);
         return response;
     }
-    private static MutationResponse Accepted(JsonObject doc,string? jobId=null)=>new(202,new JsonObject{["documentId"]=doc.Text("id"),["generationId"]=doc.Text("id"),["jobId"]=jobId,
+    private static string ExistingAcceptance(JsonObject doc)=>doc.Text("generationState") switch{"published"=>"existing_success","failed" or "cancelled"=>"existing_failed",_=>"existing_pending"};
+    private static MutationResponse Accepted(JsonObject doc,string? jobId=null,string acceptance="new")=>new(202,new JsonObject{["acceptance"]=acceptance,["documentId"]=doc.Text("id"),["generationId"]=doc.Text("id"),["jobId"]=jobId,
         ["generationState"]=doc.Text("generationState"),["statusUrl"]="/api/v1/documents/"+doc.Text("id")+"/pipeline"},null,null);
 }
 

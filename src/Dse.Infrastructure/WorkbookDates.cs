@@ -18,7 +18,7 @@ public static class WorkbookDates
     {
         if(cell is not null && (cell.ValueState!="available" || cell.ValueType=="e"))return new(null,"unknown",null);
         var raw=text.Trim();
-        if(cell is {ValueType: "n" or "d"} && DateTime.TryParseExact(raw,["yyyy-MM-dd","yyyy-MM-dd'T'HH:mm:ss"],CultureInfo.InvariantCulture,DateTimeStyles.None,out var date))
+        if(cell is {ValueType: "n" or "d"} && TypedCalendar(raw,out var date))
         {
             var formatPrecision=FormatPrecision(cell.NumberFormat);
             var precision=formatPrecision!="unknown"?formatPrecision:cell.ValueType=="d"&&string.IsNullOrEmpty(cell.NumberFormat)?"day":"unknown";
@@ -37,6 +37,15 @@ public static class WorkbookDates
         if(DateTime.TryParseExact(raw,["yyyy-MM-dd","yyyy-M-d","yyyy年M月d日"],CultureInfo.InvariantCulture,DateTimeStyles.None,out var day))
             return new(day.ToString("yyyy-MM-dd",CultureInfo.InvariantCulture),"day",raw);
         return new(null,"unknown",null);
+    }
+    // Excel cells are calendar values. Preserve the written date even when an ISO offset
+    // is present; converting to server-local/UTC can move a project across a day/month.
+    private static bool TypedCalendar(string raw,out DateTime date)
+    {
+        if(DateTime.TryParseExact(raw,["yyyy-MM-dd","yyyy-MM-dd'T'HH:mm:ss.FFFFFFF"],CultureInfo.InvariantCulture,DateTimeStyles.None,out date))return true;
+        if(raw.Length<=40&&DateTimeOffset.TryParseExact(raw,["yyyy-MM-dd'T'HH:mm:ss.FFFFFFF'Z'","yyyy-MM-dd'T'HH:mm:ss.FFFFFFFzzz"],CultureInfo.InvariantCulture,DateTimeStyles.AssumeUniversal,out var offset))
+        {date=offset.DateTime;return true;}
+        return false;
     }
     public static string FormatPrecision(string? format)
     {

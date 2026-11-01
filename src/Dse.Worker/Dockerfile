@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0.400 AS build
 WORKDIR /source
-COPY global.json Directory.Build.props ./
+COPY global.json Directory.Build.props Directory.Build.targets ./
 COPY src/Dse.Domain/ src/Dse.Domain/
 COPY src/Dse.Infrastructure/ src/Dse.Infrastructure/
 COPY src/Dse.Worker/ src/Dse.Worker/
