@@ -73,17 +73,30 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
     }
     // Caller keeps the access fence through serialization. Inaccessible source
     // candidates do not reveal their IDs, quotes, counts or review history.
+    /// <summary>要求内の読取り専用repositoryで認可・根拠を検証し、書込みと要求を跨ぐキャッシュを禁止します。</summary>
+    public Task<JsonObject> ListReadOnlyUnderFenceAsync(ActorAccess actor,string? cursor,IPrimaryRepository reads,CancellationToken ct) =>
+        new SkillDictionaryService(reads,fence,idempotency,clock,decisionFactory).ListUnderFenceAsync(actor,cursor,ct);
     public async Task<JsonObject> ListUnderFenceAsync(ActorAccess actor,string? cursor,CancellationToken ct)
     {
         actor=await Operator(actor,ct);
         var page=await repository.QueryAsync(RecordPartition.Catalog(actor.TenantId),"skillCandidate",null,null,50,cursor,ct);
         var items=new JsonArray();
+        // The same fragment may back several elements. All writers remain fenced;
+        // reuse only within this actor/page, never after a response or an AI wait.
+        var sources=new Dictionary<string,Source?>(StringComparer.Ordinal);
         foreach(var row in page.Items)
         {
             try
             {
                 if(!AccessPolicy.InScope(actor,row.Value))continue;
-                var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
+                var fragmentId=row.Value.Text("fragmentId");
+                if(!sources.TryGetValue(fragmentId,out var source))
+                {
+                    try{source=await ReadSource(actor,fragmentId,ct);}
+                    catch(DomainException e)when(e.Status==404){sources[fragmentId]=null;continue;}
+                    sources[fragmentId]=source;
+                }
+                if(source is null)continue;
                 var changed=source.Superseded||source.Fingerprint!=row.Value.Text("sourceFingerprint");
                 // Never serialize an old quote/label, proposal or review reason after a
                 // source change. Current access to the fragment is not access to old text.

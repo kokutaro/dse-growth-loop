@@ -2,7 +2,7 @@ using Dse.Domain;
 
 namespace Dse.Infrastructure;
 
-// One pre-send read set inside an already-owned fence. Never reused after AI or another phase.
+// One read set inside an already-owned fence. Never reused after AI/HTTP response or another request.
 internal sealed class FencedReadPhase(IPrimaryRepository inner) : IPrimaryRepository, IDisposable
 {
     private static readonly AsyncLocal<FencedReadPhase?> Ambient = new();
@@ -21,6 +21,16 @@ internal sealed class FencedReadPhase(IPrimaryRepository inner) : IPrimaryReposi
     }
     private void Enter(){lock(sync){if(closed)throw new InvalidOperationException("Read phase closed");active++;}}
     private void Exit(){lock(sync)active--;}
+    internal static IDisposable TrackResponseWork()
+    {
+        var phase=Ambient.Value??throw new InvalidOperationException("Read-only response phase required");
+        phase.Enter();return new ResponseWork(phase);
+    }
+    private sealed class ResponseWork(FencedReadPhase phase):IDisposable
+    {
+        private int disposed;
+        public void Dispose(){if(Interlocked.Exchange(ref disposed,1)==0)phase.Exit();}
+    }
     public async Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();Enter();

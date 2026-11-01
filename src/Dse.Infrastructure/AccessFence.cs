@@ -28,6 +28,32 @@ public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admi
     private static readonly AsyncLocal<Lease?> Current = new();
     internal static void MarkUncertainResult()=>Current.Value?.MarkFaulted();
     private sealed class ReadOnlyPreparationCancelled(OperationCanceledException inner) : OperationCanceledException("Read-only preparation cancelled",inner,inner.CancellationToken);
+    /// <summary>同じ認可・fence内の読取り専用応答を実行し、副作用と未終了I/Oがない取消だけを解放します。</summary>
+    public Task<T> RunReadOnlyAsync<T>(string tenant,Func<IPrimaryRepository,CancellationToken,Task<T>> action,CancellationToken ct) => RunAsync(tenant,async token=>
+    {
+        using var phase=FencedReadPhase.Begin(repository);
+        try
+        {
+            var result=await action(phase,token);
+            if(!phase.CloseForCancellation())
+            { MarkUncertainResult();throw new DomainException(503,"READ_OPERATION_INCOMPLETE"); }
+            return result;
+        }
+        catch(OperationCanceledException cancelled) when(token.IsCancellationRequested)
+        {
+            phase.Failed(cancelled);
+            if(phase.CloseForCancellation())
+            { PipelineDiagnostics.Cancel("read_response_cancelled_without_effects");throw new ReadOnlyPreparationCancelled(cancelled); }
+            throw;
+        }
+        finally
+        {
+            // Also poison known 4xx paths if a detached task/write attempt exists.
+            if(!phase.CloseForCancellation())MarkUncertainResult();
+        }
+    },ct);
+    /// <summary>読取り専用fence内で応答writerの実終了を追跡します。未終了writerがあれば取消解放を認めません。</summary>
+    public static IDisposable TrackReadOnlyResponseWork()=>FencedReadPhase.TrackResponseWork();
     internal Task<TResult> PrepareThenRunAsync<TPrepared,TResult>(string tenant,
         Func<IPrimaryRepository,CancellationToken,Task<TPrepared>> prepare,
         Func<TPrepared,CancellationToken,Task<TResult>> execute,CancellationToken ct) => BeforeEffectsAsync(tenant,async token=>
