@@ -9,6 +9,9 @@ namespace Dse.Tests;
 public sealed class FenceOwnerTraceTests
 {
     [Fact]
+    public void Existing_two_argument_constructor_remains_available_to_operational_hosts()
+        =>Assert.NotNull(typeof(AccessFence).GetConstructor([typeof(IPrimaryRepository),typeof(TimeProvider)]));
+    [Fact]
     public async Task Api_with_ai_reuses_http_measurement_id_and_keeps_route_and_pipeline_links()
     {
         var repo=new PrimaryRepository(new MemoryRecordStore());var actor=new ActorAccess("demo","operator","person",["member","operator"],["demo"]);
