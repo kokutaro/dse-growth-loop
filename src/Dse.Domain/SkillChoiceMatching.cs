@@ -16,18 +16,20 @@ public static class SkillChoiceMatching
     public const string Uncertain="insufficient_evidence";
     public const int MaxConcepts=253; // Provider limit 255 minus two explicit states.
     private static readonly JsonSerializerOptions Json=new(JsonSerializerDefaults.Web);
+    private static string? Shared(IEnumerable<string> values)=>values.GroupBy(x=>x,StringComparer.Ordinal)
+        .OrderByDescending(g=>g.Count()).ThenBy(g=>g.Key,StringComparer.Ordinal).FirstOrDefault()?.Key;
     public static SkillConcept[] Applicable(SkillDictionarySnapshot snapshot,string[] scopes,string[] readableScopes)=>
         snapshot.Concepts.Where(c=>c.State=="active"&&SkillDictionaryRules.SameScopes(c.ScopeIds,scopes)&&c.ScopeIds.Intersect(readableScopes).Any()).OrderBy(c=>c.Id,StringComparer.Ordinal).ToArray();
     public static string Input(SpecificSkill item,SkillElement e,SkillConcept[] concepts)
     {
-        var sharedDefinition=concepts.Select(c=>c.Definition).Distinct().Count()==1?concepts[0].Definition:null;
-        var sharedBoundary=concepts.Select(c=>c.Boundary).Distinct().Count()==1?concepts[0].Boundary:null;
+        var sharedDefinition=Shared(concepts.Select(c=>c.Definition));
+        var sharedBoundary=Shared(concepts.Select(c=>c.Boundary));
         var dictionary=new JsonObject();
         foreach(var c in concepts)
         {
             var entry=new JsonObject{["name"]=c.Name,["aliases"]=JsonSerializer.SerializeToNode(c.Aliases,Json)};
-            if(sharedDefinition is null)entry["definition"]=c.Definition;
-            if(sharedBoundary is null)entry["boundary"]=c.Boundary;
+            if(c.Definition!=sharedDefinition)entry["definition"]=c.Definition;
+            if(c.Boundary!=sharedBoundary)entry["boundary"]=c.Boundary;
             dictionary[c.Id]=entry;
         }
         return new JsonObject{
