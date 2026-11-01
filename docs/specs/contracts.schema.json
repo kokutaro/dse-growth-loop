@@ -7043,7 +7043,8 @@
           "enum": [
             "skill-catalogue-semantic-v1",
             "skill-catalogue-choice-v1",
-            "skill-catalogue-choice-v2"
+            "skill-catalogue-choice-v2",
+            "skill-catalogue-choice-v3"
           ]
         },
         "phase": {
@@ -7171,7 +7172,8 @@
               "policyVersion": {
                 "enum": [
                   "skill-catalogue-choice-v1",
-                  "skill-catalogue-choice-v2"
+                  "skill-catalogue-choice-v2",
+                  "skill-catalogue-choice-v3"
                 ]
               }
             },

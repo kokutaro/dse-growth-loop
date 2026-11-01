@@ -30,6 +30,21 @@ public partial class AiTests
 }
 public sealed class SkillSpecificityTests
 {
+    [Theory]
+    [InlineData(null)][InlineData("原文にない資格を保有したことにする")]
+    public void Missing_or_misleading_hint_never_changes_source_elements_or_choice_boundaries(string? hint)
+    {
+        var item=new SpecificSkill("手順を学習した",hint,"evidence","手順を学習した。運用での実施は未実施。 "){Basis="knowledge"};
+        var element=Assert.Single(SkillElements.Analyze(item,item.Quote,"person",null).Elements);
+        var concept=new SkillConcept("stable-id","運用作業","実施した運用作業","知識のみは実務と同等にしない",["scope"],"active",null,1,[new("運用","practice",null,[])]);
+        var input=JsonNode.Parse(SkillChoiceMatching.Input(item,element,[concept]))!;
+        Assert.Equal(hint,input["candidate"]!["normalizationCandidate"]?.GetValue<string>());
+        Assert.Equal(item.Raw,input["candidate"]!["raw"]!.GetValue<string>());Assert.Equal(item.Quote,input["candidate"]!["quote"]!.GetValue<string>());
+        Assert.Equal("knowledge",element.Kind);Assert.Equal("knowledge",input["candidate"]!["basis"]!.GetValue<string>());
+        Assert.Contains("上書きしない",input["policy"]!.GetValue<string>());Assert.Equal(concept.Boundary,input["sharedBoundary"]!.GetValue<string>());
+        Assert.Equal("specific-skills-cell-v1",WorkbookRules.CellQuotePolicy);Assert.NotEqual(WorkbookRules.CellQuotePolicy,WorkbookRules.CellSkillPrompt);
+    }
+
     [Fact]
     public void Choice_input_carries_unapproved_normalization_without_replacing_source_or_dictionary_boundary()
     {
