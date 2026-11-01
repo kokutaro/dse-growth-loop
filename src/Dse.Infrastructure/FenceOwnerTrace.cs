@@ -14,7 +14,7 @@ public static class FenceOwnerTrace
     {
         var previous=Ambient.Value;
         var route=routeTemplate.Length<=180&&routeTemplate.All(c=>char.IsAsciiLetterOrDigit(c)||"/_{}:.- ".Contains(c))?routeTemplate:"api";
-        Ambient.Value=new(){["origin"]="api",["operation"]=route,["correlationId"]=Guid.NewGuid().ToString("N"),
+        Ambient.Value=new(){["origin"]="api",["operation"]=route,["correlationId"]=OperationMeasurements.CurrentRunId??Guid.NewGuid().ToString("N"),
             ["actorHash"]=Hash(actor.TenantId+":"+actor.PrincipalId),
             ["scopeHash"]=Hash(System.Text.Json.JsonSerializer.Serialize(actor.ScopeIds.Order(StringComparer.Ordinal)))};
         return new Restore(()=>Ambient.Value=previous);
@@ -23,7 +23,12 @@ public static class FenceOwnerTrace
     {
         var result=Ambient.Value?.DeepClone().AsObject()??new JsonObject{["origin"]="internal",["correlationId"]=Guid.NewGuid().ToString("N")};
         if(PipelineDiagnostics.OwnerContext() is{} job)
-            foreach(var (name,value) in job)result[name]=value?.DeepClone();
+            foreach(var (name,value) in job)
+            {
+                if(result.Text("origin")=="api"&&name is "origin" or "operation" or "correlationId")
+                {if(name=="operation")result["aiOperation"]=value?.DeepClone();if(name=="correlationId")result["pipelineCorrelationId"]=value?.DeepClone();continue;}
+                result[name]=value?.DeepClone();
+            }
         result["version"]="fence-owner-v1";result["state"]="acquired";result["acquiredAt"]=clock.GetUtcNow();
         return result;
     }

@@ -23,6 +23,7 @@ public sealed class OperationMeasurements : IDisposable
     public MeasurementEvidence Evidence { get; }
     public MeasurementPhase Phase { get; }
     public static bool IsActive => Ambient.Value is { } current && Volatile.Read(ref current.disposed) == 0;
+    internal static string? CurrentRunId=>IsActive?Ambient.Value!.RunId:null;
     private OperationMeasurements(MeasurementEvidence evidence, MeasurementPhase phase, int maximumOperations)
     {
         if (maximumOperations is < 1 or > 100000) throw new ArgumentOutOfRangeException(nameof(maximumOperations));
