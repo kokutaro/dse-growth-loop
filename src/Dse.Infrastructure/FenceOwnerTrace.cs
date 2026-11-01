@@ -27,6 +27,14 @@ public static class FenceOwnerTrace
         result["version"]="fence-owner-v1";result["state"]="acquired";result["acquiredAt"]=clock.GetUtcNow();
         return result;
     }
+    internal static IDisposable BeginWorker(JsonObject job)
+    {
+        var previous=Ambient.Value;
+        Ambient.Value=new(){["origin"]="job",["operation"]="worker",
+            ["actorHash"]=Hash(job.Text("tenantId")+":"+job.Text("ownerId")),
+            ["scopeHash"]=Hash(System.Text.Json.JsonSerializer.Serialize(job.Strings("scopeIds").Order(StringComparer.Ordinal)))};
+        return new Restore(()=>Ambient.Value=previous);
+    }
     internal static string Hash(string text)=>Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
     private sealed class Restore(Action restore):IDisposable{private bool ended;public void Dispose(){if(!ended){ended=true;restore();}}}
 }

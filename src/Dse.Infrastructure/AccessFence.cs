@@ -135,7 +135,8 @@ public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admi
     {
         var data=new System.Text.Json.Nodes.JsonObject{["state"]=state,["holderHash"]=FenceOwnerTrace.Hash(held.Value.Text("holder")),["acquiredEtag"]=held.ETag,
             ["owner"]=held.Value["ownerTrace"]?.DeepClone(),["durationMs"]=duration,["cancellationReason"]=cancellation};
-        logger?.LogInformation("FenceLifecycle {Diagnostic}",data.ToJsonString());
+        if(state is "retained_unknown" or "release_unknown")logger?.LogWarning("FenceLifecycle {Diagnostic}",data.ToJsonString());
+        else logger?.LogInformation("FenceLifecycle {Diagnostic}",data.ToJsonString());
     }
     private async Task ReleaseAsync(RecordPartition partition, StoredRecord held,double duration,TimeProvider clock)
     {

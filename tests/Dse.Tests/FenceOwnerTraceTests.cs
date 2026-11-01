@@ -2,11 +2,66 @@ using System.Text.Json.Nodes;
 using Dse.Domain;
 using Dse.Infrastructure;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace Dse.Tests;
 
 public sealed class FenceOwnerTraceTests
 {
+    private sealed class CaptureLog:ILogger<AccessFence>
+    {
+        public List<(LogLevel Level,string Text)> Rows{get;}=[];
+        public IDisposable? BeginScope<TState>(TState state)where TState:notnull=>null;
+        public bool IsEnabled(LogLevel level)=>true;
+        public void Log<TState>(LogLevel level,EventId id,TState state,Exception? ex,Func<TState,Exception?,string> format)=>Rows.Add((level,format(state,ex)));
+    }
+    private sealed class UncertainRelease(IPrimaryRepository inner):IPrimaryRepository
+    {
+        public Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)=>inner.ReadAsync(p,id,ct);
+        public Task<RecordPage> QueryAsync(RecordPartition p,string k,string? f,string? v,int size,string? cursor,CancellationToken ct)=>inner.QueryAsync(p,k,f,v,size,cursor,ct);
+        public Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite> writes,CancellationToken ct)=>writes.Any(w=>w.Value.Text("kind")=="accessFence"&&w.Value["holder"]is null)?throw new IOException("PRIVATE_STORAGE_ERROR"):inner.CommitAsync(p,writes,ct);
+    }
+    [Fact]
+    public async Task Api_metadata_pseudonymizes_actor_scope_and_restores_ambient_context()
+    {
+        var repo=new PrimaryRepository(new MemoryRecordStore());var fence=new AccessFence(repo);
+        var actor=new ActorAccess("demo","PRIVATE_PRINCIPAL","PRIVATE_PERSON",["member","operator"],["PRIVATE_SCOPE"]);
+        using(FenceOwnerTrace.BeginApi("POST /api/v1/admin/test-people/{id}/reextractions",actor))
+        {
+            await fence.RunAsync("demo",_=>Task.FromResult(1),default);
+            var owner=(await repo.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!.Value["ownerTrace"]!.AsObject();
+            Assert.Equal("api",owner.Text("origin"));Assert.Equal(64,owner.Text("actorHash").Length);Assert.Equal(64,owner.Text("scopeHash").Length);
+            Assert.DoesNotContain("PRIVATE_",owner.ToJsonString());Assert.Equal("released",owner.Text("state"));
+        }
+        await fence.RunAsync("demo",_=>Task.FromResult(1),default);
+        var next=(await repo.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!.Value["ownerTrace"]!.AsObject();
+        Assert.Equal("internal",next.Text("origin"));Assert.Null(next["actorHash"]);
+    }
+    [Fact]
+    public async Task Cancelled_unknown_and_failed_release_are_warning_events_without_exception_text()
+    {
+        foreach(var release in new[]{false,true})
+        {
+            var inner=new PrimaryRepository(new MemoryRecordStore());var log=new CaptureLog();IPrimaryRepository repo=release?new UncertainRelease(inner):inner;var fence=new AccessFence(repo,null,log);
+            if(release)await Assert.ThrowsAsync<IOException>(()=>fence.RunAsync("demo",_=>Task.FromResult(1),default));
+            else await Assert.ThrowsAnyAsync<OperationCanceledException>(()=>fence.RunAsync<int>("demo",_=>throw new OperationCanceledException("PRIVATE_CANCEL"),default));
+            var warning=Assert.Single(log.Rows,x=>x.Level==LogLevel.Warning);Assert.Contains(release?"release_unknown":"retained_unknown",warning.Text);
+            Assert.DoesNotContain("PRIVATE_",string.Join("",log.Rows.Select(x=>x.Text)));
+            Assert.NotNull((await inner.ReadAsync(RecordPartition.Catalog("demo"),"system-access-fence",default))!.Value["holder"]);
+        }
+    }
+    [Fact]
+    public async Task Parallel_api_requests_have_independent_correlations_and_scopes()
+    {
+        async Task<JsonObject> Run(string tenant)
+        {
+            var repo=new PrimaryRepository(new MemoryRecordStore());var actor=new ActorAccess(tenant,"operator", "person",["member","operator"],[tenant]);
+            using var context=FenceOwnerTrace.BeginApi("GET /api/v1/people",actor);await Task.Yield();
+            await new AccessFence(repo).RunAsync(tenant,_=>Task.FromResult(1),default);
+            return (await repo.ReadAsync(RecordPartition.Catalog(tenant),"system-access-fence",default))!.Value["ownerTrace"]!.AsObject();
+        }
+        var values=await Task.WhenAll(Run("a"),Run("b"));Assert.NotEqual(values[0].Text("scopeHash"),values[1].Text("scopeHash"));Assert.NotEqual(values[0].Text("correlationId"),values[1].Text("correlationId"));
+    }
     [Fact]
     public async Task Job_owner_is_persisted_at_acquisition_and_release_without_source_body()
     {
