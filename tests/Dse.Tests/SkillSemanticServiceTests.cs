@@ -96,11 +96,13 @@ public sealed class SkillSemanticServiceTests
     }
 
     [Theory]
-    [InlineData("skill-choice-wire-v1")][InlineData("skill-choice-wire-v2")]
-    public async Task Previous_choice_version_is_read_only_history_not_a_noul_score(string wire)
+    [InlineData("skill-catalogue-choice-v1","skill-choice-wire-v1")][InlineData("skill-catalogue-choice-v1","skill-choice-wire-v2")]
+    [InlineData("skill-catalogue-choice-v2","skill-choice-wire-v1")][InlineData("skill-catalogue-choice-v2","skill-choice-wire-v2")]
+    [InlineData("skill-catalogue-choice-v3","skill-choice-wire-v1")][InlineData("skill-catalogue-choice-v3","skill-choice-wire-v2")]
+    public async Task Previous_choice_version_is_read_only_history_not_a_noul_score(string policy,string wire)
     {
         var(f,j,c,d,_)=await Setup();await Suggest(f,c,d);var p=RecordPartition.Catalog("demo");var current=Assert.Single((await f.Repo.QueryAsync(p,"skillMatchProposal",null,null,100,null,default)).Items).Value;
-        var previous=current.Copy();previous["policyVersion"]="skill-catalogue-choice-v1";previous["wireVersion"]=wire;previous["id"]="skill-proposal-"+ConversationService.Hash(A.PrincipalId+":"+c.Value.Text("id")+":"+current.Text("sourceFingerprint")+":"+current.Text("snapshotHash")+":skill-catalogue-choice-v1:"+SkillSemanticBudget.Version+":"+wire+":"+ChoiceProbabilityRules.Version+":"+current.Text("candidateSetHash"));
+        var previous=current.Copy();previous["policyVersion"]=policy;previous["wireVersion"]=wire;previous["id"]="skill-proposal-"+ConversationService.Hash(A.PrincipalId+":"+c.Value.Text("id")+":"+current.Text("sourceFingerprint")+":"+current.Text("snapshotHash")+":"+policy+":"+SkillSemanticBudget.Version+":"+wire+":"+ChoiceProbabilityRules.Version+":"+current.Text("candidateSetHash"));
         await f.Store.CommitAsync(p,[RecordWrite.Create(previous)],default);
         var view=await f.Fence.RunAsync("demo",t=>f.Service.ReadSuggestionUnderFenceAsync(A,c.Value.Text("id"),d.Number("version"),t),default);
         var old=Assert.Single(view["previousProposals"]!.AsArray())!;Assert.Equal("choice",old["method"]!.GetValue<string>());Assert.Null(old["threshold"]);Assert.NotNull(old["choice"]);Assert.Equal(1,j.Calls);

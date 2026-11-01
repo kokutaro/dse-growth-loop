@@ -16,7 +16,9 @@ public interface IWorkbookStructurer
 public static class WorkbookRules
 {
     public const string Version = "workbook-context-v2";
-    public const string CellSkillPrompt = "specific-skills-cell-v1";
+    public const string CellSkillPrompt = "specific-skills-cell-v2";
+    /// <summary>原文セル全文を引用する保存契約。抽出プロンプトの更新とは分離する。</summary>
+    public const string CellQuotePolicy = "specific-skills-cell-v1";
     public const int MaxEvidence = 100;
     public static void Validate(WorkbookStructure result, IReadOnlyCollection<string> evidenceIds, bool synthetic)
     {

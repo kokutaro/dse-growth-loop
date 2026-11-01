@@ -8,7 +8,7 @@ namespace Dse.Infrastructure;
 // without filtering concepts or changing names/definitions/conditions/probability values.
 public static class SkillChoiceWire
 {
-    public const string Version="skill-choice-wire-v2";
+    public const string Version="skill-choice-wire-v3";
     public const int NumericBytes=32;
     public static Dictionary<string,string> IdMap(ChoiceQuestion question)
     {
@@ -35,15 +35,30 @@ public static class SkillChoiceWire
         copy["text"]!["layoutPolicy"]="dictionary値はdictionaryRowsの0始まり行番号。各行はdictionaryLayout順、別名はaliasLayout順。名前は同じIDのcriteria全文。定義/境界nullはsharedDefinition/sharedBoundary全文、別名text=nullはその名前全文。共有は完全一致のみ・省略/要約なし。";
         if(copy["evidence"] is JsonArray evidence && evidence.Count>0)
         {
+            // Permission/version checks have already bound these IDs to authoritative sources.
+            // Ordinal order matches the run's evidenceIds audit list, not source text similarity.
+            var ids=evidence.Select(x=>x!["id"]!.GetValue<string>()).Order(StringComparer.Ordinal).ToArray();
+            if(ids.Any(string.IsNullOrWhiteSpace)||ids.Distinct(StringComparer.Ordinal).Count()!=ids.Length)throw new ArgumentException("Invalid Choice evidence IDs");
+            var evidenceMap=ids.Select((id,i)=>(id,wire:"e"+i.ToString("D3"))).ToDictionary(x=>x.id,x=>x.wire,StringComparer.Ordinal);
+            string LocalId(string id)=>evidenceMap.TryGetValue(id,out var local)?local:throw new ArgumentException("Unknown Choice evidence reference");
+            var candidate=copy["text"]!["candidate"]!.AsObject();var sourceId=candidate["evidenceId"]!.GetValue<string>();
+            candidate["evidenceId"]=LocalId(sourceId);
+            if(candidate["quote"] is JsonObject reference)
+            {
+                if(reference["evidenceId"]!.GetValue<string>()!=sourceId)throw new ArgumentException("Conflicting Choice quote reference");
+                reference["evidenceId"]=LocalId(sourceId);
+            }
             var documents=new JsonArray();var documentIds=new Dictionary<string,int>(StringComparer.Ordinal);
             foreach(var entry in evidence.Select(x=>x!.AsObject()))
             {
                 var document=new JsonArray(entry["documentVersionId"]!.DeepClone(),entry["sourceVersion"]!.DeepClone());var key=RecordJson.Canonical(document);
                 if(!documentIds.TryGetValue(key,out var index)){index=documents.Count;documentIds[key]=index;documents.Add(document);}
                 entry.Remove("documentVersionId");entry.Remove("sourceVersion");entry["document"]=index;
+                entry["id"]=LocalId(entry["id"]!.GetValue<string>());
             }
             copy["evidenceDocuments"]=documents;
-            copy["evidenceLayoutPolicy"]="evidence.documentはevidenceDocumentsの0始まり行番号。行は[documentVersionId,sourceVersion]。id/text全文と出典を全件保持。";
+            copy["evidenceLayoutPolicy"]="evidence.documentはevidenceDocumentsの0始まり行番号。行は[documentVersionId,sourceVersion]。本文・版・出典対応を全件保持。";
+            copy["evidenceIdPolicy"]="eNNNは認可・版照合済み出典の要求内ID。candidateとquoteは同じevidence.idを参照。本文が同じ別出典も統合しない。原本IDはサーバー監査で保持。";
         }
         copy["choiceWireVersion"]=Version;return copy;
     }

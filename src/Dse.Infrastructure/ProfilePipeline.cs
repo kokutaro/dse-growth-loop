@@ -182,7 +182,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                     value["workbookStructureVersion"] = WorkbookRules.Version;
                     value["periodState"] = workbookPeriod!.Warnings.Length==0?"source_precision_resolved":"source_precision_review";
                     value["periodWarnings"]=RecordJson.Array(workbookPeriod.Warnings);value["periodEndState"]=workbookPeriod.EndState;value["workbookPeriodVersion"]=WorkbookDates.Version;
-                    value["skillQuotePolicy"] = WorkbookRules.CellSkillPrompt;
+                    value["skillQuotePolicy"] = WorkbookRules.CellQuotePolicy;
                 }
                 value["personId"] = personId; value["documentId"] = document.Value.Text("id"); value["structureRunId"] = structureRun;
                 value["processingMode"] = config["Ai:Mode"] == "Mock" ? "fixture" : "live";
@@ -292,7 +292,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             // already present in authoritative evidence; never promote imported hints directly.
             var skillInputHash = Id("skills-", RecordJson.Canonical(new JsonObject {
                 ["text"] = fragment["description"]!.DeepClone(), ["refs"] = Node(evidence),
-                ["version"] = fragment.Text("skillQuotePolicy") == WorkbookRules.CellSkillPrompt ? WorkbookRules.CellSkillPrompt : SpecificSkillRules.Version, ["model"] = config["Foundry:ModelId"] ?? "mock-v1",
+                ["version"] = fragment.Text("skillQuotePolicy") == WorkbookRules.CellQuotePolicy ? WorkbookRules.CellSkillPrompt : SpecificSkillRules.ContextPrompt, ["model"] = config["Foundry:ModelId"] ?? "mock-v1",
                 ["mode"] = config["Ai:Mode"] ?? "Mock" }));
             SpecificSkills specific;
             if (fragment == entity) specific = CombinedSkills();
@@ -301,7 +301,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 specific = fragment["specificSkills"]!.Deserialize<SpecificSkills>(Json)!;
             else
             {
-                var skillResult = await skillExtractor.ExtractSkillsAsync(new(actor, job.Text("id"), fragment.Text("skillQuotePolicy") == WorkbookRules.CellSkillPrompt ? WorkbookRules.CellSkillPrompt : SpecificSkillRules.Version,
+                var skillResult = await skillExtractor.ExtractSkillsAsync(new(actor, job.Text("id"), fragment.Text("skillQuotePolicy") == WorkbookRules.CellQuotePolicy ? WorkbookRules.CellSkillPrompt : SpecificSkillRules.ContextPrompt,
                     Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { WorkbookSectionKind = fragment.Text("workbookSectionKind") is { Length: > 0 } kind ? kind : null }, fragment.Text("description"), ct);
                 if (skillResult.Status != AiStatus.Succeeded || skillResult.Value is null) throw Failure(skillResult.Status, skillResult.Failure);
                 specific = skillResult.Value;

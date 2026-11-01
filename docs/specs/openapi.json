@@ -4076,7 +4076,7 @@
             "minimum": 1
           },
           "choiceWireVersion": {
-            "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2"]
+            "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2", "skill-choice-wire-v3"]
           },
           "choiceWireMapHash": {
             "type": "string",
@@ -10613,7 +10613,8 @@
             "enum": [
               "skill-catalogue-semantic-v1",
               "skill-catalogue-choice-v1",
-              "skill-catalogue-choice-v2"
+              "skill-catalogue-choice-v2",
+              "skill-catalogue-choice-v3"
             ]
           },
           "phase": {
@@ -10710,7 +10711,7 @@
             ]
           },
           "wireVersion": {
-            "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2"]
+            "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2", "skill-choice-wire-v3"]
           }
         },
         "required": [
@@ -10741,7 +10742,8 @@
                 "policyVersion": {
                   "enum": [
                     "skill-catalogue-choice-v1",
-                    "skill-catalogue-choice-v2"
+                    "skill-catalogue-choice-v2",
+                    "skill-catalogue-choice-v3"
                   ]
                 }
               },

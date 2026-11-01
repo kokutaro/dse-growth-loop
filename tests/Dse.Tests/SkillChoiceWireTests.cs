@@ -8,14 +8,55 @@ namespace Dse.Tests;
 public sealed class SkillChoiceWireTests
 {
  [Fact]
+ public void Common_definitions_stay_shared_when_one_concept_has_an_explicit_approved_override()
+ {
+  var original=Dictionary().Concepts;var concepts=original.Select((c,i)=>i==0?c with{Definition="固有の対象・開発・実行の区別を含む定義",Boundary="固有の除外条件"}:c with{Aliases=[new("表記"+i,"practice","対象"+i,[])]}).ToArray();
+  var item=new SpecificSkill("確認した",null,"ev","確認した"){Basis="experience"};var input=JsonNode.Parse(SkillChoiceMatching.Input(item,Assert.Single(SkillElements.Atomize(item)),concepts))!;
+  Assert.Equal(original[1].Definition,input["sharedDefinition"]!.GetValue<string>());Assert.Equal(original[1].Boundary,input["sharedBoundary"]!.GetValue<string>());
+  Assert.Equal(concepts[0].Definition,input["dictionary"]![concepts[0].Id]!["definition"]!.GetValue<string>());
+  Assert.Equal(concepts[0].Boundary,input["dictionary"]![concepts[0].Id]!["boundary"]!.GetValue<string>());
+  foreach(var c in concepts.Skip(1)){Assert.Null(input["dictionary"]![c.Id]!["definition"]);Assert.Null(input["dictionary"]![c.Id]!["boundary"]);}
+ }
+
+ [Theory]
+ [InlineData("unknown")][InlineData("duplicate")][InlineData("conflicting_quote")]
+ public void Invalid_source_references_cannot_be_hidden_by_request_local_ids(string mutation)
+ {
+  var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);var item=new SpecificSkill("確認した",null,"source-a","記録を確認した"){Basis="experience"};
+  var source=new JsonObject{["text"]=SkillChoiceMatching.Input(item,Assert.Single(SkillElements.Atomize(item)),concepts),["evidence"]=new JsonArray(new JsonObject{["id"]="source-a",["text"]=item.Quote,["documentVersionId"]="immutable-v1",["sourceVersion"]=1},new JsonObject{["id"]="source-b",["text"]=item.Quote,["documentVersionId"]="immutable-v2",["sourceVersion"]=2})};
+  var input=SkillSemanticBudget.Prepare(source,[new("source-a","immutable-v1",1),new("source-b","immutable-v2",2)]);
+  if(mutation=="unknown")input["text"]!["candidate"]!["evidenceId"]="missing";
+  else if(mutation=="duplicate")input["evidence"]![1]!["id"]="source-a";
+  else input["text"]!["candidate"]!["quote"]!["evidenceId"]="source-b";
+  Assert.Throws<ArgumentException>(()=>SkillChoiceWire.Prepare(input,q));
+ }
+
+ [Fact]
+ public void Request_local_evidence_ids_keep_distinct_sources_and_full_text_without_changing_authoritative_input()
+ {
+  var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);const string text="記録を照合した。実機運転は未実施。";
+  var ids=Enumerable.Range(0,20).Select(i=>"source-"+new string('a',70)+i.ToString("D3")).ToArray();
+  var item=new SpecificSkill("記録を照合した","記録照合",ids[19],text){Basis="experience"};var element=Assert.Single(SkillElements.Atomize(item));
+  var evidence=new JsonArray(ids.Reverse().Select(id=>(JsonNode)new JsonObject{["id"]=id,["text"]=text,["documentVersionId"]="immutable-v1",["sourceVersion"]=7}).ToArray());
+  var source=new JsonObject{["text"]=SkillChoiceMatching.Input(item,element,concepts),["evidence"]=evidence.DeepClone()};
+  var input=SkillSemanticBudget.Prepare(source,ids.Select(id=>new EvidenceReference(id,"immutable-v1",7)).ToArray());var before=input.ToJsonString();var packed=SkillChoiceWire.Prepare(input,q);
+  Assert.Equal("skill-choice-wire-v3",SkillChoiceWire.Version);Assert.Equal("e019",packed["text"]!["candidate"]!["evidenceId"]!.GetValue<string>());
+  Assert.Equal("e019",packed["text"]!["candidate"]!["quote"]!["evidenceId"]!.GetValue<string>());
+  Assert.Equal(ids.Length,packed["evidence"]!.AsArray().Select(x=>x!["id"]!.ToString()).Distinct().Count());
+  Assert.Equal(Enumerable.Range(0,20).Reverse().Select(i=>"e"+i.ToString("D3")),packed["evidence"]!.AsArray().Select(x=>x!["id"]!.ToString()));
+  Assert.All(packed["evidence"]!.AsArray(),x=>Assert.Equal(text,x!["text"]!.GetValue<string>()));Assert.Equal(before,input.ToJsonString());
+  Assert.True(Encoding.UTF8.GetByteCount(SkillSemanticBudget.Serialize(packed))<Encoding.UTF8.GetByteCount(SkillSemanticBudget.Serialize(input))-1000);
+ }
+
+ [Fact]
  public void Evidence_keeps_every_id_text_and_document_version_while_sharing_identical_provenance()
  {
   var concepts=Dictionary().Concepts;var q=SkillChoiceMatching.Question(concepts);
-  var item=new SpecificSkill("技能",null,"e","原文末尾：未実施","experience");var e=new SkillElement("技能",null,null,[],"practice","person","explicit",null,"unmapped",[]);
+  var item=new SpecificSkill("技能",null,"e0","原文末尾：未実施","experience");var e=new SkillElement("技能",null,null,[],"practice","person","explicit",null,"unmapped",[]);
   var evidence=new JsonArray(Enumerable.Range(0,5).Select(i=>(JsonNode)new JsonObject{["id"]="e"+i,["text"]="原文末尾：未実施"+i,["documentVersionId"]="immutable-doc-v1",["sourceVersion"]=7}).ToArray());
   var input=new JsonObject{["text"]=JsonNode.Parse(SkillChoiceMatching.Input(item,e,concepts)),["evidence"]=evidence.DeepClone()};
   var packed=SkillChoiceWire.Prepare(input,q);var docs=packed["evidenceDocuments"]!.AsArray();Assert.Single(docs);
-  foreach(var row in packed["evidence"]!.AsArray()){var doc=docs[row!["document"]!.GetValue<int>()]!;var before=evidence.Single(x=>x!["id"]!.ToString()==row["id"]!.ToString())!;Assert.Equal(before["text"]!.ToString(),row["text"]!.ToString());Assert.Equal(before["documentVersionId"]!.ToString(),doc[0]!.ToString());Assert.Equal(7,doc[1]!.GetValue<int>());}
+  foreach(var row in packed["evidence"]!.AsArray()){var doc=docs[row!["document"]!.GetValue<int>()]!;var index=int.Parse(row["id"]!.ToString()[1..]);var before=evidence[index]!;Assert.Equal(before["text"]!.ToString(),row["text"]!.ToString());Assert.Equal(before["documentVersionId"]!.ToString(),doc[0]!.ToString());Assert.Equal(7,doc[1]!.GetValue<int>());}
   Assert.True(JsonNode.DeepEquals(evidence,input["evidence"]));
  }
  [Fact]
