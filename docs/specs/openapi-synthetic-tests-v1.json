@@ -58,6 +58,9 @@
           "200": {
             "description": "現在状態・再送結果"
           },
+          "201": {
+            "description": "検証人物の登録完了"
+          },
           "400": {
             "description": "入力不正"
           },
@@ -75,9 +78,6 @@
           },
           "412": {
             "description": "古いETag"
-          },
-          "201": {
-            "description": "検証人物の登録完了"
           }
         },
         "x-required-roles": [
@@ -143,6 +143,9 @@
           "200": {
             "description": "現在状態・再送結果"
           },
+          "202": {
+            "description": "受理済みJobのURL"
+          },
           "400": {
             "description": "入力不正"
           },
@@ -160,9 +163,6 @@
           },
           "412": {
             "description": "古いETag"
-          },
-          "202": {
-            "description": "受理済みJobのURL"
           }
         },
         "x-required-roles": [
@@ -462,6 +462,16 @@
           "200": {
             "description": "費用・原本ETag・対象版・適用済み状態"
           },
+          "202": {
+            "description": "同じ原本hash・実装/モデル/価格/入出力版は同じ世代/Job/独立予算へ戻る。失敗時の枠補充なし",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionAccepted"
+                }
+              }
+            }
+          },
           "400": {
             "description": "入力不正"
           },
@@ -479,9 +489,6 @@
           },
           "412": {
             "description": "古いETag"
-          },
-          "202": {
-            "description": "同じ原本hash・実装/モデル/価格/入出力版は同じ世代/Job/独立予算へ戻る。失敗時の枠補充なし"
           }
         },
         "x-required-roles": [
@@ -582,6 +589,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "原本・版と固定した費用枠の見積",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionRetryEstimate"
+                }
+              }
+            }
+          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -608,16 +625,6 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
-          },
-          "200": {
-            "description": "原本・版と固定した費用枠の見積",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReextractionRetryEstimate"
-                }
-              }
-            }
           }
         },
         "x-current-owner-and-scope-required": true
@@ -664,6 +671,30 @@
           }
         ],
         "responses": {
+          "202": {
+            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReextractionAccepted"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "description": "作成済みリソースまたはジョブ状態URL。",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -690,30 +721,6 @@
           },
           "503": {
             "$ref": "#/components/responses/503"
-          },
-          "202": {
-            "description": "永続受付済み。処理成功はjobの終端状態で確認。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReextractionAccepted"
-                }
-              }
-            },
-            "headers": {
-              "ETag": {
-                "description": "現在のリソース版。APIではCosmos _etagを引用符付きETagへ写す。",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Location": {
-                "description": "作成済みリソースまたはジョブ状態URL。",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
           }
         },
         "requestBody": {
@@ -857,6 +864,15 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 300
+          },
+          "acceptance": {
+            "enum": [
+              "new",
+              "existing_success",
+              "existing_failed",
+              "existing_pending",
+              "already_applied"
+            ]
           }
         },
         "required": [
@@ -864,7 +880,8 @@
           "generationId",
           "jobId",
           "generationState",
-          "statusUrl"
+          "statusUrl",
+          "acceptance"
         ],
         "additionalProperties": false
       },
