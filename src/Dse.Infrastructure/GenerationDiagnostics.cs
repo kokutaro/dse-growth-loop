@@ -105,7 +105,7 @@ public sealed class GenerationDiagnostics(IRecordStore store, IConfiguration con
             ["jobs"]=new JsonArray(jobs.Select(j=>(JsonNode)Meta(j,"aggregateId","jobType","status","attempt","lastErrorCode","leaseUntil","leaseOwner","notificationState","createdAt","updatedAt","processingDiagnostics")).ToArray()),
             ["nonterminalCatalogJobs"]=new JsonArray(allJobs.Where(j=>j.Value.Text("status") is not("ready" or "failed" or "cancelled" or "budget_stopped" or "needs_review")).Select(j=>(JsonNode)Meta(j,"aggregateId","jobType","status","leaseUntil")).ToArray()),
             ["aiRuns"]=ai,["executions"]=executions,["globalPendingAiExecutions"]=new JsonArray(pendingAi.Select(r=>(JsonNode)Meta(r,"kind","runId","state","createdAt")).ToArray()),["nonterminalConversationJobs"]=conversationJobs,["budgets"]=budgets,["projections"]=projections,["committedReceipts"]=receipts,["conversationPartitions"]=RecordJson.Array(sessions),
-            ["fence"]=fence is null?null:Meta(fence,"holder","updatedAt"),["gate"]=gate is null?null:Meta(gate,"active","blocked"),["activeExecutions"]=active};
+            ["fence"]=fence is null?null:Meta(fence,"holder","updatedAt","ownerTrace"),["gate"]=gate is null?null:Meta(gate,"active","blocked"),["activeExecutions"]=active};
     }
     private async Task<StoredRecord[]> Rows(RecordPartition p,string kind,CancellationToken ct,string? field=null,string? parent=null)
     {
