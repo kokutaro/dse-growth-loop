@@ -6,8 +6,11 @@ namespace Dse.Infrastructure;
 // A durable, non-expiring mutex. A crashed holder deliberately fails closed. Recovery requires
 // stopping both API and Worker and proving no commit is still in flight (see persistence.md).
 // Unlike a timed lease, a paused old process cannot resume after a revocation and publish stale text.
-public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admissionClock=null,ILogger<AccessFence>? logger=null)
+public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admissionClock=null)
 {
+    private readonly ILogger<AccessFence>? logger;
+    /// <summary>既存の取得・解放契約を維持し、診断ログだけを追加します。</summary>
+    public AccessFence(IPrimaryRepository repository,TimeProvider? admissionClock,ILogger<AccessFence>? logger):this(repository,admissionClock){this.logger=logger;}
     private sealed class Lease(IPrimaryRepository repository, string tenant)
     {
         public IPrimaryRepository Repository { get; } = repository;
