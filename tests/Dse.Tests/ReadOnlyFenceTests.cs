@@ -3,6 +3,9 @@ using Dse.Api;
 using Dse.Domain;
 using Dse.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -64,6 +67,45 @@ public sealed class ReadOnlyFenceTests
         Assert.NotNull((await store.ReadAsync(Partition,"system-access-fence",default))!.Value["holder"]);output.Done.SetResult();await producer.Write!;
         Assert.NotNull((await store.ReadAsync(Partition,"system-access-fence",default))!.Value["holder"]);
     }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Real_http_pipeline_abort_in_build_or_serialization_releases_after_server_ends(bool serialize)
+    {
+        var store=new MemoryRecordStore();var fence=new AccessFence(new PrimaryRepository(store));
+        var entered=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);var ended=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var builder=WebApplication.CreateBuilder();builder.WebHost.UseTestServer();await using var server=builder.Build();
+        server.Run(async context=>
+        {
+            try{await new ReadOnlyFencedResult(fence,"demo",async(_,ct)=>
+            {
+                if(serialize)return new AbortedResponse(entered);
+                entered.SetResult();await Task.Delay(Timeout.InfiniteTimeSpan,ct);return Results.Ok();
+            },context.RequestAborted).ExecuteAsync(context);}
+            finally{ended.SetResult();}
+        });
+        await server.StartAsync();using var client=server.GetTestClient();using var stop=new CancellationTokenSource();var request=client.GetAsync("/",stop.Token);
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));stop.Cancel();await Assert.ThrowsAnyAsync<OperationCanceledException>(()=>request);
+        await ended.Task.WaitAsync(TimeSpan.FromSeconds(5));Assert.Null((await store.ReadAsync(Partition,"system-access-fence",default))!.Value["holder"]);
+    }
+    [Fact]
+    public async Task Concurrent_writer_stays_blocked_until_read_only_response_finishes()
+    {
+        var store=new MemoryRecordStore();var fence=new AccessFence(new PrimaryRepository(store));var entered=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);var done=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var reading=fence.RunReadOnlyAsync("demo",async(_,_)=>{entered.SetResult();await done.Task;return 1;},default);await entered.Task;
+        var blocked=await Assert.ThrowsAsync<DomainException>(()=>fence.RunAsync("demo",_=>Task.FromResult(2),default));Assert.Equal("ACCESS_BUSY",blocked.Code);
+        done.SetResult();Assert.Equal(1,await reading);Assert.Equal(2,await fence.RunAsync("demo",_=>Task.FromResult(2),default));
+    }
+    [Fact]
+    public async Task Completion_with_detached_io_and_dependency_failure_both_stay_closed()
+    {
+        var store=new MemoryRecordStore();var pending=new PendingRepository(new PrimaryRepository(store));var fence=new AccessFence(pending);Task? outstanding=null;
+        var error=await Assert.ThrowsAsync<DomainException>(()=>fence.RunReadOnlyAsync("demo",(reads,ct)=>{outstanding=reads.ReadAsync(Partition,"pending",ct);return Task.FromResult(1);},default));Assert.Equal("READ_OPERATION_INCOMPLETE",error.Code);
+        pending.Read.SetResult(null);await outstanding!;Assert.NotNull((await store.ReadAsync(Partition,"system-access-fence",default))!.Value["holder"]);
+        var otherStore=new MemoryRecordStore();var otherFence=new AccessFence(new PrimaryRepository(otherStore));await Assert.ThrowsAsync<IOException>(()=>otherFence.RunReadOnlyAsync<int>("demo",(_,_)=>throw new IOException("unknown dependency"),default));Assert.NotNull((await otherStore.ReadAsync(Partition,"system-access-fence",default))!.Value["holder"]);
+    }
+    private sealed class AbortedResponse(TaskCompletionSource entered):IResult
+    {public async Task ExecuteAsync(HttpContext c){await c.Response.WriteAsync("{",c.RequestAborted);entered.SetResult();await Task.Delay(Timeout.InfiniteTimeSpan,c.RequestAborted);}}
     private sealed class PendingRepository(IPrimaryRepository inner):IPrimaryRepository
     {
         public TaskCompletionSource<StoredRecord?> Read {get;}=new(TaskCreationOptions.RunContinuationsAsynchronously);
