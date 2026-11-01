@@ -76,7 +76,7 @@ public sealed partial class SkillDictionaryService
         if(row is null)result=new(){["phase"]="not_evaluated",["method"]="choice",["policyVersion"]=SkillChoiceMatching.Version,["outcome"]="requires_review",["dictionaryVersion"]=version,["reason"]="NOT_REQUESTED",["requiresHumanApproval"]=true};
         else {var valid=await ValidateProposal(actor,row.Value.Text("id"),ct);result=View(valid.Row.Value,valid.Snapshot,head.Version!=snapshot.Version);}
         var previous=new JsonArray();
-        foreach(var (policy,wire) in new[]{("skill-catalogue-choice-v1","skill-choice-wire-v1"),(SkillChoiceMatching.Version,"skill-choice-wire-v1")})
+        foreach(var (policy,wire) in new[]{("skill-catalogue-choice-v1","skill-choice-wire-v1"),("skill-catalogue-choice-v1",SkillChoiceWire.Version),(SkillChoiceMatching.Version,"skill-choice-wire-v1")})
         {
             var oldChoice=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),SuggestionId(actor,candidate.Value,snapshot,policy,wire),ct);
             if(oldChoice is not null){var valid=await ValidateProposal(actor,oldChoice.Value.Text("id"),ct);previous.Add(View(valid.Row.Value,valid.Snapshot,head.Version!=snapshot.Version));}

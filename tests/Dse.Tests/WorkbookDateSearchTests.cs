@@ -18,6 +18,10 @@ public class WorkbookDateSearchTests
     {
         var actual=WorkbookDates.Read(raw,Cell(format,"d"));Assert.Equal(value,actual.Value);Assert.Equal(precision,actual.Precision);
     }
+    [Theory]
+    [InlineData("2023-02-29T00:00:00.000Z")][InlineData("2024-01-01T00:00:00+15:00")]
+    [InlineData("2024-01-01T25:00:00Z")][InlineData("01/02/2024")][InlineData("2024-01-01T00:00:00Z trailing")]
+    public void Invalid_or_ambiguous_typed_values_remain_unknown(string raw)=>Assert.Null(WorkbookDates.Read(raw,Cell("yyyy-mm-dd","d")).Value);
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     private static CellSource Cell(string format, string type="n", string state="available") => new("any","AZ900",null,"visible",false,false,type,"", "",format,false,state);
     private static StoredRecord Row(string id,string text,CellSource? cell=null) => new(new JsonObject{["id"]=id,["text"]=text,["sourceCell"]=JsonSerializer.SerializeToNode(cell,Json)},"etag");

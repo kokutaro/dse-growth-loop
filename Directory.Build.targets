@@ -8,7 +8,7 @@
       <_DseSource Update="@(_DseSource)"><LogicalName>$([MSBuild]::MakeRelative('$(MSBuildThisFileDirectory)', '%(_DseSource.FullPath)'))</LogicalName></_DseSource>
     </ItemGroup>
     <GetFileHash Files="@(_DseSource)" Algorithm="SHA256"><Output TaskParameter="Items" ItemName="_DseHashed" /></GetFileHash>
-    <WriteLinesToFile File="$(IntermediateOutputPath)dse-processing-inputs.txt" Lines="schema=1;configuration=$(Configuration);framework=$(TargetFramework);sdk=$(NETCoreSdkVersion);@(_DseHashed->'%(LogicalName):%(FileHash)')" Overwrite="true" WriteOnlyWhenDifferent="true" Encoding="UTF-8" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)dse-processing-inputs.txt" Lines="schema=1;configuration=$(Configuration);framework=$(TargetFramework);sdk=$(NETCoreSdkVersion);language=$(LangVersion);defines=$(DefineConstants);nullable=$(Nullable);optimize=$(Optimize);deterministic=$(Deterministic);@(_DseHashed->'%(LogicalName):%(FileHash)')" Overwrite="true" WriteOnlyWhenDifferent="true" Encoding="UTF-8" />
     <GetFileHash Files="$(IntermediateOutputPath)dse-processing-inputs.txt" Algorithm="SHA256"><Output TaskParameter="Hash" PropertyName="_DseProcessingHash" /></GetFileHash>
     <ItemGroup><AssemblyMetadata Include="Dse.ProcessingSourceSha256" Value="$(_DseProcessingHash)" /></ItemGroup>
   </Target>
