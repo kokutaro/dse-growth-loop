@@ -506,7 +506,7 @@
           "minimum": 1
         },
         "choiceWireVersion": {
-          "const": "skill-choice-wire-v1"
+          "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2"]
         },
         "choiceWireMapHash": {
           "type": "string",
@@ -7140,7 +7140,7 @@
           ]
         },
         "wireVersion": {
-          "const": "skill-choice-wire-v1"
+          "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2"]
         }
       },
       "required": [

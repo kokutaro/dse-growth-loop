@@ -31,6 +31,7 @@ public sealed class FenceRecovery(IRecordStore store)
             } while (cursor is not null);
         }
         fence.Value["holder"] = null;
+        if(fence.Value["ownerTrace"]is System.Text.Json.Nodes.JsonObject owner){owner["state"]="recovered_offline";owner["recoveredAt"]=DateTimeOffset.UtcNow;}
         await store.CommitAsync(catalog, [RecordWrite.Replace(fence.Value, expectedFenceEtag)], ct);
     }
 }

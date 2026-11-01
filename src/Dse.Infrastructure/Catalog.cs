@@ -5,6 +5,7 @@ using Dse.Domain;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Dse.Infrastructure;
 
@@ -140,7 +141,7 @@ public static class InfrastructureRegistration
         else throw new InvalidOperationException("Data__Mode は Demo または Azure を指定してください。");
         services.AddSingleton<IPrimaryRepository, PrimaryRepository>();
         services.AddSingleton<SourceGuard>();
-        services.AddSingleton<AccessFence>();
+        services.AddSingleton(sp=>new AccessFence(sp.GetRequiredService<IPrimaryRepository>(),sp.GetRequiredService<TimeProvider>(),sp.GetService<ILogger<AccessFence>>()));
         services.AddSingleton<ValidatedCatalog>();
         services.AddSingleton<ICatalog>(sp => sp.GetRequiredService<ValidatedCatalog>());
         services.AddSingleton<IdentityResolver>();

@@ -55,6 +55,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
             await queue.RenewAsync(delivery, job.Value["availableAt"]!.Deserialize<DateTimeOffset>() - now, ct); return true;
         }
         using var diagnostics=PipelineDiagnostics.Begin(notice.JobId,job.Value.Text("aggregateId"),clock,logger,job.Value["createdAt"] is JsonNode created?created.Deserialize<DateTimeOffset>().ToString("O"):null);
+        using var fenceOperation=FenceOwnerTrace.BeginWorker(job.Value);
         var owner = Guid.NewGuid().ToString("N");
         var exhausted = job.Value.Number("attempt") >= options.Attempts;
         job.Value["status"] = "processing"; job.Value["leaseOwner"] = owner; job.Value["leaseUntil"] = now + Visibility;

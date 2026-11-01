@@ -135,6 +135,9 @@ app.Use(async (context, next) =>
         context.Items[typeof(ActorAccess)] = actor;
         WorkspaceIsolation.Require(actor, context.Request.Path.Value ?? "", demo,
             context.GetEndpoint()?.Metadata.GetMetadata<LegacyWorkspaceEndpoint>() is not null);
+        var template=(context.GetEndpoint() as Microsoft.AspNetCore.Routing.RouteEndpoint)?.RoutePattern.RawText??"api";
+        using var fenceOperation=FenceOwnerTrace.BeginApi(context.Request.Method+" "+template,actor);
+        await next();return;
     }
     await next();
 });

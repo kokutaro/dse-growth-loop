@@ -25,12 +25,12 @@ test.describe.serial('検証人物の製品APIとモック取込',()=>{
   await page.getByRole('button',{name:'再抽出の費用と版を確認',exact:true}).click();
   const start=page.getByRole('button',{name:'見積内で新しい抽出世代を開始',exact:true});await expect(start).toBeDisabled();
   await page.getByLabel('再抽出理由',{exact:true}).fill('全セル新版の再確認');await page.getByLabel('この原本と版・新しい費用上限を確認しました',{exact:true}).check();
-  await start.dblclick();await expect(page.getByRole('status')).toContainText('再抽出受付');
+  await start.dblclick();await expect(page.getByRole('status')).toContainText('新規受付');
   const pending=(await (await request.get('/api/v1/admin/test-people')).json()).items[0];expect(pending.pendingGenerationId).toBeTruthy();expect(Object.values(pending.documentHeads)[0]).toBe(doc);
   await page.getByRole('button',{name:'テスト検索',exact:true}).click();await expect(page.getByText('検証専用・架空',{exact:true})).toBeVisible();
   await request.post('/api/test/drain');await page.getByRole('button',{name:'処理・根拠を更新',exact:true}).click();
   const published=(await (await request.get('/api/v1/admin/test-people')).json()).items[0];expect(Object.values(published.documentHeads)[0]).toBe(pending.pendingGenerationId);expect(published.pendingGenerationId).toBeUndefined();
-  await expect(page.locator('article')).toHaveCount(3);await page.getByRole('button',{name:'再抽出の費用と版を確認',exact:true}).click();await expect(page.getByText('この版は適用済みです。新しい費用枠は作成しません。',{exact:true})).toBeVisible();
+  await expect(page.locator('article')).toHaveCount(3);await page.getByRole('button',{name:'再抽出の費用と版を確認',exact:true}).click();await expect(page.getByText('この版の状態：already_applied。',{exact:false})).toBeVisible();
   await page.screenshot({path:path.join(root,'generation-published.png'),fullPage:true});
   await page.getByRole('button',{name:'一覧に戻る',exact:true}).click();await expect(page.locator('article')).toHaveCount(0);
   await page.getByRole('button',{name:'[検証専用・架空] 合成 A',exact:true}).click();await page.getByRole('button',{name:'利用停止（削除しない）',exact:true}).click();await expect(page.getByRole('status')).toContainText('利用停止');

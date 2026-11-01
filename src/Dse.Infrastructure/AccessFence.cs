@@ -1,4 +1,5 @@
 using Dse.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace Dse.Infrastructure;
 
@@ -7,6 +8,9 @@ namespace Dse.Infrastructure;
 // Unlike a timed lease, a paused old process cannot resume after a revocation and publish stale text.
 public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admissionClock=null)
 {
+    private readonly ILogger<AccessFence>? logger;
+    /// <summary>既存の取得・解放契約を維持し、診断ログだけを追加します。</summary>
+    public AccessFence(IPrimaryRepository repository,TimeProvider? admissionClock,ILogger<AccessFence>? logger):this(repository,admissionClock){this.logger=logger;}
     private sealed class Lease(IPrimaryRepository repository, string tenant)
     {
         public IPrimaryRepository Repository { get; } = repository;
@@ -86,6 +90,7 @@ public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admi
             finally { parent.Exit(faulted); }
         }
         using var acquisition=PipelineDiagnostics.Measure("fence_acquire");
+        var clock=admissionClock??TimeProvider.System;var started=clock.GetTimestamp();
         var partition = RecordPartition.Catalog(tenant);
         StoredRecord held;
         try
@@ -94,35 +99,53 @@ public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admi
         if (current?.Value.Text("holder") is { Length: > 0 } blocker) { PipelineDiagnostics.BlockedFence(blocker,current.ETag);acquisition.Failed();throw new DomainException(503,"ACCESS_BUSY"); }
         var value = current?.Value.Copy() ?? RecordJson.New("accessFence", "system-access-fence", tenant, "system", ["system"], DateTimeOffset.UtcNow);
         value["holder"] = Guid.NewGuid().ToString("N");
+        value["ownerTrace"]=FenceOwnerTrace.Capture(clock);
         value["updatedAt"] = DateTimeOffset.UtcNow;
         try { await repository.CommitAsync(partition, [new(value, current?.ETag)], ct); }
         catch (StoreConflictException) { acquisition.Failed();throw new DomainException(503, "ACCESS_BUSY"); }
         held = await repository.ReadAsync(partition, "system-access-fence", ct)
             ?? throw new DomainException(503, "DEPENDENCY_UNAVAILABLE");
         PipelineDiagnostics.Fence(held.Value.Text("holder"),held.ETag);
+        Trace("acquired",held,clock.GetElapsedTime(started).TotalMilliseconds,null);
         acquisition.Dispose();
         }
         catch(Exception error){acquisition.Failed(error);throw;}
         var release = false;
+        string? cancellation=null;
+        var heldAt=clock.GetTimestamp();
         var previous = Current.Value;
         var lease = new Lease(repository, tenant);
         try { Current.Value = lease; var result = await action(ct); release = true; return result; }
         catch (Exception e) when (KnownRejection(e)) { release = true; throw; }
+        catch(OperationCanceledException){cancellation=PipelineDiagnostics.OwnerContext()?.Text("cancellationReason") is{Length:>0} reason?reason:"operation_cancelled";throw;}
         finally
         {
             Current.Value = previous;
             await lease.CloseAsync();
-            if (release && !lease.Faulted) await ReleaseAsync(partition, held);
+            if (release && !lease.Faulted)
+            {
+                try{await ReleaseAsync(partition,held,clock.GetElapsedTime(heldAt).TotalMilliseconds,clock);Trace("released",held,clock.GetElapsedTime(heldAt).TotalMilliseconds,null);}
+                catch{Trace("release_unknown",held,clock.GetElapsedTime(heldAt).TotalMilliseconds,cancellation);throw;}
+            }
+            else Trace("retained_unknown",held,clock.GetElapsedTime(heldAt).TotalMilliseconds,cancellation);
         }
     }
     // ACCESS_BUSY is raised before entering the rejected acquisition's callback. It must not
     // poison an already-owned outer lease. Unknown dependency failures/cancellation stay closed.
     private static bool KnownRejection(Exception error) => error is ReadOnlyPreparationCancelled or ArgumentException or StoreConflictException ||
         error is DomainException d && (d.Status < 500 || d.Code == "SEARCH_LIMIT_EXCEEDED" || d.Status == 503 && d.Code == "ACCESS_BUSY");
-    private async Task ReleaseAsync(RecordPartition partition, StoredRecord held)
+    private void Trace(string state,StoredRecord held,double duration,string? cancellation)
+    {
+        var data=new System.Text.Json.Nodes.JsonObject{["state"]=state,["holderHash"]=FenceOwnerTrace.Hash(held.Value.Text("holder")),["acquiredEtag"]=held.ETag,
+            ["owner"]=held.Value["ownerTrace"]?.DeepClone(),["durationMs"]=duration,["cancellationReason"]=cancellation};
+        if(state is "retained_unknown" or "release_unknown")logger?.LogWarning("FenceLifecycle {Diagnostic}",data.ToJsonString());
+        else logger?.LogInformation("FenceLifecycle {Diagnostic}",data.ToJsonString());
+    }
+    private async Task ReleaseAsync(RecordPartition partition, StoredRecord held,double duration,TimeProvider clock)
     {
         var released = held.Value.Copy();
         released["holder"] = null;
+        if(released["ownerTrace"]is System.Text.Json.Nodes.JsonObject owner){owner["state"]="released";owner["releasedAt"]=clock.GetUtcNow();owner["holdMs"]=duration;}
         // Release failures leave the durable fence closed for offline recovery.
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         await repository.CommitAsync(partition, [RecordWrite.Replace(released, held.ETag)], timeout.Token);

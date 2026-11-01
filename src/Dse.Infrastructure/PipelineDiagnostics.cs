@@ -41,6 +41,8 @@ public sealed class PipelineDiagnostics : IDisposable
     public static void AdmissionExhausted(){if(Ambient.Value is{}d)lock(d.sync)d.admissionExhausted=true;}
     public static void Fence(string holder,string etag) { if(Ambient.Value is { } d)lock(d.sync){d.fenceHolder=holder;d.fenceEtag=etag;CurrentStage.Value?.SetFence(holder,etag);} }
     public static JsonObject? Snapshot() => Ambient.Value?.Export();
+    internal static JsonObject? OwnerContext()=>Ambient.Value is{} d?new(){["origin"]="job",["correlationId"]=d.CorrelationId,
+        ["jobId"]=d.JobId,["aggregateId"]=d.AggregateId,["operation"]=CurrentStage.Value?.Operation??"job",["cancellationReason"]=d.CancellationReason}:null;
     public static RepositoryCall Repository(string operation) => new(CurrentStage.Value,operation);
     public JsonObject Export()
     {
@@ -57,6 +59,7 @@ public sealed class PipelineDiagnostics : IDisposable
         private readonly long started;
         private readonly string name;
         private readonly string? operation,aiRunId;private string? holder,etag;
+        internal string? Operation=>operation;
         private bool ended;private string outcome="running";private double? elapsed;
         private int reads,queries,writes,failures,cacheHits,transportCalls;
         private double repositoryMs;

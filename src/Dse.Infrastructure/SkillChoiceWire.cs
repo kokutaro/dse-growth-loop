@@ -8,7 +8,7 @@ namespace Dse.Infrastructure;
 // without filtering concepts or changing names/definitions/conditions/probability values.
 public static class SkillChoiceWire
 {
-    public const string Version="skill-choice-wire-v1";
+    public const string Version="skill-choice-wire-v2";
     public const int NumericBytes=32;
     public static Dictionary<string,string> IdMap(ChoiceQuestion question)
     {
@@ -17,19 +17,34 @@ public static class SkillChoiceWire
     public static Dictionary<string,string> Options(ChoiceQuestion question)=>IdMap(question).ToDictionary(p=>p.Key,p=>question.Options[p.Value],StringComparer.Ordinal);
     public static JsonObject Prepare(JsonObject input,ChoiceQuestion question)
     {
-        var copy=input.DeepClone().AsObject();var dictionary=copy["text"]!["dictionary"]!.AsObject();var compact=new JsonObject();
+        var copy=input.DeepClone().AsObject();var dictionary=copy["text"]!["dictionary"]!.AsObject();var compact=new JsonObject();var rows=new JsonArray();var rowIds=new Dictionary<string,int>(StringComparer.Ordinal);
         foreach(var (wire,id) in IdMap(question))
             if(id is not (SkillChoiceMatching.None or SkillChoiceMatching.Uncertain))
             {
                 var entry=dictionary[id]!;var aliases=new JsonArray();
                 foreach(var alias in entry["aliases"]!.AsArray())aliases.Add(new JsonArray(alias!["text"]!.GetValue<string>()==entry["name"]!.GetValue<string>()?null:alias["text"]!.DeepClone(),alias["kind"]!.DeepClone(),alias["object"]?.DeepClone(),alias["conditions"]!.DeepClone()));
-                compact[wire]=new JsonArray(entry["definition"]?.DeepClone(),entry["boundary"]?.DeepClone(),aliases);
+                var row=new JsonArray(entry["definition"]?.DeepClone(),entry["boundary"]?.DeepClone(),aliases);var key=RecordJson.Canonical(row);
+                if(!rowIds.TryGetValue(key,out var index)){index=rows.Count;rowIds[key]=index;rows.Add(row);}
+                compact[wire]=index;
             }
         if(compact.Count!=dictionary.Count)throw new ArgumentException("Choice input catalogue mismatch");
         copy["text"]!["dictionary"]=compact;
+        copy["text"]!["dictionaryRows"]=rows;
         copy["text"]!["dictionaryLayout"]=new JsonArray("definitionOrShared","boundaryOrShared","aliases");
         copy["text"]!["aliasLayout"]=new JsonArray("text","kind","object","conditions");
-        copy["text"]!["layoutPolicy"]="辞書はdictionaryLayout順の配列。名前は同じIDのcriteria値全文。定義・境界のnullはsharedDefinition/sharedBoundary全文。別名はaliasLayout順でtextのnullは名前全文。全フィールドを保持し要約はない。";
+        copy["text"]!["layoutPolicy"]="dictionary値はdictionaryRowsの0始まり行番号。各行はdictionaryLayout順、別名はaliasLayout順。名前は同じIDのcriteria全文。定義/境界nullはsharedDefinition/sharedBoundary全文、別名text=nullはその名前全文。共有は完全一致のみ・省略/要約なし。";
+        if(copy["evidence"] is JsonArray evidence && evidence.Count>0)
+        {
+            var documents=new JsonArray();var documentIds=new Dictionary<string,int>(StringComparer.Ordinal);
+            foreach(var entry in evidence.Select(x=>x!.AsObject()))
+            {
+                var document=new JsonArray(entry["documentVersionId"]!.DeepClone(),entry["sourceVersion"]!.DeepClone());var key=RecordJson.Canonical(document);
+                if(!documentIds.TryGetValue(key,out var index)){index=documents.Count;documentIds[key]=index;documents.Add(document);}
+                entry.Remove("documentVersionId");entry.Remove("sourceVersion");entry["document"]=index;
+            }
+            copy["evidenceDocuments"]=documents;
+            copy["evidenceLayoutPolicy"]="evidence.documentはevidenceDocumentsの0始まり行番号。行は[documentVersionId,sourceVersion]。id/text全文と出典を全件保持。";
+        }
         copy["choiceWireVersion"]=Version;return copy;
     }
     // A shape estimate for the bounded response contract, using the exact wire IDs.

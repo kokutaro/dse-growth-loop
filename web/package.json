@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "test:auth": "node --experimental-test-module-mocks --test unit/auth.test.mjs",
+    "test:auth": "node --experimental-test-module-mocks --test unit/*.test.mjs",
     "build": "tsc --noEmit && vite build",
     "test:e2e": "node scripts/test-e2e.mjs",
     "test:e2e:raw": "playwright test",

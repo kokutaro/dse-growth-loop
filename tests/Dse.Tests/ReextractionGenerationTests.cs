@@ -9,6 +9,21 @@ namespace Dse.Tests;
 
 public sealed class ReextractionGenerationTests
 {
+    [Fact]
+    public void Processing_identity_is_a_content_digest_not_the_package_version()
+        => Assert.Matches("^source-sha256:[a-f0-9]{64}$",ReextractionGenerations.ImplementationVersion);
+    [Fact]
+    public async Task Estimate_and_receipt_distinguish_a_terminal_existing_generation_from_a_new_acceptance()
+    {
+        using var h=new SyntheticHarness();var(p,doc)=await Baseline(h);var first=await Start(h,p,doc);
+        Assert.Equal("new",first.Body!.AsObject().Text("acceptance"));
+        var id=first.Body.AsObject().Text("generationId");var generation=await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),id,default);
+        generation!.Value["generationState"]="failed";await h.Repo.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Replace(generation.Value,generation.ETag)],default);
+        var q=await Service(h).EstimateAsync(SyntheticHarness.Operator,p.Text("id"),doc.Text("id"),default);
+        Assert.Equal("existing_failed",q.Text("availability"));Assert.Equal(id,q.Text("generationId"));
+        var repeated=await Start(h,p,doc);Assert.Equal("existing_failed",repeated.Body!.AsObject().Text("acceptance"));
+        Assert.Equal(first.Body.AsObject().Text("jobId"),repeated.Body.AsObject().Text("jobId"));
+    }
     private static ReextractionGenerations Service(SyntheticHarness h)=>new(h.Repo,h.Fence,new(h.Repo,TimeProvider.System),h.Notifications,h.Config,TimeProvider.System);
     private static async Task<(JsonObject Person,JsonObject Doc)> Baseline(SyntheticHarness h)
     {
