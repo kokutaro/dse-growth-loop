@@ -20,11 +20,13 @@ public partial class AiTests
         var handler=new Handler(async(req,ct)=>{
             var body=JsonNode.Parse(await req.Content!.ReadAsStringAsync(ct))!;var system=body["messages"]![0]!["content"]!.GetValue<string>();
             Assert.DoesNotContain("short exact",system);Assert.Contains("minimum sufficient source passage",system);Assert.Contains("100",system);
+            Assert.Contains("For independent entries in a technology list",system);
+            Assert.Contains("Do not repeat the whole list as raw",system);
             var input=JsonNode.Parse(body["messages"]![1]!["content"]!.GetValue<string>())!;Assert.Equal(source,(workbook?input["cells"]!["c0"]!["text"]:input["evidence"]![0]!["text"])!.GetValue<string>());
             var item=new JsonObject{["raw"]=raw,["normalizationCandidate"]="電文の重複保存防止",["evidenceId"]=workbook?"c0":reference.Id,["basis"]="experience"};if(!workbook)item["quote"]=source;
             return Response(Foundry(new JsonObject{["state"]="extracted",["items"]=new JsonArray(item)}.ToJsonString()));
         });
-        using var ai=Service(Config(),store,handler);var result=await ai.ExtractSkillsAsync(Context() with{Evidence=[reference],PromptVersion=workbook?WorkbookRules.CellSkillPrompt:"specific-skills-context-v3"},source,default);
+        using var ai=Service(Config(),store,handler);var result=await ai.ExtractSkillsAsync(Context() with{Evidence=[reference],PromptVersion=workbook?WorkbookRules.CellSkillPrompt:SpecificSkillRules.ContextPrompt},source,default);
         var actual=Assert.Single(result.Value!.Items!);Assert.Equal(raw,actual.Raw);Assert.Equal(source,actual.Quote);Assert.Equal(1,handler.Calls);
     }
 }
