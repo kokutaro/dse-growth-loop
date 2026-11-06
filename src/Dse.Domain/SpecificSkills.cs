@@ -30,7 +30,7 @@ public static class SpecificSkillRules
 {
     public const string Version = "specific-skills-v2";
     /// <summary>出力形式や既存検索の版を変えず、抽出指示とキャッシュを更新する。</summary>
-    public const string ContextPrompt = "specific-skills-context-v3";
+    public const string ContextPrompt = "specific-skills-context-v4";
     public const string LegacyVersion = "specific-skills-v1";
     public const string GuardVersion = "source-integrity-v1";
     public static readonly string[] Bases = ["experience", "knowledge", "qualification", "not_experience", "uncertain"];

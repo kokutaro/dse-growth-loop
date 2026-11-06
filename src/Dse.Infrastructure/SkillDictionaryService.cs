@@ -176,6 +176,9 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             // Explain the failure without echoing a fabricated/withdrawn quote.
             rejected.Add(new JsonObject{["reason"]=r.Reason,
                 ["raw"]=text?.Contains(r.Item.Raw,StringComparison.Ordinal)==true?r.Item.Raw:null,
+                // Only expose a proposal backed by the current complete quotation.
+                // It remains unapproved and cannot turn a collection notice into a skill.
+                ["normalizationCandidate"]=r.Reason=="duplicate_candidate"&&text?.Contains(r.Item.Quote,StringComparison.Ordinal)==true&&r.Item.Quote.Contains(r.Item.Raw,StringComparison.Ordinal)?r.Item.NormalizationCandidate:null,
                 ["basis"]=r.Item.Basis});
         }
         return new(){["candidateId"]=id,["fragmentId"]=row.Value.Text("fragmentId"),

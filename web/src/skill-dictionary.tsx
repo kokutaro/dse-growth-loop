@@ -7,7 +7,7 @@ type Concept={id:string;name:string;definition:string;boundary:string;scopeIds:s
 type Dictionary={version:number;currentVersion:number;etag:string;concepts:Concept[]};
 type Candidate={syntheticTest?:boolean;sourceStatus?:string;reviewable?:boolean;candidateType?:string;sourceInputState?:string;id:string;etag:string;state:string;conceptId:string|null;fragmentId:string;scopeIds:string[];element:Element|null;item:{raw:string;quote:string;evidenceId:string;participation?:string;basis?:string;normalizationCandidate:string|null;analysis:{experienceState:string;quoteState:string;semanticSupport:string}}|null};
 type ReviewCandidate=Candidate & {element:Element;item:NonNullable<Candidate['item']>};
-type SourceReview={candidateId:string;fragmentId:string;sourceStatus:string;currentFingerprint:string;guardVersion:string;inputState:string;acceptedCount:number;currentText:string;evidence:{id:string;text:string}[];rejected:{reason:string;raw:string|null;participation?:string;basis?:string}[]};
+type SourceReview={candidateId:string;fragmentId:string;sourceStatus:string;currentFingerprint:string;guardVersion:string;inputState:string;acceptedCount:number;currentText:string;evidence:{id:string;text:string}[];rejected:{reason:string;raw:string|null;normalizationCandidate?:string|null;participation?:string;basis?:string}[]};
 const holdReasons:Record<string,string>={generation_superseded:'抽出世代が置き換え済みです。人物画面の現在の実績IDから収集してください',raw_not_in_quote:'元表現が引用内にない',quote_not_in_source:'引用が原文と一致しない',not_in_fragment:'元表現が現在の実績本文にない',incomplete_passage:'文の一部だけの引用',no_completed_assertion:'実施を確定できない',negated_assertion:'実施の否定',reported_or_intended:'希望・計画・相談・伝聞',other_actor:'他者の実績',duplicate_candidate:'重複候補',unknown_evidence:'根拠IDが現在の原文根拠に含まれない'};
 type Write={path:string;key:string;etag?:string;body:unknown};
 const labels:Record<string,string>={pending:'未登録・確認待ち',matched:'既存技能に対応',registered:'新規登録済み',alias:'別名承認済み',merged:'統合済み',not_skill:'技能ではない',deferred:'保留',practice:'作業・技術',knowledge:'知識',reference:'参照',qualification:'資格',eligible:'経験候補・本人未確認',content_only:'知識内容のみ',pending_eligibility:'文脈未確定'};
@@ -86,7 +86,8 @@ export function SkillDictionary({config}:{config:AppConfig}){
  <h3>現在の本文</h3><blockquote>{sourceReview.currentText}</blockquote>
  <details><summary>現在アクセス可能な原文根拠</summary>{sourceReview.evidence.map(e=><div key={e.id}><p>根拠ID：{e.id}</p><blockquote>{e.text}</blockquote></div>)}</details>
  <p>現在の検証で保持した抽出 {sourceReview.acceptedCount} 件。保留 {sourceReview.rejected.length} 件。</p>
- <ul>{sourceReview.rejected.map((r,i)=><li key={i}>{r.raw??'原文に一致する元表現を確認できません'} ／ {holdReasons[r.reason]??'検証保留'}（{r.reason}） ／ {contextName(r.basis)}</li>)}</ul>
+ <ul>{sourceReview.rejected.map((r,i)=><li key={i}>{r.raw??'原文に一致する元表現を確認できません'} ／ {holdReasons[r.reason]??'検証保留'}（{r.reason}） ／ {contextName(r.basis)}{r.normalizationCandidate&&<p>AI正規化案（未承認）：{r.normalizationCandidate}</p>}</li>)}</ul>
+ {sourceReview.rejected.some(r=>r.normalizationCandidate)&&<p>同じ元表現に異なる案がある場合、案だけで別技能へ登録せず、原文中の各技能を区別した再抽出が必要です。技術列の記載だけでは実務経験を認定しません。</p>}
  <p>原文や保存済み抽出の修正はこの画面では行いません。再収集は現在の根拠で再検証し、解消していない保留は残します。AI追加実行・辞書承認・人物経験の認定は行いません。</p>
  <button disabled={busy||uncertain||sourceReview.rejected.some(r=>r.reason==='generation_superseded')} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:sourceReview.fragmentId,expectedFingerprint:sourceReview.currentFingerprint}})}>現在の根拠で再収集</button>
  <button disabled={busy} onClick={()=>{sourceEpoch.current++;setSourceReview(undefined);}}>一覧へ戻る</button>
