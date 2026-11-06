@@ -12,6 +12,19 @@ public sealed class TechnicalCandidateReviewTests
     [Theory]
     [InlineData("アプリ開発担当 ／ TypeScript、SQLite、Git", "TypeScript", "SQLite", "Git")]
     [InlineData("通信処理の開発担当 ／ Go、Linux、Git", "Go", "Linux", "Git")]
+    public void Individually_anchored_list_entries_remain_distinct_knowledge_not_experience(string source, string first, string second, string third)
+    {
+        var items = new[] { first, second, third }.Select(raw => new SpecificSkill(raw, raw, "technology-cell", source) { Basis = "knowledge" }).ToArray();
+        var assessed = SpecificSkillRules.Assess(new(SpecificSkillRules.Version, "extracted", items), new Dictionary<string, string> { ["technology-cell"] = source });
+        Assert.Equal(new[] { first, second, third }, assessed.Items!.Select(i => i.Raw));
+        Assert.Empty(assessed.RejectedItems ?? []);
+        Assert.Empty(assessed.SearchTerms);
+        Assert.All(assessed.Items!, i => { Assert.Equal("content_only", i.Analysis!.ExperienceState); Assert.Equal(i.Raw, Assert.Single(i.Analysis.Elements).Label); Assert.Null(Assert.Single(i.Analysis.Elements).ConceptId); });
+    }
+
+    [Theory]
+    [InlineData("アプリ開発担当 ／ TypeScript、SQLite、Git", "TypeScript", "SQLite", "Git")]
+    [InlineData("通信処理の開発担当 ／ Go、Linux、Git", "Go", "Linux", "Git")]
     public async Task Held_distinct_hints_are_visible_but_not_approved_or_promoted(string source, string first, string second, string third)
     {
         var f = await SkillDictionaryFixture.Create();

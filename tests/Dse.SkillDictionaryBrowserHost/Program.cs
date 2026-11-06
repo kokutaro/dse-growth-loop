@@ -27,6 +27,15 @@ await Change("fragment-recovery-stale",v=>{v["description"]="私は現在の候�
 await Change("ev-recovery-stale",v=>v["text"]="私は現在の候補を実施した。");
 await Change("fragment-recovery-held",v=>v["specificSkills"]!["items"]![0]!["quote"]="私は原文にない捏造技能を実施した。");
 await fixture.Service.CollectAsync(SkillDictionaryFixture.Curator,Guid.NewGuid().ToString("N"),new("fragment-recovery-held"),default);
+foreach(var (id,source,hints) in new[]{
+    ("technical-list-a","アプリ開発担当 ／ TypeScript、SQLite、Git",new[]{"TypeScript","SQLite","Git"}),
+    ("technical-list-b","通信処理の開発担当 ／ Go、Linux、Git",new[]{"Go","Linux","Git"})})
+{
+    await fixture.Source(id,source,source);
+    await Change("fragment-"+id,v=>v["specificSkills"]=JsonSerializer.SerializeToNode(new SpecificSkills(SpecificSkillRules.Version,"extracted",
+        hints.Select(h=>new SpecificSkill(source,h,"ev-"+id,source){Basis="knowledge"}).ToArray()),browserJson));
+    await fixture.Service.CollectAsync(SkillDictionaryFixture.Curator,Guid.NewGuid().ToString("N"),new("fragment-"+id),default);
+}
 var wire=new SkillSemanticTestRuntime.Wire();var aiConfig=SkillSemanticTestRuntime.Config();aiConfig["AiUsage:MaxInputTokens"]="8000";
 var ai=SkillSemanticTestRuntime.Ai(fixture,aiConfig,wire);
 builder.Services.AddSingleton(new SkillDictionaryService(fixture.Repo,fixture.Fence,new(fixture.Repo,TimeProvider.System),TimeProvider.System,()=>ai));

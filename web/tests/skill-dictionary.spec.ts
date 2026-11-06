@@ -2,6 +2,22 @@ import {test,expect} from '@playwright/test';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 const output=path.resolve('test-results/skill-dictionary');
+test('技術列で保留された4件の正規化案を未承認として表示し、保留や引用を変更しない',async({page})=>{
+ const shotDir='screenshots/'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15).replace('T','-')+'-technical-candidates';
+ await page.setViewportSize({width:1920,height:1080});
+ await page.goto('/skill-dictionary.html');
+ for(const [fragment,hints] of [['technical-list-a',['SQLite','Git']],['technical-list-b',['Linux','Git']]] as const){
+  const notice=page.locator('tbody tr').filter({hasText:'fragment-'+fragment}).filter({hasText:'収集の確認待ち'});
+  await expect(notice).toHaveCount(1);await expect(notice.getByRole('checkbox')).toBeDisabled();
+  await notice.getByRole('button',{name:'この候補を確認'}).click();
+  const panel=page.locator('.source-review');await expect(panel).toContainText('保留 2 件');
+  for(const hint of hints)await expect(panel).toContainText('AI正規化案（未承認）：'+hint);
+  await expect(panel).toContainText('案だけで別技能へ登録せず');
+  await expect(page.getByRole('button',{name:'判断を承認して保存'})).toHaveCount(0);
+  await panel.screenshot({path:`${shotDir}/${fragment==='technical-list-a'?'01':'02'}-held-proposals.png`});
+  await panel.getByRole('button',{name:'一覧へ戻る'}).click();
+ }
+});
 test('仮データの収集から人の承認、統合、固定版プレビューまで業務・goldを変更しない',async({page,request})=>{
  await fs.mkdir(output,{recursive:true});await page.goto('/skill-dictionary.html');
  await expect(page.getByText('現在の辞書版 0。',{exact:false})).toBeVisible();
