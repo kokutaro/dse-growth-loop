@@ -1,5 +1,6 @@
 using Dse.Domain;
 using Dse.Infrastructure;
+using System.Text.Json;
 using Xunit;
 
 namespace Dse.Tests;
@@ -7,6 +8,15 @@ namespace Dse.Tests;
 public sealed class SkillDictionarySearchTests
 {
     private static readonly ActorAccess Actor=SkillDictionaryFixture.Curator;
+
+    [Fact]
+    public void Wire_requires_an_explicit_fixed_version_and_never_silently_uses_version_zero()
+    {
+        var json=new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        Assert.Throws<JsonException>(()=>JsonSerializer.Deserialize<SkillDictionarySearch>("{\"conceptId\":\"skill-example\",\"eligibility\":\"content_only\"}",json));
+        var explicitZero=JsonSerializer.Deserialize<SkillDictionarySearch>("{\"version\":0,\"conceptId\":\"skill-example\",\"eligibility\":\"content_only\"}",json)!;
+        Assert.Equal(0,explicitZero.Version);Assert.Equal(20,explicitZero.Limit);
+    }
 
     [Fact]
     public async Task Ordinary_skill_search_uses_fixed_dictionary_and_returns_evidence_without_promoting_knowledge()
