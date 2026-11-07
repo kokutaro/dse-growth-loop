@@ -1,0 +1,176 @@
+{
+  "observedAtUtc": "2026-11-07T05:09:52Z",
+  "productHead": "c92a9a51a485f1237178d50e96a83e135618ca99",
+  "localFixtureTestHead": "84e2bb2c0da305fb89e3bd9cff438655d32021ff",
+  "scope": "isolated direct extractSkills; not normal Azure Queue/Worker or production dictionary",
+  "prompt": "specific-skills-cell-v3",
+  "providerCalls": 2,
+  "maximumCalls": 2,
+  "inputTokens": 1527,
+  "outputTokens": 634,
+  "configuredCostUsd": 0.0010662,
+  "configuredMaximumUsd": 0.0139264,
+  "invoiceVerified": false,
+  "strictPassCount": 1,
+  "cases": [
+    {
+      "case": "technical-list-a",
+      "status": "Succeeded",
+      "failure": null,
+      "strictPass": true,
+      "runId": "ai-run-40eb36a99e4d4c778e40249151609bcd",
+      "items": [
+        {
+          "raw": "TypeScript",
+          "normalizationCandidate": "TypeScript",
+          "basis": "knowledge",
+          "quote": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+          "experienceState": "content_only"
+        },
+        {
+          "raw": "SQLite",
+          "normalizationCandidate": "SQLite",
+          "basis": "knowledge",
+          "quote": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+          "experienceState": "content_only"
+        },
+        {
+          "raw": "Git",
+          "normalizationCandidate": "Git",
+          "basis": "knowledge",
+          "quote": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+          "experienceState": "content_only"
+        }
+      ],
+      "directSearchTerms": [],
+      "rejectedItems": [],
+      "modelId": "gpt-6-luna-2026-09-22",
+      "modelVersion": "2026-09-22",
+      "promptVersion": "specific-skills-cell-v3",
+      "inputTokens": 763,
+      "outputTokens": 241,
+      "usageEstimated": false,
+      "attemptCount": 1,
+      "retryCount": 0
+    },
+    {
+      "case": "technical-list-b",
+      "status": "Succeeded",
+      "failure": null,
+      "strictPass": false,
+      "runId": "ai-run-7fa9eafef64148ef880d4bf58cdeca41",
+      "items": [
+        {
+          "raw": "通信処理の開発担当",
+          "normalizationCandidate": "通信処理の開発",
+          "basis": "experience",
+          "quote": "通信処理の開発担当 ／ Go、Linux、Git",
+          "experienceState": "non_practice"
+        },
+        {
+          "raw": "Go",
+          "normalizationCandidate": "Go",
+          "basis": "knowledge",
+          "quote": "通信処理の開発担当 ／ Go、Linux、Git",
+          "experienceState": "content_only"
+        },
+        {
+          "raw": "Linux",
+          "normalizationCandidate": "Linux",
+          "basis": "knowledge",
+          "quote": "通信処理の開発担当 ／ Go、Linux、Git",
+          "experienceState": "content_only"
+        },
+        {
+          "raw": "Git",
+          "normalizationCandidate": "Git",
+          "basis": "knowledge",
+          "quote": "通信処理の開発担当 ／ Go、Linux、Git",
+          "experienceState": "content_only"
+        }
+      ],
+      "directSearchTerms": [],
+      "rejectedItems": [],
+      "modelId": "gpt-6-luna-2026-09-22",
+      "modelVersion": "2026-09-22",
+      "promptVersion": "specific-skills-cell-v3",
+      "inputTokens": 764,
+      "outputTokens": 393,
+      "usageEstimated": false,
+      "attemptCount": 1,
+      "retryCount": 0
+    }
+  ],
+  "offlinePersonProjectionReplay": [
+    {
+      "case": "technical-list-a",
+      "sourceKind": "person",
+      "searchTerms": [],
+      "contentTerms": [
+        "git",
+        "sqlite",
+        "typescript"
+      ],
+      "items": [
+        {
+          "raw": "TypeScript",
+          "basis": "knowledge",
+          "experienceState": "content_only"
+        },
+        {
+          "raw": "SQLite",
+          "basis": "knowledge",
+          "experienceState": "content_only"
+        },
+        {
+          "raw": "Git",
+          "basis": "knowledge",
+          "experienceState": "content_only"
+        }
+      ]
+    },
+    {
+      "case": "technical-list-b",
+      "sourceKind": "person",
+      "searchTerms": [
+        "通信処理の開発担当"
+      ],
+      "contentTerms": [
+        "git",
+        "go",
+        "linux"
+      ],
+      "items": [
+        {
+          "raw": "通信処理の開発担当",
+          "basis": "experience",
+          "experienceState": "eligible"
+        },
+        {
+          "raw": "Go",
+          "basis": "knowledge",
+          "experienceState": "content_only"
+        },
+        {
+          "raw": "Linux",
+          "basis": "knowledge",
+          "experienceState": "content_only"
+        },
+        {
+          "raw": "Git",
+          "basis": "knowledge",
+          "experienceState": "content_only"
+        }
+      ]
+    }
+  ],
+  "cleanup": {
+    "currentAssignmentAbsent": true,
+    "preExistingUserAssignmentsPreserved": true,
+    "bothCreatedAssignmentIdsAbsent": true,
+    "checkedAt": "2026-11-07T05:09:52Z"
+  },
+  "mainMerge": false,
+  "productionDeployment": false,
+  "productionDataWrites": false
+}

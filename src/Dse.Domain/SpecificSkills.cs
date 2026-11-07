@@ -8,6 +8,8 @@ public sealed record SpecificSkill(string Raw, string? NormalizationCandidate, s
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Participation = null)
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Basis { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ContentKind { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ContextPolicy { get; init; }
     public SkillAnalysis? Analysis { get; init; }
 }
 public sealed record SkillRejection(SpecificSkill Item, string Reason);
@@ -30,7 +32,9 @@ public static class SpecificSkillRules
 {
     public const string Version = "specific-skills-v2";
     /// <summary>出力形式や既存検索の版を変えず、抽出指示とキャッシュを更新する。</summary>
-    public const string ContextPrompt = "specific-skills-context-v3";
+    public const string ContextPrompt = "specific-skills-context-v5";
+    public const string ContextPolicy = "skill-context-v1";
+    public static readonly string[] ContentKinds = ["skill_statement", "technology_list", "context", "uncertain"];
     public const string LegacyVersion = "specific-skills-v1";
     public const string GuardVersion = "source-integrity-v1";
     public static readonly string[] Bases = ["experience", "knowledge", "qualification", "not_experience", "uncertain"];
@@ -39,6 +43,12 @@ public static class SpecificSkillRules
     public static string Normalize(string raw) => raw.Normalize(NormalizationForm.FormKC).Trim().ToLowerInvariant();
     public static bool IsExperience(SpecificSkill skill) => skill.Basis == "experience";
     public static bool IsSearchExperience(SpecificSkill skill) => IsExperience(skill) && skill.Analysis?.ExperienceState == "eligible";
+    // Stamp only fresh extraction boundaries. Preserve the policy per item through combining,
+    // serialization and reassessment, so quarantined context cannot become legacy experience.
+    public static SpecificSkills RequireContext(SpecificSkills result) => result with {
+        Items = result.Items?.Select(s => s with { ContextPolicy = ContextPolicy }).ToArray(),
+        RejectedItems = result.RejectedItems?.Select(r => r with { Item = r.Item with { ContextPolicy = ContextPolicy } }).ToArray()
+    };
 
     private static string? Failure(SpecificSkill s, IReadOnlyDictionary<string, string> evidence)
     {
@@ -49,6 +59,13 @@ public static class SpecificSkillRules
         if (!evidence.TryGetValue(s.EvidenceId, out var source)) return "unknown_evidence";
         if (!source.Contains(s.Quote, StringComparison.Ordinal)) return "quote_not_in_source";
         if (!s.Quote.Contains(s.Raw, StringComparison.Ordinal)) return "raw_not_in_quote";
+        if (s.ContextPolicy is not null)
+        {
+            if (s.ContextPolicy != ContextPolicy || s.ContentKind is not null && !ContentKinds.Contains(s.ContentKind)) return "skill_context_unverified";
+            if (s.ContentKind == "context") return "non_skill_context";
+            if (s.ContentKind == "uncertain" || s.ContentKind is null && IsExperience(s)) return "skill_context_unverified";
+            if (s.ContentKind == "technology_list" && IsExperience(s)) return "skill_context_conflict";
+        }
         // Whether this quotation asserts experience, knowledge or non-experience is an AI task.
         // Do not split sentences/particles or infer ownership/negation with word lists here.
         return null;

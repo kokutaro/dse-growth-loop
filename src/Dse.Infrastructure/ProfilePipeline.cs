@@ -304,7 +304,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 var skillResult = await skillExtractor.ExtractSkillsAsync(new(actor, job.Text("id"), fragment.Text("skillQuotePolicy") == WorkbookRules.CellQuotePolicy ? WorkbookRules.CellSkillPrompt : SpecificSkillRules.ContextPrompt,
                     Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { WorkbookSectionKind = fragment.Text("workbookSectionKind") is { Length: > 0 } kind ? kind : null }, fragment.Text("description"), ct);
                 if (skillResult.Status != AiStatus.Succeeded || skillResult.Value is null) throw Failure(skillResult.Status, skillResult.Failure);
-                specific = skillResult.Value;
+                specific = SpecificSkillRules.RequireContext(skillResult.Value);
                 fragment["skillRunId"] = skillResult.RunId;
             }
             var unitId = Id("projection-", entity.Text("id") + ":" + entity.Number("sourceVersion") + ":" + fragment.Text("id"));

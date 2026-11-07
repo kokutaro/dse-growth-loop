@@ -76,7 +76,7 @@ public partial class AiTests
             Assert.True(input["cells"]!.AsObject().ContainsKey("c0"));
             Assert.Null(input["evidence"]);
             var content=new JsonObject { ["state"]="extracted",["items"]=new JsonArray(new JsonObject {
-                ["raw"]=raw,["normalizationCandidate"]=null,["evidenceId"]=wrongId?unit.EvidenceRefs[0].Id:"c0",["basis"]=basis }) };
+                ["raw"]=raw,["normalizationCandidate"]=null,["evidenceId"]=wrongId?unit.EvidenceRefs[0].Id:"c0",["basis"]=basis,["contentKind"]="skill_statement" }) };
             return Response(Foundry(content.ToJsonString()));
         });
         using var service=Service(Config(),store,handler);

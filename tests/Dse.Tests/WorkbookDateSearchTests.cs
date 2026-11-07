@@ -96,7 +96,7 @@ public class WorkbookDateSearchTests
     private sealed class WorkbookSkills : IConcreteSkillExtractor
     {
         public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext c,string text,CancellationToken ct) => Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,
-            new(SpecificSkillRules.Version,"extracted",[new("夜間一次対応の手順書を作成",null,c.Evidence[0].Id,text){Basis="experience"},new("SQLの資料を読んだ",null,c.Evidence[0].Id,text){Basis="knowledge"}]),"local-fixed",null));
+            new(SpecificSkillRules.Version,"extracted",[new("夜間一次対応の手順書を作成",null,c.Evidence[0].Id,text){Basis="experience",ContentKind="skill_statement"},new("SQLの資料を読んだ",null,c.Evidence[0].Id,text){Basis="knowledge"}]),"local-fixed",null));
     }
     [Fact]
     public async Task Old_workbook_lexical_rows_are_rechecked_without_exposing_knowledge_and_revocation_still_wins()

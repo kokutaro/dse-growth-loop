@@ -2,6 +2,23 @@ import {test,expect} from '@playwright/test';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 const output=path.resolve('test-results/skill-dictionary');
+
+test('技術列で保留された4件の正規化案を未承認として表示し、保留や引用を変更しない',async({page})=>{
+ const shotDir='screenshots/'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15).replace('T','-')+'-technical-candidates';
+ await page.setViewportSize({width:1920,height:1080});
+ await page.goto('/skill-dictionary.html');
+ for(const [fragment,hints] of [['technical-list-a',['SQLite','Git']],['technical-list-b',['Linux','Git']]] as const){
+  const notice=page.locator('tbody tr').filter({hasText:'fragment-'+fragment}).filter({hasText:'収集の確認待ち'});
+  await expect(notice).toHaveCount(1);await expect(notice.getByRole('checkbox')).toBeDisabled();
+  await notice.getByRole('button',{name:'この候補を確認'}).click();
+  const panel=page.locator('.source-review');await expect(panel).toContainText('保留 2 件');
+  for(const hint of hints)await expect(panel).toContainText('AI正規化案（未承認）：'+hint);
+  await expect(panel).toContainText('案だけで別技能へ登録せず');
+  await expect(page.getByRole('button',{name:'判断を承認して保存'})).toHaveCount(0);
+  await panel.screenshot({path:`${shotDir}/${fragment==='technical-list-a'?'01':'02'}-held-proposals.png`});
+  await panel.getByRole('button',{name:'一覧へ戻る'}).click();
+ }
+});
 test('仮データの収集から人の承認、統合、固定版プレビューまで業務・goldを変更しない',async({page,request})=>{
  await fs.mkdir(output,{recursive:true});await page.goto('/skill-dictionary.html');
  await expect(page.getByText('現在の辞書版 0。',{exact:false})).toBeVisible();
@@ -126,4 +143,72 @@ test('古い候補と収集保留を現在の原文から再確認し、二重�
  const revokeRow=page.locator('tbody tr').filter({hasText:'権限試験'}).first();await revokeRow.getByRole('button',{name:'この候補を確認'}).click();await expect(page.getByRole('button',{name:'承認履歴を見る'})).toBeEnabled();await request.post('/api/test/recovery-revoke');await page.getByRole('button',{name:'承認履歴を見る'}).click();await expect(page.getByRole('alert')).toContainText('閲覧条件');await expect(page.getByText('私は権限試験を実施した。',{exact:true})).toHaveCount(0);
  await page.getByRole('button',{name:'権限を確認して読み込む'}).click();await expect(page.locator('tbody tr').filter({hasText:'権限試験'})).toHaveCount(0);expect(errors).toEqual([]);
  await page.locator('tbody tr').filter({hasText:'fragment-recovery-stale'}).filter({hasText:'根拠更新・再収集が必要'}).first().getByRole('button',{name:'この候補を確認'}).click();await expect(panel).toBeVisible();await panel.screenshot({path:'test-results/skill-dictionary/recovery-stale.png'});
+});
+
+test('個別化した技術の知識を承認すると資料を越えて同じGit IDへ対応し、本人経験へ昇格しない',async({page,request})=>{
+ const shotDir='screenshots/'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15).replace('T','-')+'-technical-id-review';
+ await fs.mkdir(shotDir,{recursive:true});
+ await page.goto('/skill-dictionary.html');
+ await expect(page.getByRole('button',{name:'この候補を確認'}).first()).toBeEnabled();
+ const initial=await(await request.get('/api/v1/skill-dictionary')).json();let version=initial.version;
+ const ids:Record<string,string>={};const candidateIds:string[]=[];
+ const sources=[['technical-list-a-distinct',['TypeScript','SQLite','Git']],['technical-list-b-distinct',['Go','Linux','Git']]] as const;
+ for(const [source,names] of sources){
+  await page.getByLabel('実績・知識ID').fill('fragment-'+source);
+  await page.getByRole('button',{name:'保存済み抽出を収集',exact:true}).click();
+  await expect(page.getByRole('status')).toContainText('新規候補 3 件');
+  await expect(page.getByRole('button',{name:'保存済み抽出を収集',exact:true})).toBeEnabled();
+  for(const name of names){
+   const list=await(await request.get('/api/v1/skill-candidates')).json();
+   const candidate=list.items.find((c:{fragmentId:string;item?:{raw:string}})=>c.fragmentId==='fragment-'+source&&c.item?.raw===name);
+   expect(candidate).toBeDefined();candidateIds.push(candidate.id);
+   await page.locator('tbody tr').filter({has:page.getByLabel(`候補 ${candidate.id} をプレビュー`)}).getByRole('button',{name:'この候補を確認'}).click();
+   const panel=page.locator('.candidate-review');
+   await expect(panel).toContainText('知識 ／ 知識・学習');await expect(panel).toContainText('抽出文脈：知識内容のみ');
+   await expect(panel.locator('blockquote')).toContainText(source.startsWith('technical-list-a')?'アプリ開発担当 ／ TypeScript、SQLite、Git':'通信処理の開発担当 ／ Go、Linux、Git');
+   if(ids[name]){
+    expect(candidate.conceptId).toBe(ids[name]);
+    await page.getByLabel('レビュー判断').selectOption('alias');await page.getByLabel('比較・統合先の技能').selectOption(ids[name]);
+   }else{
+    await page.getByLabel('レビュー判断').selectOption('new');
+    await page.getByLabel('技能の定義').fill(`${name}の記載知識。技術列の原文に明記された範囲だけを扱う。`);
+    await page.getByLabel('含む範囲・含めない範囲').fill('本人の実務経験・熟練度・利用期間は認定しない。他の技術とは統合しない。');version++;
+   }
+   await page.getByLabel('確認理由').fill('隔離メモリ内の合成原文と知識種別を確認した、承認手続きの自動試験');
+   await page.getByRole('button',{name:'判断を承認して保存'}).click();
+   await expect(page.getByRole('status')).toContainText(`辞書版 ${version}`);
+   await expect(panel).toHaveCount(0);await expect(page.getByRole('button',{name:'保存済み抽出を収集',exact:true})).toBeEnabled();
+   const after=(await(await request.get('/api/v1/skill-candidates')).json()).items.find((c:{id:string})=>c.id===candidate.id);
+   expect(after.conceptId).toMatch(/^skill-/);if(ids[name])expect(after.conceptId).toBe(ids[name]);else ids[name]=after.conceptId;
+  }
+ }
+ const preview=await(await request.post('/api/v1/skill-dictionary/preview',{data:{version,candidateIds}})).json();
+ expect(preview.items).toHaveLength(6);expect(new Set(Object.values(ids)).size).toBe(5);
+ expect(preview.businessRecordsChanged).toBe(false);expect(preview.goldChanged).toBe(false);
+ for(const item of preview.items){expect(item.mapping.conceptId).toBeTruthy();expect(item.experienceEligibility).toBe('content_only');}
+ for(const id of candidateIds)await page.getByLabel(`候補 ${id} をプレビュー`).check();
+ await page.getByLabel('再分類に使う辞書版').fill(String(version));await page.getByRole('button',{name:'選択候補を固定版でプレビュー'}).click();
+ await expect(page.getByRole('heading',{name:`辞書版 ${version} の固定プレビュー`})).toBeVisible();
+ await expect(page.locator('table').last().locator('tbody tr')).toHaveCount(6);
+ await page.locator('table').last().screenshot({path:path.join(shotDir,'01-knowledge-id-mapping.png')});
+ await fs.writeFile(path.join(shotDir,'mapping.json'),JSON.stringify({dictionaryVersion:version,ids,items:preview.items,businessRecordsChanged:preview.businessRecordsChanged,goldChanged:preview.goldChanged},null,2));
+});
+
+test('役割表現を保留理由付きで表示し、再収集しても経験候補や承認へ昇格しない',async({page,request})=>{
+ await page.goto('/skill-dictionary.html');
+ const before=await(await request.get('/api/v1/skill-dictionary')).json();
+ const notice=page.locator('tbody tr').filter({hasText:'fragment-role-context'}).filter({hasText:'収集の確認待ち'});
+ await expect(notice).toHaveCount(1);await expect(notice.getByRole('checkbox')).toBeDisabled();
+ await notice.getByRole('button',{name:'この候補を確認'}).click();
+ const panel=page.locator('.source-review');await expect(panel).toContainText('現在の検証で保持した抽出 3 件。保留 1 件。');
+ await expect(panel).toContainText('役割・所属などの背景情報で、具体技能ではない');
+ await expect(panel).toContainText('通信処理の開発担当');
+ await expect(page.getByRole('button',{name:'判断を承認して保存'})).toHaveCount(0);
+ await panel.screenshot({path:'test-results/skill-dictionary/role-context-held.png'});
+ await panel.getByRole('button',{name:'現在の根拠で再収集'}).click();
+ await expect(page.getByRole('status')).toContainText('新規候補 0 件');await expect(panel).toHaveCount(0);
+ const list=(await(await request.get('/api/v1/skill-candidates')).json()).items.filter((c:{fragmentId:string})=>c.fragmentId==='fragment-role-context');
+ expect(list.filter((c:{item?:{raw:string}})=>c.item?.raw==='通信処理の開発担当')).toHaveLength(0);
+ expect(list.filter((c:{item?:{basis:string}})=>c.item?.basis==='knowledge')).toHaveLength(3);
+ expect(await(await request.get('/api/v1/skill-dictionary')).json()).toEqual(before);
 });

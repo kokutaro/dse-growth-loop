@@ -56,7 +56,7 @@ public sealed class SyntheticFixtureSkills : IConcreteSkillExtractor
     public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext c,string text,CancellationToken ct)
     {
         var raw=text.Contains("回帰試験",StringComparison.Ordinal)?"回帰試験":text.Split('\n',StringSplitOptions.RemoveEmptyEntries)[0];
-        return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new(raw,null,c.Evidence[0].Id,raw){Basis="experience"}]),"mock-synthetic-skills",null));
+        return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new(raw,null,c.Evidence[0].Id,raw){Basis="experience",ContentKind="skill_statement"}]),"mock-synthetic-skills",null));
     }
 }
 public sealed class SyntheticTestProfileTests

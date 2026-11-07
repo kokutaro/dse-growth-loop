@@ -6,6 +6,32 @@ from jsonschema import Draft202012Validator
 
 
 class SpecificSkillContracts(unittest.TestCase):
+    def test_context_metadata_and_quarantine_roundtrip_in_storage_and_openapi(self):
+        spec = Path(__file__).resolve().parents[2] / 'docs/specs'
+        for name in ('contracts.schema.json', 'openapi.json', 'openapi-skill-dictionary-v1.json'):
+            source = json.loads((spec / name).read_text())
+            defs = source.get('$defs', source.get('components', {}).get('schemas'))
+            prefix = '#/$defs/' if '$defs' in source else '#/components/schemas/'
+            validator = Draft202012Validator({'$ref': prefix + 'SpecificSkill', '$defs': defs} if '$defs' in source else
+                                            {'$ref': prefix + 'SpecificSkill', 'components': {'schemas': defs}})
+            for kind in ('skill_statement', 'technology_list', 'context', 'uncertain', 'future_context'):
+                item = dict(raw='通信処理の開発担当', normalizationCandidate=None, evidenceId='e1',
+                            quote='通信処理の開発担当 ／ Go、Linux、Git', basis='experience',
+                            contentKind=kind, contextPolicy='skill-context-v1')
+                with self.subTest(file=name, kind=kind):
+                    self.assertTrue(validator.is_valid(item))
+            # Missing metadata remains readable; only fresh extraction has the new policy.
+            item.pop('contentKind'); item.pop('contextPolicy')
+            self.assertTrue(validator.is_valid(item))
+            if 'SpecificSkills' in defs:
+                root = {'$defs': defs} if '$defs' in source else {'components': {'schemas': defs}}
+                skills = Draft202012Validator({'$ref': prefix + 'SpecificSkills', **root})
+                for reason in ('non_skill_context', 'skill_context_unverified', 'skill_context_conflict'):
+                    value = dict(version='specific-skills-v2', state='extracted', items=[], searchTerms=[],
+                                 rejectedItems=[dict(item={**item, 'contextPolicy': 'skill-context-v1'}, reason=reason)])
+                    with self.subTest(file=name, reason=reason):
+                        self.assertTrue(skills.is_valid(value))
+
     def test_contract_preserves_null_empty_and_participation(self):
         schema = json.loads((Path(__file__).resolve().parents[2] / 'docs/specs/contracts.schema.json').read_text())
         validator = Draft202012Validator({'$ref': '#/$defs/SpecificSkills', '$defs': schema['$defs']})
