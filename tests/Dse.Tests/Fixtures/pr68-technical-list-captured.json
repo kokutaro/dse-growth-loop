@@ -1,0 +1,52 @@
+{
+  "capture": "Parsed output of the approved two-call PR68 cell-v3 run; source/evidence IDs are rebound only inside local tests",
+  "cases": [
+    {
+      "case": "technical-list-a",
+      "source": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+      "items": [
+        {
+          "raw": "TypeScript",
+          "normalizationCandidate": "TypeScript",
+          "basis": "knowledge"
+        },
+        {
+          "raw": "SQLite",
+          "normalizationCandidate": "SQLite",
+          "basis": "knowledge"
+        },
+        {
+          "raw": "Git",
+          "normalizationCandidate": "Git",
+          "basis": "knowledge"
+        }
+      ]
+    },
+    {
+      "case": "technical-list-b",
+      "source": "通信処理の開発担当 ／ Go、Linux、Git",
+      "items": [
+        {
+          "raw": "通信処理の開発担当",
+          "normalizationCandidate": "通信処理の開発",
+          "basis": "experience"
+        },
+        {
+          "raw": "Go",
+          "normalizationCandidate": "Go",
+          "basis": "knowledge"
+        },
+        {
+          "raw": "Linux",
+          "normalizationCandidate": "Linux",
+          "basis": "knowledge"
+        },
+        {
+          "raw": "Git",
+          "normalizationCandidate": "Git",
+          "basis": "knowledge"
+        }
+      ]
+    }
+  ]
+}
