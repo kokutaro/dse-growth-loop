@@ -223,6 +223,29 @@ test('個別化した技術の知識を承認すると資料を越えて同じGi
  const old=await(await request.get('http://127.0.0.1:5182/api/test/skill-documents?version='+initial.version+'&conceptId='+ids.Git+'&eligibility=content_only')).json();
  expect(old.dictionaryVersion).toBe(initial.version);expect(old.items).toHaveLength(0);
  await fs.writeFile(path.join(shotDir,'search.json'),JSON.stringify(audit,null,2));
+ await page.goto('/skill-dictionary.html');
+ await page.getByRole('link',{name:'この辞書版で資料を探す',exact:true}).click();
+ await expect(page).toHaveURL(new RegExp('/validation.html\\?skillVersion='+version+'$'));
+ await expect(page.getByLabel('探し方',{exact:true})).toHaveValue('skills');
+ await page.getByRole('button',{name:'この版を読み込む',exact:true}).click();
+ await page.getByLabel('承認済み技能',{exact:true}).selectOption(ids.Git);
+ await page.getByRole('button',{name:'承認済み技能で検索',exact:true}).click();
+ await expect(page.locator('article.candidate')).toHaveCount(2);
+ await expect(page.getByText(`固定した辞書版：${version}`,{exact:true})).toBeVisible();
+ for(const card of await page.locator('article.candidate').all()){
+  await expect(card).toContainText('知識内容のみ');await expect(card).toContainText(ids.Git);
+  await card.getByText('根拠を見る',{exact:true}).click();await expect(card.locator('blockquote')).toContainText('Git');
+ }
+ await page.screenshot({path:path.join(shotDir,'03-ordinary-search-git.png'),fullPage:true});
+ await page.getByLabel('検索する内容',{exact:true}).selectOption('eligible');
+ await expect(page.locator('article.candidate')).toHaveCount(0);
+ await page.getByRole('button',{name:'承認済み技能で検索',exact:true}).click();
+ await expect(page.getByText('条件に合う候補はありません。',{exact:true})).toBeVisible();
+ const current=await request.post('/api/v1/skill-dictionary/search',{data:{version,conceptId:ids.Git,eligibility:'content_only'}});
+ expect(current.status()).toBe(200);expect(current.headers()['cache-control']).toBe('no-store');
+ expect((await current.json()).items).toHaveLength(2);
+ expect((await request.post('/api/v1/skill-dictionary/search',{headers:{'X-Test-Actor':'member'},data:{version,conceptId:ids.Git,eligibility:'content_only'}})).status()).toBe(403);
+ await fs.writeFile(path.join(shotDir,'ordinary-search.json'),JSON.stringify(await(await request.post('/api/v1/skill-dictionary/search',{data:{version,conceptId:ids.Git,eligibility:'content_only'}})).json(),null,2));
 });
 
 test('役割表現を保留理由付きで表示し、再収集しても経験候補や承認へ昇格しない',async({page,request})=>{
