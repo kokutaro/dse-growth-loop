@@ -12,7 +12,7 @@ public sealed class SkillDocumentDemoTests
     private static readonly JsonSerializerOptions Json=new(JsonSerializerDefaults.Web);
     private static string Key()=>Guid.NewGuid().ToString("N");
 
-    private static async Task<(SkillDictionaryFixture Fixture,Dictionary<string,string> Ids)> Approved()
+    internal static async Task<(SkillDictionaryFixture Fixture,Dictionary<string,string> Ids)> Approved()
     {
         var f=await SkillDictionaryFixture.Create();var ids=new Dictionary<string,string>();
         foreach(var (name,text,skills) in new[]{
