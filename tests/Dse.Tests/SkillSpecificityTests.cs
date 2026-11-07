@@ -27,7 +27,7 @@ public partial class AiTests
             return Response(Foundry(new JsonObject{["state"]="extracted",["items"]=new JsonArray(item)}.ToJsonString()));
         });
         using var ai=Service(Config(),store,handler);var result=await ai.ExtractSkillsAsync(Context() with{Evidence=[reference],PromptVersion=workbook?WorkbookRules.CellSkillPrompt:SpecificSkillRules.ContextPrompt},source,default);
-        var actual=Assert.Single(result.Value!.Items!);Assert.Equal(raw,actual.Raw);Assert.Equal(source,actual.Quote);Assert.Equal(1,handler.Calls);
+        Assert.Empty(result.Value!.Items!);var held=Assert.Single(result.Value.RejectedItems!);Assert.Equal("skill_context_unverified",held.Reason);var actual=held.Item;Assert.Equal(raw,actual.Raw);Assert.Equal(source,actual.Quote);Assert.Equal(1,handler.Calls);
     }
 }
 public sealed class SkillSpecificityTests

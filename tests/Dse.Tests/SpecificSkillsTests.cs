@@ -49,7 +49,7 @@ public sealed class SpecificSkillsTests
         public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext context,string text,CancellationToken ct)
         {
             Calls++;
-            return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new("C#","C#",evidenceId ?? context.Evidence[0].Id,quote){Basis="experience"}, ..(corruptSibling ? new SpecificSkill[] { new("Azure",null,"invented","Azureで構築した。"){Basis="experience"} } : [])]),"skill-run-test",null));
+            return Task.FromResult(new AiResult<SpecificSkills>(AiStatus.Succeeded,new(SpecificSkillRules.Version,"extracted",[new("C#","C#",evidenceId ?? context.Evidence[0].Id,quote){Basis="experience",ContentKind="skill_statement"}, ..(corruptSibling ? new SpecificSkill[] { new("Azure",null,"invented","Azureで構築した。"){Basis="experience",ContentKind="skill_statement"} } : [])]),"skill-run-test",null));
         }
     }
     [Fact]

@@ -193,3 +193,22 @@ test('個別化した技術の知識を承認すると資料を越えて同じGi
  await page.locator('table').last().screenshot({path:path.join(shotDir,'01-knowledge-id-mapping.png')});
  await fs.writeFile(path.join(shotDir,'mapping.json'),JSON.stringify({dictionaryVersion:version,ids,items:preview.items,businessRecordsChanged:preview.businessRecordsChanged,goldChanged:preview.goldChanged},null,2));
 });
+
+test('役割表現を保留理由付きで表示し、再収集しても経験候補や承認へ昇格しない',async({page,request})=>{
+ await page.goto('/skill-dictionary.html');
+ const before=await(await request.get('/api/v1/skill-dictionary')).json();
+ const notice=page.locator('tbody tr').filter({hasText:'fragment-role-context'}).filter({hasText:'収集の確認待ち'});
+ await expect(notice).toHaveCount(1);await expect(notice.getByRole('checkbox')).toBeDisabled();
+ await notice.getByRole('button',{name:'この候補を確認'}).click();
+ const panel=page.locator('.source-review');await expect(panel).toContainText('現在の検証で保持した抽出 3 件。保留 1 件。');
+ await expect(panel).toContainText('役割・所属などの背景情報で、具体技能ではない');
+ await expect(panel).toContainText('通信処理の開発担当');
+ await expect(page.getByRole('button',{name:'判断を承認して保存'})).toHaveCount(0);
+ await panel.screenshot({path:'test-results/skill-dictionary/role-context-held.png'});
+ await panel.getByRole('button',{name:'現在の根拠で再収集'}).click();
+ await expect(page.getByRole('status')).toContainText('新規候補 0 件');await expect(panel).toHaveCount(0);
+ const list=(await(await request.get('/api/v1/skill-candidates')).json()).items.filter((c:{fragmentId:string})=>c.fragmentId==='fragment-role-context');
+ expect(list.filter((c:{item?:{raw:string}})=>c.item?.raw==='通信処理の開発担当')).toHaveLength(0);
+ expect(list.filter((c:{item?:{basis:string}})=>c.item?.basis==='knowledge')).toHaveLength(3);
+ expect(await(await request.get('/api/v1/skill-dictionary')).json()).toEqual(before);
+});

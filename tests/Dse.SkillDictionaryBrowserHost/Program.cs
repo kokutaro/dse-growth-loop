@@ -42,6 +42,13 @@ foreach(var (id,source,hints) in new[]{
     await Change("fragment-"+distinctId,v=>v["specificSkills"]=JsonSerializer.SerializeToNode(new SpecificSkills(SpecificSkillRules.Version,"extracted",
         hints.Select(h=>new SpecificSkill(h,h,"ev-"+distinctId,source){Basis="knowledge"}).ToArray()),browserJson));
 }
+// Current-contract response fixture: the role remains quarantined through collection.
+const string roleContextSource="通信処理の開発担当 ／ Go、Linux、Git";
+await fixture.Source("role-context",roleContextSource,roleContextSource);
+await Change("fragment-role-context",v=>v["specificSkills"]=JsonSerializer.SerializeToNode(SpecificSkillRules.RequireContext(new(SpecificSkillRules.Version,"extracted",
+    [new("通信処理の開発担当","通信処理の開発","ev-role-context",roleContextSource){Basis="experience",ContentKind="context"},
+     ..new[]{"Go","Linux","Git"}.Select(h=>new SpecificSkill(h,h,"ev-role-context",roleContextSource){Basis="knowledge",ContentKind="technology_list"})])),browserJson));
+await fixture.Service.CollectAsync(SkillDictionaryFixture.Curator,Guid.NewGuid().ToString("N"),new("fragment-role-context"),default);
 var wire=new SkillSemanticTestRuntime.Wire();var aiConfig=SkillSemanticTestRuntime.Config();aiConfig["AiUsage:MaxInputTokens"]="8000";
 var ai=SkillSemanticTestRuntime.Ai(fixture,aiConfig,wire);
 builder.Services.AddSingleton(new SkillDictionaryService(fixture.Repo,fixture.Fence,new(fixture.Repo,TimeProvider.System),TimeProvider.System,()=>ai));

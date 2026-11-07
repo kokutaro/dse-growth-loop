@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Dse.Domain;
 using Dse.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Dse.Tests;
@@ -26,6 +27,9 @@ public sealed class SkillContextRegressionTests
     [InlineData(null,"experience","通信処理の開発担当",false,"skill_context_unverified")]
     [InlineData("uncertain","experience","仕様整理",false,"skill_context_unverified")]
     [InlineData("technology_list","experience","Git",false,"skill_context_conflict")]
+    [InlineData("context","knowledge","通信処理の開発担当",false,"non_skill_context")]
+    [InlineData("invented","experience","仕様整理",false,"skill_context_unverified")]
+    [InlineData("technology_list","knowledge","Git",false,null)]
     [InlineData("skill_statement","experience","担当者と共同で通信処理の単体試験を実施した。",true,null)]
     [InlineData("skill_statement","not_experience","通信処理の単体試験は担当していない。",false,null)]
     public void Current_context_policy_requires_concrete_skill_evidence_without_role_word_filters(string? contentKind,string basis,string raw,bool eligible,string? reason)
@@ -56,19 +60,26 @@ public sealed class SkillContextRegressionTests
         }
     }
     [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    public async Task Recorded_response_through_upload_projection_and_search_does_not_promote_role_context(int index)
+    [InlineData(0,false)]
+    [InlineData(1,false)]
+    [InlineData(0,true)]
+    [InlineData(1,true)]
+    public async Task Recorded_response_through_upload_queue_worker_projection_and_search_does_not_promote_role_context(int index,bool excel)
     {
         var captured=Captured()[index]!.AsObject();var text=captured["source"]!.GetValue<string>();
         using var h=new IngestionHarness();
-        var upload=await h.Upload(bytes:OfficeFixtures.Package(body:$"<w:p><w:r><w:t>{text}</w:t></w:r></w:p>"));
-        await h.Processor.RunOnceAsync(default);
-        var doc=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),upload.Body!["documentId"]!.GetValue<string>(),default))!;
         var ai=new PipelineAi();var saved=new SavedExtractor(captured);
         var config=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock"}).Build();
         var pipeline=new ProfilePipeline(h.Repo,h.Store,new(h.Repo),ai,ai,new(config),config,h.Clock,saved);
-        await pipeline.CommitAsync(await pipeline.BuildAsync(Jobs.Create(doc.Value,"enrichment",h.Clock.GetUtcNow()),default),[],default);
+        var options=new IngestionOptions();
+        var worker=new IngestionProcessor(h.Repo,h.Blobs,h.Queue,new(options),options,new(h.Repo),h.Clock,NullLogger<IngestionProcessor>.Instance,pipeline,h.Notifications);
+        var body=excel?$"<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData><row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>{text}</t></is></c></row></sheetData></worksheet>":$"<w:p><w:r><w:t>{text}</w:t></w:r></w:p>";
+        var upload=await h.Upload(bytes:OfficeFixtures.Package(excel,body),excel:excel);
+        Assert.True(await worker.RunOnceAsync(default)); // Durable upload notification and Office extraction.
+        Assert.True(await worker.RunOnceAsync(default)); // Enrichment notification, projection and commit.
+        var doc=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),upload.Body!["documentId"]!.GetValue<string>(),default))!;
+        var enrichment=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),doc.Value.Text("enrichmentJobId"),default))!;
+        Assert.Equal("ready",enrichment.Value.Text("status"));
         var person=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),"demo-person-01",default))!;
         var fragment=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),Assert.Single(person.Value.Strings("experienceIds")),default))!.Value;
         var result=fragment["specificSkills"]!.Deserialize<SpecificSkills>(Json)!;
@@ -83,5 +94,13 @@ public sealed class SkillContextRegressionTests
         Assert.Equal(1,saved.Calls);
         var after=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),fragment.Text("id"),default))!.Value["specificSkills"]!.Deserialize<SpecificSkills>(Json)!;
         Assert.Empty(after.SearchTerms);if(index==1)Assert.Single(after.RejectedItems!);
+        person=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),"demo-person-01",default))!;
+        var profiles=new ProfileService(h.Repo,new(h.Repo),new(h.Repo,h.Clock));
+        await profiles.UpdateAsync(IdentityResolver.Demo,"demo-person-01","context-correction-key",person.ETag,
+            new("本人訂正",true,"correct",[new(fragment.Text("id"),"本人が訂正した担当内容。",new(null,null,"unknown",null))]),default);
+        await pipeline.CommitAsync(await pipeline.BuildAsync(enrichment.Value,default),[],default);
+        var corrected=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),fragment.Text("id"),default))!.Value;
+        Assert.Equal("本人が訂正した担当内容。",corrected.Text("description"));
+        Assert.Equal("conflict",corrected.Text("correctionState"));Assert.NotNull(corrected["pendingExtraction"]);
     }
 }
