@@ -35,6 +35,12 @@ foreach(var (id,source,hints) in new[]{
     await Change("fragment-"+id,v=>v["specificSkills"]=JsonSerializer.SerializeToNode(new SpecificSkills(SpecificSkillRules.Version,"extracted",
         hints.Select(h=>new SpecificSkill(source,h,"ev-"+id,source){Basis="knowledge"}).ToArray()),browserJson));
     await fixture.Service.CollectAsync(SkillDictionaryFixture.Curator,Guid.NewGuid().ToString("N"),new("fragment-"+id),default);
+    // Separate saved-response fixture for the independently anchored result.
+    // Never rewrite the old held collection or call an external model.
+    var distinctId=id+"-distinct";
+    await fixture.Source(distinctId,source,source);
+    await Change("fragment-"+distinctId,v=>v["specificSkills"]=JsonSerializer.SerializeToNode(new SpecificSkills(SpecificSkillRules.Version,"extracted",
+        hints.Select(h=>new SpecificSkill(h,h,"ev-"+distinctId,source){Basis="knowledge"}).ToArray()),browserJson));
 }
 var wire=new SkillSemanticTestRuntime.Wire();var aiConfig=SkillSemanticTestRuntime.Config();aiConfig["AiUsage:MaxInputTokens"]="8000";
 var ai=SkillSemanticTestRuntime.Ai(fixture,aiConfig,wire);
