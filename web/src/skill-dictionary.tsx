@@ -71,6 +71,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
  {error&&<p role="alert">{error}</p>}{message&&<p role="status">{message}</p>}
  {uncertain&&<button disabled={busy} onClick={()=>pending.current&&void send(pending.current)}>同じ操作を再送</button>}
  {!dictionary?<button onClick={()=>void read(refresh)} disabled={busy}>権限を確認して読み込む</button>:<>
+ <p><a href={'/validation.html?skillVersion='+dictionary.version}>この辞書版で資料を探す</a></p>
  <section className="panel"><h2>抽出結果から候補を取り込む</h2><p>現在の辞書版 {dictionary.version}。根拠を閲覧できる既存の実績IDを指定します。AIの追加実行はありません。</p>
  <label>実績・知識ID<input value={fragment} onChange={e=>setFragment(e.target.value)}/></label><button disabled={busy||uncertain||!fragment.trim()} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:fragment}})}>保存済み抽出を収集</button>
  </section>
