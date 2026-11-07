@@ -9708,6 +9708,14 @@
               "not_experience",
               "uncertain"
             ]
+          },
+          "contentKind": {
+            "type": "string",
+            "description": "抽出された文脈種別。skill_statement、technology_list、context、uncertain。未知の値も保留証跡として保持し、経験適格性はサーバーで再検証する。"
+          },
+          "contextPolicy": {
+            "type": "string",
+            "description": "新規抽出境界でサーバーが付ける文脈検証版。skill-context-v1。旧版では省略し、未知の版は保留する。"
           }
         },
         "required": [
@@ -9807,7 +9815,10 @@
                     "not_in_fragment",
                     "reported_quote",
                     "retracted_assertion",
-                    "actor_not_established"
+                    "actor_not_established",
+                    "non_skill_context",
+                    "skill_context_unverified",
+                    "skill_context_conflict"
                   ]
                 }
               }
