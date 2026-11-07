@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-07",
+  "mode": "saved-synthetic-response-and-mock-only",
+  "testedCommit": "d4a59bbdae2109573d79b9185cdb318c50da6877",
+  "promptVersions": {
+    "prose": "specific-skills-context-v5",
+    "cell": "specific-skills-cell-v4",
+    "perItemPolicy": "skill-context-v1"
+  },
+  "tests": {
+    "dotnet": {
+      "passed": 1223,
+      "failed": 0,
+      "skipped": 0
+    },
+    "targetedRegression": {
+      "passed": 18,
+      "failed": 0
+    },
+    "browserDictionary": {
+      "passed": 9,
+      "failed": 0
+    },
+    "frontendBuild": "succeeded"
+  },
+  "capturedReplay": {
+    "cases": 2,
+    "formats": [
+      "docx",
+      "xlsx"
+    ],
+    "queuedWorkerScenarios": 4,
+    "knowledgeItemsPerSource": 3,
+    "roleCandidate": "quarantined-skill_context_unverified",
+    "personExperienceSearchTerms": [],
+    "textSearchPreserved": true,
+    "personCorrectionPreserved": true
+  },
+  "currentContractFixture": {
+    "roleCandidate": "quarantined-non_skill_context",
+    "knowledgeItems": 3,
+    "newCandidatesAfterRecollection": 0,
+    "dictionaryChanged": false
+  },
+  "externalAiCalls": 0,
+  "newInferenceCostUsd": 0,
+  "iamChanges": 0,
+  "azureWrites": 0,
+  "productionMerged": false,
+  "productionDeployed": false,
+  "pr": {
+    "url": "https://github.com/kokutaro/dse-growth-loop/pull/68",
+    "remoteHeadObserved": "c92a9a51a485f1237178d50e96a83e135618ca99",
+    "draft": true,
+    "pushed": false,
+    "reason": "PR synchronize triggers preview build and Azure delivery; no extra deployment/cost is authorized"
+  },
+  "unverified": [
+    "live model quality for context-v5/cell-v4",
+    "Azure Queue and standing Worker for this fix",
+    "Azure-authenticated approval and shared dictionary",
+    "updated public preview"
+  ],
+  "sha256": {
+    "tests/Dse.Tests/Fixtures/pr68-technical-list-captured.json": "66186b8f66e6e59439d7b90ed2d453925fdcc77c3e6c85473a591583edb0ba18",
+    "web/screenshots/20261107-role-context/01-held-role.png": "22602ec351ded8eca3c8a6989c763dcafadf577d93f7e4614e8e6915f5056c31"
+  }
+}
