@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Dse.Domain;
 
@@ -12,7 +13,7 @@ public sealed record SkillDictionaryReview(string Action, string Reason, int Exp
 public sealed record SkillCandidateCollect(string FragmentId,string? ExpectedFingerprint=null);
 public sealed record SkillDictionaryPreview(int Version, string[] CandidateIds);
 public sealed record SkillDictionaryMatch(string State, string? ConceptId);
-public sealed record SkillDictionarySearch(int Version,string ConceptId,string Eligibility,int Limit=20)
+public sealed record SkillDictionarySearch([property:JsonRequired]int Version,[property:JsonRequired]string ConceptId,[property:JsonRequired]string Eligibility,int Limit=20)
 {
     public void Validate()
     {
