@@ -13,6 +13,7 @@ export default defineConfig({
         validation: resolve(import.meta.dirname, "validation.html"),
         testProfiles: resolve(import.meta.dirname, "test-profiles.html"),
         skillDictionary: resolve(import.meta.dirname, "skill-dictionary.html"),
+        skillDemo: resolve(import.meta.dirname, "skill-demo.html"),
         redirect: resolve(import.meta.dirname, "redirect.html"),
       },
     },

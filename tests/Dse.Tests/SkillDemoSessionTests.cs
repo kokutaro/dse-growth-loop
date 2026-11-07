@@ -36,6 +36,10 @@ public sealed class SkillDemoSessionTests
         Assert.Equal(404,(await Assert.ThrowsAsync<DomainException>(()=>sessions.GetAsync(SkillDictionaryFixture.OtherScope,demo.Id,default))).Status);
         clock.Now=clock.Now.AddHours(2);
         Assert.Equal(410,(await Assert.ThrowsAsync<DomainException>(()=>sessions.GetAsync(SkillDictionaryFixture.Curator,demo.Id,default))).Status);
+        var fresh=await sessions.StartAsync(SkillDictionaryFixture.Curator,default);
+        var p=RecordPartition.Catalog("demo");var role=(await f.Repo.ReadAsync(p,AuthorityProvider.PersonId(SkillDictionaryFixture.Curator.PersonId),default))!;
+        role.Value["roles"]=RecordJson.Array(["member"]);await f.Store.CommitAsync(p,[RecordWrite.Replace(role.Value,role.ETag)],default);
+        Assert.Equal(403,(await Assert.ThrowsAsync<DomainException>(()=>sessions.GetAsync(SkillDictionaryFixture.Curator,fresh.Id,default))).Status);
     }
 
     private sealed class Clock:TimeProvider

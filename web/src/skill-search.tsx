@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {authSessionSignal,getToken,type AppConfig} from './auth';
+import {skillApi,skillDemoId} from './skill-demo-context';
 
 export type SkillMatch={conceptId:string;eligibility:string;reviews:{action:string;reason:string;previousVersion:number;approvedVersion:number;createdAt:string}[]};
 type Hit={candidateId:string;fragmentId:string;conceptId:string;skillName:string;raw:string;quote:string;evidenceId:string;experienceEligibility:string;reviews:SkillMatch['reviews']};
@@ -15,7 +16,8 @@ export function SkillSearch({config,onResult,onInvalidate}:{config:AppConfig;onR
  async function request(path:string,body?:unknown){
   const headers:Record<string,string>={'Content-Type':'application/json'};
   if(config.mode==='Azure')headers.Authorization=`Bearer ${await getToken(config)}`;
-  const response=await fetch('/api/v1/'+path,{method:body===undefined?'GET':'POST',headers,...(body===undefined?{}:{body:JSON.stringify(body)}),signal:authSessionSignal(),cache:'no-store'});
+  const response=await fetch(skillApi(path),{method:body===undefined?'GET':'POST',headers,...(body===undefined?{}:{body:JSON.stringify(body)}),signal:authSessionSignal(),cache:'no-store'});
+  if(response.status===410)throw new Error('デモは終了しました。以前の2資料でデモを開き直してください。');
   if(!response.ok)throw new Error(response.status===403?'この検索には既存のoperator権限が必要です。':response.status===404?'指定した辞書版を確認できません。':response.status===422?'検索対象が上限を超えました。部分結果は表示しません。':'検索を完了できません。辞書版と現在の根拠を確認してください。');
   return response.json();
  }
@@ -39,6 +41,7 @@ export function SkillSearch({config,onResult,onInvalidate}:{config:AppConfig;onR
   }catch(e){if(current===epoch.current)setError(e instanceof Error?e.message:'検索できません。');}finally{if(current===epoch.current)setBusy(false);}
  }
  return <form onSubmit={e=>void search(e)}>
+  {skillDemoId()!==undefined&&<p>操作用デモ：変更は自分のメモリ内だけに保存します。<a href="/skill-demo.html">デモを開き直す</a></p>}
   <p>承認済みの技能IDで資料を探します。既存operatorの閲覧範囲に限り、AIを呼ばずに検索します。</p>
   <label>固定する辞書版<input type="number" min="0" step="1" value={version} disabled={busy} onChange={e=>{invalidate();setVersion(e.target.value);setLoaded(undefined);setConcepts([]);setSelected('');}}/></label>
   <button type="button" disabled={busy} onClick={()=>void load()}>この版を読み込む</button>
