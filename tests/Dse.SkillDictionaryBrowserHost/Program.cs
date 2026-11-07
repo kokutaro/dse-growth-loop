@@ -52,6 +52,7 @@ await fixture.Service.CollectAsync(SkillDictionaryFixture.Curator,Guid.NewGuid()
 var wire=new SkillSemanticTestRuntime.Wire();var aiConfig=SkillSemanticTestRuntime.Config();aiConfig["AiUsage:MaxInputTokens"]="8000";
 var ai=SkillSemanticTestRuntime.Ai(fixture,aiConfig,wire);
 builder.Services.AddSingleton(new SkillDictionaryService(fixture.Repo,fixture.Fence,new(fixture.Repo,TimeProvider.System),TimeProvider.System,()=>ai));
+builder.Services.AddSingleton<SkillDocumentDemo>();
 builder.Services.AddSingleton(new AuthorityProvider(fixture.Repo));
 builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();builder.Services.AddSingleton<PageTokens>();
@@ -63,6 +64,12 @@ app.Use(async(c,next)=>{
  catch(ArgumentException){c.Response.StatusCode=400;await c.Response.WriteAsJsonAsync(new{code="INVALID_INPUT"});}
 });
 app.Lifetime.ApplicationStopped.Register(ai.Dispose);
+app.UseStaticFiles();
+app.MapGet("/api/test/skill-documents",(int version,string conceptId,string eligibility,HttpContext c,SkillDocumentDemo demo,CancellationToken ct)=>
+    new FencedResult(fixture.Fence,"demo",async token=>{
+        c.Response.Headers.CacheControl="no-store";
+        return Results.Ok(await demo.SearchUnderFenceAsync((ActorAccess)c.Items[typeof(ActorAccess)]!,version,conceptId,eligibility,token));
+    },ct));
 app.MapGet("/api/test/semantic-audit",async()=>new{wire.Calls,runs=(await fixture.Repo.QueryAsync(RecordPartition.Catalog("demo"),"aiRun",null,null,100,null,default)).Items.Select(r=>new{id=r.Value.Text("id"),status=r.Value.Text("status")}).ToArray()});
 app.MapPost("/api/test/seed-noul",async(string candidateId)=>{
  var p=RecordPartition.Catalog("demo");var candidate=(await fixture.Repo.ReadAsync(p,candidateId,default))!;var version=(await fixture.Repo.ReadAsync(p,SkillDictionaryService.HeadId,default))!.Value.Number("version");var snapRow=(await fixture.Repo.ReadAsync(p,"skill-dictionary-version-"+version,default))!;var snapshot=snapRow.Value["snapshot"]!.Deserialize<SkillDictionarySnapshot>(browserJson)!;

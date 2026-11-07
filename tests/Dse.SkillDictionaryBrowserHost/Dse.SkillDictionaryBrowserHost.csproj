@@ -4,5 +4,6 @@
     <ProjectReference Include="../../src/Dse.Api/Dse.Api.csproj" />
     <Compile Include="../Dse.Tests/SkillSemanticTestRuntime.cs" Link="SkillSemanticTestRuntime.cs" />
     <Compile Include="../Dse.Tests/SkillDictionaryFixture.cs" Link="SkillDictionaryFixture.cs" />
+    <Compile Include="../Dse.Tests/SkillDocumentDemo.cs" Link="SkillDocumentDemo.cs" />
   </ItemGroup>
 </Project>
