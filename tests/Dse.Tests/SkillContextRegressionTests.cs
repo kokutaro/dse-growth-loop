@@ -39,7 +39,7 @@ public sealed class SkillContextRegressionTests
         Assert.Equal(result.SearchTerms,again.SearchTerms);
     }
     [Fact]
-    public void Existing_legacy_skill_and_person_owned_correction_are_not_automatically_rewritten()
+    public void Existing_legacy_skill_is_not_automatically_rewritten()
     {
         const string text="担当者と共同で通信処理の単体試験を実施した。";
         var old=SpecificSkillRules.Assess(new(SpecificSkillRules.Version,"extracted",[new(text,null,"e1",text){Basis="experience"}]),new Dictionary<string,string>{{"e1",text}},text,"person");
@@ -77,7 +77,8 @@ public sealed class SkillContextRegressionTests
         var units=(await h.Store.QueryAsync(RecordPartition.Catalog("demo"),"searchUnit","entityId","demo-person-01",100,null,default)).Items.Select(r=>r.Value.Deserialize<SearchUnit>(Json)!).ToArray();
         var valid=await new SourceGuard(h.Repo).FilterAsync(IdentityResolver.Demo,units,default);
         Assert.Empty(Retriever.Search(valid,new([],[],[]){SpecificSkills=["通信処理の開発担当"]},IdentityResolver.Demo.Search).Candidates);
-        Assert.Empty(Retriever.Search(valid,new([],[],["通信処理の開発担当"]),IdentityResolver.Demo.Search).Candidates);
+        // Source text remains available to ordinary text search; it must not count as skill evidence.
+        Assert.All(Retriever.Search(valid,new([],[],["通信処理の開発担当"]),IdentityResolver.Demo.Search).Candidates,c=>Assert.Equal(0,c.SpecificSkillMatches));
         await pipeline.CommitAsync(await pipeline.BuildAsync(Jobs.Create(person.Value,"projection",h.Clock.GetUtcNow()),default),[],default);
         Assert.Equal(1,saved.Calls);
         var after=(await h.Repo.ReadAsync(RecordPartition.Catalog("demo"),fragment.Text("id"),default))!.Value["specificSkills"]!.Deserialize<SpecificSkills>(Json)!;

@@ -51,6 +51,8 @@ public sealed class MockAiTransport : IAiTransport
                         items.Add(new JsonObject { ["raw"]=raw,["normalizationCandidate"]=null,
                             ["evidenceId"]=e["id"]!.DeepClone(),["quote"]=example.Text,["basis"]=example.Basis });
             }
+            if (input["skillContextPolicy"]?.GetValue<string>() == Dse.Domain.SpecificSkillRules.ContextPolicy)
+                foreach (var item in items) item!["contentKind"] = "skill_statement";
             if (input["workbookPolicy"]?.GetValue<string>() == Dse.Domain.WorkbookRules.CellSkillPrompt)
                 foreach (var item in items) item!.AsObject().Remove("quote");
             content = new() { ["state"] = "extracted", ["items"] = items };

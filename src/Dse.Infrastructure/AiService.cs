@@ -24,7 +24,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
     public Task<AiResult<StructuredText>> StructureAsync(AiContext context, string text, CancellationToken ct) =>
         RunAsync(context, "structure", text, [], [], (body, model, evidence, _) => AiCodecs.Structure(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<SpecificSkills>> ExtractSkillsAsync(AiContext context, string text, CancellationToken ct) =>
-        RunAsync(context, "extractSkills", text, [], [], (body, model, evidence, _) => AiCodecs.Skills(AiCodecs.FoundryContent(body, model), evidence, context.PromptVersion == WorkbookRules.CellSkillPrompt), ct);
+        RunAsync(context, "extractSkills", text, [], [], (body, model, evidence, _) => AiCodecs.Skills(AiCodecs.FoundryContent(body, model), evidence, context.PromptVersion == WorkbookRules.CellSkillPrompt,
+            context.PromptVersion is SpecificSkillRules.ContextPrompt or WorkbookRules.CellSkillPrompt), ct);
     public Task<AiResult<GroundedText>> SummarizeAsync(AiContext context, string text, CancellationToken ct) =>
         RunAsync(context, "summarize", text, [], [], (body, model, evidence, _) => AiCodecs.Summary(AiCodecs.FoundryContent(body, model), evidence), ct);
     public Task<AiResult<Ranking>> RerankAsync(AiContext context, string query, CancellationToken ct) =>
@@ -153,6 +154,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var evidenceIds = context.Evidence.Select(x => x.Id).Concat(conversationEvidence.Select(x => x!["id"]!.GetValue<string>())).Concat(candidateEvidence.Values.SelectMany(x => x)).ToHashSet();
         if (evidenceIds.Count > 100 || snapshots.Distinct().Count() > 100) throw new ArgumentException("Too many AI sources");
         var input = new JsonObject { ["text"] = text, ["evidence"] = evidence, ["candidates"] = candidates };
+        if (operation == "extractSkills" && context.PromptVersion is SpecificSkillRules.ContextPrompt or WorkbookRules.CellSkillPrompt)
+            input["skillContextPolicy"] = SpecificSkillRules.ContextPolicy;
         if (context.PromptVersion is WorkbookRules.Version or WorkbookRules.CellSkillPrompt || operation=="decide" && context.WorkbookSectionKind is not null)
         {
             input["workbookPolicy"] = operation=="decide" ? "workbook-domain-v1" : context.PromptVersion;
