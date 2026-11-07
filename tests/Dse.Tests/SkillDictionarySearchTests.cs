@@ -91,6 +91,44 @@ public sealed class SkillDictionarySearchTests
         Assert.Equal(100,reads.Pages);
     }
 
+    [Fact]
+    public async Task Approved_practice_remains_practice_and_management_only_marked_candidates_stay_out()
+    {
+        var (f,ids)=await SkillDocumentDemoTests.Approved();var p=RecordPartition.Catalog("demo");
+        var collected=await f.Service.CollectAsync(Actor,Guid.NewGuid().ToString("N"),new("fragment-regression"),default);
+        var candidateId=collected.Body!["bindings"]![0]!["candidateId"]!.GetValue<string>();
+        var row=(await f.Repo.ReadAsync(p,candidateId,default))!;var dictionary=await f.Service.ReadUnderFenceAsync(Actor,null,default);
+        var approved=await f.Service.ReviewAsync(Actor,candidateId,Guid.NewGuid().ToString("N"),row.ETag,
+            new("new","以前のデモ業務の実施根拠を確認",5,dictionary.Text("etag"),Name:"回帰試験",Definition:"回帰試験を実施する",Boundary:"知識だけの記載は含めない"),default);
+        var concept=approved.Body!["conceptId"]!.GetValue<string>();
+        Assert.Single((await f.Service.SearchUnderFenceAsync(Actor,new(6,concept,"eligible"),default))["items"]!.AsArray());
+        Assert.Empty((await f.Service.SearchUnderFenceAsync(Actor,new(6,concept,"content_only"),default))["items"]!.AsArray());
+        row=(await f.Repo.ReadAsync(p,candidateId,default))!;row.Value["syntheticTest"]=true;
+        await f.Store.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],default);
+        Assert.Empty((await f.Service.SearchUnderFenceAsync(Actor,new(6,concept,"eligible"),default))["items"]!.AsArray());
+        Assert.Equal(2,(await f.Service.SearchUnderFenceAsync(Actor,new(6,ids["Git"],"content_only"),default))["items"]!.AsArray().Count);
+    }
+
+    [Fact]
+    public async Task Approved_merge_keeps_old_version_searchable_and_maps_both_sources_in_the_new_version()
+    {
+        var (f,_)=await SkillDocumentDemoTests.Approved();var p=RecordPartition.Catalog("demo");
+        var ids=new List<(string Candidate,string Concept)>();
+        foreach(var fragment in new[]{"regression","alias"})
+        {
+            var collected=await f.Service.CollectAsync(Actor,Guid.NewGuid().ToString("N"),new("fragment-"+fragment),default);
+            var id=collected.Body!["bindings"]![0]!["candidateId"]!.GetValue<string>();var row=(await f.Repo.ReadAsync(p,id,default))!;
+            var d=await f.Service.ReadUnderFenceAsync(Actor,null,default);
+            var approved=await f.Service.ReviewAsync(Actor,id,Guid.NewGuid().ToString("N"),row.ETag,new("new","既存の回帰試験デモ資料を確認",d.Number("version"),d.Text("etag"),Name:fragment,Definition:"回帰試験を実施する",Boundary:"知識の記載のみは含めない"),default);
+            ids.Add((id,approved.Body!["conceptId"]!.GetValue<string>()));
+        }
+        var source=(await f.Repo.ReadAsync(p,ids[0].Candidate,default))!;var dictionary=await f.Service.ReadUnderFenceAsync(Actor,null,default);
+        await f.Service.ReviewAsync(Actor,ids[0].Candidate,Guid.NewGuid().ToString("N"),source.ETag,new("merge","同じ回帰試験の原文と定義境界を確認",7,dictionary.Text("etag"),TargetId:ids[1].Concept,SourceId:ids[0].Concept),default);
+        Assert.Single((await f.Service.SearchUnderFenceAsync(Actor,new(7,ids[0].Concept,"eligible"),default))["items"]!.AsArray());
+        Assert.Equal(2,(await f.Service.SearchUnderFenceAsync(Actor,new(8,ids[1].Concept,"eligible"),default))["items"]!.AsArray().Count);
+        Assert.Empty((await f.Service.SearchUnderFenceAsync(Actor,new(8,ids[0].Concept,"eligible"),default))["items"]!.AsArray());
+    }
+
     private sealed class EmptyPages(IPrimaryRepository inner):IPrimaryRepository
     {
         public int Pages{get;private set;}
