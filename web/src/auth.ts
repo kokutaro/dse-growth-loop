@@ -7,6 +7,7 @@ export type AppConfig = {
   tenantId: string;
   clientId: string;
   scope: string;
+  dictionaryFixture?:boolean;
 };
 let instance: PublicClientApplication | undefined;
 let ended = false;

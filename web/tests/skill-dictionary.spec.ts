@@ -147,10 +147,15 @@ test('古い候補と収集保留を現在の原文から再確認し、二重�
 
 test('個別化した技術の知識を承認すると資料を越えて同じGit IDへ対応し、本人経験へ昇格しない',async({page,request})=>{
  const shotDir='screenshots/'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15).replace('T','-')+'-technical-id-review';
+ await page.setViewportSize({width:1920,height:1080});
  await fs.mkdir(shotDir,{recursive:true});
  await page.goto('/skill-dictionary.html');
  await expect(page.getByRole('button',{name:'この候補を確認'}).first()).toBeEnabled();
  const initial=await(await request.get('/api/v1/skill-dictionary')).json();let version=initial.version;
+ const originalNotices=(await(await request.get('/api/v1/skill-candidates')).json()).items.filter((c:{candidateType:string;fragmentId:string})=>c.candidateType==='collection'&&['fragment-technical-list-a','fragment-technical-list-b'].includes(c.fragmentId));
+ // Source reads share the tenant fence; compare successful reads sequentially.
+ const originalSources=[];
+ for(const c of originalNotices){const response=await request.get('/api/v1/skill-candidates/'+c.id+'/source');expect(response.ok()).toBe(true);originalSources.push(await response.json());}
  const ids:Record<string,string>={};const candidateIds:string[]=[];
  const sources=[['technical-list-a-distinct',['TypeScript','SQLite','Git']],['technical-list-b-distinct',['Go','Linux','Git']]] as const;
  for(const [source,names] of sources){
@@ -192,6 +197,73 @@ test('個別化した技術の知識を承認すると資料を越えて同じGi
  await expect(page.locator('table').last().locator('tbody tr')).toHaveCount(6);
  await page.locator('table').last().screenshot({path:path.join(shotDir,'01-knowledge-id-mapping.png')});
  await fs.writeFile(path.join(shotDir,'mapping.json'),JSON.stringify({dictionaryVersion:version,ids,items:preview.items,businessRecordsChanged:preview.businessRecordsChanged,goldChanged:preview.goldChanged},null,2));
+ const dictionaryBeforeSearch=await(await request.get('/api/v1/skill-dictionary')).json();
+ const heldBeforeSearch=(await(await request.get('/api/v1/skill-candidates')).json()).items.filter((c:{candidateType:string})=>c.candidateType==='collection');
+ await page.goto('http://127.0.0.1:5182/skill-document-search.html');
+ await expect(page.getByRole('heading',{name:'技能IDから資料を探す（隔離デモ）'})).toBeVisible();
+ await expect(page.getByText('通常の製品検索への統合は未実装です。',{exact:true})).toBeVisible();
+ await page.getByLabel('固定する辞書版').fill(String(version));await page.getByRole('button',{name:'この版を読み込む',exact:true}).click();
+ for(const term of ['Git','SQLite','Linux']){
+  await page.getByLabel('承認済み技能').selectOption(ids[term]);await page.getByRole('button',{name:'資料を検索',exact:true}).click();
+  await expect(page.getByRole('status')).toHaveText(`辞書版 ${version} ／ ${term==='Git'?2:1} 件`);
+  const hits=page.locator('#results article');await expect(hits).toHaveCount(term==='Git'?2:1);
+  await expect(hits.first()).toContainText('知識内容のみ');await expect(hits.first()).toContainText(ids[term]);await expect(hits.first().locator('blockquote')).toContainText(term);
+  if(term==='Git')await page.screenshot({path:path.join(shotDir,'02-git-two-documents.png'),fullPage:true});
+ }
+ await page.getByLabel('検索する内容').selectOption('eligible');await page.getByRole('button',{name:'資料を検索',exact:true}).click();
+ await expect(page.getByRole('status')).toHaveText(`辞書版 ${version} ／ 0 件`);
+ expect(await(await request.get('/api/v1/skill-dictionary')).json()).toEqual(dictionaryBeforeSearch);
+ expect((await(await request.get('/api/v1/skill-candidates')).json()).items.filter((c:{candidateType:string})=>c.candidateType==='collection')).toEqual(heldBeforeSearch);
+ const sourcesAfter=[];
+ for(const c of originalNotices){const response=await request.get('/api/v1/skill-candidates/'+c.id+'/source');expect(response.ok()).toBe(true);sourcesAfter.push(await response.json());}
+ expect(sourcesAfter).toEqual(originalSources);
+ const audit=await(await request.get('http://127.0.0.1:5182/api/test/skill-documents?version='+version+'&conceptId='+ids.Git+'&eligibility=content_only')).json();
+ expect(audit.items).toHaveLength(2);expect(audit.normalSearchIntegrated).toBe(false);expect(audit.externalAiCalls).toBe(0);
+ for(const hit of audit.items){expect(hit.reviews.length).toBeGreaterThan(0);expect(hit.reviews.every((r:{targetId:string})=>r.targetId===ids.Git)).toBe(true);}
+ const old=await(await request.get('http://127.0.0.1:5182/api/test/skill-documents?version='+initial.version+'&conceptId='+ids.Git+'&eligibility=content_only')).json();
+ expect(old.dictionaryVersion).toBe(initial.version);expect(old.items).toHaveLength(0);
+ await fs.writeFile(path.join(shotDir,'search.json'),JSON.stringify(audit,null,2));
+ await page.goto('/skill-dictionary.html');
+ await page.getByRole('link',{name:'この辞書版で資料を探す',exact:true}).click();
+ await expect(page).toHaveURL(new RegExp('/validation.html\\?skillVersion='+version+'$'));
+ await expect(page.getByLabel('探し方',{exact:true})).toHaveValue('skills');
+ await page.getByRole('button',{name:'この版を読み込む',exact:true}).click();
+ await page.getByLabel('承認済み技能',{exact:true}).selectOption(ids.Git);
+ await page.getByRole('button',{name:'承認済み技能で検索',exact:true}).click();
+ await expect(page.locator('article.candidate')).toHaveCount(2);
+ await expect(page.getByText(`固定した辞書版：${version}`,{exact:true})).toBeVisible();
+ for(const card of await page.locator('article.candidate').all()){
+  await expect(card).toContainText('知識内容のみ');await expect(card).toContainText(ids.Git);
+  await card.getByText('根拠を見る',{exact:true}).click();await expect(card.locator('blockquote')).toContainText('Git');
+ }
+ for(const name of ['SQLite','Linux']){
+  await page.getByLabel('承認済み技能',{exact:true}).selectOption(ids[name]);
+  await page.getByRole('button',{name:'承認済み技能で検索',exact:true}).click();
+  await expect(page.locator('article.candidate')).toHaveCount(1);await expect(page.locator('article.candidate')).toContainText(ids[name]);
+ }
+ await page.getByLabel('承認済み技能',{exact:true}).selectOption(ids.Git);await page.getByRole('button',{name:'承認済み技能で検索',exact:true}).click();
+ await expect(page.locator('article.candidate')).toHaveCount(2);
+ for(const card of await page.locator('article.candidate').all())await card.getByText('根拠を見る',{exact:true}).click();
+ await page.getByRole('banner').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(shotDir,'03-ordinary-search-git.png'),fullPage:true});
+ await page.getByLabel('検索する内容',{exact:true}).selectOption('eligible');
+ await expect(page.locator('article.candidate')).toHaveCount(0);
+ await page.getByRole('button',{name:'承認済み技能で検索',exact:true}).click();
+ await expect(page.getByText('条件に合う候補はありません。',{exact:true})).toBeVisible();
+ const current=await request.post('/api/v1/skill-dictionary/search',{data:{version,conceptId:ids.Git,eligibility:'content_only'}});
+ expect(current.status()).toBe(200);expect(current.headers()['cache-control']).toBe('no-store');
+ expect((await current.json()).items).toHaveLength(2);
+ expect((await request.post('/api/v1/skill-dictionary/search',{data:{conceptId:ids.Git,eligibility:'content_only'}})).status()).toBe(400);
+ expect((await request.post('/api/v1/skill-dictionary/search',{headers:{'X-Test-Actor':'member'},data:{version,conceptId:ids.Git,eligibility:'content_only'}})).status()).toBe(403);
+ await fs.writeFile(path.join(shotDir,'ordinary-search.json'),JSON.stringify(await(await request.post('/api/v1/skill-dictionary/search',{data:{version,conceptId:ids.Git,eligibility:'content_only'}})).json(),null,2));
+ // A response arriving after switching search modes must never repopulate old results.
+ await page.getByLabel('検索する内容',{exact:true}).selectOption('content_only');
+ let release!:()=>void;let arrived!:()=>void;
+ const hold=new Promise<void>(resolve=>{release=resolve;});const requested=new Promise<void>(resolve=>{arrived=resolve;});
+ await page.route('**/api/v1/skill-dictionary/search',async route=>{arrived();await hold;await route.fulfill({json:await current.json()});});
+ await page.getByRole('button',{name:'承認済み技能で検索',exact:true}).click();await requested;
+ await page.getByLabel('探し方',{exact:true}).selectOption('terms');
+ const response=page.waitForResponse(r=>r.url().endsWith('/api/v1/skill-dictionary/search'));release();await response;
+ await expect(page.getByLabel('自然文の課題',{exact:true})).toBeVisible();await expect(page.locator('article.candidate')).toHaveCount(0);
 });
 
 test('役割表現を保留理由付きで表示し、再収集しても経験候補や承認へ昇格しない',async({page,request})=>{

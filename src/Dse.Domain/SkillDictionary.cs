@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Dse.Domain;
 
@@ -12,6 +13,14 @@ public sealed record SkillDictionaryReview(string Action, string Reason, int Exp
 public sealed record SkillCandidateCollect(string FragmentId,string? ExpectedFingerprint=null);
 public sealed record SkillDictionaryPreview(int Version, string[] CandidateIds);
 public sealed record SkillDictionaryMatch(string State, string? ConceptId);
+public sealed record SkillDictionarySearch([property:JsonRequired]int Version,[property:JsonRequired]string ConceptId,[property:JsonRequired]string Eligibility,int Limit=20)
+{
+    public void Validate()
+    {
+        if(Version<0||string.IsNullOrWhiteSpace(ConceptId)||!RecordJson.IsId(ConceptId)||Eligibility is not ("content_only" or "eligible")||Limit is <1 or >100)
+            throw new ArgumentException("辞書版・技能ID・知識／経験の区分・件数を確認してください。");
+    }
+}
 
 // Exact, human-approved aliases only. The occurrence's role, subject and source
 // remain separate; mapping to a concept never recognizes a person's experience.

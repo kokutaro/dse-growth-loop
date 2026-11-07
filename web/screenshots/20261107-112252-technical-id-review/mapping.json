@@ -1,0 +1,176 @@
+{
+  "dictionaryVersion": 11,
+  "ids": {
+    "TypeScript": "skill-e9b54100494b4292a349e9f92eac1dea",
+    "SQLite": "skill-3f0c07d6df3a4bc780f9eda7ff6a1bdf",
+    "Git": "skill-d3762a1de9f64f8cbe85b65250d647d1",
+    "Go": "skill-c383f718a6794f5ba8b1cfb0f753bf23",
+    "Linux": "skill-1341e69fc3244fe0822ea4ed5cfed4f8"
+  },
+  "items": [
+    {
+      "candidateId": "skill-candidate-b81a77140afbf59f59c1e955d30ed9219ba82201cd524050b7f7eeb7b90e70e5",
+      "state": "registered",
+      "mapping": {
+        "state": "mapped",
+        "conceptId": "skill-e9b54100494b4292a349e9f92eac1dea"
+      },
+      "element": {
+        "label": "TypeScript",
+        "action": null,
+        "object": null,
+        "conditions": [],
+        "kind": "knowledge",
+        "subjectScope": "person",
+        "conceptId": null,
+        "conceptState": "unmapped",
+        "slices": [
+          {
+            "text": "TypeScript",
+            "quoteOffset": 10,
+            "length": 10
+          }
+        ],
+        "basis": "knowledge"
+      },
+      "experienceEligibility": "content_only"
+    },
+    {
+      "candidateId": "skill-candidate-119e69a0c809fd15e95ce2ad8215cb6c9004418b46fd9fa2bf662541decbcff8",
+      "state": "registered",
+      "mapping": {
+        "state": "mapped",
+        "conceptId": "skill-3f0c07d6df3a4bc780f9eda7ff6a1bdf"
+      },
+      "element": {
+        "label": "SQLite",
+        "action": null,
+        "object": null,
+        "conditions": [],
+        "kind": "knowledge",
+        "subjectScope": "person",
+        "conceptId": null,
+        "conceptState": "unmapped",
+        "slices": [
+          {
+            "text": "SQLite",
+            "quoteOffset": 21,
+            "length": 6
+          }
+        ],
+        "basis": "knowledge"
+      },
+      "experienceEligibility": "content_only"
+    },
+    {
+      "candidateId": "skill-candidate-e7fb8ea5ab6fbbd7ff5d84829544ea2c9703f0974acdd3d182f38609b347e459",
+      "state": "registered",
+      "mapping": {
+        "state": "mapped",
+        "conceptId": "skill-d3762a1de9f64f8cbe85b65250d647d1"
+      },
+      "element": {
+        "label": "Git",
+        "action": null,
+        "object": null,
+        "conditions": [],
+        "kind": "knowledge",
+        "subjectScope": "person",
+        "conceptId": null,
+        "conceptState": "unmapped",
+        "slices": [
+          {
+            "text": "Git",
+            "quoteOffset": 28,
+            "length": 3
+          }
+        ],
+        "basis": "knowledge"
+      },
+      "experienceEligibility": "content_only"
+    },
+    {
+      "candidateId": "skill-candidate-8ee31c44ad669bb1c0881d1dc72e1f43fb08ef5b0cf58c438d5256ee52ea7d47",
+      "state": "registered",
+      "mapping": {
+        "state": "mapped",
+        "conceptId": "skill-c383f718a6794f5ba8b1cfb0f753bf23"
+      },
+      "element": {
+        "label": "Go",
+        "action": null,
+        "object": null,
+        "conditions": [],
+        "kind": "knowledge",
+        "subjectScope": "person",
+        "conceptId": null,
+        "conceptState": "unmapped",
+        "slices": [
+          {
+            "text": "Go",
+            "quoteOffset": 12,
+            "length": 2
+          }
+        ],
+        "basis": "knowledge"
+      },
+      "experienceEligibility": "content_only"
+    },
+    {
+      "candidateId": "skill-candidate-087f49ad77ec6060fd198e22f0407ba49285e11c98768367726515e2e791c78c",
+      "state": "registered",
+      "mapping": {
+        "state": "mapped",
+        "conceptId": "skill-1341e69fc3244fe0822ea4ed5cfed4f8"
+      },
+      "element": {
+        "label": "Linux",
+        "action": null,
+        "object": null,
+        "conditions": [],
+        "kind": "knowledge",
+        "subjectScope": "person",
+        "conceptId": null,
+        "conceptState": "unmapped",
+        "slices": [
+          {
+            "text": "Linux",
+            "quoteOffset": 15,
+            "length": 5
+          }
+        ],
+        "basis": "knowledge"
+      },
+      "experienceEligibility": "content_only"
+    },
+    {
+      "candidateId": "skill-candidate-8bfb804c865a9fb366f66fca8da0435cb1e60bc6f2b8758f24fb2b3d496eb138",
+      "state": "alias",
+      "mapping": {
+        "state": "mapped",
+        "conceptId": "skill-d3762a1de9f64f8cbe85b65250d647d1"
+      },
+      "element": {
+        "label": "Git",
+        "action": null,
+        "object": null,
+        "conditions": [],
+        "kind": "knowledge",
+        "subjectScope": "person",
+        "conceptId": null,
+        "conceptState": "unmapped",
+        "slices": [
+          {
+            "text": "Git",
+            "quoteOffset": 21,
+            "length": 3
+          }
+        ],
+        "basis": "knowledge"
+      },
+      "experienceEligibility": "content_only"
+    }
+  ],
+  "businessRecordsChanged": false,
+  "goldChanged": false
+}

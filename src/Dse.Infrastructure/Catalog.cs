@@ -148,6 +148,7 @@ public static class InfrastructureRegistration
         services.AddSingleton<AuthorityProvider>();
         services.AddSingleton<OrganizationService>();
         services.AddSingleton(sp=>new SkillDictionaryService(sp.GetRequiredService<IPrimaryRepository>(),sp.GetRequiredService<AccessFence>(),sp.GetRequiredService<IdempotencyExecutor>(),sp.GetRequiredService<TimeProvider>(),()=>sp.GetRequiredService<IDecisionProvider>()));
+        services.AddSingleton<SkillDemoSessions>();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IdempotencyExecutor>();
         services.AddSingleton<ProfileService>();

@@ -1,6 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {SkillSuggestionPanel,type SkillSuggestion} from './skill-suggestion';
 import {authSessionSignal,getToken,type AppConfig} from './auth';
+import {skillApi,skillDemoId,skillSearchLink} from './skill-demo-context';
 
 type Element={label:string;object:string|null;conditions:string[];kind:string;subjectScope:string;participation?:string;basis?:string};
 type Concept={id:string;name:string;definition:string;boundary:string;scopeIds:string[];state:string;redirectId:string|null;aliases:{text:string;kind:string;object:string|null;conditions:string[]}[]};
@@ -16,6 +17,7 @@ class ApiError extends Error{constructor(public status:number,public code:string
 const contextLabels:Record<string,string>={experience:'経験内容',knowledge:'知識・学習',qualification:'資格',not_experience:'未実施・希望等',uncertain:'文脈未確定'};
 const contextName=(basis?:string)=>contextLabels[basis??'']??'旧版の抽出（新方式で未評価）';
 export function SkillDictionary({config}:{config:AppConfig}){
+ const isDemo=skillDemoId()!==undefined;
  const [sourceReview,setSourceReview]=useState<SourceReview>();const sourceEpoch=useRef(0);const sending=useRef(false);
  const [suggestion,setSuggestion]=useState<SkillSuggestion>();
  const [dictionary,setDictionary]=useState<Dictionary>();const [items,setItems]=useState<Candidate[]>([]);const [cursor,setCursor]=useState<string|null>(null);
@@ -30,7 +32,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
  async function request(path:string,init?:RequestInit){
   const headers=new Headers(init?.headers);if(init?.body)headers.set('Content-Type','application/json');
   if(config.mode==='Azure')headers.set('Authorization',`Bearer ${await getToken(config)}`);
-  const response=await fetch('/api/v1/'+path,{...init,headers,signal:AbortSignal.any([lifetime.current.signal,authSessionSignal()])});
+  const response=await fetch(skillApi(path),{...init,headers,signal:AbortSignal.any([lifetime.current.signal,authSessionSignal()])});
   if(!response.ok){const x=await response.json().catch(()=>({}));throw new ApiError(response.status,x.code??'接続エラー');}return response.json();
  }
  async function refresh(){
@@ -39,6 +41,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
   sourceEpoch.current++;setSourceReview(undefined);setSuggestion(undefined);setDictionary(d);setItems(list.items);setCursor(list.continuationToken);setSelected(undefined);setHistory(undefined);setChecked([]);
  }
  function failed(e:unknown){
+  if(isDemo&&e instanceof ApiError&&e.status===410){clearEvidence();setDictionary(undefined);setError('デモは終了しました。以前の2資料でデモを開き直してください。');return;}
   if(e instanceof ApiError&&(e.status===403||e.status===404)){clearEvidence();setDictionary(undefined);setError('権限または根拠の閲覧条件を確認できません。');return;}
   clearEvidence();setDictionary(undefined);setError(e instanceof ApiError?`${e.code}（${e.status}）`:e instanceof Error?e.message:'接続できません。');
  }
@@ -68,11 +71,14 @@ export function SkillDictionary({config}:{config:AppConfig}){
  return <div className="skill-dictionary"><h1>共通技能辞書と候補レビュー</h1>
  {config.mode==='Demo'&&<p className="note">ローカルの仮データ検証画面です。実AIの精度評価ではありません。</p>}
  <p>原文と文脈を確認し、人が辞書を育てます。辞書登録は人物経験の認定・公開ではありません。正解データと既存の検索語も変更しません。</p>
+ {isDemo?<p>操作用デモ：変更は自分のメモリ内だけに保存します。</p>:<p><a href="/skill-demo.html">以前の架空2資料で辞書承認と検索を試す</a></p>}
+ {isDemo&&<p>1時間、またはサーバーの停止・再起動で終了します。<a href="/skill-demo.html">操作用デモを開き直す</a></p>}
  {error&&<p role="alert">{error}</p>}{message&&<p role="status">{message}</p>}
  {uncertain&&<button disabled={busy} onClick={()=>pending.current&&void send(pending.current)}>同じ操作を再送</button>}
  {!dictionary?<button onClick={()=>void read(refresh)} disabled={busy}>権限を確認して読み込む</button>:<>
+ <p><a href={skillSearchLink(dictionary.version)}>この辞書版で資料を探す</a></p>
  <section className="panel"><h2>抽出結果から候補を取り込む</h2><p>現在の辞書版 {dictionary.version}。根拠を閲覧できる既存の実績IDを指定します。AIの追加実行はありません。</p>
- <label>実績・知識ID<input value={fragment} onChange={e=>setFragment(e.target.value)}/></label><button disabled={busy||uncertain||!fragment.trim()} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:fragment}})}>保存済み抽出を収集</button>
+ {isDemo?<p>以前の2資料の個別化候補は準備済みです。候補一覧から原文と知識種別を確認してください。</p>:<><label>実績・知識ID<input value={fragment} onChange={e=>setFragment(e.target.value)}/></label><button disabled={busy||uncertain||!fragment.trim()} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:fragment}})}>保存済み抽出を収集</button></>}
  </section>
  <section className="panel"><h2>候補一覧</h2><p>未登録は誤りではありません。判断不能と該当なしは収集状態で区別します。</p>
  <div style={{overflowX:'auto'}}><table><thead><tr><th>選択</th><th>元表現・比較要素</th><th>種別・抽出文脈</th><th>状態</th><th>確認</th></tr></thead><tbody>{items.map(c=><tr key={c.id}>
@@ -89,7 +95,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
  <ul>{sourceReview.rejected.map((r,i)=><li key={i}>{r.raw??'原文に一致する元表現を確認できません'} ／ {holdReasons[r.reason]??'検証保留'}（{r.reason}） ／ {contextName(r.basis)}{r.normalizationCandidate&&<p>AI正規化案（未承認）：{r.normalizationCandidate}</p>}</li>)}</ul>
  {sourceReview.rejected.some(r=>r.normalizationCandidate)&&<p>同じ元表現に異なる案がある場合、案だけで別技能へ登録せず、原文中の各技能を区別した再抽出が必要です。技術列の記載だけでは実務経験を認定しません。</p>}
  <p>原文や保存済み抽出の修正はこの画面では行いません。再収集は現在の根拠で再検証し、解消していない保留は残します。AI追加実行・辞書承認・人物経験の認定は行いません。</p>
- <button disabled={busy||uncertain||sourceReview.rejected.some(r=>r.reason==='generation_superseded')} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:sourceReview.fragmentId,expectedFingerprint:sourceReview.currentFingerprint}})}>現在の根拠で再収集</button>
+ <button disabled={isDemo||busy||uncertain||sourceReview.rejected.some(r=>r.reason==='generation_superseded')} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:sourceReview.fragmentId,expectedFingerprint:sourceReview.currentFingerprint}})}>現在の根拠で再収集</button>
  <button disabled={busy} onClick={()=>{sourceEpoch.current++;setSourceReview(undefined);}}>一覧へ戻る</button>
  </section>}
  {selected&&<section className="panel candidate-review"><h2>根拠と辞書を比較</h2><button disabled={busy} onClick={()=>{sourceEpoch.current++;setSelected(undefined);setSuggestion(undefined);setHistory(undefined);}}>一覧へ戻る</button>
@@ -99,7 +105,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
  <div><h3>既存の承認済み辞書</h3><p>共有範囲と種別が同じ技能だけを選択できます。範囲は元資料から広げません。</p><label>比較・統合先の技能<select value={target} onChange={e=>setTarget(e.target.value)}><option value="">選択してください</option>{targets.map(c=><option key={c.id} value={c.id}>{c.name} ({c.id})</option>)}</select></label>
  {targetConcept?<><p>標準名：{targetConcept.name}</p><p>定義：{targetConcept.definition}</p><p>境界：{targetConcept.boundary}</p><p>別名：{targetConcept.aliases.map(a=>a.text).join('、')}</p></>:<p>同じ上位カテゴリだけでは統合しません。</p>}
  <p>辞書版 {dictionary.version} に対する判断です。種別と原文引用を保持します。対象・条件・案件の役割は原文を確認してください。</p></div></div>
- <SkillSuggestionPanel value={suggestion} currentVersion={dictionary.version} disabled={busy||uncertain||!allowed||selected.syntheticTest===true} onRequest={()=>void send({path:`skill-candidates/${selected.id}/suggest`,key:crypto.randomUUID(),etag:selected.etag,body:{version:dictionary.version,dictionaryETag:dictionary.etag}})} onReload={()=>void read(async()=>setSuggestion(await request(`skill-candidates/${selected.id}/suggestion?version=${dictionary.version}`)))} onCompare={id=>{if(targets.some(c=>c.id===id)&&!suggestion?.stale&&suggestion?.dictionaryVersion===dictionary.version)setTarget(id);}}/>
+ <SkillSuggestionPanel value={suggestion} currentVersion={dictionary.version} disabled={isDemo||busy||uncertain||!allowed||selected.syntheticTest===true} onRequest={()=>void send({path:`skill-candidates/${selected.id}/suggest`,key:crypto.randomUUID(),etag:selected.etag,body:{version:dictionary.version,dictionaryETag:dictionary.etag}})} onReload={()=>void read(async()=>setSuggestion(await request(`skill-candidates/${selected.id}/suggestion?version=${dictionary.version}`)))} onCompare={id=>{if(targets.some(c=>c.id===id)&&!suggestion?.stale&&suggestion?.dictionaryVersion===dictionary.version)setTarget(id);}}/>
  {selected.syntheticTest&&<p>検証専用の候補です。共有辞書への登録・統合・追加AIは行いません。保留または技能ではないと記録できます。</p>}
  <label>レビュー判断<select value={action} onChange={e=>setAction(e.target.value)}><option value="defer">保留</option><option value="alias" disabled={selected.syntheticTest}>既存技能の別名として承認</option><option value="new" disabled={selected.syntheticTest}>新しい技能として登録</option><option value="merge" disabled={selected.syntheticTest}>既存技能を統合（旧IDを保持）</option><option value="not_skill">技能ではない</option></select></label>
  {action==='new'&&<><label>標準名<input value={standard} maxLength={100} onChange={e=>setStandard(e.target.value)}/></label><label>技能の定義<textarea value={definition} maxLength={500} onChange={e=>setDefinition(e.target.value)}/></label><label>含む範囲・含めない範囲<textarea value={boundary} maxLength={500} onChange={e=>setBoundary(e.target.value)}/></label></>}

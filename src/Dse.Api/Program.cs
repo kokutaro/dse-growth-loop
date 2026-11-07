@@ -155,6 +155,7 @@ records.MapAnonymousWorkspace();
 records.MapIdentityDisclosure();
 records.MapOrganization();
 records.MapSkillDictionary();
+records.MapSkillDemo();
 records.MapGet("/operation-measurements", (HttpContext context, Dse.Api.OperationMeasurementBuffer measurements) =>
 {
     if (!RecordEndpoints.Actor(context).HasRole("operator")) throw new DomainException(403, "FORBIDDEN");

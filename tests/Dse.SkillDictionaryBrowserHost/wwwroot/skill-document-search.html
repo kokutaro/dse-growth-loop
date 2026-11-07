@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>技能IDと資料の検索デモ</title>
+<style>
+body{font-family:system-ui,sans-serif;line-height:1.7;background:#f4f6f5;color:#183e33;margin:0}main{max-width:960px;margin:auto;padding:2rem}section,article{background:white;border:1px solid #c4d6cd;border-radius:8px;padding:1rem 1.5rem;margin:1rem 0}label{display:block;margin:.8rem 0}input,select,button{font:inherit;padding:.4rem .7rem;max-width:100%}button{background:#205442;color:white;border:0;border-radius:4px;cursor:pointer}button:disabled{opacity:.5}blockquote{border-left:4px solid #729f8a;padding:.7rem;margin:1rem 0;background:#f4f8f5}code{overflow-wrap:anywhere}#error{color:#9d251b}
+</style>
+<main>
+<h1>技能IDから資料を探す（隔離デモ）</h1>
+<p>以前の架空2資料と保存済みの個別化fixtureを使います。外部AIは呼びません。</p>
+<p>通常の製品検索への統合は未実装です。</p>
+<p>辞書版を固定し、参照時点の原文根拠と承認状態で再照合します。知識の記載は本人の実務経験・熟練度の認定ではありません。</p>
+<section>
+<h2>承認した辞書版で確認</h2>
+<p>先に辞書レビュー画面で個別候補を承認し、その辞書版を指定してください。</p>
+<label>固定する辞書版 <input id="version" type="number" min="0" step="1" value="0" required></label>
+<button id="load">この版を読み込む</button>
+<p id="loaded"></p>
+<label>承認済み技能 <select id="concept" disabled><option value="">版を読み込んでください</option></select></label>
+<label>検索する内容 <select id="eligibility"><option value="content_only">知識の記載</option><option value="eligible">実務経験の候補</option></select></label>
+<button id="search" disabled>資料を検索</button>
+</section>
+<p id="error" role="alert"></p>
+<p id="status" role="status"></p>
+<div id="results"></div>
+</main>
+<script type="module">
+const el=id=>document.getElementById(id);
+let fixedVersion;
+const clear=()=>{el('results').replaceChildren();el('status').textContent='';el('error').textContent='';};
+const invalidate=()=>{fixedVersion=undefined;clear();el('concept').replaceChildren(new Option('版を読み込んでください',''));el('concept').disabled=true;el('search').disabled=true;el('loaded').textContent='';};
+el('version').addEventListener('input',invalidate);
+el('concept').addEventListener('change',clear);el('eligibility').addEventListener('change',clear);
+async function read(url){const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error(`読込みを完了できません（${response.status}）。版と根拠を確認してください。`);return response.json();}
+el('load').addEventListener('click',async()=>{
+ invalidate();const version=Number(el('version').value);if(!el('version').value||!Number.isInteger(version)||version<0){el('error').textContent='辞書版を整数で指定してください。';return;}
+ el('load').disabled=true;el('version').disabled=true;
+ try{const data=await read('/api/v1/skill-dictionary?version='+version);fixedVersion=data.version;
+  el('concept').replaceChildren(...data.concepts.filter(c=>c.state==='active').map(c=>new Option(c.name+' ／ '+c.id,c.id)));
+  el('loaded').textContent=`固定した辞書版 ${fixedVersion}`;el('concept').disabled=false;el('search').disabled=el('concept').options.length===0;
+ }catch(e){el('error').textContent=e.message;}finally{el('load').disabled=false;el('version').disabled=false;}
+});
+el('search').addEventListener('click',async()=>{
+ clear();if(fixedVersion===undefined)return;
+ const version=fixedVersion;el('search').disabled=true;el('load').disabled=true;el('version').disabled=true;el('concept').disabled=true;el('eligibility').disabled=true;
+ try{const params=new URLSearchParams({version:String(version),conceptId:el('concept').value,eligibility:el('eligibility').value});const result=await read('/api/test/skill-documents?'+params);
+  el('status').textContent=`辞書版 ${result.dictionaryVersion} ／ ${result.items.length} 件`;
+  for(const item of result.items){const article=document.createElement('article');
+   const add=(tag,text)=>{const node=document.createElement(tag);node.textContent=text;article.append(node);};
+   add('h2',item.skillName);add('p',item.experienceEligibility==='content_only'?'知識内容のみ':'経験候補・本人未確認');
+   add('code','技能ID：'+item.conceptId);add('p','資料：'+item.fragmentId);add('blockquote',item.quote);add('p','根拠ID：'+item.evidenceId);
+   const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='承認の記録';details.append(summary);
+   for(const review of item.reviews){const line=document.createElement('p');line.textContent=`${review.action} ／ 辞書 ${review.previousVersion} → ${review.approvedVersion} ／ ${review.reason} ／ ${review.createdAt}`;details.append(line);}article.append(details);el('results').append(article);
+  }
+ }catch(e){clear();el('error').textContent=e.message;}finally{el('search').disabled=false;el('load').disabled=false;el('version').disabled=false;el('concept').disabled=false;el('eligibility').disabled=false;}
+});
+</script>
+</html>
