@@ -5,6 +5,13 @@ public static class SkillDictionaryEndpoints
 {
     public static void MapSkillDictionary(this RouteGroupBuilder api)
     {
+        api.MapPost("/skill-dictionary/search",(SkillDictionarySearch input,HttpContext c,SkillDictionaryService s,AccessFence f,CancellationToken ct)=>
+            new FencedResult(f,RecordEndpoints.Actor(c).TenantId,async t=>{
+                c.Response.Headers.CacheControl="no-store";
+                return Results.Ok(await s.SearchUnderFenceAsync(RecordEndpoints.Actor(c),input,t));
+            },ct)).WithName("SearchApprovedSkillEvidence")
+            .WithSummary("固定した辞書版と現在の根拠で、承認済み技能IDを検索する")
+            .WithDescription("既存operatorの閲覧範囲だけ。知識と経験を分け、辞書・根拠・投影を書き換えず、AIは呼ばない。");
         api.MapGet("/skill-dictionary",(int? version,HttpContext c,SkillDictionaryService s,AccessFence f,CancellationToken ct)=>
             new FencedResult(f,RecordEndpoints.Actor(c).TenantId,async t=>{c.Response.Headers.CacheControl="no-store";return Results.Ok(await s.ReadUnderFenceAsync(RecordEndpoints.Actor(c),version,t));},ct));
         api.MapGet("/skill-candidates",(string? continuationToken,HttpContext c,SkillDictionaryService s,AccessFence f,PageTokens tokens,CancellationToken ct)=>
