@@ -53,6 +53,7 @@ var wire=new SkillSemanticTestRuntime.Wire();var aiConfig=SkillSemanticTestRunti
 var ai=SkillSemanticTestRuntime.Ai(fixture,aiConfig,wire);
 builder.Services.AddSingleton(new SkillDictionaryService(fixture.Repo,fixture.Fence,new(fixture.Repo,TimeProvider.System),TimeProvider.System,()=>ai));
 builder.Services.AddSingleton<SkillDocumentDemo>();
+builder.Services.AddSingleton<SkillDemoSessions>();
 builder.Services.AddSingleton(new AuthorityProvider(fixture.Repo));
 builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();builder.Services.AddSingleton<PageTokens>();
@@ -84,4 +85,5 @@ app.MapPost("/api/test/recovery-change",async()=>{await Change("doc-recovery-sta
 app.MapGet("/health/live",()=>Results.Ok("test-only"));
 app.MapGet("/api/config",()=>Results.Ok(new{mode="Demo",tenantId="demo",clientId="",scope="",dictionaryFixture=true}));
 app.MapGroup("/api/v1").MapSkillDictionary();
+app.MapGroup("/api/v1").MapSkillDemo();
 app.Run();
