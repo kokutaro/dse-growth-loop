@@ -269,7 +269,7 @@ function App() {
               </button>
             </form>}
             <p className="note">
-              自然文は条件を確認・編集して検索できます。人物・経験・分類値はすべて架空の検証用データです。
+              {searchMode==='skills'?'技能名・辞書版・原文根拠を確認できます。人物・経験はすべて架空のデモ用データです。':'自然文は条件を確認・編集して検索できます。人物・経験・分類値はすべて架空の検証用データです。'}
             </p>
           </section>
           <section aria-labelledby="results-title" aria-live="polite">
@@ -335,7 +335,7 @@ function App() {
                           <p>{u.skillMatch.eligibility==='content_only'?'知識内容のみ':'経験候補・本人未確認'} ／ 技能ID：{u.skillMatch.conceptId}</p>
                           <details><summary>辞書承認の記録</summary>{u.skillMatch.reviews.map((r,j)=><p key={j}>{r.action} ／ 辞書 {r.previousVersion} → {r.approvedVersion} ／ {r.reason} ／ {r.createdAt}</p>)}</details>
                         </div>)}
-                        {candidate.units.map((u, i) => <SkillDetails key={i} value={u.specificSkills} />)}
+                        {candidate.units.map((u, i) => !u.skillMatch&&<SkillDetails key={i} value={u.specificSkills} />)}
                         <small>{candidate.units.some(u=>u.skillMatch)?'原文照合・辞書対応 ／ 追加AIなし':<>{candidate.units.some(u => u.confirmationState === "reviewed") ? "参加者確認・公開承認済み" : candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</>}</small>
                         <div className="routes">
                           {candidate.routes.map((route) => (
@@ -360,8 +360,7 @@ function App() {
                   </section>
                 ))}
                 <p className="note">
-                  一致した職歴・事例 {result.matchedUnits}件 ／ 重複排除後{" "}
-                  {result.beforeLimit}件
+                  {result.skillDictionaryVersion!==undefined?`表示した記載 ${result.matchedUnits}件 ／ 上限前 ${result.beforeLimit}件`:<>一致した職歴・事例 {result.matchedUnits}件 ／ 重複排除後 {result.beforeLimit}件</>}
                 </p>
               </>
             )}

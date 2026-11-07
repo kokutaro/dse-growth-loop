@@ -674,6 +674,70 @@
           }
         }
       }
+    },
+    "/api/v1/skill-dictionary/search": {
+      "post": {
+        "summary": "固定辞書版の承認済み技能IDで現在の根拠を検索",
+        "operationId": "SearchApprovedSkillEvidence",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-required-roles": [
+          "operator"
+        ],
+        "x-revalidates-source-access": true,
+        "x-updates-gold": false,
+        "x-publishes-personal-experience": false,
+        "x-external-ai-calls": 0,
+        "x-read-only": true,
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillSearchInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "指定辞書版、現在閲覧可能な根拠・技能ID・承認監査・区分・上限前件数。辞書版以外の状態は現在値",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillSearchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "検索条件不正"
+          },
+          "403": {
+            "description": "operator権限なし"
+          },
+          "404": {
+            "description": "指定辞書版なし"
+          },
+          "422": {
+            "description": "走査上限超過。部分結果なし"
+          },
+          "503": {
+            "description": "アクセス競合・検索予算超過"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1634,6 +1698,139 @@
           "version",
           "dictionaryETag"
         ],
+        "additionalProperties": false
+      },
+      "SkillSearchInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "conceptId",
+          "eligibility"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "conceptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "eligibility": {
+            "enum": [
+              "content_only",
+              "eligible"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
+      },
+      "SkillSearchHit": {
+        "type": "object",
+        "required": [
+          "candidateId",
+          "fragmentId",
+          "conceptId",
+          "skillName",
+          "raw",
+          "quote",
+          "evidenceId",
+          "basis",
+          "experienceEligibility",
+          "reviewState",
+          "reviews"
+        ],
+        "properties": {
+          "candidateId": {
+            "type": "string"
+          },
+          "fragmentId": {
+            "type": "string"
+          },
+          "conceptId": {
+            "type": "string"
+          },
+          "skillName": {
+            "type": "string"
+          },
+          "raw": {
+            "type": "string"
+          },
+          "quote": {
+            "type": "string"
+          },
+          "evidenceId": {
+            "type": "string"
+          },
+          "basis": {
+            "type": "string"
+          },
+          "reviewState": {
+            "type": "string"
+          },
+          "experienceEligibility": {
+            "enum": [
+              "content_only",
+              "eligible"
+            ]
+          },
+          "reviews": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillDictionaryReview"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SkillSearchResult": {
+        "type": "object",
+        "required": [
+          "dictionaryVersion",
+          "conceptId",
+          "items",
+          "beforeLimit",
+          "readOnly",
+          "ordinarySearchIntegrated",
+          "externalAiCalls"
+        ],
+        "properties": {
+          "dictionaryVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "conceptId": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/SkillSearchHit"
+            }
+          },
+          "beforeLimit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "readOnly": {
+            "const": true
+          },
+          "ordinarySearchIntegrated": {
+            "const": true
+          },
+          "externalAiCalls": {
+            "const": 0
+          }
+        },
         "additionalProperties": false
       }
     }

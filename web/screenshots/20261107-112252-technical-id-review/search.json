@@ -1,0 +1,93 @@
+{
+  "dictionaryVersion": 11,
+  "conceptId": "skill-d3762a1de9f64f8cbe85b65250d647d1",
+  "items": [
+    {
+      "candidateId": "skill-candidate-8bfb804c865a9fb366f66fca8da0435cb1e60bc6f2b8758f24fb2b3d496eb138",
+      "fragmentId": "fragment-technical-list-b-distinct",
+      "conceptId": "skill-d3762a1de9f64f8cbe85b65250d647d1",
+      "skillName": "Git",
+      "raw": "Git",
+      "quote": "通信処理の開発担当 ／ Go、Linux、Git",
+      "evidenceId": "ev-technical-list-b-distinct",
+      "basis": "knowledge",
+      "experienceEligibility": "content_only",
+      "reviewState": "alias",
+      "reviews": [
+        {
+          "kind": "skillDictionaryReview",
+          "id": "skill-review-c721cc51a57b46a8ba84c966e22ddc10",
+          "tenantId": "demo",
+          "ownerId": "fixture-curator",
+          "scopeIds": [
+            "demo"
+          ],
+          "schemaVersion": "1.0",
+          "sourceVersion": 1,
+          "activeVersion": null,
+          "createdAt": "2026-11-07T11:22:53.625262+00:00",
+          "updatedAt": "2026-11-07T11:22:53.625262+00:00",
+          "createdBy": {
+            "type": "principal",
+            "id": "fixture-curator"
+          },
+          "correctedBy": null,
+          "candidateId": "skill-candidate-8bfb804c865a9fb366f66fca8da0435cb1e60bc6f2b8758f24fb2b3d496eb138",
+          "action": "alias",
+          "reason": "隔離メモリ内の合成原文と知識種別を確認した、承認手続きの自動試験",
+          "previousVersion": 11,
+          "approvedVersion": 11,
+          "sourceId": null,
+          "targetId": "skill-d3762a1de9f64f8cbe85b65250d647d1",
+          "sourceFingerprint": "0ed4e46d7f3400d6fe48c2b50def21ca32e43188de691110239788dd83026da2",
+          "etag": "\"774\""
+        }
+      ]
+    },
+    {
+      "candidateId": "skill-candidate-e7fb8ea5ab6fbbd7ff5d84829544ea2c9703f0974acdd3d182f38609b347e459",
+      "fragmentId": "fragment-technical-list-a-distinct",
+      "conceptId": "skill-d3762a1de9f64f8cbe85b65250d647d1",
+      "skillName": "Git",
+      "raw": "Git",
+      "quote": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+      "evidenceId": "ev-technical-list-a-distinct",
+      "basis": "knowledge",
+      "experienceEligibility": "content_only",
+      "reviewState": "registered",
+      "reviews": [
+        {
+          "kind": "skillDictionaryReview",
+          "id": "skill-review-f9849788cb144b6ea1daa88b8cae6432",
+          "tenantId": "demo",
+          "ownerId": "fixture-curator",
+          "scopeIds": [
+            "demo"
+          ],
+          "schemaVersion": "1.0",
+          "sourceVersion": 1,
+          "activeVersion": null,
+          "createdAt": "2026-11-07T11:22:53.176004+00:00",
+          "updatedAt": "2026-11-07T11:22:53.176004+00:00",
+          "createdBy": {
+            "type": "principal",
+            "id": "fixture-curator"
+          },
+          "correctedBy": null,
+          "candidateId": "skill-candidate-e7fb8ea5ab6fbbd7ff5d84829544ea2c9703f0974acdd3d182f38609b347e459",
+          "action": "new",
+          "reason": "隔離メモリ内の合成原文と知識種別を確認した、承認手続きの自動試験",
+          "previousVersion": 8,
+          "approvedVersion": 9,
+          "sourceId": null,
+          "targetId": "skill-d3762a1de9f64f8cbe85b65250d647d1",
+          "sourceFingerprint": "b5ada0445637987cb328599ade9f55552f76f14f0e42604d5d5235b03221fce4",
+          "etag": "\"713\""
+        }
+      ]
+    }
+  ],
+  "readOnly": true,
+  "normalSearchIntegrated": false,
+  "externalAiCalls": 0
+}
