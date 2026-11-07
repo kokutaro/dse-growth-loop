@@ -24,7 +24,7 @@ public sealed partial class SkillDictionaryService
                 var page=await ListUnderFenceAsync(actor,cursor,ct);
                 var candidates=page["items"]!.AsArray().Select(n=>n!.AsObject()).Where(c=>
                     !SyntheticTestAccess.IsTest(c)&&c["reviewable"]?.GetValue<bool>()==true&&
-                    c.Text("state") is "registered" or "alias" or "matched").ToArray();
+                    c.Text("state") is "registered" or "alias" or "matched" or "merged").ToArray();
                 if(candidates.Length>0)
                 {
                     var preview=await PreviewUnderFenceAsync(actor,new(input.Version,candidates.Select(c=>c.Text("id")).ToArray()),ct);
