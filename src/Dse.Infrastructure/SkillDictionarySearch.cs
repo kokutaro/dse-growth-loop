@@ -12,16 +12,16 @@ public sealed partial class SkillDictionaryService
         actor=await Operator(actor,ct);input.Validate();
         using var budget=new SearchBudget();
         var snapshot=await ReadUnderFenceAsync(actor,input.Version,ct);
-        var items=new JsonArray();var total=0;var scanned=0;
+        var items=new JsonArray();var total=0;var pages=0;
         var concept=snapshot["concepts"]!.AsArray().Select(n=>n!.AsObject()).SingleOrDefault(c=>c.Text("id")==input.ConceptId&&c.Text("state")=="active");
         if(concept is not null)
         {
             string? cursor=null;
             do
             {
+                // Count pages even when every row is hidden by the current access checks.
+                if(++pages>100)throw new DomainException(422,"SKILL_SEARCH_TOO_LARGE");
                 var page=await ListUnderFenceAsync(actor,cursor,ct);
-                scanned+=page["items"]!.AsArray().Count;
-                if(scanned>5000)throw new DomainException(422,"SKILL_SEARCH_TOO_LARGE");
                 var candidates=page["items"]!.AsArray().Select(n=>n!.AsObject()).Where(c=>
                     !SyntheticTestAccess.IsTest(c)&&c["reviewable"]?.GetValue<bool>()==true&&
                     c.Text("state") is "registered" or "alias" or "matched").ToArray();
