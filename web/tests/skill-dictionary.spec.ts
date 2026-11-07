@@ -147,10 +147,15 @@ test('古い候補と収集保留を現在の原文から再確認し、二重�
 
 test('個別化した技術の知識を承認すると資料を越えて同じGit IDへ対応し、本人経験へ昇格しない',async({page,request})=>{
  const shotDir='screenshots/'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15).replace('T','-')+'-technical-id-review';
+ await page.setViewportSize({width:1920,height:1080});
  await fs.mkdir(shotDir,{recursive:true});
  await page.goto('/skill-dictionary.html');
  await expect(page.getByRole('button',{name:'この候補を確認'}).first()).toBeEnabled();
  const initial=await(await request.get('/api/v1/skill-dictionary')).json();let version=initial.version;
+ const originalNotices=(await(await request.get('/api/v1/skill-candidates')).json()).items.filter((c:{candidateType:string;fragmentId:string})=>c.candidateType==='collection'&&['fragment-technical-list-a','fragment-technical-list-b'].includes(c.fragmentId));
+ // Source reads share the tenant fence; compare successful reads sequentially.
+ const originalSources=[];
+ for(const c of originalNotices){const response=await request.get('/api/v1/skill-candidates/'+c.id+'/source');expect(response.ok()).toBe(true);originalSources.push(await response.json());}
  const ids:Record<string,string>={};const candidateIds:string[]=[];
  const sources=[['technical-list-a-distinct',['TypeScript','SQLite','Git']],['technical-list-b-distinct',['Go','Linux','Git']]] as const;
  for(const [source,names] of sources){
@@ -209,7 +214,14 @@ test('個別化した技術の知識を承認すると資料を越えて同じGi
  await expect(page.getByRole('status')).toHaveText(`辞書版 ${version} ／ 0 件`);
  expect(await(await request.get('/api/v1/skill-dictionary')).json()).toEqual(dictionaryBeforeSearch);
  expect((await(await request.get('/api/v1/skill-candidates')).json()).items.filter((c:{candidateType:string})=>c.candidateType==='collection')).toEqual(heldBeforeSearch);
+ const sourcesAfter=[];
+ for(const c of originalNotices){const response=await request.get('/api/v1/skill-candidates/'+c.id+'/source');expect(response.ok()).toBe(true);sourcesAfter.push(await response.json());}
+ expect(sourcesAfter).toEqual(originalSources);
  const audit=await(await request.get('http://127.0.0.1:5182/api/test/skill-documents?version='+version+'&conceptId='+ids.Git+'&eligibility=content_only')).json();
+ expect(audit.items).toHaveLength(2);expect(audit.normalSearchIntegrated).toBe(false);expect(audit.externalAiCalls).toBe(0);
+ for(const hit of audit.items){expect(hit.reviews.length).toBeGreaterThan(0);expect(hit.reviews.every((r:{targetId:string})=>r.targetId===ids.Git)).toBe(true);}
+ const old=await(await request.get('http://127.0.0.1:5182/api/test/skill-documents?version='+initial.version+'&conceptId='+ids.Git+'&eligibility=content_only')).json();
+ expect(old.dictionaryVersion).toBe(initial.version);expect(old.items).toHaveLength(0);
  await fs.writeFile(path.join(shotDir,'search.json'),JSON.stringify(audit,null,2));
 });
 

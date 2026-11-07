@@ -87,7 +87,8 @@ public sealed class SkillDocumentDemoTests
     private sealed class NoWrites(IPrimaryRepository inner):IPrimaryRepository
     {
         public Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)=>inner.ReadAsync(p,id,ct);
-        public Task<RecordPage> QueryAsync(RecordPartition p,string kind,string? field,string? parent,int size,string? cursor,CancellationToken ct)=>inner.QueryAsync(p,kind,field,parent,size,cursor,ct);
+        // Force multiple real pages so the search cannot accidentally inspect only page one.
+        public Task<RecordPage> QueryAsync(RecordPartition p,string kind,string? field,string? parent,int size,string? cursor,CancellationToken ct)=>inner.QueryAsync(p,kind,field,parent,1,cursor,ct);
         public Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite> writes,CancellationToken ct)=>throw new InvalidOperationException("Demo search must never write");
     }
 }
