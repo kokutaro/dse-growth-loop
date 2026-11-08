@@ -28,6 +28,8 @@ public sealed class DemoWorkflowApiTests
         var page=(await client.GetFromJsonAsync<JsonObject>("/api/v1/skill-candidates"))!;Assert.Equal(8,page["items"]!.AsArray().Count);
         Assert.Equal(HttpStatusCode.Forbidden,(await client.GetAsync("/api/v1/organization" )).StatusCode);
         var original=await client.GetAsync("/api/v1/documents/doc-technical-list-a-distinct/original");original.EnsureSuccessStatusCode();Assert.NotEmpty(await original.Content.ReadAsByteArrayAsync());
+        var history=await client.GetAsync("/api/v1/documents/doc-technical-list-a");using var revokeHistory=new HttpRequestMessage(HttpMethod.Post,"/api/v1/documents/doc-technical-list-a/withdraw"){Content=JsonContent.Create(new{reason="履歴を変えない境界試験"})};
+        revokeHistory.Headers.Add("Idempotency-Key",Guid.NewGuid().ToString("N"));revokeHistory.Headers.TryAddWithoutValidation("If-Match",history.Headers.ETag!.ToString());Assert.Equal(HttpStatusCode.Conflict,(await client.SendAsync(revokeHistory)).StatusCode);
         client.DefaultRequestHeaders.Remove("X-Dse-Workflow");
         Assert.Equal(0,(await client.GetFromJsonAsync<JsonObject>("/api/v1/skill-dictionary"))!.Number("version"));
         client.DefaultRequestHeaders.Add("X-Dse-Workflow",id+"-forged");Assert.Equal(HttpStatusCode.NotFound,(await client.GetAsync("/api/v1/skill-dictionary")).StatusCode);
