@@ -29,7 +29,10 @@ test("自動事例は一度だけ保存され、出典・フィードバック�
   await page.getByRole("button", { name: "相談画面を閉じる", exact: true }).click();
   await page.getByRole("button", { name: title, exact: true }).click();
   await expect(page.getByLabel("メッセージ", { exact: true })).toBeVisible();
+  await expect(history.getByText("AIによる参考事例", { exact: false })).toHaveCount(1);
+  const replayed=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/messages')&&r.request().method()==='GET'&&r.ok());
   await page.getByRole("button", { name: "会話を更新", exact: true }).click();
+  await (await replayed).finished();
   await expect(history.getByText("AIによる参考事例", { exact: false })).toHaveCount(1);
   await page.getByLabel("自動支援 ON").click();
   await expect(page.getByLabel("自動支援 ON")).not.toBeChecked();
