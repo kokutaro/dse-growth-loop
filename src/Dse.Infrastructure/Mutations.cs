@@ -8,10 +8,14 @@ using Dse.Domain;
 namespace Dse.Infrastructure;
 
 public sealed record MutationResponse(int Status, JsonNode? Body, string? Location, string? ETag);
-public sealed record MutationPlan(RecordWrite[] Writes, string? ResultId, MutationResponse Response);
-
-public sealed partial class IdempotencyExecutor(IPrimaryRepository repository, TimeProvider clock)
+public sealed record MutationPlan(RecordWrite[] Writes, string? ResultId, MutationResponse Response)
 {
+    public RecordWrite[] ProjectionWrites{get;init;}=[];
+}
+
+public sealed partial class IdempotencyExecutor(IPrimaryRepository repository, TimeProvider clock,IRecordStore? transactions=null)
+{
+    internal bool HasProjectionTransaction=>transactions is not null;
     [GeneratedRegex("^[A-Za-z0-9._:-]{16,128}$")]
     private static partial Regex KeyPattern();
     public static void ValidateHeaders(string key, string? etag, bool requireMatch)
@@ -43,7 +47,14 @@ public sealed partial class IdempotencyExecutor(IPrimaryRepository repository, T
         receipt["state"] = plan.ResultId is null ? "complete" : "committed";
         receipt["resultId"] = plan.ResultId;
         receipt["response"] = JsonSerializer.SerializeToNode(plan.Response, ProjectionRules.Json);
-        try { await repository.CommitAsync(partition, [.. plan.Writes, new(receipt, existing?.ETag)], ct); }
+        try {
+            if(plan.ProjectionWrites.Length==0)await repository.CommitAsync(partition,[..plan.Writes,new(receipt,existing?.ETag)],ct);
+            else
+            {
+                if(transactions is null||partition.Container!="catalog"||plan.ProjectionWrites.Any(w=>w.Value.Text("kind")!="searchUnit"||w.Value.Number("projectionVersion")<1||w.Value.Number("sourceVersion")<1||w.Value.Text("projectionState")!="ready"))throw new InvalidOperationException("Invalid atomic projection plan");
+                await transactions.CommitAsync(partition,[..plan.Writes,..plan.ProjectionWrites,new(receipt,existing?.ETag)],ct);
+            }
+        }
         catch (StoreConflictException e) { throw new DomainException(e.Stale ? 412 : 409, e.Stale ? "STALE_VERSION" : "INVALID_TRANSITION"); }
         if (plan.ResultId is null) return plan.Response;
         // Cosmos assigns _etag at commit. Finalize the receipt under the same durable fence before replying.

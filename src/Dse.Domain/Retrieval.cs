@@ -18,6 +18,7 @@ public sealed record SearchUnit(string Id, string EntityId, string EntityType, s
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string[]? SkillIds { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ApprovedSkillBinding[]? SkillBindings { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? SkillDictionaryVersion { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? SkillProjectionHeadId { get; init; }
     [JsonIgnore] public int? SkillViewVersion { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public SpecificSkills? SpecificSkills { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ProcessingMode { get; init; }

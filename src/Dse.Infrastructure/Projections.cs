@@ -196,7 +196,13 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
         // Rebuild only the authorized, reassessed experience terms before matching. No write.
         if (workbook && unit.EntityType == "person")
             unit = unit with { NormalizedTerms = unit.SpecificSkills?.Version == SpecificSkillRules.Version ? unit.SpecificSkills.SearchTerms : [] };
-        return new(unit with { SyntheticTest = SyntheticTestAccess.IsTest(source), SourceRefs = refs.ToArray() }, snapshots.Distinct().ToArray());
+        unit=unit with{SyntheticTest=SyntheticTestAccess.IsTest(source),SourceRefs=refs.ToArray()};
+        if(unit.SkillProjectionHeadId is not null||unit.SkillBindings is not null)
+        {
+            try{var resolved=await new SkillDictionaryService(repository,new(repository),new(repository,TimeProvider.System),TimeProvider.System).ResolveSkillProjectionUnderFenceAsync(actor,unit,ct);if(resolved is null)return null;unit=resolved;}
+            catch(DomainException e)when(e.Status is 403 or 404 or 409){return null;}
+        }
+        return new(unit,snapshots.Distinct().ToArray());
     }
     public async Task<(JsonObject Span, JsonObject Document)?> EvidenceAsync(ActorAccess actor, EvidenceReference reference, CancellationToken ct)
     {

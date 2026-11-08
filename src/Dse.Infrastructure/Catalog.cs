@@ -46,7 +46,7 @@ public sealed class ValidatedCatalog(IProjectionRepository projections, SourceGu
         request.Validate();
         if (!actor.HasRole("member") || request.SyntheticOnly && !actor.HasRole("operator")) throw new DomainException(403, "FORBIDDEN");
         using var budget = new SearchBudget();
-        var units = await projections.FindAsync(request, actor.Search, ct);
+        var units = (await projections.FindAsync(request, actor.Search, ct)).Select(u=>u with{SkillViewVersion=request.SkillDictionaryVersion}).ToArray();
         await fence.RunAsync(actor.TenantId, async token =>
         {
             var result = Retriever.Search(await guard.FilterUnderFenceAsync(actor, units, token), request, actor.Search);
@@ -81,6 +81,9 @@ public static class CosmosCatalog
             routes.Add("EXISTS(SELECT VALUE s FROM s IN u.experienceSignals WHERE ARRAY_CONTAINS(@signals, s.signalId) AND IS_NUMBER(s.yesProbability) AND s.yesProbability >= @noul AND s.evidenceState = 'supported')");
         if (request.Terms.Length > 0)
             routes.Add("EXISTS(SELECT VALUE t FROM t IN u.normalizedTerms WHERE ARRAY_CONTAINS(@terms, t))");
+        // A bounded superset also finds immutable pre-merge projections. SourceGuard
+        // resolves their current/historical approved bindings before exact matching.
+        if(request.SkillIds is {Length:>0})routes.Add("IS_DEFINED(u.skillProjectionHeadId)");
         // SQL is a bounded superset. SourceGuard and the identifier-boundary matcher
         // recheck evidence/ACL and remove false positives before returning anything.
         var skillQueries = request.SpecificSkills.Concat(request.Terms).Select(SpecificSkillRules.Normalize).Distinct().ToArray();

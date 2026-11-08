@@ -158,7 +158,8 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             }
             if(writes.Count>90)throw new DomainException(422,"SKILL_COLLECTION_LIMIT"); // Never truncate candidates or break normal extraction.
             var state=source.Skills.State=="unknown"?"undetermined":source.Skills.State=="not_evaluated"?"not_evaluated":bindings.Count==0?(source.Skills.RejectedItems?.Length>0?"held":"none"):"assessed";
-            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["dictionaryVersion"]=snapshot.Version,["inputState"]=source.Skills.State,["state"]=state,["bindings"]=bindings,["created"]=writes.Count(w=>w.Value.Text("candidateType")!="collection"),["collectionId"]=collectionId,["quarantined"]=source.Skills.RejectedItems?.Length??0},null,null));
+            var projection=await PrepareSkillProjection(actor,source,snapshot,writes.Select(w=>w.Value),token);var created=writes.Count(w=>w.Value.Text("candidateType")!="collection");writes.AddRange(projection.Primary);
+            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["dictionaryVersion"]=snapshot.Version,["inputState"]=source.Skills.State,["state"]=state,["bindings"]=bindings,["created"]=created,["collectionId"]=collectionId,["quarantined"]=source.Skills.RejectedItems?.Length??0},null,null)){ProjectionWrites=projection.Projections};
         },token);
     },ct);
     // Read current evidence under the same tenant fence as serialization. Deleted,
@@ -226,7 +227,8 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                 var next=head?.Value.Copy()??RecordJson.New("skillDictionaryHead",HeadId,actor.TenantId,actor.PrincipalId,["system"],clock.GetUtcNow());
                 next["version"]=after.Version;next["updatedAt"]=clock.GetUtcNow();writes.Add(RecordWrite.Create(version));writes.Add(new(next,head?.ETag));
             }
-            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["candidateId"]=id,["state"]=value["state"]!.DeepClone(),["dictionaryVersion"]=after.Version,["conceptId"]=value["conceptId"]?.DeepClone(),["reviewId"]=reviewId},null,null));
+            var source=await ReadSource(actor,value.Text("fragmentId"),token);var projection=await PrepareSkillProjection(actor,source,after,[value],token);writes.AddRange(projection.Primary);
+            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["candidateId"]=id,["state"]=value["state"]!.DeepClone(),["dictionaryVersion"]=after.Version,["conceptId"]=value["conceptId"]?.DeepClone(),["reviewId"]=reviewId},null,null)){ProjectionWrites=projection.Projections};
         },token);
     },ct);
     public async Task<JsonObject> PreviewUnderFenceAsync(ActorAccess actor,SkillDictionaryPreview input,CancellationToken ct)
