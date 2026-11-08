@@ -5,6 +5,7 @@ using Dse.Domain;
 using Dse.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Azure.Cosmos;
 using Xunit;
 
 namespace Dse.Tests;
@@ -16,6 +17,101 @@ public partial class AiTests
     {
         AuthorityProvider.SeedDemoAsync(store,"demo",default).GetAwaiter().GetResult();var repo=new PrimaryRepository(store);
         return new(config,repo,new(repo),new(repo),new(store,clock),new AiHttpTransport(new HttpClient(handler),new Credentials(),clock,config),clock);
+    }
+
+    [Fact]
+    public async Task Durable_stage_concurrent_services_send_once_and_keep_response_out_of_public_audit()
+    {
+        var store=new MemoryRecordStore();var context=await DurableContext(store);
+        var entered=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);var release=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var handler=new Handler(async(_,_)=>{entered.TrySetResult();await release.Task;return Response(Fixture("choice"));});
+        using var first=Service(Config(),store,handler);using var second=Service(Config(),store,handler);
+        var a=Decide(first,context);await entered.Task;
+        var b=Decide(second,context);release.TrySetResult();
+        var results=await Task.WhenAll(a,b);Assert.All(results,r=>Assert.Equal(AiStatus.Succeeded,r.Status));Assert.Equal(1,handler.Calls);
+        var runs=await store.QueryAsync(RecordPartition.Catalog("demo"),"aiRun","jobId",context.JobId,100,null,default);
+        Assert.All(runs.Items,r=>Assert.Null(r.Value["aiResult"]));
+        Assert.All(runs.Items,r=>Assert.DoesNotContain("\"probabilities\":",r.Value.ToJsonString(),StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData(null,true)][InlineData(86400,true)][InlineData(-1,false)]
+    public void Durable_storage_policy_requires_opt_in_TTL_and_excludes_payload_from_indexes(int? ttl,bool excludeBody)
+    {
+        var properties=new ContainerProperties("catalog","/tenantId"){DefaultTimeToLive=ttl};
+        if(excludeBody)properties.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath{Path="/aiResult/*"});
+        Assert.Equal("AI_RESULT_STORAGE_POLICY_REQUIRED",Assert.Throws<DomainException>(()=>AiResultStoragePolicy.Require(properties)).Code);
+    }
+
+    [Fact]
+    public void Durable_storage_policy_keeps_tombstones_and_expires_only_opted_in_bodies()
+    {
+        var properties=new ContainerProperties("catalog","/tenantId"){DefaultTimeToLive=-1};
+        properties.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath{Path="/aiResult/*"});
+        AiResultStoragePolicy.Require(properties);
+    }
+
+    private sealed class ResultWriteFault(IRecordStore inner,string at,bool unknown):IRecordStore
+    {
+        public bool Fired;
+        public Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)=>inner.ReadAsync(p,id,ct);
+        public Task<RecordPage> QueryAsync(RecordPartition p,string k,string? f,string? parent,int size,string? token,CancellationToken ct)=>inner.QueryAsync(p,k,f,parent,size,token,ct);
+        public async Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite> writes,CancellationToken ct)
+        {
+            var hit=!Fired&&writes.Any(w=>w.Value.Text("kind")=="aiResultReceipt"&&w.Value.Text("state")==at);
+            if(hit){Fired=true;if(!unknown)throw new IOException("fixture known write failure");}
+            await inner.CommitAsync(p,writes,ct);
+            if(hit)throw new IOException("fixture unknown write outcome");
+        }
+    }
+
+    [Theory]
+    [InlineData("pending",false,0)][InlineData("pending",true,0)]
+    [InlineData("succeeded",false,1)][InlineData("succeeded",true,1)]
+    public async Task Durable_receipt_write_failure_stops_and_unknown_pending_never_becomes_a_new_send(string state,bool unknown,int calls)
+    {
+        var memory=new MemoryRecordStore();var context=await DurableContext(memory);var fault=new ResultWriteFault(memory,state,unknown);
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var ai=Service(AccountingOff(),fault,handler))await Assert.ThrowsAsync<IOException>(()=>Decide(ai,context));
+        Assert.Equal(calls,handler.Calls);
+        using(var restarted=Service(AccountingOff(),memory,handler))
+            Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>Decide(restarted,context))).Code);
+        // Offline local recovery fixture only: no process/provider remains in flight.
+        var p=RecordPartition.Catalog("demo");var held=(await memory.ReadAsync(p,"system-access-fence",default))!;
+        await new FenceRecovery(memory).RecoverAsync("demo",held.ETag,[],default);
+        using(var recovered=Service(AccountingOff(),memory,handler))
+        {
+            if(state=="succeeded"&&unknown){Assert.True((await Decide(recovered,context)).Cached);}
+            else if(state=="pending"&&!unknown){Assert.Equal(AiStatus.Succeeded,(await Decide(recovered,context)).Status);calls++;}
+            else Assert.Equal("AI_RESULT_REVIEW_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>Decide(recovered,context))).Code);
+        }
+        Assert.Equal(calls,handler.Calls);
+    }
+
+    [Theory]
+    [InlineData("withdraw")][InlineData("version")][InlineData("authority")]
+    public async Task Durable_reuse_requires_current_source_and_authority(string change)
+    {
+        using var h=new IngestionHarness();var accepted=await h.Upload();await h.Processor.RunOnceAsync(default);
+        var p=RecordPartition.Catalog("demo");var doc=(await h.Store.ReadAsync(p,accepted.Body!["documentId"]!.GetValue<string>(),default))!;
+        var spans=await h.Store.QueryAsync(p,"evidenceSpan","documentId",doc.Value.Text("id"),100,null,default);
+        var span=spans.Items.First();var context=await DurableContext(h.Store);
+        context=context with{Evidence=[new(span.Value.Text("id"),doc.Value.Text("currentVersionId"),1)]};
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var ai=Service(Config(),h.Store,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(ai,context)).Status);
+        if(change=="authority")
+        {
+            var row=(await h.Store.ReadAsync(p,AuthorityProvider.PersonId(context.Actor.PersonId),default))!;
+            row.Value["enabled"]=false;await h.Store.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],default);
+        }
+        else
+        {
+            doc=(await h.Store.ReadAsync(p,doc.Value.Text("id"),default))!;
+            if(change=="withdraw")doc.Value["activeVersion"]=null;else doc.Value["sourceVersion"]=2;
+            await h.Store.CommitAsync(p,[RecordWrite.Replace(doc.Value,doc.ETag)],default);
+        }
+        using var restarted=Service(Config(),h.Store,handler);
+        await Assert.ThrowsAsync<DomainException>(()=>Decide(restarted,context));Assert.Equal(1,handler.Calls);
     }
 
     [Fact]
