@@ -3,6 +3,28 @@ import {mkdir} from 'node:fs/promises';
 const folder='screenshots/'+new Date().toISOString().replace(/[-:]/g,'').replace('T','-').slice(0,15)+'-durable-workflow';
 test.beforeAll(async()=>{await mkdir(folder,{recursive:true});});
 
+for(const change of ['document','version','failure'])test(`遅い断片応答を現在の資料へ混ぜない（${change}）`,async({page,request})=>{
+ let sourceVersion=1;let release!:()=>void;let arrived!:()=>void;
+ const held=new Promise<void>(r=>{release=r;});const requested=new Promise<void>(r=>{arrived=r;});
+ await page.route('**/api/v1/documents**',async route=>{
+  const url=new URL(route.request().url());const id=url.pathname.split('/')[4];
+  if(url.pathname==='/api/v1/documents'){await route.fulfill({json:{items:['doc-delayed-a','doc-delayed-b'].map(id=>({id,title:id,sourceVersion:1,status:'ready',currentVersionId:id+'-v1',etag:'one'})),continuationToken:null}});return;}
+  if(url.pathname.endsWith('/skill-fragments')){arrived();await held;await route.fulfill(change==='failure'?{status:400,json:{code:'STALE_FRAGMENT_ERROR'}}:{json:{items:[{id:'stale-a',description:'遅れた旧資料の断片',contentOnly:true,historyOnly:false}]}});return;}
+  if(url.pathname.endsWith('/evidence')){await route.fulfill({json:{items:[],continuationToken:null}});return;}
+  await route.fulfill({headers:{ETag:'one'},json:{id,sourceVersion,activeVersion:sourceVersion,accessVersion:sourceVersion,status:'ready',warnings:[]}});
+ });
+ const workflow=(await(await request.post('/api/v1/demo-workflows/start')).json()).id;
+ await page.goto('/validation.html?workflow='+workflow);await page.getByRole('button',{name:'資料一覧を更新',exact:true}).click();
+ await page.getByRole('button',{name:'doc-delayed-a（第1版）',exact:true}).click();
+ await page.getByRole('button',{name:'技能候補の元になる断片を確認',exact:true}).click();await requested;
+ if(change==='version'){sourceVersion=2;await page.getByRole('button',{name:'進捗を更新',exact:true}).click();}
+ else await page.getByRole('button',{name:'doc-delayed-b（第1版）',exact:true}).click();
+ const response=page.waitForResponse(r=>r.url().endsWith('/doc-delayed-a/skill-fragments'));release();await response;
+ await expect(page.getByText('遅れた旧資料の断片',{exact:false})).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'この断片の保存済み抽出を確認する',exact:true})).toHaveCount(0);
+ await expect(page.getByText('STALE_FRAGMENT_ERROR',{exact:false})).toHaveCount(0);
+});
+
 test('以前の架空原文の承認を通常の永続検索・画面・撤回につなぐ',async({page,request})=>{
  await page.setViewportSize({width:1920,height:1080});
  await page.goto('/skill-demo.html');await page.getByRole('button',{name:'以前の2資料でデモを開く',exact:true}).click();
