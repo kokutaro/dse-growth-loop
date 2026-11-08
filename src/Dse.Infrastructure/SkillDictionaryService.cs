@@ -40,7 +40,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         if(!RecordJson.IsId(id))throw new ArgumentException("Invalid fragment ID");
         var fragment=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),id,ct)??throw new DomainException(404,"NOT_FOUND");
         var value=fragment.Value;
-        if(value.Text("kind") is not ("experience" or "knowledge" or "departmentActivity"))throw new DomainException(404,"NOT_FOUND");
+        if(value.Text("kind") is not ("experience" or "knowledge" or "documentFragment" or "departmentActivity"))throw new DomainException(404,"NOT_FOUND");
         AccessPolicy.RequireRead(actor,value);
         try { await SyntheticTestAccess.RequireLinkedAsync(repository,actor,value,ct); }
         catch(DomainException e) when(e.Status is 403 or 404 or 409) { throw new DomainException(404,"NOT_FOUND"); }

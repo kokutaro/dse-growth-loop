@@ -315,10 +315,22 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 var sourceRefs=captured.Select(s=>s.Source).ToArray();
                 specific = SpecificSkillRules.Assess(specific, sourceRefs.ToDictionary(e => e.Id, e => e.Text), fragment.Text("description"), fragment.Text("workbookSectionKind") == "context" ? "context" : entity.Text("kind"));
                 fragment["specificSkills"] = Node(specific); fragment["skillInputHash"] = skillInputHash;
+                // Knowledge is a document claim, not an assertion about someone's performed work.
+                // Keep the complete current evidence for normal operator collection and review.
+                if(document is not null && fragment != entity && specific.ContentTerms.Length>0)
+                {
+                    var contentId=Id("document-fragment-",document.Value.Text("id")+":"+document.Value.Number("sourceVersion")+":"+fragment.Text("id"));
+                    await context.ReadAsync(partition,contentId,token);
+                    var content=RecordJson.New("documentFragment",contentId,tenant,actor.PrincipalId,fragment.Strings("scopeIds"),clock.GetUtcNow());
+                    content["documentId"]=document.Value.Text("id");content["description"]=fragment["description"]!.DeepClone();
+                    content["evidenceRefs"]=Node(evidence);content["specificSkills"]=Node(specific with{Items=specific.Items?.Where(i=>i.Analysis?.ExperienceState=="content_only").ToArray()});
+                    content["workbookSectionKind"]="context";content["sourceVersion"]=document.Value.Number("sourceVersion");content["activeVersion"]=document.Value.Number("activeVersion");
+                    content["accessVersion"]=document.Value.Number("accessVersion");content["processingMode"]=entity.Text("processingMode");SyntheticTestAccess.Mark(content,document.Value);Write(content);
+                }
                 await context.ReadAsync(partition,unitId,token);
                 var unit = new SearchUnit(unitId, entity.Text("id"), entity.Text("kind"), tenant, fragment.Text("id"),
                     department ? entity.Text("title") : entity.Text("displayName"), fragment.Text("description"), entity.Strings("scopeIds"), "active",
-                    fragment.Text("workbookSectionKind") != "context" && (department || entity["available"]!.GetValue<bool>()), Retriever.TaxonomyVersion,
+                    fragment.Text("workbookSectionKind") != "context" && !(entity.Text("kind")=="person" && specific.ContentTerms.Length>0 && specific.SearchTerms.Length==0) && (department || entity["available"]!.GetValue<bool>()), Retriever.TaxonomyVersion,
                     answer.Choices.SelectMany(q => q.Value.Probabilities.Select(p => new CategoryProbability(q.Key, p.Key, p.Value))).ToArray(),
                     answer.Nouls.Select(p => new ExperienceSignal(p.Key, p.Value.YesProbability, p.Value.State switch { NoulState.Supported => "supported", NoulState.Unknown => "unknown", _ => "not_evaluated" })).ToArray(),
                     (fragment.Text("workbookSectionKind") is "project" or "context" ? specific.SearchTerms : ProfileExtraction.Terms(fragment.Text("description"))).Distinct().Order(StringComparer.Ordinal).Take(100).ToArray(),

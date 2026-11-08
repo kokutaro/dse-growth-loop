@@ -192,6 +192,7 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
             try { unit = unit with { SpecificSkills = SpecificSkillRules.Assess(unit.SpecificSkills, refs.ToDictionary(r => r.Id, r => r.Text), unit.Summary, unit.EntityType) }; }
             catch (ArgumentException) { return null; }
         }
+        if(unit.EntityType=="person" && unit.SpecificSkills is {ContentTerms.Length:>0,SearchTerms.Length:0})return null;
         // Old workbook projections may contain whole-cell lexical terms, including knowledge.
         // Rebuild only the authorized, reassessed experience terms before matching. No write.
         if (workbook && unit.EntityType == "person")

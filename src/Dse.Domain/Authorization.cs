@@ -24,7 +24,7 @@ public static class AccessPolicy
         return value.Text("kind") switch
         {
             "person" => actor.HasRole("member") && (value.Text("publicationState") != "withdrawn" || owner || actor.HasRole("operator")),
-            "document" or "documentVersion" or "evidenceSpan" or "departmentActivity" => actor.HasRole("member"),
+            "document" or "documentVersion" or "evidenceSpan" or "documentFragment" or "departmentActivity" => actor.HasRole("member"),
             "experience" => actor.HasRole("member") && value.Text("personId") == actor.PersonId,
             "session" => value.Strings("participantIds").Contains(actor.PersonId),
             "knowledge" => value.Text("status") == "published" ? actor.HasRole("member") :
@@ -42,7 +42,7 @@ public static class AccessPolicy
         {
             "person" => value["available"]?.GetValue<bool>() == true && value.Text("publicationState") != "withdrawn",
             "knowledge" => value.Text("status") == "published" && value["approvedBy"] is not null,
-            "document" => true, // a newer queued version may coexist with the previous active version
+            "document" or "documentFragment" => true, // Evidence validation also requires the current document version.
             "departmentActivity" => true,
             _ => false
         });
