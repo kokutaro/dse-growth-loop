@@ -34,7 +34,8 @@ public sealed class DocumentLifecycleTests
         var result=await h.Uploads.WithdrawAsync(IdentityResolver.Demo,id,doc.ETag,"withdraw-current-owner","本人の原文を撤回",default);Assert.Equal(200,result.Status);
         await h.Processor.RunOnceAsync(default);doc=(await h.Repo.ReadAsync(p,id,default))!;
         Assert.Equal("withdrawn",doc.Value.Text("status"));Assert.Null(doc.Value["activeVersion"]);
-        Assert.Contains((await h.Repo.QueryAsync(p,"audit",null,null,100,null,default)).Items,r=>r.Value.Text("action")=="document_withdrawn"&&r.Value.Text("aggregateId")==id);
+        var audit=(await h.Repo.ReadAsync(p,result.Body!["auditId"]!.GetValue<string>(),default))!;
+        Assert.Equal("document_withdrawn",audit.Value.Text("action"));Assert.Equal(id,audit.Value.Text("aggregateId"));
         Assert.Equal("cancelled",(await h.Job(accepted)).Value.Text("status"));
     }
 }
