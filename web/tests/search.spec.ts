@@ -1,5 +1,16 @@
 import { test, expect } from "@playwright/test";
 
+test('自然文で選んだ承認済み技能IDと辞書版を条件確認後も通常検索へ渡す（API fixture）',async({page})=>{
+ let sent:Record<string,unknown>|undefined;
+ const conditions={categories:[],signalIds:[],terms:['Git'],skillIds:['skill-fictional-git'],skillDictionaryVersion:3};
+ await page.route('**/api/v2/search/conditions',route=>route.fulfill({json:{conditions,status:'converted',distribution:[],rules:{}}}));
+ await page.route('**/api/v2/search',async route=>{sent=route.request().postDataJSON();await route.fulfill({json:{runId:'fixture-skill-run',conditions,primary:{candidates:[],matchedUnits:0,beforeLimit:0},assessments:[],rerankingStatus:'no_candidates'}});});
+ await page.goto('/validation.html');await page.getByLabel('自然文の課題',{exact:true}).fill('Gitの知識資料を探したい');
+ await page.getByRole('button',{name:'自然文から条件を生成',exact:true}).click();await expect(page.getByText('条件を生成しました。複数分野・技術要素・経験条件を編集できます。')).toBeVisible();
+ await page.getByRole('button',{name:'相談候補を探す',exact:true}).click();await expect.poll(()=>sent).toBeDefined();
+ expect(sent).toHaveProperty('conditions.skillIds',['skill-fictional-git']);expect(sent).toHaveProperty('conditions.skillDictionaryVersion',3);
+});
+
 test("ダミーの相談候補と根拠を検索できる", async ({ page }) => {
   // Initial upload authorization holds the tenant fence. Wait for that read before searching.
   const uploadContext = page.waitForResponse(response => response.url().endsWith("/api/v1/upload-context") && response.ok());
