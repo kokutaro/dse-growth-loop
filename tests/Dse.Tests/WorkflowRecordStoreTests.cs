@@ -7,6 +7,20 @@ namespace Dse.Tests;
 public sealed class WorkflowRecordStoreTests
 {
     [Fact]
+    public async Task Cached_workflow_services_cannot_read_or_write_after_operator_or_binding_loss_and_can_release_the_fence()
+    {
+        var f=await SkillDictionaryFixture.Create();var actor=await new AuthorityProvider(f.Repo).RequireAsync(SkillDictionaryFixture.Curator,default);
+        var store=new WorkflowRecordStore(f.Store,actor,"wf-one");var p=RecordPartition.Catalog("demo");var document=RecordJson.New("document","private-document","demo",actor.PrincipalId,actor.ScopeIds,DateTimeOffset.UtcNow);
+        await store.CommitAsync(p,[RecordWrite.Create(document)],default);
+        var row=(await f.Repo.ReadAsync(p,AuthorityProvider.PersonId(actor.PersonId),default))!;row.Value["roles"]=RecordJson.Array(["member"]);await f.Store.CommitAsync(p,[RecordWrite.Replace(row.Value,row.ETag)],default);
+        var fence=new AccessFence(new PrimaryRepository(store));var another=document.Copy();another["id"]="must-not-create";
+        await fence.RunAsync("demo",async token=>{
+            Assert.Equal(403,(await Assert.ThrowsAsync<DomainException>(()=>store.ReadAsync(p,"private-document",token))).Status);
+            Assert.Equal(403,(await Assert.ThrowsAsync<DomainException>(()=>store.CommitAsync(p,[RecordWrite.Create(another)],token))).Status);return true;
+        },default);
+        Assert.True(await f.Fence.RunAsync("demo",_=>Task.FromResult(true),default));
+    }
+    [Fact]
     public async Task Workspace_operations_share_the_real_authority_fence_in_both_directions()
     {
         var f=await SkillDictionaryFixture.Create();var actor=await new AuthorityProvider(f.Repo).RequireAsync(SkillDictionaryFixture.Curator,default);
