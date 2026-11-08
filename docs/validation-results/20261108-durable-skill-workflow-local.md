@@ -56,6 +56,8 @@ head `6f3f41f7` のPR側 [verify 42442576531](https://github.com/kokutaro/dse-gr
 
 再レビューでは、撤回成功から文書再読込までの間にも旧断片が復帰し得る窓が指摘された。撤回後の文書GETを保留して旧断片を返す試験で失敗を確認し、撤回成功直後に読取世代を無効化した。最終的なローカル画面はこの5ケースを含む17件成功、Web build成功。撤回の認可・ETag・監査は通常処理を維持する。
 
+head `5d5f46f` は独立再レビューでApprove、[PR側verify](https://github.com/kokutaro/dse-growth-loop/actions/runs/42444877425) は全14ジョブ成功。同headと直前headのpush側では既存知識化画面が初期課題作成のACCESS_BUSYで失敗した。取得したtraceでは、初期の課題GET・upload-context GETの完了前に試験がPOSTを送っていた。既存知識化試験をconversation-contextの初期応答完了後に作成する順へ修正し、公式のケース隔離runnerで1件成功を確認した。通常APIの排他・認可や、未知のPOSTの再送方針は変更していない。
+
 ## 未実施・制約
 
 - 追加の実AI品質試験、Azure Queue→常用Workerの領域付き実機取込、共有画面の一連確認は未実施。成功済みAI応答の不要な再送はしていない。
