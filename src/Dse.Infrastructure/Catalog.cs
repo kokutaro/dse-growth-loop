@@ -91,7 +91,7 @@ public static class CosmosCatalog
         {
             var clauses = skillQueries.Select((q,i) => SkillTextMatch.AllowsPartial(q) ? $"CONTAINS(t, @skillQuery{i})" : $"t = @skillQuery{i}").ToArray();
             var predicate = string.Join(" OR ", clauses);
-            routes.Add("(u.specificSkills.version = @specificSkillVersion AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE " + predicate + ") OR (u.entityType = 'knowledge' AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE " + predicate + "))))");
+            routes.Add("(u.specificSkills.version = @specificSkillVersion AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE " + predicate + ") OR (u.entityType IN ('knowledge', 'document') AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE " + predicate + "))))");
             for(var i=0;i<skillQueries.Length;i++) parameters.Add(($"@skillQuery{i}",skillQueries[i]));
         }
         var query = new QueryDefinition("SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s)) AND " + (request.SyntheticOnly ? "u.syntheticTest = true" : "(NOT IS_DEFINED(u.syntheticTest) OR u.syntheticTest = false)") + " AND (" + string.Join(" OR ", routes) + ")")

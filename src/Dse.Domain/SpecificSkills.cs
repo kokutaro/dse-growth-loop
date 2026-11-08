@@ -22,7 +22,7 @@ public sealed record SpecificSkills(string Version, string State, SpecificSkill[
         .Select(s => SpecificSkillRules.Normalize(s.Raw)).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray() : [];
     public string[] ContentTerms => State == "extracted" ? Items!.Where(s => s.Analysis?.ExperienceState == "content_only")
         .Select(s => SpecificSkillRules.Normalize(s.Raw)).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray() : [];
-    public string[] TermsFor(string entityType) => entityType == "knowledge" ? ContentTerms : SearchTerms;
+    public string[] TermsFor(string entityType) => entityType is "knowledge" or "document" ? ContentTerms : SearchTerms;
 }
 public interface IConcreteSkillExtractor
 {
