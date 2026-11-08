@@ -44,6 +44,10 @@ TDDの失敗段階はfeatureブランチのコミットに保存している。�
 
 資料一覧を必要時の取得へ変えて初期読込の競合を減らし、テストの確認GETも候補収集・画面再読込が完了してから送るよう修正した。修正後、ローカルの辞書・通常デモ12件、既存の手動分析6件、Web buildが成功した。追加の有料AI呼出しは0回。PR・プレビューの新しいheadでの結果は別途確認する。
 
+head `6f3f41f7` のPR側 [verify 42442576531](https://github.com/kokutaro/dse-growth-loop/actions/runs/42442576531) は全14ジョブ成功（Linux Release .NET 1,269件、契約43件、認証/context 10件を含む）。同じheadのpush側 [42442572069](https://github.com/kokutaro/dse-growth-loop/actions/runs/42442572069) は辞書画面の既存1ケースで失敗した。traceは、試験の辞書監査GETと画面の初期GETが競合し、画面に `ACCESS_BUSY` が返ったことを示した。監査GETを画面遷移の前へ移し、再収集後の監査も画面再読込の完了を待つよう修正した。失敗を単純な成功扱いや無条件の再実行で隠していない。
+
+同headの [preview 42442711921](https://github.com/kokutaro/dse-growth-loop/actions/runs/42442711921) は実際に配備済み。入口画面の永続処理の説明と、operator権限のないプレビュー利用者の開始拒否をブラウザで確認した。権限追加はしておらず、一連の操作の実機成功ではない。終了後のARM読み取りで対象revisionは `ScaledToZero`・replicas 0だった。共有API/Workerは基点 `0da09703` のまま。
+
 ## 未実施・制約
 
 - 追加の実AI品質試験、Azure Queue→常用Workerの領域付き実機取込、共有画面の一連確認は未実施。成功済みAI応答の不要な再送はしていない。
