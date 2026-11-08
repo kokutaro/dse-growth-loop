@@ -13,7 +13,7 @@ public static class DocumentEndpoints
                 var actor=RecordEndpoints.Actor(context);var size=pageSize??20;var filter="owned-documents:"+size;
                 var page=await repository.QueryAsync(RecordPartition.Catalog(actor.TenantId),"document",null,null,size,cursors.Decode(actor,filter,continuationToken),token);
                 context.Response.Headers.CacheControl="no-store";
-                return Results.Ok(new{items=page.Items.Where(r=>r.Value.Text("ownerId")==actor.PrincipalId&&AccessPolicy.CanRead(actor,r.Value)).Select(r=>RecordJson.FromStorage(r.Value,r.ETag)),continuationToken=cursors.Encode(actor,filter,page.ContinuationToken)});
+                return Results.Ok(new{items=page.Items.Where(r=>r.Value.Text("ownerId")==actor.PrincipalId&&AccessPolicy.CanRead(actor,r.Value)&&r.Value["historicalEvaluation"]?.GetValue<bool>()!=true&&!SyntheticTestAccess.IsTest(r.Value)).Select(r=>RecordJson.FromStorage(r.Value,r.ETag)),continuationToken=cursors.Encode(actor,filter,page.ContinuationToken)});
             },ct));
         api.MapGet("/documents/{id}/skill-fragments",(string id,HttpContext context,SkillDictionaryService dictionary,AccessFence fence,CancellationToken ct)=>
             new FencedResult(fence,RecordEndpoints.Actor(context).TenantId,async token=>
@@ -82,7 +82,7 @@ public static class DocumentEndpoints
                 var actor = RecordEndpoints.Actor(context);
                 var person = await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId), actor.PersonId, token) ?? throw new DomainException(404, "NOT_FOUND");
                 AccessPolicy.RequireSelf(actor, person.Value);
-                return Results.Ok(new { personId = actor.PersonId, departmentId = person.Value.Text("departmentId"), scopeIds = person.Value.Strings("scopeIds"), maxBytes = limits.OriginalBytes });
+                return Results.Ok(new { personId = actor.PersonId, departmentId = person.Value.Text("departmentId"), scopeIds = person.Value.Strings("scopeIds"), maxBytes = limits.OriginalBytes,canReviewSkills=actor.HasRole("operator") });
             }, ct));
     }
 }

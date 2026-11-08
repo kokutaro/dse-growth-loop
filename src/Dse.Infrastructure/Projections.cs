@@ -166,6 +166,9 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
         var source = (await repository.ReadAsync(partition, unit.EntityId, ct))?.Value;
         if (source is null || source.Text("kind") != unit.EntityType || !AccessPolicy.CanUse(actor, source) ||
             source.Number("activeVersion") != unit.SourceVersion || source.Number("accessVersion") != unit.AccessVersion) return null;
+        // Skill curation is not document publication or all-participants consent.
+        // Other entities still validate their linked evidence with their existing policy.
+        if(unit.EntityType=="document"&&source.Text("ownerId")!=actor.PrincipalId)return null;
         if (source.Text("kind") == "person" && !SyntheticTestAccess.IsTest(source))
         {
             var person = await new AuthorityProvider(repository,configuration).PersonAsync(actor.TenantId,source.Text("id"),ct);

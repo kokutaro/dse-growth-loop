@@ -13,6 +13,7 @@ public sealed partial class DocumentUploads
         var row=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),id,ct);
         if(row?.Value.Text("kind")!="document"||row.Value.Text("ownerId")!=actor.PrincipalId||row.Value.Text("personId")!=actor.PersonId)throw new DomainException(404,"NOT_FOUND");
         AccessPolicy.RequireRead(actor,row.Value);
+        if(row.Value["historicalEvaluation"]?.GetValue<bool>()==true)throw new DomainException(409,"SKILL_HISTORY_READ_ONLY");
         // Test-generation lifecycle has additional budget/lineage invariants and keeps its own API.
         if(SyntheticTestAccess.IsTest(row.Value)||row.Value.Text("generationParentId")!="")throw new DomainException(409,"DOCUMENT_SPECIAL_LIFECYCLE");
         return row;
@@ -45,7 +46,7 @@ public sealed partial class DocumentUploads
                 var version=RecordJson.New("documentVersion",id+"-v"+value.Number("sourceVersion"),actor.TenantId,actor.PrincipalId,value.Strings("scopeIds"),now);
                 version["sourceVersion"]=value.Number("sourceVersion");version["documentId"]=id;version["blobKey"]=blobKey;version["sha256"]=hash;version["mediaType"]=mime;
                 version["bytes"]=bytes.Length;version["status"]="queued";version["processorVersion"]=IngestionOptions.ProcessorVersion;
-                var job=Jobs.Create(value,"ingestion",now);version["jobId"]=job.Text("id");value["currentVersionId"]=version.Text("id");
+                var job=Jobs.Create(value,"ingestion",now);version["jobId"]=job.Text("id");value["currentVersionId"]=version.Text("id");value["ingestionJobId"]=job.Text("id");
                 return Task.FromResult(new MutationPlan([RecordWrite.Replace(value,doc.ETag),RecordWrite.Create(version),RecordWrite.Create(job),RecordWrite.Create(LifecycleAudit(actor,value,"document_corrected",reason))],null,Accepted(value,job.Text("id"))));
             },token);
         },ct);
