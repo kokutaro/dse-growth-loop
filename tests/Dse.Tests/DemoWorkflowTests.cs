@@ -8,11 +8,15 @@ namespace Dse.Tests;
 
 public sealed class DemoWorkflowTests
 {
-    internal static ServiceProvider Root(IRecordStore store)=>new ServiceCollection()
-        .AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock"}).Build())
-        .AddLogging().AddCatalog(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock"}).Build(),true)
-        .AddIngestion(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock"}).Build())
-        .AddSingleton<IRecordStore>(store).AddSingleton<IAiTransport>(MockAiTransport.Instance).BuildServiceProvider();
+    internal static ServiceProvider Root(IRecordStore store,IIngestionQueue? queue=null,IIngestionBlobs? blobs=null)
+    {
+        var configuration=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock",["AiUsage:Stopped"]="false"}).Build();
+        var services=new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging().AddCatalog(configuration,true).AddIngestion(configuration)
+            .AddSingleton<IRecordStore>(store).AddSingleton<IAiTransport>(MockAiTransport.Instance);
+        if(queue is not null)services.AddSingleton(queue);
+        if(blobs is not null)services.AddSingleton(blobs);
+        return services.BuildServiceProvider();
+    }
 
     [Fact]
     public async Task Common_services_resume_fictional_sources_and_review_history_after_process_restart()
