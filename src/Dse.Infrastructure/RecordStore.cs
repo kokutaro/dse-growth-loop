@@ -41,7 +41,7 @@ public sealed class PrimaryRepository(IRecordStore store) : IPrimaryRepository
     public async Task<RecordPage> QueryAsync(RecordPartition partition,string kind,string? field,string? parent,int size,string? token,CancellationToken ct)
     {
         using var measurement=PipelineDiagnostics.Repository("query");
-        try { if(!RecordJson.ContractKinds.ContainsKey(kind)||kind=="searchUnit")throw new ArgumentException("Invalid primary kind");return await store.QueryAsync(partition,kind,field,parent,size,token,ct); }
+        try { if((!RecordJson.ContractKinds.ContainsKey(kind)&&kind!="aiResultReceipt")||kind=="searchUnit")throw new ArgumentException("Invalid primary kind");return await store.QueryAsync(partition,kind,field,parent,size,token,ct); }
         catch { measurement.Fail();throw; }
     }
 }
@@ -110,7 +110,7 @@ internal static class QueryRules
         var allowedField = field is null or "personId" or "documentId" or "documentVersionId" or "entityId" or "jobId" ||
             (kind == "searchUnit" && field == "entityType") || (kind == "skillCandidate" && field == "fragmentId") || (kind == "person" && field == "managedByPersonId") ||
             (kind is "aiReservation" or "aiExecution" && field == "runId");
-        if ((!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "aiReservation" or "aiExecution")) || !allowedField || size is < 1 or > 100)
+        if ((!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "aiReservation" or "aiExecution" or "aiResultReceipt")) || !allowedField || size is < 1 or > 100)
             throw new ArgumentException("Invalid query");
     }
 }

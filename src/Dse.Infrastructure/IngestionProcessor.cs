@@ -58,6 +58,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
         { await queue.DeleteAsync(delivery, ct); return true; }
         if (job.Value.Text("status") is "ready" or "cancelled" or "needs_review" or "failed" or "budget_stopped")
         {
+            if(job.Value.Text("status")=="ready")await ForgetCompletedResultsAsync(notice.TenantId,notice.JobId,ct);
             if (job.Value.Text("status") == "failed") await queue.SendAsync(notice, ct, poison: true);
             await queue.DeleteAsync(delivery, ct); return true;
         }
@@ -133,6 +134,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                 }
                 catch(Exception error){publishStage.Failed(error);throw;}
                 finally { gate.Release(); }
+                await ForgetCompletedResultsAsync(notice.TenantId,notice.JobId,ct);
                 await queue.DeleteAsync(delivery, ct);
                 return true;
             }
@@ -292,6 +294,14 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
         }
         if (delete) await queue.DeleteAsync(delivery, ct);
         return true;
+    }
+    private async Task ForgetCompletedResultsAsync(string tenant,string jobId,CancellationToken ct)
+    {
+        using var cleanup=new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var linked=CancellationTokenSource.CreateLinkedTokenSource(ct,cleanup.Token);
+        try {await fence.RunAsync(tenant,async token=>{await new AiResultReceipts(repository,clock).ForgetCompletedAsync(tenant,jobId,token);return true;},linked.Token);}
+        catch(Exception error) when(error is not OperationCanceledException||!ct.IsCancellationRequested)
+        {logger.LogWarning("Completed job response cleanup deferred {JobId}",jobId);}
     }
 }
 

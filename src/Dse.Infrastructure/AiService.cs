@@ -409,7 +409,10 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         if (failure is not null)
         {
             if(durable is {Result:null}&&(attempts==0||inferenceNotDispatched))
-                await receipts.NotDispatchedAsync(durable,CancellationToken.None);
+            {
+                using var cleanup=new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await receipts.NotDispatchedAsync(durable,cleanup.Token);
+            }
             executionStage.Failed();
             result = default;
             cacheHit = false;

@@ -49,7 +49,9 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
             {
                 if(saved.Value["expiresAt"]!.Deserialize<DateTimeOffset>()<=clock.GetUtcNow())
                 {await RedactAsync(saved,"expired",ct);throw Review();}
-                var result=saved.Value["result"]??throw Review();
+                var body=await repository.ReadAsync(p,id+"-body",ct)??throw Review();
+                if(body.Value.Text("kind")!="aiResultPayload"||body.Value.Text("ownerId")!=actor.PrincipalId||body.Value.Text("fingerprint")!=fingerprint)throw Review();
+                var result=body.Value["aiResult"]??throw Review();
                 if(Hash(RecordJson.Canonical(result))!=saved.Value.Text("resultHash"))throw Review();
                 return new(saved,result.DeepClone(),saved.Value.Text("runId"));
             }
@@ -77,15 +79,39 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
         var node=JsonSerializer.SerializeToNode(result,AiCodecs.Json)??throw Review();
         if(Encoding.UTF8.GetByteCount(node.ToJsonString())>MaximumResultBytes)throw Review();
         var value=handle.Row.Value.Copy();value["state"]="succeeded";value["runId"]=originRunId;
-        value["result"]=node;value["resultHash"]=Hash(RecordJson.Canonical(node));value["updatedAt"]=clock.GetUtcNow();
-        try {await repository.CommitAsync(RecordPartition.Catalog(value.Text("tenantId")),[RecordWrite.Replace(value,handle.Row.ETag)],ct);}
+        value["resultHash"]=Hash(RecordJson.Canonical(node));value["updatedAt"]=clock.GetUtcNow();
+        var body=RecordJson.New("aiResultPayload",value.Text("id")+"-body",value.Text("tenantId"),value.Text("ownerId"),["system"],clock.GetUtcNow());
+        body["aiResult"]=node;body["fingerprint"]=value["fingerprint"]!.DeepClone();body["expiresAt"]=value["expiresAt"]!.DeepClone();
+        body["ttl"]=Math.Max(1,(int)(value["expiresAt"]!.Deserialize<DateTimeOffset>()-clock.GetUtcNow()).TotalSeconds);
+        try {await repository.CommitAsync(RecordPartition.Catalog(value.Text("tenantId")),[RecordWrite.Replace(value,handle.Row.ETag),RecordWrite.Create(body)],ct);}
         catch {AccessFence.MarkUncertainResult();throw;}
     }
     internal Task NotDispatchedAsync(Handle handle,CancellationToken ct)=>RedactAsync(handle.Row,"not_dispatched",ct);
     private async Task RedactAsync(StoredRecord row,string state,CancellationToken ct)
     {
         var value=row.Value.Copy();value.Remove("result");value.Remove("resultHash");value["state"]=state;value["updatedAt"]=clock.GetUtcNow();
-        try {await repository.CommitAsync(RecordPartition.Catalog(value.Text("tenantId")),[RecordWrite.Replace(value,row.ETag)],ct);}
+        var p=RecordPartition.Catalog(value.Text("tenantId"));var body=await repository.ReadAsync(p,value.Text("id")+"-body",ct);
+        List<RecordWrite> writes=[RecordWrite.Replace(value,row.ETag)];
+        if(body is not null){body.Value.Remove("aiResult");body.Value["ttl"]=1;writes.Add(RecordWrite.Replace(body.Value,body.ETag));}
+        try {await repository.CommitAsync(p,writes,ct);}
         catch {AccessFence.MarkUncertainResult();throw;}
+    }
+
+    internal async Task ForgetCompletedAsync(string tenant,string jobId,CancellationToken ct)
+    {
+        var p=RecordPartition.Catalog(tenant);var job=await repository.ReadAsync(p,jobId,ct);
+        if(job?.Value.Text("status")!="ready")return;
+        var chain=job.Value;HashSet<string> seen=[];
+        while(true)
+        {
+            var id=chain.Text("id");if(seen.Count>=20||!seen.Add(id))throw Review();
+            var receipts=await repository.QueryAsync(p,Kind,"jobId",id,100,null,ct);
+            foreach(var receipt in receipts.Items.Where(r=>r.Value.Text("state")=="succeeded"))await RedactAsync(receipt,"completed",ct);
+            if(chain.Text("supersedesJobId") is not {Length:>0} parent)break;
+            var prior=await repository.ReadAsync(p,parent,ct)??throw Review();
+            if(prior.Value.Text("kind")!="job"||prior.Value.Text("ownerId")!=job.Value.Text("ownerId")||
+                prior.Value.Text("aggregateId")!=job.Value.Text("aggregateId")||prior.Value.Number("aggregateVersion")!=job.Value.Number("aggregateVersion"))throw Review();
+            chain=prior.Value;
+        }
     }
 }
