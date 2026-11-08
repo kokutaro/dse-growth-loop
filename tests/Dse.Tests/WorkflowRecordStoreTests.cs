@@ -6,6 +6,18 @@ namespace Dse.Tests;
 
 public sealed class WorkflowRecordStoreTests
 {
+    [Fact]
+    public async Task Workspace_operations_share_the_real_authority_fence_in_both_directions()
+    {
+        var f=await SkillDictionaryFixture.Create();var actor=await new AuthorityProvider(f.Repo).RequireAsync(SkillDictionaryFixture.Curator,default);
+        var repository=new PrimaryRepository(new WorkflowRecordStore(f.Store,actor,"wf-one"));var isolated=new AccessFence(repository);
+        await f.Fence.RunAsync("demo",async token=>{
+            Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>isolated.RunAsync("demo",_=>Task.FromResult(true),token))).Code);return true;
+        },default);
+        await isolated.RunAsync("demo",async token=>{
+            Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>f.Fence.RunAsync("demo",_=>Task.FromResult(true),token))).Code);return true;
+        },default);
+    }
     [Theory]
     [InlineData("demo")]
     [InlineData("")]
