@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { HubConnectionBuilder, HttpTransportType, LogLevel } from "@microsoft/signalr";
 import { Knowledge } from "./knowledge";
 import { getToken, type AppConfig } from "./auth";
+import {apiFetch as fetch,workflowStorageKey} from './workflow-context';
 
 type Row = { id: string; etag: string; sessionId: string; title: string; summary: string; ownerId: string;
   personId: string; status: string; aiAssistance: string; membershipVersion: number; lastSequence: number;
@@ -77,7 +78,7 @@ function Chat({ challenge, principal, api, config, person, candidates, onKnowled
   const [session, setSession] = useState<Row>(), [participations, setParticipations] = useState<Row[]>([]);
   const [messages, setMessages] = useState<Row[]>([]), [text, setText] = useState(""), [target, setTarget] = useState("");
   const [error, setError] = useState(""), [connection, setConnection] = useState("未接続"), [busy, setBusy] = useState(false);
-  const storageKey = `dse-outbox:${config.tenantId}:${principal}:${sid}`;
+  const storageKey = workflowStorageKey(`dse-outbox:${config.tenantId}:${principal}:${sid}`);
   const [pending, setPending] = useState<Pending[]>(() => {
     try { return (JSON.parse(sessionStorage.getItem(storageKey) ?? "[]") as Pending[]).map(x => ({ ...x, state: "save_failed" })); } catch { return []; }
   });

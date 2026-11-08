@@ -2,6 +2,7 @@ import {useEffect,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {authSessionSignal,getToken,initializeAuth,type AppConfig} from './auth';
 import './style.css';
+import {apiFetch as fetch} from './workflow-context';
 import {generationCanStart,generationAcceptanceMessage} from './generation-status';
 type Person={id:string;displayName:string;etag:string;publicationState:string;documentHeads:Record<string,string>;syntheticTest:true;pendingGenerationId?:string};
 type GenerationQuote={estimateId:string;sourceEtag:string;sourceDocumentId:string;generationId:string;maximumUsd:number;maxCalls:number;processorVersion:string;structureVersion:string;skillPromptVersion:string;implementationVersion:string;alreadyApplied:boolean;availability:string};

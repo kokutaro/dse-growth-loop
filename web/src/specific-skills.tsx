@@ -15,7 +15,7 @@ export function SkillDetails({ value }: { value?: SpecificSkills }) {
       <strong>{s.raw}</strong> ／ 正規化候補：{s.normalizationCandidate ?? "不明"} ／ {contextNames[s.basis ?? ""] ?? "旧版の抽出（新方式で未評価）"}
       <p>{!s.basis ? "旧版の候補です。新方式での抽出前に経験認定へ変更しません" : s.analysis?.experienceState === "eligible" ? "経験内容の候補（本人未確認）" : "知識・未実施等の文脈を保持。経験タグには採用しません"}</p>
       {s.analysis && <><p>引用整合性：{s.analysis.quoteState} ／ 意味支持：{s.analysis.semanticSupport} ／ 種別：{s.analysis.kind}</p>
-        <ul>{s.analysis.elements.map((e,j)=><li key={j}>技能要素：{e.label} ／ 条件：{e.conditions.join("、") || "原文引用で確認（自動分解なし）"} ／ 共通概念：{e.conceptId ?? "未対応"}（{e.conceptState}）</li>)}</ul></>}
+        <ul>{s.analysis.elements.map((e,j)=><li key={j}>技能要素：{e.label} ／ 条件：{e.conditions.join("、") || "原文引用で確認（自動分解なし）"} ／ 抽出時の共通概念：{e.conceptId ?? "未対応"}（{e.conceptState}）</li>)}</ul></>}
       <blockquote>{s.quote}<cite>根拠ID：{s.evidenceId}</cite></blockquote>
     </li>)}</ul>}
     {!!value?.rejectedItems?.length && <div className="quarantined-skills"><p>確認が必要な候補：{value.rejectedItems.length}件。本人の経験タグ・検索には採用しません。</p><ul>{value.rejectedItems.map((r, i) => <li key={i}>

@@ -2,13 +2,14 @@ import {useEffect,useRef,useState} from 'react';
 import {SkillSuggestionPanel,type SkillSuggestion} from './skill-suggestion';
 import {authSessionSignal,getToken,type AppConfig} from './auth';
 import {skillApi,skillDemoId,skillSearchLink} from './skill-demo-context';
+import {apiFetch as fetch,workflowId,workflowHref} from './workflow-context';
 
 type Element={label:string;object:string|null;conditions:string[];kind:string;subjectScope:string;participation?:string;basis?:string};
 type Concept={id:string;name:string;definition:string;boundary:string;scopeIds:string[];state:string;redirectId:string|null;aliases:{text:string;kind:string;object:string|null;conditions:string[]}[]};
 type Dictionary={version:number;currentVersion:number;etag:string;concepts:Concept[]};
 type Candidate={syntheticTest?:boolean;sourceStatus?:string;reviewable?:boolean;candidateType?:string;sourceInputState?:string;id:string;etag:string;state:string;conceptId:string|null;fragmentId:string;scopeIds:string[];element:Element|null;item:{raw:string;quote:string;evidenceId:string;participation?:string;basis?:string;normalizationCandidate:string|null;analysis:{experienceState:string;quoteState:string;semanticSupport:string}}|null};
 type ReviewCandidate=Candidate & {element:Element;item:NonNullable<Candidate['item']>};
-type SourceReview={candidateId:string;fragmentId:string;sourceStatus:string;currentFingerprint:string;guardVersion:string;inputState:string;acceptedCount:number;currentText:string;evidence:{id:string;text:string}[];rejected:{reason:string;raw:string|null;normalizationCandidate?:string|null;participation?:string;basis?:string}[]};
+type SourceReview={candidateId:string;fragmentId:string;sourceStatus:string;currentFingerprint:string;guardVersion:string;inputState:string;acceptedCount:number;currentText:string;historyOnly?:boolean;evidence:{id:string;text:string}[];rejected:{reason:string;raw:string|null;normalizationCandidate?:string|null;participation?:string;basis?:string}[]};
 const holdReasons:Record<string,string>={non_skill_context:'役割・所属などの背景情報で、具体技能ではない',skill_context_unverified:'具体技能を示す文脈を確認できない',skill_context_conflict:'技術列と実務経験の判定が矛盾している',generation_superseded:'抽出世代が置き換え済みです。人物画面の現在の実績IDから収集してください',raw_not_in_quote:'元表現が引用内にない',quote_not_in_source:'引用が原文と一致しない',not_in_fragment:'元表現が現在の実績本文にない',incomplete_passage:'文の一部だけの引用',no_completed_assertion:'実施を確定できない',negated_assertion:'実施の否定',reported_or_intended:'希望・計画・相談・伝聞',other_actor:'他者の実績',duplicate_candidate:'重複候補',unknown_evidence:'根拠IDが現在の原文根拠に含まれない'};
 type Write={path:string;key:string;etag?:string;body:unknown};
 const labels:Record<string,string>={pending:'未登録・確認待ち',matched:'既存技能に対応',registered:'新規登録済み',alias:'別名承認済み',merged:'統合済み',not_skill:'技能ではない',deferred:'保留',practice:'作業・技術',knowledge:'知識',reference:'参照',qualification:'資格',eligible:'経験候補・本人未確認',content_only:'知識内容のみ',pending_eligibility:'文脈未確定'};
@@ -21,7 +22,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
  const [sourceReview,setSourceReview]=useState<SourceReview>();const sourceEpoch=useRef(0);const sending=useRef(false);
  const [suggestion,setSuggestion]=useState<SkillSuggestion>();
  const [dictionary,setDictionary]=useState<Dictionary>();const [items,setItems]=useState<Candidate[]>([]);const [cursor,setCursor]=useState<string|null>(null);
- const [selected,setSelected]=useState<ReviewCandidate>();const [fragment,setFragment]=useState('');const [action,setAction]=useState('defer');
+ const [selected,setSelected]=useState<ReviewCandidate>();const [fragment,setFragment]=useState(()=>new URLSearchParams(location.search).get('fragment')??'');const [action,setAction]=useState('defer');
  const [target,setTarget]=useState('');const [standard,setStandard]=useState('');const [definition,setDefinition]=useState('');const [boundary,setBoundary]=useState('');const [reason,setReason]=useState('');
  const [error,setError]=useState('');const [message,setMessage]=useState('');const [busy,setBusy]=useState(false);const [uncertain,setUncertain]=useState(false);
  const [checked,setChecked]=useState<string[]>([]);const [version,setVersion]=useState('0');const [preview,setPreview]=useState<{dictionaryVersion:number;items:{candidateId:string;state:string;mapping:{state:string;conceptId:string|null};experienceEligibility:string}[]}>();
@@ -73,6 +74,7 @@ export function SkillDictionary({config}:{config:AppConfig}){
  <p>原文と文脈を確認し、人が辞書を育てます。辞書登録は人物経験の認定・公開ではありません。正解データと既存の検索語も変更しません。</p>
  {isDemo?<p>操作用デモ：変更は自分のメモリ内だけに保存します。</p>:<p><a href="/skill-demo.html">以前の架空2資料で辞書承認と検索を試す</a></p>}
  {isDemo&&<p>1時間、またはサーバーの停止・再起動で終了します。<a href="/skill-demo.html">操作用デモを開き直す</a></p>}
+ {workflowId()!==undefined&&<p>架空資料の操作を永続保存しています。<a href={workflowHref('/validation.html')}>通常の取込・検索画面へ</a>。既存の共有辞書とは分けて保存します。</p>}
  {error&&<p role="alert">{error}</p>}{message&&<p role="status">{message}</p>}
  {uncertain&&<button disabled={busy} onClick={()=>pending.current&&void send(pending.current)}>同じ操作を再送</button>}
  {!dictionary?<button onClick={()=>void read(refresh)} disabled={busy}>権限を確認して読み込む</button>:<>
@@ -95,7 +97,8 @@ export function SkillDictionary({config}:{config:AppConfig}){
  <ul>{sourceReview.rejected.map((r,i)=><li key={i}>{r.raw??'原文に一致する元表現を確認できません'} ／ {holdReasons[r.reason]??'検証保留'}（{r.reason}） ／ {contextName(r.basis)}{r.normalizationCandidate&&<p>AI正規化案（未承認）：{r.normalizationCandidate}</p>}</li>)}</ul>
  {sourceReview.rejected.some(r=>r.normalizationCandidate)&&<p>同じ元表現に異なる案がある場合、案だけで別技能へ登録せず、原文中の各技能を区別した再抽出が必要です。技術列の記載だけでは実務経験を認定しません。</p>}
  <p>原文や保存済み抽出の修正はこの画面では行いません。再収集は現在の根拠で再検証し、解消していない保留は残します。AI追加実行・辞書承認・人物経験の認定は行いません。</p>
- <button disabled={isDemo||busy||uncertain||sourceReview.rejected.some(r=>r.reason==='generation_superseded')} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:sourceReview.fragmentId,expectedFingerprint:sourceReview.currentFingerprint}})}>現在の根拠で再収集</button>
+ {sourceReview.historyOnly&&<p>以前の保留を残した評価履歴です。変更・再収集は行いません。</p>}
+ <button disabled={isDemo||sourceReview.historyOnly||busy||uncertain||sourceReview.rejected.some(r=>r.reason==='generation_superseded')} onClick={()=>void send({path:'skill-candidates/collect',key:crypto.randomUUID(),body:{fragmentId:sourceReview.fragmentId,expectedFingerprint:sourceReview.currentFingerprint}})}>現在の根拠で再収集</button>
  <button disabled={busy} onClick={()=>{sourceEpoch.current++;setSourceReview(undefined);}}>一覧へ戻る</button>
  </section>}
  {selected&&<section className="panel candidate-review"><h2>根拠と辞書を比較</h2><button disabled={busy} onClick={()=>{sourceEpoch.current++;setSelected(undefined);setSuggestion(undefined);setHistory(undefined);}}>一覧へ戻る</button>

@@ -63,6 +63,7 @@ public sealed partial class DocumentUploads(IPrimaryRepository repository, Acces
                 SyntheticTestAccess.Mark(version,person);
                 doc["currentVersionId"] = version.Text("id");
                 var job = Jobs.Create(doc, "ingestion", now);
+                doc["ingestionJobId"]=job.Text("id");
                 version["documentId"] = documentId; version["blobKey"] = blobKey; version["sha256"] = hash; version["mediaType"] = mime;
                 version["bytes"] = bytes.Length; version["status"] = "queued"; version["jobId"] = job.Text("id"); version["processorVersion"] = IngestionOptions.ProcessorVersion;
                 person["documentHeads"] ??= new JsonObject();

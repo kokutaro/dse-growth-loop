@@ -8,6 +8,7 @@ import { Profiles } from "./profiles";
 import { Documents } from "./documents";
 import {SkillSearch,type SkillMatch} from './skill-search';
 import {skillDemoId} from './skill-demo-context';
+import {apiFetch as fetch,workflowHref,workflowId} from './workflow-context';
 
 type SourceRef = {
   id: string;
@@ -20,7 +21,7 @@ type Candidate = {
   entityType: string;
   title: string;
   routes: string[];
-  units: { summary: string; sourceRefs: SourceRef[]; confirmationState: string; processingMode?: string; specificSkills?: SpecificSkills;skillMatch?:SkillMatch }[];
+  units: { summary: string; sourceRefs: SourceRef[]; confirmationState: string; processingMode?: string; specificSkills?: SpecificSkills;skillMatch?:SkillMatch;skillBindings?:{candidateId:string;conceptId:string;eligibility:string}[];skillDictionaryVersion?:number }[];
 };
 type SearchResult = {
   candidates: Candidate[];
@@ -44,6 +45,7 @@ function App() {
   const [config, setConfig] = useState<AppConfig>();
   const [searchMode,setSearchMode]=useState(isolatedDemo||new URLSearchParams(location.search).has('skillVersion')?'skills':'terms');
   const [conditionsReady, setConditionsReady] = useState(false);
+  const [approvedSkills,setApprovedSkills]=useState<{ids:string[];version:number}>();
   const [query, setQuery] = useState("");
   const [target, setTarget] = useState("all");
   const [categoryIds, setCategoryIds] = useState("operations");
@@ -88,7 +90,7 @@ function App() {
   }, []);
   async function convert() {
     if (!config) return;
-    setBusy(true); setError(""); setResult(undefined); setStage("質問の分類中");
+    setBusy(true); setError(""); setResult(undefined);setApprovedSkills(undefined); setStage("質問の分類中");
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (config.mode === "Azure") headers.Authorization = `Bearer ${await getToken(config)}`;
@@ -100,6 +102,7 @@ function App() {
         setCategoryIds(value.conditions.categories.map((c: { categoryId: string }) => c.categoryId).join(" "));
         setSignalIds(value.conditions.signalIds.join(" "));
         setTerms(value.conditions.terms.join(" "));
+        setApprovedSkills(value.conditions.skillIds?.length?{ids:value.conditions.skillIds,version:value.conditions.skillDictionaryVersion}:undefined);
         setConversionStatus("条件を生成しました。複数分野・技術要素・経験条件を編集できます。");
       } else {
         setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills("");
@@ -130,7 +133,7 @@ function App() {
       const conditions = { categories: query.trim() ? categoryIds.split(/[\s、,]+/u).filter(Boolean).map(categoryId => ({ axis: "domain", categoryId })) : category ? [{ axis: "domain", categoryId: category }] : [],
         signalIds: query.trim() ? signalIds.split(/[\s、,]+/u).filter(Boolean) : noul ? ["handover"] : [],
         specificSkills: specificSkills.split(/[、,]+/u).map(s => s.trim()).filter(Boolean),
-        terms: terms.split(/[\s、,]+/u).filter(Boolean), probabilityThreshold: 0.2, noulThreshold: 0.5, limit: 20 };
+        terms: terms.split(/[\s、,]+/u).filter(Boolean), probabilityThreshold: 0.2, noulThreshold: 0.5, limit: 20,...(approvedSkills?{skillIds:approvedSkills.ids,skillDictionaryVersion:approvedSkills.version}:{}) };
       const response = await fetch(query.trim() ? "/api/v2/search" : "/api/search", {
         method: "POST",
         headers,
@@ -139,7 +142,7 @@ function App() {
       if (generation !== searchGeneration.current) return;
       if (response.status === 422) {
         const failure = await response.json();
-        setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills("");
+        setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills("");setApprovedSkills(undefined);
         if (failure.code === "CLASSIFICATION_OUT_OF_SCOPE") {
           setConversionStatus("自動検索の対象分野を判断できませんでした。検索は実行していません。必要な条件を手動で入力できます。");
           setStage("自動検索対象外");
@@ -164,9 +167,10 @@ function App() {
         setSignalIds(value.conditions.signalIds.join(" "));
         setTerms(value.conditions.terms.join(" "));
         setConditionsReady(true);
+        setApprovedSkills(value.conditions.skillIds?.length?{ids:value.conditions.skillIds,version:value.conditions.skillDictionaryVersion}:undefined);
       }
       const failed = value.primary && !["succeeded", "all_unsuitable", "no_candidates"].includes(value.rerankingStatus);
-      setResult(value.primary ? { ...value.primary, candidates: failed ? [] : value.primary.candidates, assessments: failed ? [] : value.assessments, runId: value.runId } : value);
+      setResult(value.primary ? { ...value.primary, candidates: failed ? [] : value.primary.candidates, assessments: failed ? [] : value.assessments, runId: value.runId,skillDictionaryVersion:value.conditions?.skillDictionaryVersion } : value);
       setStage("完了・表示前の権限確認済み");
     } catch (e) {
       if (generation !== searchGeneration.current) return;
@@ -180,7 +184,7 @@ function App() {
   return (
     <>
       <header>
-        <a className="brand" href="/">
+        <a className="brand" href={workflowHref('/')}>
           DSE <span>Growth Loop</span>
         </a>
         <span className="mode">
@@ -216,10 +220,11 @@ function App() {
             {searchMode==='skills'?config&&<SkillSearch config={config} onInvalidate={()=>{setResult(undefined);setStage('');}} onResult={value=>{setResult(value);setError('');setStage('完了・表示前の権限確認済み');}}/>:
             <form onSubmit={search}>
               <label htmlFor="query">自然文の課題</label>
-              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills(""); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
+              <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false);setApprovedSkills(undefined); setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills(""); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
               <small>ダミーの課題を入力してください。パスワード・キーなどのログイン情報は入力できません。</small>
               <button type="button" disabled={busy || !config || !query.trim()} onClick={() => { void convert(); }}>自然文から条件を生成</button>
               {conversionStatus && <p role="status">{conversionStatus}</p>}
+              {approvedSkills&&<div><p>承認済み技能IDの条件：{approvedSkills.ids.join('、')} ／ 辞書版 {approvedSkills.version}</p><button type="button" disabled={busy} onClick={()=>{setApprovedSkills(undefined);setResult(undefined);}}>技能IDの条件を外す</button></div>}
               <label>具体スキル（カンマ区切り）<input disabled={busy} value={specificSkills} onChange={e => { setSpecificSkills(e.target.value); setConditionsReady(true); }} placeholder="C#, 回帰試験" /></label>
               {query.trim() && <>
                 <label htmlFor="search-target">検索対象</label>
@@ -322,7 +327,7 @@ function App() {
                           <span className="kind">
                             {candidate.entityType === "person"
                               ? "相談候補"
-                              : "参考事例"}
+                              : candidate.entityType==='document'?'参考資料':"参考事例"}
                           </span>
                           <span className="fixture">架空データ</span>
                         </div>
@@ -337,8 +342,9 @@ function App() {
                           <p>{u.skillMatch.eligibility==='content_only'?'知識内容のみ':'経験候補・本人未確認'} ／ 技能ID：{u.skillMatch.conceptId}</p>
                           <details><summary>辞書承認の記録</summary>{u.skillMatch.reviews.map((r,j)=><p key={j}>{r.action} ／ 辞書 {r.previousVersion} → {r.approvedVersion} ／ {r.reason} ／ {r.createdAt}</p>)}</details>
                         </div>)}
+                        {candidate.units.map((u,i)=>u.skillBindings?.length?<div key={'binding-'+i}>{u.skillBindings.map(b=><p key={b.candidateId}>{b.eligibility==='content_only'?'知識内容のみ':'経験候補・本人未確認'} ／ 技能ID：{b.conceptId} ／ 辞書版 {u.skillDictionaryVersion}</p>)}<a href={workflowHref('/skill-dictionary.html')}>技能の承認履歴を確認する</a></div>:null)}
                         {candidate.units.map((u, i) => !u.skillMatch&&<SkillDetails key={i} value={u.specificSkills} />)}
-                        <small>{candidate.units.some(u=>u.skillMatch)?'原文照合・辞書対応 ／ 追加AIなし':<>{candidate.units.some(u => u.confirmationState === "reviewed") ? "参加者確認・公開承認済み" : candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</>}</small>
+                        <small>{candidate.units.some(u=>u.skillMatch||u.skillBindings?.length)?<>原文照合・辞書対応{!result.runId&&' ／ 追加AIなし'}</>:<>{candidate.units.some(u => u.confirmationState === "reviewed") ? "参加者確認・公開承認済み" : candidate.units.some(u => u.confirmationState === "ai_unconfirmed") ? "AI抽出・本人未確認" : candidate.units.some(u => u.confirmationState === "self_corrected") ? "本人訂正済み" : candidate.units.some(u => u.confirmationState === "self_confirmed") ? "本人確認済み" : "固定fixture"} ／ {candidate.units.some(u => u.processingMode === "live") ? "実AI処理" : "fixture"}</>}</small>
                         <div className="routes">
                           {candidate.routes.map((route) => (
                             <span key={route}>{routeNames[route] ?? route}</span>
@@ -368,11 +374,11 @@ function App() {
             )}
           </section>
         </div>
-        {config && !config.dictionaryFixture && !isolatedDemo && <Conversations config={config} candidates={result?.candidates ?? []} onKnowledgeChanged={invalidateKnowledge} />}
-        {config && !config.dictionaryFixture && !isolatedDemo && <Documents config={config} />}
-        {config && !config.dictionaryFixture && !isolatedDemo && <Profiles config={config} />}
-        {config && <p><a href="/test-profiles.html">検証専用の架空人物・資料取込（運用者専用）</a></p>}
-        {config && <p><a href="/skill-dictionary.html">共通技能辞書と候補レビュー（既存の運用者権限が必要）</a></p>}
+        {config && !config.dictionaryFixture && !isolatedDemo && workflowId()===undefined && <Conversations config={config} candidates={result?.candidates ?? []} onKnowledgeChanged={invalidateKnowledge} />}
+        {config && (!config.dictionaryFixture||workflowId()!==undefined) && !isolatedDemo && <Documents config={config} />}
+        {config && (!config.dictionaryFixture||workflowId()!==undefined) && !isolatedDemo && <Profiles config={config} />}
+        {config && workflowId()===undefined && <p><a href="/test-profiles.html">検証専用の架空人物・資料取込（運用者専用）</a></p>}
+        {config && <p><a href={workflowHref('/skill-dictionary.html')}>共通技能辞書と候補レビュー（既存の運用者権限が必要）</a></p>}
         {config && <p><a href="/skill-demo.html">以前の架空2資料で辞書承認と検索を試す</a></p>}
       </main>}
       <footer>
