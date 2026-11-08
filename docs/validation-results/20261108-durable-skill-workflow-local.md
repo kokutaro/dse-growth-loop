@@ -58,6 +58,8 @@ head `6f3f41f7` のPR側 [verify 42442576531](https://github.com/kokutaro/dse-gr
 
 head `5d5f46f` は独立再レビューでApprove、[PR側verify](https://github.com/kokutaro/dse-growth-loop/actions/runs/42444877425) は全14ジョブ成功。同headと直前headのpush側では既存知識化画面が初期課題作成のACCESS_BUSYで失敗した。取得したtraceでは、初期の課題GET・upload-context GETの完了前に試験がPOSTを送っていた。既存知識化試験をconversation-contextの初期応答完了後に作成する順へ修正し、公式のケース隔離runnerで1件成功を確認した。通常APIの排他・認可や、未知のPOSTの再送方針は変更していない。
 
+head `cdb6a75` のPR側は全14ジョブ成功。push側の辞書ジョブに含まれる既存検証人物試験では、登録後の画面GETが04:05:05.900に開始し、試験の監査GETが同.907に重なって503となった。画面の「登録済み」は再読込の前に表示されるため、既存の有効化済み「最新状態を確認」ボタンで操作全体の完了を待ち、その後だけ監査・drainを送るよう試験を修正した。ローカルの検証人物5件が成功。既存の二重クリック・応答消失・権限撤回・予算確認の判定は維持する。
+
 ## 未実施・制約
 
 - 追加の実AI品質試験、Azure Queue→常用Workerの領域付き実機取込、共有画面の一連確認は未実施。成功済みAI応答の不要な再送はしていない。

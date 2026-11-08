@@ -1,0 +1,18 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e:synthetic
+> playwright test --config playwright.synthetic.config.ts
+
+[WebServer] (node:57515) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:57526) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/synthetic-profiles.spec.ts:6:2 › 検証人物の製品APIとモック取込 › 登録・二重クリック・応答消失・取込・検索・停止と通常検索非混入 (1.6s)
+  ✓  2 tests/synthetic-profiles.spec.ts:47:2 › 検証人物の製品APIとモック取込 › 非operatorは登録・アップロード・テスト検索を利用できない (131ms)
+  ✓  3 tests/synthetic-profiles.spec.ts:52:2 › 検証人物の製品APIとモック取込 › 再試行の画面：明示確認・二重クリック・応答不明の同一キー再送・戻る (554ms)
+  ✓  4 tests/synthetic-profiles.spec.ts:73:2 › 検証人物の製品APIとモック取込 › 再試行の確認中に権限撤回された場合は根拠・見積をクリア (303ms)
+  ✓  5 tests/synthetic-profiles.spec.ts:78:2 › 検証人物の製品APIとモック取込 › 閲覧中にoperator権限が撤回されたら機微な表示をクリア (249ms)
+
+  5 passed (8.5s)
