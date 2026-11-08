@@ -339,6 +339,26 @@ public partial class AiTests
 
     [Theory]
     [InlineData(false)][InlineData(true)]
+    public async Task Durable_projection_can_build_current_private_head_but_never_reuses_withdrawn_profile(bool available)
+    {
+        var store=new MemoryRecordStore();var actor=IdentityResolver.Demo;var p=RecordPartition.Catalog("demo");
+        await AuthorityProvider.SeedDemoAsync(store,"demo",default);
+        var person=RecordJson.New("person",actor.PersonId,"demo",actor.PrincipalId,["demo"],DateTimeOffset.UtcNow);
+        person["sourceVersion"]=2;person["activeVersion"]=null;person["accessVersion"]=2;person["available"]=available;person["publicationState"]="published";
+        var job=Jobs.Create(person,"projection",DateTimeOffset.UtcNow,"job-staged-projection");job["status"]="processing";
+        await store.CommitAsync(p,[RecordWrite.Create(person),RecordWrite.Create(job)],default);
+        var context=Context() with{JobId=job.Text("id"),PipelineStage="classify:entity"};
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var ai=Service(Config(),store,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(ai,context)).Status);
+        Assert.False(AccessPolicy.CanUse(actor,person));
+        var current=(await store.ReadAsync(p,person.Text("id"),default))!;current.Value["publicationState"]="withdrawn";
+        await store.CommitAsync(p,[RecordWrite.Replace(current.Value,current.ETag)],default);
+        using var restarted=Service(Config(),store,handler);
+        await Assert.ThrowsAsync<DomainException>(()=>Decide(restarted,context));Assert.Equal(1,handler.Calls);
+    }
+
+    [Theory]
+    [InlineData(false)][InlineData(true)]
     public async Task Durable_completed_job_payload_cleanup_failure_does_not_block_unrelated_work(bool unknown)
     {
         var memory=new MemoryRecordStore();var context=await DurableContext(memory);
