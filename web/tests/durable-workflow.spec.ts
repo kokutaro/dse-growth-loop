@@ -26,7 +26,7 @@ test('以前の架空原文の承認を通常の永続検索・画面・撤回�
  await page.screenshot({path:folder+'/02-normal-search.png',fullPage:true});
  const response=await request.post('/api/search',{headers,data:{categories:[],signalIds:[],terms:[],skillIds:[concept],skillDictionaryVersion:1}});expect(response.ok()).toBeTruthy();
  const result=await response.json();expect(result.candidates).toHaveLength(2);expect(result.candidates.every((c:{entityType:string})=>c.entityType==='document')).toBeTruthy();
- const doc=result.candidates[0];await page.getByRole('button',{name:doc.title+'（第1版）',exact:true}).click();
+ const doc=result.candidates[0];await page.getByRole('button',{name:'資料一覧を更新',exact:true}).click();await page.getByRole('button',{name:doc.title+'（第1版）',exact:true}).click();
  await page.getByLabel('訂正・撤回の理由').fill('架空資料の撤回を検証');await page.getByRole('button',{name:'この資料を撤回する',exact:true}).click();await expect(page.getByText('この資料は撤回済みです。以前の原文は検索・候補確認に使いません。')).toBeVisible();
  await page.getByRole('button',{name:'承認済み技能で検索',exact:true}).click();await expect(page.locator('article.candidate')).toHaveCount(1);
  await page.screenshot({path:folder+'/03-withdrawn-search.png',fullPage:true});
@@ -44,12 +44,13 @@ test('同じ架空原本を通常画面で取り込み、抽出を候補へ収�
  await page.screenshot({path:folder+'/04-normal-ingestion.png',fullPage:true});
  await page.getByRole('link',{name:'この断片の保存済み抽出を確認する',exact:true}).click();await expect(page).toHaveURL(/workflow=wf-/);
  await page.getByRole('button',{name:'保存済み抽出を収集',exact:true}).click();await expect(page.getByRole('status')).toContainText('収集状態：');
+ await expect(page.getByRole('button',{name:'保存済み抽出を収集',exact:true})).toBeEnabled();
  const document=(await(await request.get('/api/v1/documents',{headers})).json()).items.find((d:{title:string})=>d.title==='以前の架空資料・通常取込');
  const dictionary=await(await request.get('/api/v1/skill-dictionary',{headers})).json();const git=dictionary.concepts.find((c:{name:string})=>c.name==='Git').id;
  const search=async()=>{const r=await request.post('/api/search',{headers,data:{categories:[],signalIds:[],terms:[],skillIds:[git],skillDictionaryVersion:dictionary.version}});expect(r.ok()).toBeTruthy();return(await r.json()).candidates;};
  expect((await search()).some((c:{entityId:string})=>c.entityId===document.id)).toBeTruthy();
  await page.getByRole('link',{name:'通常の取込・検索画面へ',exact:true}).click();
- await page.getByRole('button',{name:'以前の架空資料・通常取込（第1版）',exact:true}).click();await page.getByLabel('訂正・撤回の理由').fill('同じ架空原文の版管理を検証');
+ await page.getByRole('button',{name:'資料一覧を更新',exact:true}).click();await page.getByRole('button',{name:'以前の架空資料・通常取込（第1版）',exact:true}).click();await page.getByLabel('訂正・撤回の理由').fill('同じ架空原文の版管理を検証');
  await page.getByLabel('訂正版の原本',{exact:true}).setInputFiles({name:'fictional-revised.docx',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',buffer:bytes});
  await page.getByRole('button',{name:'訂正版を取り込む',exact:true}).click();await expect(page.getByText('文書ID：'+document.id+' ／ 版：2',{exact:true})).toBeVisible();await expect(page.locator('.documents')).toContainText('AI構造化：検索投影済み',{timeout:20000});
  expect((await search()).some((c:{entityId:string})=>c.entityId===document.id)).toBeFalsy();
@@ -57,6 +58,7 @@ test('同じ架空原本を通常画面で取り込み、抽出を候補へ収�
  const currentFragments=await request.get('/api/v1/documents/'+document.id+'/skill-fragments',{headers});expect(currentFragments.ok(),await currentFragments.text()).toBeTruthy();expect((await currentFragments.json()).items).toHaveLength(1);
  await page.getByRole('button',{name:'技能候補の元になる断片を確認',exact:true}).click();await page.getByRole('link',{name:'この断片の保存済み抽出を確認する',exact:true}).click();
  await page.getByRole('button',{name:'保存済み抽出を収集',exact:true}).click();await expect(page.getByRole('status')).toContainText('収集状態：');
+ await expect(page.getByRole('button',{name:'保存済み抽出を収集',exact:true})).toBeEnabled();
  const corrected=(await search()).find((c:{entityId:string})=>c.entityId===document.id);expect(corrected).toBeDefined();expect(corrected.units.every((u:{evidenceRefs:{sourceVersion:number}[]})=>u.evidenceRefs.every(e=>e.sourceVersion===2))).toBeTruthy();
  await page.screenshot({path:folder+'/05-normal-correction.png',fullPage:true});
 });

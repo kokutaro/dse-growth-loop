@@ -57,8 +57,6 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
       if (!resolved.personId || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(resolved.personId)) throw new Error("本人の登録先を確認できませんでした。");
       const storageKey = workflowStorageKey(`dse-upload-job:v2:${config.mode}:${config.tenantId || 'demo'}:${resolved.personId}`);
       uploadStorageKey.current = storageKey; setContext(resolved); setError("");
-      await listDocuments(false);
-      if(!current(version))return;
       // Legacy generic/client-person keys cannot establish the authenticated owner.
       sessionStorage.removeItem("dse-upload-job");
       if (person) sessionStorage.removeItem(`dse-upload-job:${config.tenantId}:${person}`);
@@ -176,7 +174,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
     <p>ダミーのWord（docx）・Excel（xlsx）を登録できます。画像OCRは対象外です。構造化・分類・検索投影の状態を下に表示します。</p>
     <p>Excelは全シートのテキストと出典を取り込みます。Google スプレッドシートはExcel形式で書き出して登録してください。</p>
     {!context ? <button onClick={loadContext}>登録先を確認する</button> : <p>対象者：{context.personId} ／ 部署：{context.departmentId} ／ 閲覧範囲：{context.scopeIds.join("、")} ／ 上限：{context.maxBytes / 1024 / 1024} MiB</p>}
-    {context&&<section aria-label="保存した資料"><h3>保存した資料</h3><button disabled={busy} onClick={()=>void listDocuments().catch(e=>setError(String(e)))}>資料一覧を更新</button><ul>{saved.map(doc=><li key={doc.id}><button disabled={busy} onClick={()=>void chooseDocument(doc)}>{doc.title}（第{doc.sourceVersion}版{doc.status==='withdrawn'?'・撤回済み':''}）</button></li>)}</ul>{savedCursor&&<button disabled={busy} onClick={()=>void listDocuments(true).catch(e=>setError(String(e)))}>次の資料を読む</button>}</section>}
+    {context&&<section aria-label="保存した資料"><h3>保存した資料</h3><p>資料一覧を更新すると、保存した資料を開けます。</p><button disabled={busy} onClick={()=>void listDocuments().catch(e=>setError(String(e)))}>資料一覧を更新</button><ul>{saved.map(doc=><li key={doc.id}><button disabled={busy} onClick={()=>void chooseDocument(doc)}>{doc.title}（第{doc.sourceVersion}版{doc.status==='withdrawn'?'・撤回済み':''}）</button></li>)}</ul>{savedCursor&&<button disabled={busy} onClick={()=>void listDocuments(true).catch(e=>setError(String(e)))}>次の資料を読む</button>}</section>}
     <form onSubmit={upload}>
       <label htmlFor="document-title">文書名</label><input id="document-title" value={title} required maxLength={300} onChange={e => { setTitle(e.target.value); key.current = crypto.randomUUID(); }} />
       <label htmlFor="document-type">文書種別</label><select id="document-type" value={type} onChange={e => { setType(e.target.value); key.current = crypto.randomUUID(); }}><option value="profile">職歴・スキル</option><option value="report">部署週報</option><option value="case">事例</option></select>
