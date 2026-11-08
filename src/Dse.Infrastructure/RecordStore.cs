@@ -115,6 +115,15 @@ internal static class QueryRules
     }
 }
 
+internal static class AiResultStoragePolicy
+{
+    internal static void Require(ContainerProperties properties)
+    {
+        if(properties.DefaultTimeToLive!=-1||!properties.IndexingPolicy.ExcludedPaths.Any(path=>path.Path=="/aiResult/*"))
+            throw new DomainException(422,"AI_RESULT_STORAGE_POLICY_REQUIRED");
+    }
+}
+
 public sealed class CosmosRecordStore(CosmosClient client, IConfiguration configuration, ILogger<CosmosRecordStore> logger) : IRecordStore
 {
     private Container Container(RecordPartition partition) => client.GetContainer(configuration["Cosmos:Database"] ?? "dse-growth-loop", partition.Container);
@@ -136,6 +145,8 @@ public sealed class CosmosRecordStore(CosmosClient client, IConfiguration config
             response.EnsureSuccessStatusCode();
             var value = (await JsonNode.ParseAsync(response.Content, cancellationToken: ct))!.AsObject();
             if (value.Text("tenantId") != partition.TenantId) return null;
+            if(value.Text("kind") is "aiResultReceipt" or "aiResultPayload")
+                AiResultStoragePolicy.Require((await Container(partition).ReadContainerAsync(cancellationToken:ct)).Resource);
             measurement.Classify(OperationMeasurementKinds.Record(value.Text("kind")));
             return new(RecordJson.FromStorage(value, response.Headers.ETag), response.Headers.ETag);
         }
@@ -148,6 +159,8 @@ public sealed class CosmosRecordStore(CosmosClient client, IConfiguration config
         try
         {
             BatchRules.Validate(partition, writes);
+            if(writes.Any(write=>write.Value.Text("kind") is "aiResultReceipt" or "aiResultPayload"))
+                AiResultStoragePolicy.Require((await Container(partition).ReadContainerAsync(cancellationToken:ct)).Resource);
             var batch = Container(partition).CreateTransactionalBatch(new PartitionKey(partition.Key));
             List<Stream> streams = [];
             try

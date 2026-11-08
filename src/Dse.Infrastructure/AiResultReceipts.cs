@@ -69,7 +69,7 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
         value["jobId"]=root.Value.Text("id");value["stage"]=context.PipelineStage;value["fingerprint"]=fingerprint;
         value["runId"]=runId;value["state"]="pending";value["expiresAt"]=clock.GetUtcNow()+ReuseWindow;
         try {await repository.CommitAsync(p,[new(value,saved?.ETag)],ct);}
-        catch {AccessFence.MarkUncertainResult();throw;}
+        catch(Exception error){if(error is not (StoreConflictException or DomainException{Status:<500}))AccessFence.MarkUncertainResult();throw;}
         var committed=await repository.ReadAsync(p,id,ct)??throw Review();
         return new(committed,null,null);
     }
@@ -84,7 +84,7 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
         body["aiResult"]=node;body["fingerprint"]=value["fingerprint"]!.DeepClone();body["expiresAt"]=value["expiresAt"]!.DeepClone();
         body["ttl"]=Math.Max(1,(int)(value["expiresAt"]!.Deserialize<DateTimeOffset>()-clock.GetUtcNow()).TotalSeconds);
         try {await repository.CommitAsync(RecordPartition.Catalog(value.Text("tenantId")),[RecordWrite.Replace(value,handle.Row.ETag),RecordWrite.Create(body)],ct);}
-        catch {AccessFence.MarkUncertainResult();throw;}
+        catch(Exception error){if(error is not (StoreConflictException or DomainException{Status:<500}))AccessFence.MarkUncertainResult();throw;}
     }
     internal Task NotDispatchedAsync(Handle handle,CancellationToken ct)=>RedactAsync(handle.Row,"not_dispatched",ct);
     private async Task RedactAsync(StoredRecord row,string state,CancellationToken ct)
@@ -94,13 +94,13 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
         List<RecordWrite> writes=[RecordWrite.Replace(value,row.ETag)];
         if(body is not null){body.Value.Remove("aiResult");body.Value["ttl"]=1;writes.Add(RecordWrite.Replace(body.Value,body.ETag));}
         try {await repository.CommitAsync(p,writes,ct);}
-        catch {AccessFence.MarkUncertainResult();throw;}
+        catch(Exception error){if(error is not (StoreConflictException or DomainException{Status:<500}))AccessFence.MarkUncertainResult();throw;}
     }
 
     internal async Task ForgetCompletedAsync(string tenant,string jobId,CancellationToken ct)
     {
         var p=RecordPartition.Catalog(tenant);var job=await repository.ReadAsync(p,jobId,ct);
-        if(job?.Value.Text("status")!="ready")return;
+        if(job?.Value.Text("status")!="ready"||job.Value.Text("jobType") is not ("enrichment" or "projection"))return;
         var chain=job.Value;HashSet<string> seen=[];
         while(true)
         {
