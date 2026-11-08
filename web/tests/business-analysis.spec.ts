@@ -46,13 +46,16 @@ for (const committed of [true, false]) {
     await page.getByText('許可済み課題の分析（ローカル検証）', { exact: true }).click();
     await page.getByRole('button', { name: '今すぐ分析（ローカル）' }).click();
     await expect(page.getByRole('alert')).toBeVisible();
+    // Finish the initial source/capability reads before intentionally navigating.
+    // Cancelling an owned server fence tests unknown-result recovery, not this saved-request case.
+    await page.waitForLoadState('networkidle');
     await page.getByRole('link', { name: 'ホーム', exact: true }).first().click();
     await page.goto('/#profile');
     await page.route('**/api/v1/business-analysis/capabilities', async route => {
       const response = await route.fetch(); const value = await response.json();
       await route.fulfill({ json: { ...value, enabled: false, reason: 'AI_BUDGET_STOPPED' } });
     });
-    await page.reload();
+    await page.waitForLoadState('networkidle');await page.reload();
     await page.getByText('許可済み課題の分析（ローカル検証）', { exact: true }).click();
     await page.getByRole('button', { name: '同じ分析の結果を確認する', exact: true }).click();
     expect(bodies).toHaveLength(1); // A stopped executor permits GET confirmation, never POST.

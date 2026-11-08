@@ -9,13 +9,14 @@ type UploadContext = { personId: string; departmentId: string; scopeIds: string[
 type SavedDocument={id:string;title:string;sourceVersion:number;status:string;currentVersionId:string;etag:string;ingestionJobId?:string};
 const statuses: Record<string, string> = { queued: "処理待ち", processing: "処理中", ready: "機械抽出済み", failed: "失敗", needs_review: "確認待ち", cancelled: "取り消し", budget_stopped: "保留" };
 const warningLabels: Record<string, string> = { IMAGES_NOT_OCR: "画像の文字は抽出していません。", EMPTY_DOCUMENT: "抽出できる本文がありません。", EXTERNAL_LINKS_IGNORED: "外部リンク先は取得していません。", FORMULA_CACHED_VALUES_ONLY: "数式は保存済みの値です。再計算していません。", FORMULA_CACHE_MISSING: "保存値のない数式セルがあります。", AUXILIARY_PARTS_NOT_EXTRACTED: "ヘッダー・フッター・注釈は抽出対象外です。", EXCEL_1900_LEAP_DAY: "Excel固有の日付1900-02-29を含みます。", INVALID_DATE_SERIAL: "変換できない日付は元の値を表示します。" };
-export function Documents({ config, person }: { config: AppConfig; person?: string }) {
+export function Documents({ config, person, onSourceChanged }: { config: AppConfig; person?: string; onSourceChanged?:(change:'corrected'|'withdrawn')=>void }) {
   const [context, setContext] = useState<UploadContext>();
   const [saved,setSaved]=useState<SavedDocument[]>([]),[savedCursor,setSavedCursor]=useState<string|null>(null);
   const [documentState,setDocumentState]=useState(''),[revisionFile,setRevisionFile]=useState<File>(),[changeReason,setChangeReason]=useState('');
   const [fragments,setFragments]=useState<{id:string;description:string;contentOnly:boolean;historyOnly:boolean}[]>([]);
   const documentEtag=useRef(''),revisionKey=useRef(crypto.randomUUID()),withdrawKey=useRef(crypto.randomUUID());
   const activeDocument=useRef<Accepted|undefined>(undefined),documentView=useRef('');
+  const [sourceView,setSourceView]=useState<{key:string;version:number}>();
   const fragmentRead=useRef(0);
   const documentKey=(value:Accepted|undefined)=>value?`${value.documentId}:${value.version}:${value.jobId}`:'';
   const [accepted, setAccepted] = useState<Accepted>();
@@ -51,7 +52,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
   }
   async function loadContext() {
     const version = ++generation.current; uploadStorageKey.current = undefined;
-    setContext(undefined); setAccepted(undefined);activeDocument.current=undefined; setJob(undefined); setEvidence([]); setWarnings([]); setPipeline(undefined);setSaved([]);setFragments([]);
+    setContext(undefined); setAccepted(undefined);activeDocument.current=undefined; setJob(undefined); setEvidence([]); setWarnings([]); setPipeline(undefined);setSaved([]);setFragments([]);setSourceView(undefined);
     try {
       const resolved: UploadContext = await (await request("/api/v1/upload-context")).json();
       if (!current(version)) return;
@@ -72,7 +73,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
   useEffect(() => {
     mounted.current = true;
     uploadStorageKey.current = undefined;
-    setContext(undefined); setAccepted(undefined);activeDocument.current=undefined; setJob(undefined); setEvidence([]); setWarnings([]); setPipeline(undefined);setSaved([]);setFragments([]);
+    setContext(undefined); setAccepted(undefined);activeDocument.current=undefined; setJob(undefined); setEvidence([]); setWarnings([]); setPipeline(undefined);setSaved([]);setFragments([]);setSourceView(undefined);
     setTitle(""); setFile(undefined); setBusy(false); setError(""); key.current = crypto.randomUUID();
     if (config.mode === "Demo") void loadContext();
     return () => { mounted.current = false; generation.current++; uploadStorageKey.current = undefined; };
@@ -91,11 +92,11 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
       let jobState:Job={status:'ready',lastErrorCode:null,resultId:null};
       if(value.jobId){const response = await request(`/api/v1/jobs/${value.jobId}`);if(!selected())return;etag.current=response.headers.get('ETag')??'';jobState=await response.json();}
       if (!selected()) return;
-      setJob(jobState);
       const docResponse=await request(`/api/v1/documents/${value.documentId}`);const doc=await docResponse.json();if(!selected())return;documentEtag.current=docResponse.headers.get('ETag')??'';
       setWarnings(doc.warnings ?? []);
-      const view=`${doc.id}:${doc.sourceVersion}:${doc.activeVersion}:${doc.accessVersion}`;if(documentView.current!==view){documentView.current=view;fragmentRead.current++;setFragments([]);}
+      const view=`${doc.id}:${doc.sourceVersion}:${doc.activeVersion}:${doc.accessVersion}`;if(documentView.current!==view){documentView.current=view;fragmentRead.current++;setFragments([]);}setSourceView(previous=>previous?.key===view?previous:{key:view,version:doc.sourceVersion});
       setDocumentState(doc.status);if(doc.status==='withdrawn'){setEvidence([]);setPipeline(undefined);setJob({status:'cancelled',lastErrorCode:null,resultId:null});return;}
+      setJob(jobState);
       if (doc.enrichmentJobId) { const next = await (await request(`/api/v1/documents/${value.documentId}/pipeline`)).json(); if (!selected()) return; setPipeline(next); }
       if (jobState.status === "ready" && doc.activeVersion!==null) {
         const all: Evidence[] = []; let token: string | null = null;
@@ -110,7 +111,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
     } catch (e) { if (selected()) { setEvidence([]); setError(String(e)); } }
   }
   async function chooseDocument(doc:SavedDocument){
-    if(!uploadStorageKey.current)return;const value={documentId:doc.id,jobId:doc.ingestionJobId??'',version:doc.sourceVersion};fragmentRead.current++;activeDocument.current=value;setAccepted(value);setPipeline(undefined);setFragments([]);setEvidence([]);setChangeReason('');setRevisionFile(undefined);revisionKey.current=crypto.randomUUID();withdrawKey.current=crypto.randomUUID();sessionStorage.setItem(uploadStorageKey.current,JSON.stringify(value));await refresh(value);
+    if(!uploadStorageKey.current)return;const value={documentId:doc.id,jobId:doc.ingestionJobId??'',version:doc.sourceVersion};fragmentRead.current++;activeDocument.current=value;setAccepted(value);setPipeline(undefined);setSourceView(undefined);setFragments([]);setEvidence([]);setChangeReason('');setRevisionFile(undefined);revisionKey.current=crypto.randomUUID();withdrawKey.current=crypto.randomUUID();sessionStorage.setItem(uploadStorageKey.current,JSON.stringify(value));await refresh(value);
   }
   async function readFragments(){
     if(!accepted)return;
@@ -119,17 +120,30 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
     try{const page=await(await request(`/api/v1/documents/${accepted.documentId}/skill-fragments`)).json();if(valid())setFragments(page.items);}
     catch(e){if(valid())setError(String(e));}
   }
+  useEffect(()=>{
+    if(context?.canReviewSkills&&documentState!=='withdrawn'&&sourceView&&sourceView.key===documentView.current&&pipeline?.job?.status==='ready'&&pipeline.sourceVersion===sourceView.version)void readFragments();
+  },[context?.canReviewSkills,sourceView?.key,pipeline?.job?.status,pipeline?.sourceVersion,documentState]);
   async function revise(event:React.SubmitEvent){
-    event.preventDefault();if(!accepted||!revisionFile||!context||!uploadStorageKey.current)return;const version=generation.current,storageKey=uploadStorageKey.current;setBusy(true);setError('');
+    event.preventDefault();if(!accepted||!revisionFile||!context||!uploadStorageKey.current)return;let version=generation.current,received=false;const storageKey=uploadStorageKey.current;setBusy(true);setError('');
     try{if(revisionFile.size>context.maxBytes)throw new Error('ファイルが上限を超えています。');const body=new FormData();body.set('file',revisionFile);body.set('reason',changeReason);
-      const next:Accepted=await(await request(`/api/v1/documents/${accepted.documentId}/versions`,{method:'POST',headers:{'If-Match':documentEtag.current,'Idempotency-Key':revisionKey.current},body})).json();
+      const response=await request(`/api/v1/documents/${accepted.documentId}/versions`,{method:'POST',headers:{'If-Match':documentEtag.current,'Idempotency-Key':revisionKey.current},body});
       if(!current(version)||storageKey!==uploadStorageKey.current)return;
-      activeDocument.current=next;setAccepted(next);sessionStorage.setItem(storageKey,JSON.stringify(next));setEvidence([]);setPipeline(undefined);setFragments([]);revisionKey.current=crypto.randomUUID();await refresh(next);await listDocuments();
-    }catch(e){if(current(version)){setEvidence([]);setFragments([]);setError(String(e));}}finally{if(current(version))setBusy(false);}
+      received=true;version=++generation.current;fragmentRead.current++;
+      activeDocument.current=undefined;setAccepted(undefined);setDocumentState('queued');setSourceView(undefined);setEvidence([]);setPipeline(undefined);setFragments([]);setWarnings([]);setJob(undefined);setSaved([]);setRevisionFile(undefined);onSourceChanged?.('corrected');sessionStorage.removeItem(storageKey);
+      // A successful POST already changed the source. Never restore the old view
+      // if the response body is lost, malformed, or no longer belongs to this view.
+      const next:Accepted=await response.json();
+      if(!current(version)||storageKey!==uploadStorageKey.current)return;
+      if(!next||next.documentId!==accepted.documentId||!Number.isInteger(next.version)||next.version<=accepted.version||typeof next.jobId!=='string'||!/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(next.jobId))throw new Error('受付結果を確認できません。');
+      activeDocument.current=next;setAccepted(next);sessionStorage.setItem(storageKey,JSON.stringify(next));setJob({status:'queued',lastErrorCode:null,resultId:null});revisionKey.current=crypto.randomUUID();await refresh(next);await listDocuments();
+    }catch(e){if(current(version)){setEvidence([]);setFragments([]);setError(received?'訂正は受理されましたが、受付結果を読めません。再取込せず、資料一覧を更新して新版を開いてください。':String(e));}}finally{if(current(version))setBusy(false);}
   }
   async function withdraw(){
-    if(!accepted||!changeReason.trim())return;const version=generation.current;setBusy(true);setError('');
-    try{await request(`/api/v1/documents/${accepted.documentId}/withdraw`,{method:'POST',headers:{'Content-Type':'application/json','If-Match':documentEtag.current,'Idempotency-Key':withdrawKey.current},body:JSON.stringify({reason:changeReason})});if(!current(version))return;fragmentRead.current++;setEvidence([]);setFragments([]);await refresh();await listDocuments();}
+    if(!accepted||!changeReason.trim())return;let version=generation.current;setBusy(true);setError('');
+    try{await request(`/api/v1/documents/${accepted.documentId}/withdraw`,{method:'POST',headers:{'Content-Type':'application/json','If-Match':documentEtag.current,'Idempotency-Key':withdrawKey.current},body:JSON.stringify({reason:changeReason})});if(!current(version))return;
+      version=++generation.current;fragmentRead.current++;
+      setDocumentState('withdrawn');setSourceView(undefined);setEvidence([]);setFragments([]);setPipeline(undefined);setWarnings([]);setJob({status:'cancelled',lastErrorCode:null,resultId:null});onSourceChanged?.('withdrawn');
+      await refresh();await listDocuments();}
     catch(e){if(current(version)){setEvidence([]);setFragments([]);setError(String(e));}}finally{if(current(version))setBusy(false);}
   }
   useEffect(() => {
@@ -200,11 +214,11 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
         }}>構造化・分類を再実行</button>}
       </div>}
       {job?.lastErrorCode && <p>詳細：{job.lastErrorCode}</p>}
-      <button onClick={() => refresh()}>進捗を更新</button> <button onClick={original}>原本を取得</button>
+      <button onClick={() => refresh()}>進捗を更新</button> <button disabled={documentState==='withdrawn'} onClick={original}>原本を取得</button>
       {job && ["failed", "needs_review", "queued", "budget_stopped"].includes(job.status) && <button disabled={busy} onClick={retry}>再実行・再通知</button>}
       {warnings.map(w => <p key={w}>{warningLabels[w] ?? w}</p>)}
       {documentState==='withdrawn'?<p role="status">この資料は撤回済みです。以前の原文は検索・候補確認に使いません。</p>:<section aria-label="資料の訂正と撤回"><h3>資料の訂正・撤回</h3><p>訂正すると旧版を検索から外し、新版を通常の取込処理へ送ります。過去の版と承認履歴は残します。</p><form onSubmit={e=>void revise(e)}><label>訂正・撤回の理由<input value={changeReason} maxLength={500} required onChange={e=>{setChangeReason(e.target.value);revisionKey.current=crypto.randomUUID();withdrawKey.current=crypto.randomUUID();}}/></label><label>訂正版の原本<input type="file" accept=".docx,.xlsx" onChange={e=>{setRevisionFile(e.target.files?.[0]);revisionKey.current=crypto.randomUUID();}}/></label><button disabled={busy||!revisionFile||!changeReason.trim()}>訂正版を取り込む</button><button type="button" disabled={busy||!changeReason.trim()} onClick={()=>void withdraw()}>この資料を撤回する</button></form>
-      {context?.canReviewSkills&&<><button disabled={busy} onClick={()=>void readFragments()}>技能候補の元になる断片を確認</button>{fragments.length>0?<ul>{fragments.map(f=><li key={f.id}><p>{f.description} ／ {f.contentOnly?'知識内容のみ':'経験候補・本人未確認'}</p>{!f.historyOnly&&<a href={workflowHref('/skill-dictionary.html?fragment='+encodeURIComponent(f.id))}>この断片の保存済み抽出を確認する</a>}</li>)}</ul>:<p>技能候補の確認では、現在の原文と保存済み抽出だけを読みます。</p>}</>}
+      {context?.canReviewSkills&&<>{pipeline?.job?.status==='ready'&&<><h3>技能ID検索への次の手順</h3><p>構造化・分類の投影が完了しました。技能ID検索には、下の断片から保存済み抽出を収集して現在の辞書と照合します。未登録の技能は人の承認後に利用します。ここでは収集・承認・AIの追加実行は行いません。</p></>}<button disabled={busy} onClick={()=>void readFragments()}>技能候補の元になる断片を確認</button>{fragments.length>0?<ul>{fragments.map(f=><li key={f.id}><p>{f.description} ／ {f.contentOnly?'知識内容のみ':'経験候補・本人未確認'}</p>{!f.historyOnly&&<a href={workflowHref('/skill-dictionary.html?fragment='+encodeURIComponent(f.id))}>この断片の保存済み抽出を確認する</a>}</li>)}</ul>:<p>技能候補の確認では、現在の原文と保存済み抽出だけを読みます。</p>}</>}
       </section>}
       {evidence.length > 0 && <h3>出典プレビュー</h3>}{evidence.map(span => <article key={span.id}><h4>{span.location.label}</h4><p className="evidence-text">{span.text}</p></article>)}
     </div>}

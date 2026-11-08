@@ -4,6 +4,7 @@ async function create(page: Page, title: string) {
   await page.goto("/validation.html");
   await page.getByLabel("課題名", { exact: true }).fill(title);
   await page.getByLabel("困っていること").fill("架空の相談です");
+  await page.waitForLoadState('networkidle');
   await page.getByRole("button", { name: "課題を作成", exact: true }).click();
   await expect(page.getByLabel("メッセージ", { exact: true })).toBeVisible();
 }

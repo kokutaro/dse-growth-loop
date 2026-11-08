@@ -8,11 +8,12 @@ type Hit={candidateId:string;fragmentId:string;conceptId:string;skillName:string
 type Result={dictionaryVersion:number;beforeLimit:number;items:Hit[]};
 export type SkillSearchResult={candidates:{entityId:string;entityType:string;title:string;routes:string[];units:{summary:string;sourceRefs:{id:string;documentTitle:string;location:string;text:string}[];confirmationState:string;skillMatch?:SkillMatch;skillBindings?:{candidateId:string;conceptId:string;eligibility:string}[];skillDictionaryVersion?:number}[]}[];matchedUnits:number;beforeLimit:number;rerankingStatus:string;skillDictionaryVersion:number};
 
-export function SkillSearch({config,onResult,onInvalidate}:{config:AppConfig;onResult:(value:SkillSearchResult)=>void;onInvalidate:()=>void}){
+export function SkillSearch({config,onResult,onInvalidate,invalidationVersion=0}:{config:AppConfig;onResult:(value:SkillSearchResult)=>void;onInvalidate:()=>void;invalidationVersion?:number}){
  const [version,setVersion]=useState(()=>new URLSearchParams(location.search).get('skillVersion')??'');
  const [loaded,setLoaded]=useState<number>();const [concepts,setConcepts]=useState<{id:string;name:string}[]>([]);
  const [selected,setSelected]=useState('');const [eligibility,setEligibility]=useState('content_only');const [busy,setBusy]=useState(false);const [error,setError]=useState('');
  const epoch=useRef(0);useEffect(()=>()=>{epoch.current++;},[]);
+ useEffect(()=>{epoch.current++;setBusy(false);setError('');},[invalidationVersion]);
  const invalidate=()=>{epoch.current++;onInvalidate();setError('');};
  async function request(path:string,body?:unknown){
   const headers:Record<string,string>={'Content-Type':'application/json'};
