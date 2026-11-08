@@ -36,7 +36,7 @@ public partial class AiTests
         var store=new MemoryRecordStore();var context=await DurableContext(store);var config=Config();
         var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
         using(var first=Service(config,store,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(first,context)).Status);
-        if(change=="model")config["Jev:Model"]="changed-model";
+        if(change=="model")config["Jev:InputUsdPerMillion"]="0.043";
         if(change=="prompt")context=context with{PromptVersion="changed-prompt"};
         if(change=="actor")
         {

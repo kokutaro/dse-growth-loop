@@ -113,7 +113,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 }
                 var workbookAi = workbookStructurer ?? structurer as IWorkbookStructurer ?? throw new DomainException(422, "WORKBOOK_STRUCTURER_UNAVAILABLE");
                 var structured = await workbookAi.StructureWorkbookAsync(new(actor, job.Text("id"), WorkbookRules.Version, Retriever.TaxonomyVersion,
-                    job.Number("aggregateVersion"), references, []), ct);
+                    job.Number("aggregateVersion"), references, []) {PipelineStage="structure-workbook"}, ct);
                 if (structured.Status != AiStatus.Succeeded || structured.Value is null) throw Failure(structured.Status, structured.Failure);
                 try { WorkbookRules.Validate(structured.Value, references.Select(r => r.Id).ToArray(), SyntheticTestAccess.IsTest(document.Value)); }
                 catch (ArgumentException) { throw new DomainException(422, "WORKBOOK_STRUCTURE_COVERAGE"); }
@@ -146,7 +146,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                 string? structureRun = null;
                 if (group.Count() == 1 && span.Value["location"]?["type"]?.GetValue<string>() == "paragraph" && period.Precision == "unknown")
                 {
-                    var structured = await structurer.StructureAsync(new(actor, job.Text("id"), PromptVersion, Retriever.TaxonomyVersion, job.Number("aggregateVersion"), [reference], []), text, ct);
+                    var structured = await structurer.StructureAsync(new(actor, job.Text("id"), PromptVersion, Retriever.TaxonomyVersion, job.Number("aggregateVersion"), [reference], []) {PipelineStage="structure:"+span.Value.Text("id")}, text, ct);
                     structureRun = structured.RunId;
                     if (structured.Status != AiStatus.Succeeded || structured.Value is null) throw Failure(structured.Status, structured.Failure);
                     // Evidence IDs alone are insufficient. Require extractive claims to match the cited text.
@@ -271,7 +271,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             if (saved is not null) answer = saved.Value["decisions"]!.Deserialize<Decisions>(Json)!;
             else
             {
-                var result = await decisions.DecideAsync(new(actor, job.Text("id"), PromptVersion, Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { WorkbookSectionKind=fragment.Text("workbookSectionKind") is {Length:>0} sectionKind?sectionKind:null }, fragment.Text("description"),
+                var result = await decisions.DecideAsync(new(actor, job.Text("id"), PromptVersion, Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { PipelineStage="classify:"+fragment.Text("id"),WorkbookSectionKind=fragment.Text("workbookSectionKind") is {Length:>0} sectionKind?sectionKind:null }, fragment.Text("description"),
                     [new("domain", "state.textの経験分野を分類。根拠は訂正前の場合もある。Probabilityは年数・熟練度ではない。", ProfileExtraction.Domains)],
                     ProfileExtraction.Domains.Concat(new[] { new KeyValuePair<string, string>("handover", "引き継ぎ") }).Select(p => new NoulQuestion(p.Key, p.Value + "の経験がstate.textに明記されているか。根拠は本人訂正前の場合もある。", ProfileExtraction.HasDomainEvidence(fragment.Text("description"), p.Key))).ToArray(), ct);
                 if (result.Status != AiStatus.Succeeded || result.Value is null) throw Failure(result.Status, result.Failure);
@@ -302,7 +302,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             else
             {
                 var skillResult = await skillExtractor.ExtractSkillsAsync(new(actor, job.Text("id"), fragment.Text("skillQuotePolicy") == WorkbookRules.CellQuotePolicy ? WorkbookRules.CellSkillPrompt : SpecificSkillRules.ContextPrompt,
-                    Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { WorkbookSectionKind = fragment.Text("workbookSectionKind") is { Length: > 0 } kind ? kind : null }, fragment.Text("description"), ct);
+                    Retriever.TaxonomyVersion, entity.Number("sourceVersion"), evidence, []) { PipelineStage="skills:"+fragment.Text("id"),WorkbookSectionKind = fragment.Text("workbookSectionKind") is { Length: > 0 } kind ? kind : null }, fragment.Text("description"), ct);
                 if (skillResult.Status != AiStatus.Succeeded || skillResult.Value is null) throw Failure(skillResult.Status, skillResult.Failure);
                 specific = SpecificSkillRules.RequireContext(skillResult.Value);
                 fragment["skillRunId"] = skillResult.RunId;
