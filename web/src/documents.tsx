@@ -124,13 +124,19 @@ export function Documents({ config, person, onSourceChanged }: { config: AppConf
     if(context?.canReviewSkills&&documentState!=='withdrawn'&&sourceView&&sourceView.key===documentView.current&&pipeline?.job?.status==='ready'&&pipeline.sourceVersion===sourceView.version)void readFragments();
   },[context?.canReviewSkills,sourceView?.key,pipeline?.job?.status,pipeline?.sourceVersion,documentState]);
   async function revise(event:React.SubmitEvent){
-    event.preventDefault();if(!accepted||!revisionFile||!context||!uploadStorageKey.current)return;let version=generation.current;const storageKey=uploadStorageKey.current;setBusy(true);setError('');
+    event.preventDefault();if(!accepted||!revisionFile||!context||!uploadStorageKey.current)return;let version=generation.current,received=false;const storageKey=uploadStorageKey.current;setBusy(true);setError('');
     try{if(revisionFile.size>context.maxBytes)throw new Error('ファイルが上限を超えています。');const body=new FormData();body.set('file',revisionFile);body.set('reason',changeReason);
-      const next:Accepted=await(await request(`/api/v1/documents/${accepted.documentId}/versions`,{method:'POST',headers:{'If-Match':documentEtag.current,'Idempotency-Key':revisionKey.current},body})).json();
+      const response=await request(`/api/v1/documents/${accepted.documentId}/versions`,{method:'POST',headers:{'If-Match':documentEtag.current,'Idempotency-Key':revisionKey.current},body});
       if(!current(version)||storageKey!==uploadStorageKey.current)return;
-      version=++generation.current;fragmentRead.current++;
-      activeDocument.current=next;setAccepted(next);sessionStorage.setItem(storageKey,JSON.stringify(next));setDocumentState('queued');setSourceView(undefined);setEvidence([]);setPipeline(undefined);setFragments([]);setWarnings([]);setJob({status:'queued',lastErrorCode:null,resultId:null});revisionKey.current=crypto.randomUUID();onSourceChanged?.('corrected');await refresh(next);await listDocuments();
-    }catch(e){if(current(version)){setEvidence([]);setFragments([]);setError(String(e));}}finally{if(current(version))setBusy(false);}
+      received=true;version=++generation.current;fragmentRead.current++;
+      activeDocument.current=undefined;setAccepted(undefined);setDocumentState('queued');setSourceView(undefined);setEvidence([]);setPipeline(undefined);setFragments([]);setWarnings([]);setJob(undefined);setSaved([]);setRevisionFile(undefined);onSourceChanged?.('corrected');sessionStorage.removeItem(storageKey);
+      // A successful POST already changed the source. Never restore the old view
+      // if the response body is lost, malformed, or no longer belongs to this view.
+      const next:Accepted=await response.json();
+      if(!current(version)||storageKey!==uploadStorageKey.current)return;
+      if(!next||next.documentId!==accepted.documentId||!Number.isInteger(next.version)||next.version<=accepted.version||typeof next.jobId!=='string'||!/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(next.jobId))throw new Error('受付結果を確認できません。');
+      activeDocument.current=next;setAccepted(next);sessionStorage.setItem(storageKey,JSON.stringify(next));setJob({status:'queued',lastErrorCode:null,resultId:null});revisionKey.current=crypto.randomUUID();await refresh(next);await listDocuments();
+    }catch(e){if(current(version)){setEvidence([]);setFragments([]);setError(received?'訂正は受理されましたが、受付結果を読めません。再取込せず、資料一覧を更新して新版を開いてください。':String(e));}}finally{if(current(version))setBusy(false);}
   }
   async function withdraw(){
     if(!accepted||!changeReason.trim())return;let version=generation.current;setBusy(true);setError('');
