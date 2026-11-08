@@ -303,6 +303,40 @@ public partial class AiTests
         Assert.Equal(1,handler.Calls);
     }
 
+    [Fact]
+    public async Task Durable_legacy_paid_intermediate_retry_audit_holds_the_entire_lineage()
+    {
+        var store=new MemoryRecordStore();var context=await DurableContext(store);var p=RecordPartition.Catalog("demo");
+        var doc=(await store.ReadAsync(p,"doc-durable-result",default))!;
+        var intermediate=Jobs.Create(doc.Value,"enrichment",DateTimeOffset.UtcNow,"job-legacy-intermediate");
+        intermediate["status"]="processing";intermediate["supersedesJobId"]=context.JobId;
+        await store.CommitAsync(p,[RecordWrite.Create(intermediate)],default);
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var old=Service(Config(),store,handler))
+            Assert.Equal(AiStatus.Succeeded,(await Decide(old,context with{JobId=intermediate.Text("id"),PipelineStage=null})).Status);
+        var next=Jobs.Create(doc.Value,"enrichment",DateTimeOffset.UtcNow,"job-after-upgrade");
+        next["status"]="processing";next["supersedesJobId"]=intermediate.Text("id");
+        await store.CommitAsync(p,[RecordWrite.Create(next)],default);
+        using var upgraded=Service(Config(),store,handler);
+        Assert.Equal("AI_RESULT_REVIEW_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>Decide(upgraded,context with{JobId=next.Text("id")}))).Code);
+        Assert.Equal(1,handler.Calls);
+    }
+
+    [Fact]
+    public async Task Durable_modern_audit_pages_do_not_prevent_a_previously_unexecuted_stage()
+    {
+        var store=new MemoryRecordStore();var context=await DurableContext(store);var p=RecordPartition.Catalog("demo");
+        var rows=Enumerable.Range(0,110).Select(i=>
+        {
+            var row=RecordJson.New("aiRun","ai-run-modern-"+i.ToString("D3"),"demo",context.Actor.PrincipalId,["demo"],DateTimeOffset.UtcNow);
+            row["jobId"]=context.JobId;row["trace"]=new JsonObject{["attemptCount"]=1,["durableResultVersion"]="pipeline-result-v1"};
+            return RecordWrite.Create(row);
+        }).ToArray();
+        foreach(var batch in rows.Chunk(100))await store.CommitAsync(p,batch,default);
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using var ai=Service(Config(),store,handler);Assert.Equal(AiStatus.Succeeded,(await Decide(ai,context)).Status);Assert.Equal(1,handler.Calls);
+    }
+
     [Theory]
     [InlineData(false)][InlineData(true)]
     public async Task Durable_completed_job_payload_cleanup_failure_does_not_block_unrelated_work(bool unknown)
