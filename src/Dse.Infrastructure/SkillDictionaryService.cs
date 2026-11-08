@@ -5,7 +5,8 @@ using Dse.Domain;
 namespace Dse.Infrastructure;
 
 // Curation writes remain human-only. Optional proposals use the existing guarded AI
-// provider; neither path updates gold, publishes experience, queues or search projections.
+// provider. Approved IDs and immutable projections commit atomically; neither path
+// updates gold, publishes personal experience or queues another inference.
 public sealed partial class SkillDictionaryService(IPrimaryRepository repository, AccessFence fence, IdempotencyExecutor idempotency, TimeProvider clock, Func<IDecisionProvider>? decisionFactory=null)
 {
     public const string HeadId="skill-dictionary-head";
@@ -139,7 +140,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
     }
     public Task<MutationResponse> CollectAsync(ActorAccess actor,string key,SkillCandidateCollect input,CancellationToken ct)=>fence.RunAsync(actor.TenantId,async token=>
     {
-        actor=await Operator(actor,token);var source=await ReadSource(actor,input.FragmentId,token);if(source.Superseded)throw new DomainException(409,"SKILL_GENERATION_SUPERSEDED");var p=RecordPartition.Catalog(actor.TenantId);
+        actor=await Operator(actor,token);var source=await ReadSource(actor,input.FragmentId,token);if(source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()==true)throw new DomainException(409,"SKILL_HISTORY_READ_ONLY");if(source.Superseded)throw new DomainException(409,"SKILL_GENERATION_SUPERSEDED");var p=RecordPartition.Catalog(actor.TenantId);
         if(input.ExpectedFingerprint is not null&&input.ExpectedFingerprint!=source.Fingerprint)throw new DomainException(409,"SKILL_SOURCE_CHANGED");
         return await idempotency.ExecuteAsync(p,actor,"POST","skill-candidates/collect",key,null,Node(new{input.FragmentId,source.Fingerprint}),async()=>
         {
