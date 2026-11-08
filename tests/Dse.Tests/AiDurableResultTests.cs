@@ -51,6 +51,15 @@ public partial class AiTests
         AiResultStoragePolicy.Require(properties);
     }
 
+    [Fact]
+    public void Durable_storage_policy_rejects_more_specific_payload_inclusion()
+    {
+        var properties=new ContainerProperties("catalog","/tenantId"){DefaultTimeToLive=-1};
+        properties.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath{Path="/aiResult/*"});
+        properties.IndexingPolicy.IncludedPaths.Add(new IncludedPath{Path="/aiResult/secret/?"});
+        Assert.Throws<DomainException>(()=>AiResultStoragePolicy.Require(properties));
+    }
+
     private sealed class ResultWriteFault(IRecordStore inner,string at,bool unknown):IRecordStore
     {
         public bool Fired;
@@ -195,11 +204,57 @@ public partial class AiTests
     private static async Task<AiContext> DurableContext(IRecordStore store, string stage="classify:fragment-one")
     {
         var doc=RecordJson.New("document","doc-durable-result","demo",IdentityResolver.Demo.PrincipalId,["demo"],DateTimeOffset.UtcNow);
+        doc["activeVersion"]=1;doc["accessVersion"]=1;doc["status"]="ready";
         var job=Jobs.Create(doc,"enrichment",DateTimeOffset.UtcNow,"job-durable-result");
         job["status"]="processing";job["attempt"]=1;
         var p=RecordPartition.Catalog("demo");
         if(await store.ReadAsync(p,job.Text("id"),default) is null)await store.CommitAsync(p,[RecordWrite.Create(doc),RecordWrite.Create(job)],default);
         return Context() with{JobId=job.Text("id"),PipelineStage=stage};
+    }
+
+    [Fact]
+    public async Task Durable_reuse_rechecks_current_job_scope_before_reading_saved_result()
+    {
+        var store=new MemoryRecordStore();var context=await DurableContext(store);
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var ai=Service(Config(),store,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(ai,context)).Status);
+        var p=RecordPartition.Catalog("demo");var job=(await store.ReadAsync(p,context.JobId,default))!;
+        job.Value["scopeIds"]=RecordJson.Array(["private-other"]);await store.CommitAsync(p,[RecordWrite.Replace(job.Value,job.ETag)],default);
+        using var restarted=Service(Config(),store,handler);
+        await Assert.ThrowsAsync<DomainException>(()=>Decide(restarted,context));Assert.Equal(1,handler.Calls);
+    }
+
+    [Theory]
+    [InlineData(false)][InlineData(true)]
+    public async Task Durable_reuse_requires_current_job_aggregate_even_without_evidence(bool changedVersion)
+    {
+        var store=new MemoryRecordStore();var context=await DurableContext(store);
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var ai=Service(Config(),store,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(ai,context)).Status);
+        var p=RecordPartition.Catalog("demo");var doc=(await store.ReadAsync(p,"doc-durable-result",default))!;
+        if(changedVersion)doc.Value["sourceVersion"]=2;else doc.Value["activeVersion"]=null;
+        await store.CommitAsync(p,[RecordWrite.Replace(doc.Value,doc.ETag)],default);
+        using var restarted=Service(Config(),store,handler);
+        Assert.Equal("AI_RESULT_REVIEW_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>Decide(restarted,context))).Code);
+        Assert.Equal(1,handler.Calls);
+    }
+
+    [Theory]
+    [InlineData(false)][InlineData(true)]
+    public async Task Durable_explicit_retry_reuses_only_same_job_lineage_and_version(bool differentVersion)
+    {
+        var store=new MemoryRecordStore();var context=await DurableContext(store);
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var ai=Service(Config(),store,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(ai,context)).Status);
+        var p=RecordPartition.Catalog("demo");var doc=(await store.ReadAsync(p,"doc-durable-result",default))!;
+        var retry=Jobs.Create(doc.Value,"enrichment",DateTimeOffset.UtcNow,"job-durable-retry");
+        retry["status"]="processing";retry["attempt"]=1;retry["supersedesJobId"]=context.JobId;
+        if(differentVersion)retry["aggregateVersion"]=2;
+        await store.CommitAsync(p,[RecordWrite.Create(retry)],default);
+        using var restarted=Service(Config(),store,handler);
+        if(differentVersion)await Assert.ThrowsAsync<DomainException>(()=>Decide(restarted,context with{JobId=retry.Text("id")}));
+        else Assert.True((await Decide(restarted,context with{JobId=retry.Text("id")})).Cached);
+        Assert.Equal(1,handler.Calls);
     }
 
     [Fact]
@@ -214,7 +269,7 @@ public partial class AiTests
     }
 
     [Theory]
-    [InlineData("model")][InlineData("prompt")][InlineData("input")][InlineData("actor")]
+    [InlineData("model")][InlineData("prompt")][InlineData("input")][InlineData("actor")][InlineData("dictionary")]
     public async Task Durable_stage_changed_binding_holds_without_resending(string change)
     {
         var store=new MemoryRecordStore();var context=await DurableContext(store);var config=Config();
@@ -222,6 +277,11 @@ public partial class AiTests
         using(var first=Service(config,store,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(first,context)).Status);
         if(change=="model")config["Jev:InputUsdPerMillion"]="0.043";
         if(change=="prompt")context=context with{PromptVersion="changed-prompt"};
+        if(change=="dictionary")
+        {
+            var head=RecordJson.New("skillDictionaryHead",SkillDictionaryService.HeadId,"demo","system",["system"],DateTimeOffset.UtcNow);head["version"]=1;
+            await store.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Create(head)],default);
+        }
         if(change=="actor")
         {
             var p=RecordPartition.Catalog("demo");var authority=(await store.ReadAsync(p,AuthorityProvider.PersonId(context.Actor.PersonId),default))!;
