@@ -61,12 +61,15 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [sessionEnded, setSessionEnded] = useState(false);
   const [logoutError, setLogoutError] = useState(false);
+  const [sourceRevision,setSourceRevision]=useState(0),[resultStale,setResultStale]=useState(false);
   const searchGeneration = useRef(0);
-  function invalidateKnowledge() {
+  const renderGeneration=searchGeneration.current;
+  function invalidateResults(message:string) {
     searchGeneration.current++;
-    setResult(undefined); setBusy(false);
-    setStage("知識の公開状態が変わりました。検索結果を再取得してください。");
+    setSourceRevision(x=>x+1);setResultStale(true);setResult(undefined);setError('');setBusy(false);
+    setStage(message);
   }
+  function invalidateKnowledge(){invalidateResults("知識の公開状態が変わりました。検索結果を再取得してください。");}
   async function logout() {
     searchGeneration.current++;
     setSessionEnded(true);
@@ -90,13 +93,16 @@ function App() {
   }, []);
   async function convert() {
     if (!config) return;
-    setBusy(true); setError(""); setResult(undefined);setApprovedSkills(undefined); setStage("質問の分類中");
+    const generation=++searchGeneration.current;
+    setResultStale(false);setBusy(true); setError(""); setResult(undefined);setApprovedSkills(undefined); setStage("質問の分類中");
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (config.mode === "Azure") headers.Authorization = `Bearer ${await getToken(config)}`;
+      if(generation!==searchGeneration.current)return;
       const response = await fetch("/api/v2/search/conditions", { method: "POST", headers, body: JSON.stringify({ query }) });
       if (!response.ok) throw new Error("条件の生成に失敗しました。機密ログイン情報を除き、手動条件を確認してください。");
       const value = await response.json();
+      if(generation!==searchGeneration.current)return;
       setConditionsReady(!!value.conditions);
       if (value.conditions) {
         setCategoryIds(value.conditions.categories.map((c: { categoryId: string }) => c.categoryId).join(" "));
@@ -113,12 +119,13 @@ function App() {
           : "分類できませんでした。手動で条件を入力してください。");
       }
       setStage(value.status === "manual_required:unknown" ? "自動検索対象外" : "条件の確認待ち");
-    } catch (e) { setError(e instanceof Error ? e.message : "条件の生成に失敗しました。"); setStage("条件生成失敗"); }
-    finally { setBusy(false); }
+    } catch (e) { if(generation===searchGeneration.current){setError(e instanceof Error ? e.message : "条件の生成に失敗しました。"); setStage("条件生成失敗");} }
+    finally { if(generation===searchGeneration.current)setBusy(false); }
   }
   async function search(event: React.SubmitEvent) {
     event.preventDefault();
     const generation = ++searchGeneration.current;
+    setResultStale(false);
     setError("");
     setResult(undefined);
     setBusy(true);
@@ -130,6 +137,7 @@ function App() {
       };
       if (config.mode === "Azure")
         headers.Authorization = `Bearer ${await getToken(config)}`;
+      if(generation!==searchGeneration.current)return;
       const conditions = { categories: query.trim() ? categoryIds.split(/[\s、,]+/u).filter(Boolean).map(categoryId => ({ axis: "domain", categoryId })) : category ? [{ axis: "domain", categoryId: category }] : [],
         signalIds: query.trim() ? signalIds.split(/[\s、,]+/u).filter(Boolean) : noul ? ["handover"] : [],
         specificSkills: specificSkills.split(/[、,]+/u).map(s => s.trim()).filter(Boolean),
@@ -142,6 +150,7 @@ function App() {
       if (generation !== searchGeneration.current) return;
       if (response.status === 422) {
         const failure = await response.json();
+        if(generation!==searchGeneration.current)return;
         setConditionsReady(false); setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills("");setApprovedSkills(undefined);
         if (failure.code === "CLASSIFICATION_OUT_OF_SCOPE") {
           setConversionStatus("自動検索の対象分野を判断できませんでした。検索は実行していません。必要な条件を手動で入力できます。");
@@ -217,7 +226,7 @@ function App() {
             <p className="eyebrow">01 / 相談先を探す</p>
             <h2 id="search-title">探したい経験は？</h2>
             <label htmlFor="search-method">探し方</label><select id="search-method" disabled={busy} value={searchMode} onChange={e=>{searchGeneration.current++;setSearchMode(e.target.value);setResult(undefined);setError('');setStage('');}}><option value="terms" disabled={isolatedDemo}>検索語・自然文</option><option value="skills">承認済み技能</option></select>
-            {searchMode==='skills'?config&&<SkillSearch config={config} onInvalidate={()=>{setResult(undefined);setStage('');}} onResult={value=>{setResult(value);setError('');setStage('完了・表示前の権限確認済み');}}/>:
+            {searchMode==='skills'?config&&<SkillSearch invalidationVersion={sourceRevision} config={config} onInvalidate={()=>{setResultStale(false);setResult(undefined);setStage('');}} onResult={value=>{if(renderGeneration!==searchGeneration.current)return;setResultStale(false);setResult(value);setError('');setStage('完了・表示前の権限確認済み');}}/>:
             <form onSubmit={search}>
               <label htmlFor="query">自然文の課題</label>
               <textarea id="query" disabled={busy} value={query} maxLength={2000} onChange={e => { setQuery(e.target.value); setConditionsReady(false);setApprovedSkills(undefined); setCategoryIds(""); setSignalIds(""); setTerms(""); setSpecificSkills(""); setConversionStatus(""); setResult(undefined); }} placeholder="例：ソフトウェアの引き継ぎを改善したい" />
@@ -290,7 +299,7 @@ function App() {
                 {error}
               </p>
             )}
-            {!result && !error && (
+            {!result && !error && !resultStale && (
               <div className="empty">
                 <span className="loop">↗</span>
                 <h3>部署を越えたヒントを見つける</h3>
@@ -375,7 +384,7 @@ function App() {
           </section>
         </div>
         {config && !config.dictionaryFixture && !isolatedDemo && workflowId()===undefined && <Conversations config={config} candidates={result?.candidates ?? []} onKnowledgeChanged={invalidateKnowledge} />}
-        {config && (!config.dictionaryFixture||workflowId()!==undefined) && !isolatedDemo && <Documents config={config} />}
+        {config && (!config.dictionaryFixture||workflowId()!==undefined) && !isolatedDemo && <Documents config={config} onSourceChanged={change=>invalidateResults(change==='withdrawn'?'資料が撤回されました。検索結果を再取得してください。':'資料が訂正されました。検索結果を再取得してください。')} />}
         {config && (!config.dictionaryFixture||workflowId()!==undefined) && !isolatedDemo && <Profiles config={config} />}
         {config && workflowId()===undefined && <p><a href="/test-profiles.html">検証専用の架空人物・資料取込（運用者専用）</a></p>}
         {config && <p><a href={workflowHref('/skill-dictionary.html')}>共通技能辞書と候補レビュー（既存の運用者権限が必要）</a></p>}
