@@ -177,6 +177,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             ["snapshots"] = AiCodecs.Node(snapshots.Distinct().ToArray()), ["operation"] = operation, ["prompt"] = context.PromptVersion,
             ["taxonomy"] = context.TaxonomyVersion, ["dataVersion"] = context.DataVersion, ["membershipVersion"] = context.ChatMembershipVersion, ["lastSequence"] = context.ChatLastSequence };
         if(choices.Length>0)hashMaterial["choiceProbabilityVersion"]=ChoiceProbabilityRules.Version;
+        if(context.PipelineStage is not null)
+            hashMaterial["dictionaryVersion"]=(await preparationRepository.ReadAsync(RecordPartition.Catalog(actor.TenantId),SkillDictionaryService.HeadId,ct))?.Value.Number("version")??0;
         var inputHash = Hash(RecordJson.Canonical(hashMaterial));
         return new(actor,testDocuments,snapshots,candidateEvidence,candidates,evidence,evidenceIds,input,workbookWireMap,searchRerank,cuts,hashMaterial,inputHash,clock.GetElapsedTime(preparationStarted).TotalMilliseconds);
     }

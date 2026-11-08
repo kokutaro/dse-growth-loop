@@ -16,13 +16,16 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
     private static DomainException Review()=>new(422,"AI_RESULT_REVIEW_REQUIRED");
     private static string Hash(string value)=>ConversationService.Hash(value);
 
-    private async Task<StoredRecord> RootJobAsync(AiContext context,CancellationToken ct)
+    private async Task<StoredRecord> RootJobAsync(AiContext context,ActorAccess actor,CancellationToken ct)
     {
         var p=RecordPartition.Catalog(context.Actor.TenantId);
         var job=await repository.ReadAsync(p,context.JobId,ct)??throw Review();
         if(context.SessionId is not null||context.ChatMembershipVersion is not null||
             job.Value.Text("kind")!="job"||job.Value.Text("jobType") is not ("enrichment" or "projection")||
             job.Value.Text("status")!="processing"||job.Value.Text("ownerId")!=context.Actor.PrincipalId)throw Review();
+        AccessPolicy.RequireRead(actor,job.Value);
+        var aggregate=await repository.ReadAsync(p,job.Value.Text("aggregateId"),ct);
+        if(aggregate is null||aggregate.Value.Number("sourceVersion")!=job.Value.Number("aggregateVersion")||!AccessPolicy.CanUse(actor,aggregate.Value))throw Review();
         var first=job.Value;HashSet<string> seen=[context.JobId];
         while(job.Value.Text("supersedesJobId") is {Length:>0} prior)
         {
@@ -31,6 +34,7 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
             if(job.Value.Text("kind")!="job"||job.Value.Text("aggregateId")!=first.Text("aggregateId")||
                 job.Value.Number("aggregateVersion")!=first.Number("aggregateVersion")||job.Value.Text("jobType")!=first.Text("jobType")||
                 job.Value.Text("ownerId")!=first.Text("ownerId"))throw Review();
+            AccessPolicy.RequireRead(actor,job.Value);
         }
         return job;
     }
@@ -38,7 +42,7 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
     internal async Task<Handle> BeginAsync(AiContext context,ActorAccess actor,string fingerprint,string inputHash,string runId,CancellationToken ct)
     {
         if(context.PipelineStage is not {Length:>0 and <=128})throw Review();
-        var root=await RootJobAsync(context,ct);var p=RecordPartition.Catalog(actor.TenantId);
+        var root=await RootJobAsync(context,actor,ct);var p=RecordPartition.Catalog(actor.TenantId);
         var id="ai-result-"+Hash(root.Value.Text("id")+":"+context.PipelineStage);
         var saved=await repository.ReadAsync(p,id,ct);
         if(saved is not null)
@@ -110,7 +114,7 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
             if(chain.Text("supersedesJobId") is not {Length:>0} parent)break;
             var prior=await repository.ReadAsync(p,parent,ct)??throw Review();
             if(prior.Value.Text("kind")!="job"||prior.Value.Text("ownerId")!=job.Value.Text("ownerId")||
-                prior.Value.Text("aggregateId")!=job.Value.Text("aggregateId")||prior.Value.Number("aggregateVersion")!=job.Value.Number("aggregateVersion"))throw Review();
+                prior.Value.Text("aggregateId")!=job.Value.Text("aggregateId")||prior.Value.Number("aggregateVersion")!=job.Value.Number("aggregateVersion")||prior.Value.Text("jobType")!=job.Value.Text("jobType"))throw Review();
             chain=prior.Value;
         }
     }

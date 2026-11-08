@@ -119,7 +119,9 @@ internal static class AiResultStoragePolicy
 {
     internal static void Require(ContainerProperties properties)
     {
-        if(properties.DefaultTimeToLive!=-1||!properties.IndexingPolicy.ExcludedPaths.Any(path=>path.Path=="/aiResult/*"))
+        if(properties.DefaultTimeToLive!=-1||!properties.IndexingPolicy.ExcludedPaths.Any(path=>path.Path=="/aiResult/*")||
+            properties.IndexingPolicy.IncludedPaths.Any(path=>path.Path!="/*")||
+            properties.IndexingPolicy.CompositeIndexes.Count>0||properties.IndexingPolicy.SpatialIndexes.Count>0)
             throw new DomainException(422,"AI_RESULT_STORAGE_POLICY_REQUIRED");
     }
 }
