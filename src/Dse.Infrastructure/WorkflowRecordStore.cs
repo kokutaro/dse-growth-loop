@@ -9,6 +9,12 @@ namespace Dse.Infrastructure;
 public sealed class WorkflowRecordStore(IRecordStore shared,ActorAccess owner,string workflowId):IRecordStore
 {
     private static string Hash(string value)=>ConversationService.Hash(value);
+    private async Task RequireBinding(CancellationToken ct)
+    {
+        var current=await new AuthorityProvider(new PrimaryRepository(shared)).PersonAsync(owner.TenantId,owner.PersonId,ct);
+        if(current is null||current.PrincipalId!=owner.PrincipalId||current.AccessEpoch!=owner.AccessEpoch||!current.HasRole("member")||!current.HasRole("operator")||
+            !current.Roles.ToHashSet(StringComparer.Ordinal).SetEquals(owner.Roles)||!current.ScopeIds.ToHashSet(StringComparer.Ordinal).SetEquals(owner.ScopeIds))throw new DomainException(403,"WORKFLOW_ACCESS_REVOKED");
+    }
     private string Epoch(string value)=>Hash(workflowId+":"+value);
     private string Generation(string value)=>Hash(workflowId+":"+value)[..32];
     public ActorAccess MapActor(ActorAccess actor)
@@ -34,6 +40,7 @@ public sealed class WorkflowRecordStore(IRecordStore shared,ActorAccess owner,st
     {
         var target=Physical(partition);
         if(partition.Container=="catalog"&&id=="system-access-fence")return await shared.ReadAsync(partition,id,ct);
+        await RequireBinding(ct);
         if(partition.Container=="catalog"&&Authority(id))
         {
             if(id!=AuthorityProvider.ControlId&&id!=AuthorityProvider.PersonId(owner.PersonId))return null;
@@ -48,18 +55,20 @@ public sealed class WorkflowRecordStore(IRecordStore shared,ActorAccess owner,st
     {
         var target=Physical(partition);
         if(kind is "personAuthority" or "authorityControl" or "department")throw new DomainException(409,"WORKFLOW_AUTHORITY_READ_ONLY");
+        await RequireBinding(ct);
         var page=await shared.QueryAsync(target,kind,field,parent,size,token,ct);
         return new(page.Items.Select(row=>new StoredRecord(Restore(row.Value),row.ETag)).ToArray(),page.ContinuationToken);
     }
-    public Task CommitAsync(RecordPartition partition,IReadOnlyList<RecordWrite> writes,CancellationToken ct)
+    public async Task CommitAsync(RecordPartition partition,IReadOnlyList<RecordWrite> writes,CancellationToken ct)
     {
         var target=Physical(partition);BatchRules.Validate(partition,writes);
         if(writes.Any(w=>w.Value.Text("id")=="system-access-fence"))
         {
             if(partition.Container!="catalog"||writes.Count!=1||writes[0].Value.Text("kind")!="accessFence")throw new DomainException(409,"WORKFLOW_MIXED_SYSTEM_BATCH");
-            return shared.CommitAsync(partition,writes,ct);
+            await shared.CommitAsync(partition,writes,ct);return;
         }
         if(writes.Any(w=>Authority(w.Value.Text("id"))||w.Value.Text("kind") is "personAuthority" or "authorityControl" or "department"))throw new DomainException(409,"WORKFLOW_AUTHORITY_READ_ONLY");
+        await RequireBinding(ct);
         var mapped=writes.Select(w=>{
             var value=w.Value.Copy();value["tenantId"]=workflowId;
             if(value.Text("sessionId") is {Length:>0} session)
@@ -69,6 +78,6 @@ public sealed class WorkflowRecordStore(IRecordStore shared,ActorAccess owner,st
             }
             return new RecordWrite(value,w.IfMatch);
         }).ToArray();
-        return shared.CommitAsync(target,mapped,ct);
+        await shared.CommitAsync(target,mapped,ct);
     }
 }

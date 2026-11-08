@@ -16,7 +16,7 @@ public sealed class DemoWorkflows(IServiceProvider root,IRecordStore shared,ICon
     private readonly SemaphoreSlim gate=new(1,1);
     private readonly Dictionary<string,(WorkflowRecordStore Store,ServiceProvider Services)> contexts=[];
     private const string StateId="workflow-state";
-    private static string Id(ActorAccess a)=>"wf-"+ConversationService.Hash(string.Join('\n',a.TenantId,a.PrincipalId,a.PersonId,a.AccessEpoch,string.Join(',',a.Roles.Order()),string.Join(',',a.ScopeIds.Order())))[..48];
+    private static string Id(ActorAccess a)=>"wf-"+ConversationService.Hash(string.Join('\n',a.TenantId,a.PrincipalId,a.PersonId,a.AccessEpoch,string.Join(',',a.Roles.Order(StringComparer.Ordinal)),string.Join(',',a.ScopeIds.Order(StringComparer.Ordinal))))[..48];
     private async Task<ActorAccess> Require(ActorAccess actor,CancellationToken ct)
     {
         actor=await new AuthorityProvider(new PrimaryRepository(shared),configuration).RequireAsync(actor,ct);
