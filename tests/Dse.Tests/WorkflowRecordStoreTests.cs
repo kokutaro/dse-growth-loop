@@ -6,6 +6,18 @@ namespace Dse.Tests;
 
 public sealed class WorkflowRecordStoreTests
 {
+    [Theory]
+    [InlineData("demo")]
+    [InlineData("")]
+    [InlineData("arbitrary-shared-tenant")]
+    public async Task Invalid_storage_namespace_is_rejected_before_any_business_write(string id)
+    {
+        var f=await SkillDictionaryFixture.Create();var actor=await new AuthorityProvider(f.Repo).RequireAsync(SkillDictionaryFixture.Curator,default);
+        var adapter=new WorkflowRecordStore(f.Store,actor,id);
+        var row=RecordJson.New("document","must-not-write","demo",actor.PrincipalId,actor.ScopeIds,DateTimeOffset.UtcNow);
+        await Assert.ThrowsAsync<ArgumentException>(()=>adapter.CommitAsync(RecordPartition.Catalog("demo"),[RecordWrite.Create(row)],default));
+        Assert.Null(await f.Store.ReadAsync(RecordPartition.Catalog("demo"),row.Text("id"),default));
+    }
     [Fact]
     public async Task Durable_catalog_resumes_after_adapter_restart_without_appearing_in_shared_or_other_workspace()
     {
