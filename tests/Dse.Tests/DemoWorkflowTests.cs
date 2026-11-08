@@ -8,7 +8,7 @@ namespace Dse.Tests;
 
 public sealed class DemoWorkflowTests
 {
-    private static ServiceProvider Root(IRecordStore store)=>new ServiceCollection()
+    internal static ServiceProvider Root(IRecordStore store)=>new ServiceCollection()
         .AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock"}).Build())
         .AddLogging().AddCatalog(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock"}).Build(),true)
         .AddIngestion(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock"}).Build())
