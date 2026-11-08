@@ -23,7 +23,7 @@ public sealed class SyntheticTestApiTests
     private const string Tenant="11111111-1111-4111-8111-111111111111",Client="22222222-2222-4222-8222-222222222222",Oid="33333333-3333-4333-8333-333333333333",MemberOid="44444444-4444-4444-8444-444444444444";
     // Local JWT fixture only, never accepted by Entra or any deployed service.
     private static readonly SymmetricSecurityKey Key=new(Encoding.UTF8.GetBytes("synthetic-test-only-signing-material-0123456789abcdef"));
-    private static WebApplicationFactory<Program> Factory()
+    internal static WebApplicationFactory<Program> Factory()
     {
         var store=new MemoryRecordStore();var bindings=new[]{new IdentityBinding(Tenant,Oid,"fixture-manager","fixture-manager-person",["member","operator"],true),new IdentityBinding(Tenant,MemberOid,"fixture-member","fixture-member-person",["member"],true)};
         var grants=new[]{new AccessGrant("fixture-manager",["fixture"]),new AccessGrant("fixture-member",["fixture"])};
@@ -46,7 +46,7 @@ public sealed class SyntheticTestApiTests
             });
         });
     }
-    private static string Token(string oid=Oid)=>new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken($"https://login.microsoftonline.com/{Tenant}/v2.0",Client,[new Claim("tid",Tenant),new Claim("oid",oid),new Claim("scp","access_as_user")],DateTime.UtcNow.AddMinutes(-1),DateTime.UtcNow.AddMinutes(5),new SigningCredentials(Key,SecurityAlgorithms.HmacSha256)));
+    internal static string Token(string oid=Oid)=>new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken($"https://login.microsoftonline.com/{Tenant}/v2.0",Client,[new Claim("tid",Tenant),new Claim("oid",oid),new Claim("scp","access_as_user")],DateTime.UtcNow.AddMinutes(-1),DateTime.UtcNow.AddMinutes(5),new SigningCredentials(Key,SecurityAlgorithms.HmacSha256)));
     private static HttpRequestMessage Registration(object input)=>new(HttpMethod.Post,"/api/v1/admin/test-people"){Content=JsonContent.Create(input),Headers={{"Idempotency-Key",Guid.NewGuid().ToString("N")}}};
     [Fact]
     public async Task Unauthenticated_and_nonoperator_cannot_register_list_or_search()

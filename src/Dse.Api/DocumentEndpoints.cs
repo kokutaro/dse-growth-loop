@@ -7,6 +7,32 @@ public static class DocumentEndpoints
     public sealed record RetryInput([property: JsonRequired] string Reason);
     public static void MapDocuments(this RouteGroupBuilder api, bool demo = false)
     {
+        api.MapGet("/documents",(int? pageSize,string? continuationToken,HttpContext context,IPrimaryRepository repository,AccessFence fence,PageTokens cursors,CancellationToken ct)=>
+            new FencedResult(fence,RecordEndpoints.Actor(context).TenantId,async token=>
+            {
+                var actor=RecordEndpoints.Actor(context);var size=pageSize??20;var filter="owned-documents:"+size;
+                var page=await repository.QueryAsync(RecordPartition.Catalog(actor.TenantId),"document",null,null,size,cursors.Decode(actor,filter,continuationToken),token);
+                context.Response.Headers.CacheControl="no-store";
+                return Results.Ok(new{items=page.Items.Where(r=>r.Value.Text("ownerId")==actor.PrincipalId&&AccessPolicy.CanRead(actor,r.Value)).Select(r=>RecordJson.FromStorage(r.Value,r.ETag)),continuationToken=cursors.Encode(actor,filter,page.ContinuationToken)});
+            },ct));
+        api.MapGet("/documents/{id}/skill-fragments",(string id,HttpContext context,SkillDictionaryService dictionary,AccessFence fence,CancellationToken ct)=>
+            new FencedResult(fence,RecordEndpoints.Actor(context).TenantId,async token=>
+            {context.Response.Headers.CacheControl="no-store";return Results.Ok(await dictionary.DocumentFragmentsUnderFenceAsync(RecordEndpoints.Actor(context),id,token));},ct));
+        api.MapPost("/documents/{id}/versions",async(string id,HttpContext context,DocumentUploads uploads,IngestionOptions limits,CancellationToken ct)=>
+        {
+            if(!context.Request.HasFormContentType)throw new DomainException(400,"INVALID_INPUT");
+            var form=await context.Request.ReadFormAsync(ct);
+            if(form.Files.Count!=1||form.Files[0].Name!="file"||form.Keys.Count()!=1||form["reason"].Count!=1)throw new DomainException(400,"INVALID_INPUT");
+            var file=form.Files[0];if(file.Length>limits.OriginalBytes)throw new DomainException(413,"PAYLOAD_TOO_LARGE");
+            using var bytes=new MemoryStream();await file.CopyToAsync(bytes,ct);
+            var result=await uploads.ReviseAsync(RecordEndpoints.Actor(context),id,context.Request.Headers.IfMatch.ToString(),context.Request.Headers["Idempotency-Key"].ToString(),form["reason"].ToString(),file.FileName,file.ContentType,bytes.ToArray(),ct);
+            context.Response.Headers.Location=result.Location;return Results.Json(result.Body,statusCode:result.Status);
+        }).RequireRateLimiting("upload");
+        api.MapPost("/documents/{id}/withdraw",async(string id,RetryInput input,HttpContext context,DocumentUploads uploads,CancellationToken ct)=>
+        {
+            var result=await uploads.WithdrawAsync(RecordEndpoints.Actor(context),id,context.Request.Headers.IfMatch.ToString(),context.Request.Headers["Idempotency-Key"].ToString(),input.Reason,ct);
+            return Results.Json(result.Body,statusCode:result.Status);
+        });
         api.MapPost("/documents", async (HttpContext context, DocumentUploads uploads, IngestionOptions limits, CancellationToken ct) =>
         {
             var actor = RecordEndpoints.Actor(context);

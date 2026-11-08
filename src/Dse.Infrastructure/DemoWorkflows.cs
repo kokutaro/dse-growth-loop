@@ -54,7 +54,7 @@ public sealed class DemoWorkflows(IServiceProvider root,IRecordStore shared,ICon
             var mapped=entry.Store.MapActor(actor);
             if(state.Value.Text("state")!="ready")
             {
-                await DemoWorkflowSources.SeedAsync(entry.Store,entry.Services.GetRequiredService<SkillDictionaryService>(),mapped,clock,ct);
+                await DemoWorkflowSources.SeedAsync(entry.Store,entry.Services.GetRequiredService<IIngestionBlobs>(),entry.Services.GetRequiredService<SkillDictionaryService>(),mapped,clock,ct);
                 state=await entry.Store.ReadAsync(p,StateId,ct)??throw new DomainException(503,"WORKFLOW_UNAVAILABLE");
                 if(state.Value.Text("state")!="ready")
                 {state.Value["state"]="ready";await entry.Store.CommitAsync(p,[RecordWrite.Replace(state.Value,state.ETag)],ct);}
@@ -108,7 +108,7 @@ public sealed class WorkflowIngestionQueue(IIngestionQueue queue,string workflow
 
 internal static class DemoWorkflowSources
 {
-    public static async Task SeedAsync(IRecordStore store,SkillDictionaryService dictionary,ActorAccess actor,TimeProvider clock,CancellationToken ct)
+    public static async Task SeedAsync(IRecordStore store,IIngestionBlobs blobs,SkillDictionaryService dictionary,ActorAccess actor,TimeProvider clock,CancellationToken ct)
     {
         var p=RecordPartition.Catalog(actor.TenantId);
         if(await store.ReadAsync(p,actor.PersonId,ct) is null)
@@ -129,6 +129,9 @@ internal static class DemoWorkflowSources
                 JsonObject Row(string kind,string key)=>RecordJson.New(kind,key,actor.TenantId,actor.PrincipalId,actor.ScopeIds,clock.GetUtcNow());
                 var doc=Row("document","doc-"+id);doc["activeVersion"]=1;doc["accessVersion"]=1;doc["status"]="ready";doc["title"]=text;doc["personId"]=actor.PersonId;doc["documentType"]="report";doc["currentVersionId"]="ver-"+id;
                 var version=Row("documentVersion","ver-"+id);version["documentId"]=doc.Text("id");version["status"]="ready";
+                var bytes=Original(text);var blobKey=actor.TenantId+"/fixtures/"+id+".docx";await blobs.PutAsync("originals",blobKey,bytes,ct);
+                version["blobKey"]=blobKey;version["sha256"]=OfficeExtractor.Hash(bytes);version["mediaType"]=OfficeExtractor.WordMime;version["bytes"]=bytes.Length;version["processorVersion"]=IngestionOptions.ProcessorVersion;
+                doc["extractionState"]="complete";doc["aiState"]="complete";doc["processingMode"]="saved_response";
                 var evidence=Row("evidenceSpan","ev-"+id);evidence["documentId"]=doc.Text("id");evidence["documentVersionId"]=version.Text("id");evidence["validationState"]="validated";evidence["text"]=text;evidence["location"]=new JsonObject{["label"]="以前の架空原文"};
                 var fragment=Row("experience",fragmentId);fragment["personId"]=actor.PersonId;fragment["description"]=text;fragment["skillHistoryOnly"]=!distinct;
                 fragment["evidenceRefs"]=JsonSerializer.SerializeToNode(new[]{new EvidenceReference(evidence.Text("id"),version.Text("id"),1)},ProjectionRules.Json);
@@ -137,5 +140,17 @@ internal static class DemoWorkflowSources
             }
             await dictionary.CollectAsync(actor,"workflow-seed-"+ConversationService.Hash(id)[..32],new(fragmentId),ct);
         }
+    }
+    private static byte[] Original(string text)
+    {
+        using var buffer=new MemoryStream();
+        using(var zip=new System.IO.Compression.ZipArchive(buffer,System.IO.Compression.ZipArchiveMode.Create,true))
+        {
+            void Part(string name,string content){using var writer=new StreamWriter(zip.CreateEntry(name).Open());writer.Write(content);}
+            Part("[Content_Types].xml","<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/></Types>");
+            Part("_rels/.rels","<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/></Relationships>");
+            Part("word/document.xml","<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body><w:p><w:r><w:t>"+System.Security.SecurityElement.Escape(text)+"</w:t></w:r></w:p></w:body></w:document>");
+        }
+        return buffer.ToArray();
     }
 }

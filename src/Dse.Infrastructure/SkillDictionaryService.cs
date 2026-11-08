@@ -35,6 +35,27 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             ["concepts"]=Node(snapshot.Concepts.Where(c=>c.ScopeIds.Intersect(actor.ScopeIds).Any()).ToArray()),["contract"]=SkillDictionaryRules.Version};
     }
     private sealed record Source(StoredRecord Fragment,SpecificSkills Skills,string Fingerprint,Dictionary<string,string> Evidence,bool Superseded);
+    public async Task<JsonObject> DocumentFragmentsUnderFenceAsync(ActorAccess actor,string documentId,CancellationToken ct)
+    {
+        actor=await Operator(actor,ct);if(!RecordJson.IsId(documentId))throw new ArgumentException("Invalid document ID");
+        var p=RecordPartition.Catalog(actor.TenantId);var document=await repository.ReadAsync(p,documentId,ct);
+        if(document?.Value.Text("kind")!="document"||!AccessPolicy.CanUse(actor,document.Value))throw new DomainException(404,"NOT_FOUND");
+        var items=new JsonArray();
+        foreach(var kind in new[]{"documentFragment","experience"})
+        {
+            var page=await repository.QueryAsync(p,kind,"documentId",documentId,100,null,ct);
+            if(page.ContinuationToken is not null)throw new DomainException(422,"SKILL_COLLECTION_LIMIT");
+            foreach(var row in page.Items)
+                try
+                {
+                    var source=await ReadSource(actor,row.Value.Text("id"),ct);
+                    if(source.Superseded||kind=="experience"&&source.Skills.SearchTerms.Length==0)continue;
+                    items.Add(new JsonObject{["id"]=row.Value.Text("id"),["description"]=row.Value["description"]?.DeepClone(),["sourceFingerprint"]=source.Fingerprint,["inputState"]=source.Skills.State,["contentOnly"]=kind=="documentFragment",["historyOnly"]=row.Value["skillHistoryOnly"]?.DeepClone()??JsonValue.Create(false)});
+                }
+                catch(DomainException e)when(e.Status==404){}
+        }
+        return new(){["items"]=items};
+    }
     private async Task<Source> ReadSource(ActorAccess actor,string id,CancellationToken ct)
     {
         if(!RecordJson.IsId(id))throw new ArgumentException("Invalid fragment ID");
@@ -190,7 +211,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             ["inputState"]=source.Skills.State,["acceptedCount"]=source.Superseded?0:source.Skills.Items?.Length??0,["rejected"]=rejected,
             ["currentText"]=source.Superseded?"":source.Fragment.Value.Text(source.Fragment.Value.Text("kind")=="knowledge"?"summary":"description"),
             ["evidence"]=new JsonArray((source.Superseded?new Dictionary<string,string>():source.Evidence).Select(e=>(JsonNode)new JsonObject{["id"]=e.Key,["text"]=e.Value}).ToArray()),
-            ["requiresRecollection"]=true,["personalExperienceApproved"]=false};
+            ["requiresRecollection"]=source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()!=true,["historyOnly"]=source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()==true,["personalExperienceApproved"]=false};
     }
     public Task<MutationResponse> ReviewAsync(ActorAccess actor,string id,string key,string etag,SkillDictionaryReview input,CancellationToken ct)=>fence.RunAsync(actor.TenantId,async token=>
     {
