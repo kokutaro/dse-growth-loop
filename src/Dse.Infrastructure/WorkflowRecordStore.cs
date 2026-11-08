@@ -19,6 +19,7 @@ public sealed class WorkflowRecordStore(IRecordStore shared,ActorAccess owner,st
     }
     private RecordPartition Physical(RecordPartition logical)
     {
+        if(!workflowId.StartsWith("wf-",StringComparison.Ordinal)||!RecordJson.IsId(workflowId)||workflowId==owner.TenantId)throw new ArgumentException("Invalid workflow namespace");
         if(logical.TenantId!=owner.TenantId||logical.Container is not ("catalog" or "conversations"))throw new ArgumentException("Workflow tenant mismatch");
         return logical.Container=="catalog"?RecordPartition.Catalog(workflowId):RecordPartition.Conversation(workflowId,"wfs-"+Hash(workflowId+":"+logical.Key)[..48]);
     }
