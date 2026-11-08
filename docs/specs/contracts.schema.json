@@ -506,7 +506,11 @@
           "minimum": 1
         },
         "choiceWireVersion": {
-          "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2", "skill-choice-wire-v3"]
+          "enum": [
+            "skill-choice-wire-v1",
+            "skill-choice-wire-v2",
+            "skill-choice-wire-v3"
+          ]
         },
         "choiceWireMapHash": {
           "type": "string",
@@ -600,7 +604,8 @@
             "processing",
             "ready",
             "needs_review",
-            "failed"
+            "failed",
+            "withdrawn"
           ]
         },
         "currentVersionId": {
@@ -651,7 +656,8 @@
         "processingMode": {
           "enum": [
             "fixture",
-            "live"
+            "live",
+            "saved_response"
           ]
         },
         "profileResultId": {
@@ -832,6 +838,12 @@
         },
         "generationRetry": {
           "$ref": "#/$defs/ReextractionRetry"
+        },
+        "ingestionJobId": {
+          "type": "string"
+        },
+        "historicalEvaluation": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1879,7 +1891,8 @@
           "enum": [
             "person",
             "knowledge",
-            "departmentActivity"
+            "departmentActivity",
+            "document"
           ]
         },
         "unitId": {
@@ -1917,7 +1930,7 @@
           "items": {
             "$ref": "#/$defs/CategoryProbability"
           },
-          "minItems": 1,
+          "minItems": 0,
           "maxItems": 100,
           "uniqueItems": true
         },
@@ -1947,7 +1960,7 @@
           "items": {
             "$ref": "#/$defs/SourceRef"
           },
-          "minItems": 1,
+          "minItems": 0,
           "maxItems": 100,
           "uniqueItems": true
         },
@@ -1957,7 +1970,8 @@
             "ai_unconfirmed",
             "self_corrected",
             "self_confirmed",
-            "reviewed"
+            "reviewed",
+            "human_skill_review"
           ]
         },
         "projectionVersion": {
@@ -2002,8 +2016,7 @@
           },
           "maxItems": 100,
           "uniqueItems": true,
-          "deprecated": true,
-          "description": "Legacy domain keyword IDs only. Never promote to concrete personal skills. New writes use specificSkills."
+          "description": "Approved concrete skill IDs only when accompanied by current bindings, dictionary version and projection head. Unbound legacy IDs never authorize this route."
         },
         "processingMode": {
           "enum": [
@@ -2022,6 +2035,42 @@
         },
         "testPersonId": {
           "type": "string"
+        },
+        "skillBindings": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "properties": {
+              "candidateId": {
+                "type": "string"
+              },
+              "conceptId": {
+                "type": "string"
+              },
+              "eligibility": {
+                "enum": [
+                  "eligible",
+                  "content_only"
+                ]
+              }
+            },
+            "required": [
+              "candidateId",
+              "conceptId",
+              "eligibility"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "skillDictionaryVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skillProjectionHeadId": {
+          "type": "string",
+          "pattern": "^skill-projection-head-[a-f0-9]{48}$"
         }
       },
       "required": [
@@ -2042,13 +2091,52 @@
         "projectionVersion",
         "projectionState",
         "accessVersion",
-        "classificationResultIds",
         "evidenceRefs"
       ],
       "unevaluatedProperties": false,
       "allOf": [
         {
           "$ref": "#/$defs/PersistedMetadata"
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "required": [
+                  "skillProjectionHeadId"
+                ]
+              },
+              {
+                "required": [
+                  "skillBindings"
+                ]
+              }
+            ]
+          },
+          "then": {
+            "required": [
+              "skillProjectionHeadId",
+              "skillBindings",
+              "skillDictionaryVersion",
+              "skillIds"
+            ]
+          },
+          "else": {
+            "required": [
+              "classificationResultIds"
+            ],
+            "properties": {
+              "classifications": {
+                "minItems": 1
+              },
+              "sourceRefs": {
+                "minItems": 1
+              },
+              "skillIds": {
+                "deprecated": true
+              }
+            }
+          }
         }
       ]
     },
@@ -2642,6 +2730,18 @@
                     "maxLength": 100
                   },
                   "maxItems": 20
+                },
+                "skillIds": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  }
+                },
+                "skillDictionaryVersion": {
+                  "type": "integer",
+                  "minimum": 0
                 }
               },
               "required": [
@@ -2725,6 +2825,14 @@
                   "maxItems": 5000
                 },
                 "specificSkills": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "maxItems": 5000
+                },
+                "skillDictionary": {
                   "type": "array",
                   "items": {
                     "type": "string",
@@ -7152,7 +7260,11 @@
           ]
         },
         "wireVersion": {
-          "enum": ["skill-choice-wire-v1", "skill-choice-wire-v2", "skill-choice-wire-v3"]
+          "enum": [
+            "skill-choice-wire-v1",
+            "skill-choice-wire-v2",
+            "skill-choice-wire-v3"
+          ]
         }
       },
       "required": [
@@ -7908,6 +8020,155 @@
         "statusUrl"
       ],
       "additionalProperties": false
+    },
+    "DemoWorkflow": {
+      "type": "object",
+      "properties": {
+        "personId": {
+          "type": "string"
+        },
+        "workflowId": {
+          "type": "string",
+          "pattern": "^wf-[a-f0-9]{48}$"
+        },
+        "sourceTenantId": {
+          "type": "string"
+        },
+        "ownerEpoch": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "initializing",
+            "ready"
+          ]
+        },
+        "kind": {
+          "const": "demoWorkflow"
+        }
+      },
+      "required": [
+        "kind",
+        "personId",
+        "workflowId",
+        "sourceTenantId",
+        "ownerEpoch",
+        "state"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "SkillProjectionHead": {
+      "type": "object",
+      "properties": {
+        "fragmentId": {
+          "type": "string"
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "projectionIds": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "string"
+          }
+        },
+        "dictionaryVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "skillProjectionHead"
+        }
+      },
+      "required": [
+        "kind",
+        "fragmentId",
+        "sourceFingerprint",
+        "projectionIds",
+        "dictionaryVersion"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "DocumentFragment": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          }
+        },
+        "specificSkills": {
+          "$ref": "#/$defs/SpecificSkills"
+        },
+        "workbookSectionKind": {
+          "const": "context"
+        },
+        "accessVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "processingMode": {
+          "enum": [
+            "fixture",
+            "live",
+            "saved_response"
+          ]
+        },
+        "skillHistoryOnly": {
+          "type": "boolean"
+        },
+        "syntheticTest": {
+          "type": "boolean"
+        },
+        "managedByPersonId": {
+          "type": "string"
+        },
+        "testPersonId": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "documentFragment"
+        }
+      },
+      "required": [
+        "kind",
+        "documentId",
+        "description",
+        "evidenceRefs",
+        "specificSkills",
+        "workbookSectionKind",
+        "accessVersion",
+        "processingMode"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/PersistedMetadata"
+        }
+      ],
+      "unevaluatedProperties": false
     }
   },
   "oneOf": [
@@ -7973,6 +8234,15 @@
     },
     {
       "$ref": "#/$defs/SkillMatchProposal"
+    },
+    {
+      "$ref": "#/$defs/DemoWorkflow"
+    },
+    {
+      "$ref": "#/$defs/SkillProjectionHead"
+    },
+    {
+      "$ref": "#/$defs/DocumentFragment"
     }
   ],
   "x-example-required": [
@@ -8022,6 +8292,9 @@
     "MessagePage",
     "OpportunityPage",
     "ExperiencePage",
-    "MessageCommitted"
+    "MessageCommitted",
+    "DemoWorkflow",
+    "DocumentFragment",
+    "SkillProjectionHead"
   ]
 }

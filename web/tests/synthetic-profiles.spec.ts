@@ -5,18 +5,22 @@ const root=path.resolve('test-results/synthetic-profiles');
 test.describe.serial('検証人物の製品APIとモック取込',()=>{
  test('登録・二重クリック・応答消失・取込・検索・停止と通常検索非混入',async({page,request})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await fs.mkdir(root,{recursive:true});
+  const idle=()=>expect(page.getByRole('button',{name:'最新状態を確認',exact:true})).toBeEnabled();
   await page.goto('/test-profiles.html');await expect(page.getByRole('button',{name:'最新状態を確認'})).toBeEnabled();
   await page.getByLabel('管理参照（例 hk-a）').fill('browser-a');await page.getByLabel('架空表示名',{exact:true}).fill('合成 A');await page.getByLabel('実名・実案件を含まない合成データです').check();
   await page.route('**/api/v1/admin/test-people',async route=>{if(route.request().method()==='POST'){const r=await route.fetch();expect(r.status()).toBe(201);await route.abort('failed');}else await route.continue();},{times:1});
   await page.getByRole('button',{name:'登録',exact:true}).click();await expect(page.getByRole('alert')).toBeVisible();
   await page.getByRole('button',{name:'登録',exact:true}).dblclick();await expect(page.getByRole('status')).toContainText('登録済み');
+  await idle(); // Status precedes the UI's list refresh; audit reads must not race it.
   const list=await (await request.get('/api/v1/admin/test-people')).json();expect(list.items).toHaveLength(1);const person=list.items[0];
   await page.getByRole('button',{name:'[検証専用・架空] 合成 A',exact:true}).click();
   const workbook=await (await request.get('/api/test/workbook')).body();
   await page.getByLabel('合成スキルシート（XLSX）').setInputFiles({name:'synthetic.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:workbook});
   await page.getByRole('button',{name:'資料を取り込む',exact:true}).dblclick();await expect(page.getByRole('status')).toContainText('取込受付');
+  await idle();
   await request.post('/api/test/drain');await page.getByRole('button',{name:'処理・根拠を更新',exact:true}).click();
   await expect(page.getByRole('heading',{name:'抽出・保留'})).toBeVisible();await expect(page.getByText('取得範囲：全',{exact:false})).toBeVisible();await expect(page.locator('article')).toHaveCount(3);
+  await idle();
   const current=await (await request.get('/api/v1/admin/test-people')).json();const doc=Object.values(current.items[0].documentHeads)[0];
   const pipeline=await (await request.get(`/api/v1/documents/${doc}/pipeline`)).json();expect(pipeline.aiState).toBe('complete');expect(pipeline.job.status).toBe('ready');
   await page.getByLabel('原文語または具体技能').fill('回帰試験');await page.getByRole('button',{name:'テスト検索',exact:true}).click();await expect(page.getByText('検証専用・架空',{exact:true})).toBeVisible();
@@ -26,9 +30,11 @@ test.describe.serial('検証人物の製品APIとモック取込',()=>{
   const start=page.getByRole('button',{name:'見積内で新しい抽出世代を開始',exact:true});await expect(start).toBeDisabled();
   await page.getByLabel('再抽出理由',{exact:true}).fill('全セル新版の再確認');await page.getByLabel('この原本と版・新しい費用上限を確認しました',{exact:true}).check();
   await start.dblclick();await expect(page.getByRole('status')).toContainText('新規受付');
+  await idle();
   const pending=(await (await request.get('/api/v1/admin/test-people')).json()).items[0];expect(pending.pendingGenerationId).toBeTruthy();expect(Object.values(pending.documentHeads)[0]).toBe(doc);
   await page.getByRole('button',{name:'テスト検索',exact:true}).click();await expect(page.getByText('検証専用・架空',{exact:true})).toBeVisible();
   await request.post('/api/test/drain');await page.getByRole('button',{name:'処理・根拠を更新',exact:true}).click();
+  await idle();
   const published=(await (await request.get('/api/v1/admin/test-people')).json()).items[0];expect(Object.values(published.documentHeads)[0]).toBe(pending.pendingGenerationId);expect(published.pendingGenerationId).toBeUndefined();
   await expect(page.locator('article')).toHaveCount(3);await page.getByRole('button',{name:'再抽出の費用と版を確認',exact:true}).click();await expect(page.getByText('この版の状態：already_applied。',{exact:false})).toBeVisible();
   await page.screenshot({path:path.join(root,'generation-published.png'),fullPage:true});

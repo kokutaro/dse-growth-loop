@@ -267,8 +267,9 @@ test('個別化した技術の知識を承認すると資料を越えて同じGi
 });
 
 test('役割表現を保留理由付きで表示し、再収集しても経験候補や承認へ昇格しない',async({page,request})=>{
- await page.goto('/skill-dictionary.html');
  const before=await(await request.get('/api/v1/skill-dictionary')).json();
+ // Complete the audit probe before the page takes the same tenant read fence.
+ await page.goto('/skill-dictionary.html');
  const notice=page.locator('tbody tr').filter({hasText:'fragment-role-context'}).filter({hasText:'収集の確認待ち'});
  await expect(notice).toHaveCount(1);await expect(notice.getByRole('checkbox')).toBeDisabled();
  await notice.getByRole('button',{name:'この候補を確認'}).click();
@@ -279,6 +280,7 @@ test('役割表現を保留理由付きで表示し、再収集しても経験�
  await panel.screenshot({path:'test-results/skill-dictionary/role-context-held.png'});
  await panel.getByRole('button',{name:'現在の根拠で再収集'}).click();
  await expect(page.getByRole('status')).toContainText('新規候補 0 件');await expect(panel).toHaveCount(0);
+ await expect(notice.getByRole('button',{name:'この候補を確認'})).toBeEnabled();
  const list=(await(await request.get('/api/v1/skill-candidates')).json()).items.filter((c:{fragmentId:string})=>c.fragmentId==='fragment-role-context');
  expect(list.filter((c:{item?:{raw:string}})=>c.item?.raw==='通信処理の開発担当')).toHaveLength(0);
  expect(list.filter((c:{item?:{basis:string}})=>c.item?.basis==='knowledge')).toHaveLength(3);

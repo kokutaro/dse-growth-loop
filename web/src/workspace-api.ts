@@ -1,4 +1,5 @@
 import { authSessionSignal, getToken, type AppConfig } from './auth';
+import {apiFetch as fetch} from './workflow-context';
 
 export type Api = <T>(path: string, method?: string, body?: unknown, key?: string, etag?: string) => Promise<T>;
 export class WorkspaceError extends Error {

@@ -203,6 +203,18 @@
               "maxLength": 100
             },
             "description": "Concrete personal experience tags only; independent of domain categories and lexical terms."
+          },
+          "skillIds": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          },
+          "skillDictionaryVersion": {
+            "type": "integer",
+            "minimum": 0
           }
         },
         "required": [
@@ -210,7 +222,26 @@
           "signalIds",
           "terms"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "skillIds"
+              ],
+              "properties": {
+                "skillIds": {
+                  "minItems": 1
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "skillDictionaryVersion"
+              ]
+            }
+          }
+        ]
       },
       "Rules": {
         "type": "object",
@@ -353,7 +384,8 @@
             "enum": [
               "person",
               "knowledge",
-              "departmentActivity"
+              "departmentActivity",
+              "document"
             ]
           },
           "unitId": {
@@ -391,7 +423,7 @@
             "items": {
               "$ref": "#/components/schemas/CategoryProbability"
             },
-            "minItems": 1,
+            "minItems": 0,
             "maxItems": 100,
             "uniqueItems": true
           },
@@ -430,7 +462,8 @@
               "fixture",
               "ai_unconfirmed",
               "self_corrected",
-              "self_confirmed"
+              "self_confirmed",
+              "human_skill_review"
             ]
           },
           "projectionVersion": {
@@ -502,6 +535,45 @@
           "sourceVersion": {
             "type": "integer",
             "minimum": 1
+          },
+          "skillBindings": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 40,
+            "items": {
+              "type": "object",
+              "properties": {
+                "candidateId": {
+                  "type": "string"
+                },
+                "conceptId": {
+                  "type": "string"
+                },
+                "eligibility": {
+                  "enum": [
+                    "eligible",
+                    "content_only"
+                  ]
+                }
+              },
+              "required": [
+                "candidateId",
+                "conceptId",
+                "eligibility"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "skillDictionaryVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "skillProjectionHeadId": {
+            "type": "string",
+            "pattern": "^skill-projection-head-[a-f0-9]{48}$"
+          },
+          "specificSkills": {
+            "$ref": "#/components/schemas/SpecificSkills"
           }
         },
         "required": [
@@ -1255,7 +1327,7 @@
             "items": {
               "type": "string"
             },
-            "maxItems": 3
+            "maxItems": 5
           },
           "units": {
             "type": "array",
@@ -1469,6 +1541,440 @@
           "status",
           "aiRunId",
           "rules"
+        ],
+        "additionalProperties": false
+      },
+      "SpecificSkills": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "enum": [
+              "specific-skills-v1",
+              "specific-skills-v2"
+            ]
+          },
+          "state": {
+            "enum": [
+              "extracted",
+              "unknown",
+              "not_evaluated"
+            ]
+          },
+          "items": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SpecificSkill"
+            },
+            "maxItems": 40,
+            "uniqueItems": true
+          },
+          "searchTerms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "guardVersion": {
+            "enum": [
+              "scoped-assertion-v2",
+              "scoped-assertion-v3",
+              "scoped-assertion-v4",
+              "source-integrity-v1"
+            ]
+          },
+          "rejectedItems": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "item",
+                "reason"
+              ],
+              "properties": {
+                "item": {
+                  "$ref": "#/components/schemas/SpecificSkill"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "invalid_candidate",
+                    "unknown_evidence",
+                    "quote_not_in_source",
+                    "raw_not_in_quote",
+                    "incomplete_passage",
+                    "broad_domain",
+                    "experience_not_established",
+                    "excluded_operand",
+                    "negated_assertion",
+                    "reported_or_intended",
+                    "no_completed_assertion",
+                    "other_actor",
+                    "ownership_restricted",
+                    "involvement_mismatch",
+                    "duplicate_candidate",
+                    "not_in_fragment",
+                    "reported_quote",
+                    "retracted_assertion",
+                    "actor_not_established",
+                    "non_skill_context",
+                    "skill_context_unverified",
+                    "skill_context_conflict"
+                  ]
+                }
+              }
+            }
+          },
+          "contentTerms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "version",
+          "state",
+          "items",
+          "searchTerms"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "extracted"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "items": {
+                  "type": "array"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "items": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SpecificSkill": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "raw": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "normalizationCandidate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "evidenceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8000
+          },
+          "participation": {
+            "enum": [
+              "performed",
+              "joint",
+              "assisted",
+              "consultation",
+              "aspiration",
+              "other_person",
+              "negated",
+              "unclear"
+            ]
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SkillAnalysis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "basis": {
+            "enum": [
+              "experience",
+              "knowledge",
+              "qualification",
+              "not_experience",
+              "uncertain"
+            ]
+          },
+          "contentKind": {
+            "type": "string",
+            "description": "抽出された文脈種別。skill_statement、technology_list、context、uncertain。未知の値も保留証跡として保持し、経験適格性はサーバーで再検証する。"
+          },
+          "contextPolicy": {
+            "type": "string",
+            "description": "新規抽出境界でサーバーが付ける文脈検証版。skill-context-v1。旧版では省略し、未知の版は保留する。"
+          }
+        },
+        "required": [
+          "raw",
+          "normalizationCandidate",
+          "evidenceId",
+          "quote"
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "basis"
+            ]
+          },
+          {
+            "required": [
+              "participation"
+            ]
+          }
+        ]
+      },
+      "SkillAnalysis": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "enum": [
+              "skill-elements-v1",
+              "skill-elements-v2"
+            ]
+          },
+          "quoteState": {
+            "enum": [
+              "quote_verified",
+              "invalid_quote"
+            ]
+          },
+          "semanticSupport": {
+            "const": "unreviewed"
+          },
+          "experienceState": {
+            "enum": [
+              "eligible",
+              "content_only",
+              "non_practice",
+              "pending",
+              "blocked"
+            ]
+          },
+          "subjectScope": {
+            "enum": [
+              "person",
+              "knowledge",
+              "other",
+              "team",
+              "unresolved"
+            ]
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "knowledge",
+              "reference",
+              "qualification"
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillElement"
+            },
+            "maxItems": 8
+          }
+        },
+        "required": [
+          "version",
+          "quoteState",
+          "semanticSupport",
+          "experienceState",
+          "subjectScope",
+          "kind",
+          "reason",
+          "elements"
+        ],
+        "additionalProperties": false
+      },
+      "SkillElement": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 220
+          },
+          "action": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "object": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8000
+            },
+            "maxItems": 8,
+            "uniqueItems": true
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "knowledge",
+              "reference",
+              "qualification"
+            ]
+          },
+          "subjectScope": {
+            "enum": [
+              "person",
+              "knowledge",
+              "other",
+              "team",
+              "unresolved",
+              "unspecified"
+            ]
+          },
+          "participation": {
+            "enum": [
+              "performed",
+              "joint",
+              "assisted",
+              "consultation",
+              "aspiration",
+              "other_person",
+              "negated",
+              "unclear",
+              "unspecified"
+            ]
+          },
+          "conceptId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conceptState": {
+            "enum": [
+              "unmapped",
+              "approved_existing_alias"
+            ]
+          },
+          "slices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkillSlice"
+            },
+            "maxItems": 2
+          },
+          "basis": {
+            "enum": [
+              "experience",
+              "knowledge",
+              "qualification",
+              "not_experience",
+              "uncertain"
+            ]
+          }
+        },
+        "required": [
+          "label",
+          "action",
+          "object",
+          "conditions",
+          "kind",
+          "subjectScope",
+          "conceptId",
+          "conceptState",
+          "slices"
+        ],
+        "additionalProperties": false
+      },
+      "SkillSlice": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "quoteOffset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "length": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "text",
+          "quoteOffset",
+          "length"
         ],
         "additionalProperties": false
       }

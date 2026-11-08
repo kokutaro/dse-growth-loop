@@ -1,5 +1,9 @@
 # 実装契約 v1
 
+## 概要
+
+架空データだけを使う実装・認可・整合性の契約を収録する。2026-11-08追加の [永続デモと文書ライフサイクル](openapi-durable-workflow-v1.json) は通常API/Workerを再利用する。[自然文検索](openapi-search-v2.json) は承認済み技能ID・固定辞書版・現在の原文根拠を扱う。環境への反映・実AI品質は契約試験と別に確認する。
+
 更新日：2026-09-23。対象：[Issue #3](https://github.com/kokutaro/dse-growth-loop/issues/3)、親計画 [#1](https://github.com/kokutaro/dse-growth-loop/issues/1)。全件ダミーの開発契約。**この仕様を追加しただけでは、現APIに書込・認可・AI処理は実装されない。**
 
 2026-10-11の追加ランタイム契約は [匿名ワークスペース](openapi-workspace-v1.json)、[手動分析](openapi-business-analysis-v1.json)、[公開知識](openapi-knowledge-v1.json)。独立表示名同意のprivate保存stateはSession schemaに定義し、匿名DTOへは出さない。新Live traceは未測定RUをnullとして区別する。実環境の受入は別の検証である。

@@ -41,7 +41,9 @@ public sealed class MockAiTransport : IAiTransport
             var examples = new[] {
                 (Text: "C#で回帰試験を実施した。", Raw: new[]{"C#","回帰試験"}, Basis:"experience"),
                 (Text: "Azureを利用したい。", Raw: new[]{"Azure"}, Basis:"not_experience"),
-                (Text: "同僚が回帰試験を実施した。", Raw: new[]{"回帰試験"}, Basis:"not_experience") };
+                (Text: "同僚が回帰試験を実施した。", Raw: new[]{"回帰試験"}, Basis:"not_experience"),
+                (Text: "アプリ開発担当 ／ TypeScript、SQLite、Git", Raw:new[]{"TypeScript","SQLite","Git"},Basis:"knowledge"),
+                (Text: "通信処理の開発担当 ／ Go、Linux、Git", Raw:new[]{"Go","Linux","Git"},Basis:"knowledge") };
             var items = new JsonArray();
             foreach (var e in input["evidence"]!.AsArray())
             {
@@ -52,7 +54,7 @@ public sealed class MockAiTransport : IAiTransport
                             ["evidenceId"]=e["id"]!.DeepClone(),["quote"]=example.Text,["basis"]=example.Basis });
             }
             if (input["skillContextPolicy"]?.GetValue<string>() == Dse.Domain.SpecificSkillRules.ContextPolicy)
-                foreach (var item in items) item!["contentKind"] = "skill_statement";
+                foreach (var item in items) item!["contentKind"] = item!["basis"]!.GetValue<string>()=="knowledge"?"technology_list":"skill_statement";
             if (input["workbookPolicy"]?.GetValue<string>() == Dse.Domain.WorkbookRules.CellSkillPrompt)
                 foreach (var item in items) item!.AsObject().Remove("quote");
             content = new() { ["state"] = "extracted", ["items"] = items };

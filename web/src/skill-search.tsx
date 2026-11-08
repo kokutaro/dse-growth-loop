@@ -1,11 +1,12 @@
 import {useEffect,useRef,useState} from 'react';
 import {authSessionSignal,getToken,type AppConfig} from './auth';
 import {skillApi,skillDemoId} from './skill-demo-context';
+import {apiFetch as fetch,workflowId} from './workflow-context';
 
 export type SkillMatch={conceptId:string;eligibility:string;reviews:{action:string;reason:string;previousVersion:number;approvedVersion:number;createdAt:string}[]};
 type Hit={candidateId:string;fragmentId:string;conceptId:string;skillName:string;raw:string;quote:string;evidenceId:string;experienceEligibility:string;reviews:SkillMatch['reviews']};
 type Result={dictionaryVersion:number;beforeLimit:number;items:Hit[]};
-export type SkillSearchResult={candidates:{entityId:string;entityType:string;title:string;routes:string[];units:{summary:string;sourceRefs:{id:string;documentTitle:string;location:string;text:string}[];confirmationState:string;skillMatch:SkillMatch}[]}[];matchedUnits:number;beforeLimit:number;rerankingStatus:string;skillDictionaryVersion:number};
+export type SkillSearchResult={candidates:{entityId:string;entityType:string;title:string;routes:string[];units:{summary:string;sourceRefs:{id:string;documentTitle:string;location:string;text:string}[];confirmationState:string;skillMatch?:SkillMatch;skillBindings?:{candidateId:string;conceptId:string;eligibility:string}[];skillDictionaryVersion?:number}[]}[];matchedUnits:number;beforeLimit:number;rerankingStatus:string;skillDictionaryVersion:number};
 
 export function SkillSearch({config,onResult,onInvalidate}:{config:AppConfig;onResult:(value:SkillSearchResult)=>void;onInvalidate:()=>void}){
  const [version,setVersion]=useState(()=>new URLSearchParams(location.search).get('skillVersion')??'');
@@ -16,7 +17,7 @@ export function SkillSearch({config,onResult,onInvalidate}:{config:AppConfig;onR
  async function request(path:string,body?:unknown){
   const headers:Record<string,string>={'Content-Type':'application/json'};
   if(config.mode==='Azure')headers.Authorization=`Bearer ${await getToken(config)}`;
-  const response=await fetch(skillApi(path),{method:body===undefined?'GET':'POST',headers,...(body===undefined?{}:{body:JSON.stringify(body)}),signal:authSessionSignal(),cache:'no-store'});
+  const response=await fetch(path.startsWith('/api/')?path:skillApi(path),{method:body===undefined?'GET':'POST',headers,...(body===undefined?{}:{body:JSON.stringify(body)}),signal:authSessionSignal(),cache:'no-store'});
   if(response.status===410)throw new Error('デモは終了しました。以前の2資料でデモを開き直してください。');
   if(!response.ok)throw new Error(response.status===403?'この検索には既存のoperator権限が必要です。':response.status===404?'指定した辞書版を確認できません。':response.status===422?'検索対象が上限を超えました。部分結果は表示しません。':'検索を完了できません。辞書版と現在の根拠を確認してください。');
   return response.json();
@@ -31,6 +32,12 @@ export function SkillSearch({config,onResult,onInvalidate}:{config:AppConfig;onR
  }
  async function search(e:React.SubmitEvent){
   e.preventDefault();invalidate();if(loaded===undefined||!selected)return;const current=epoch.current;setBusy(true);
+  if(workflowId()!==undefined){
+   try{const data=await request('/api/search',{categories:[],signalIds:[],terms:[],skillIds:[selected],skillDictionaryVersion:loaded});if(current!==epoch.current)return;
+    const candidates=data.candidates.map((c:SkillSearchResult['candidates'][number])=>({...c,units:c.units.filter(u=>u.skillBindings?.some(b=>b.conceptId===selected&&b.eligibility===eligibility))})).filter((c:SkillSearchResult['candidates'][number])=>c.units.length>0);
+    onResult({...data,candidates,matchedUnits:candidates.reduce((sum:number,c:SkillSearchResult['candidates'][number])=>sum+c.units.length,0),skillDictionaryVersion:loaded});
+   }catch(e){if(current===epoch.current)setError(e instanceof Error?e.message:'検索できません。');}finally{if(current===epoch.current)setBusy(false);}return;
+  }
   try{const data:Result=await request('skill-dictionary/search',{version:loaded,conceptId:selected,eligibility});if(current!==epoch.current)return;
    // These are evidence records, not fabricated people or endorsements of proficiency.
    onResult({skillDictionaryVersion:data.dictionaryVersion,matchedUnits:data.items.length,beforeLimit:data.beforeLimit,rerankingStatus:'not_performed',

@@ -3,8 +3,7 @@ import {test,expect} from '@playwright/test';
 test('共有環境用の操作デモで以前の資料を承認し、共有辞書や他者へ影響せず通常画面から検索できる',async({page,request})=>{
  const before=await(await request.get('/api/v1/skill-dictionary')).json();
  expect((await request.post('/api/v1/skill-demo/start',{headers:{'X-Test-Actor':'member'}})).status()).toBe(403);
- await page.goto('/skill-demo.html');
- await page.getByRole('button',{name:'以前の2資料でデモを開く',exact:true}).click();
+ const legacy=await(await request.post('/api/v1/skill-demo/start')).json();await page.goto('/skill-dictionary.html?skillDemo='+legacy.id);
  await expect(page).toHaveURL(/skill-dictionary.html\?skillDemo=[a-f0-9]{32}$/);
  const id=new URL(page.url()).searchParams.get('skillDemo')!;const api='/api/v1/skill-demo/'+id;
  await expect(page.getByText('操作用デモ：変更は自分のメモリ内だけに保存します。',{exact:true})).toBeVisible();

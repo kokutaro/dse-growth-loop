@@ -166,6 +166,9 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
         var source = (await repository.ReadAsync(partition, unit.EntityId, ct))?.Value;
         if (source is null || source.Text("kind") != unit.EntityType || !AccessPolicy.CanUse(actor, source) ||
             source.Number("activeVersion") != unit.SourceVersion || source.Number("accessVersion") != unit.AccessVersion) return null;
+        // Skill curation is not document publication or all-participants consent.
+        // Other entities still validate their linked evidence with their existing policy.
+        if(unit.EntityType=="document"&&source.Text("ownerId")!=actor.PrincipalId)return null;
         if (source.Text("kind") == "person" && !SyntheticTestAccess.IsTest(source))
         {
             var person = await new AuthorityProvider(repository,configuration).PersonAsync(actor.TenantId,source.Text("id"),ct);
@@ -192,11 +195,18 @@ public sealed class SourceGuard(IPrimaryRepository repository, IConfiguration? c
             try { unit = unit with { SpecificSkills = SpecificSkillRules.Assess(unit.SpecificSkills, refs.ToDictionary(r => r.Id, r => r.Text), unit.Summary, unit.EntityType) }; }
             catch (ArgumentException) { return null; }
         }
+        if(unit.EntityType=="person" && unit.SpecificSkills is {ContentTerms.Length:>0,SearchTerms.Length:0})return null;
         // Old workbook projections may contain whole-cell lexical terms, including knowledge.
         // Rebuild only the authorized, reassessed experience terms before matching. No write.
         if (workbook && unit.EntityType == "person")
             unit = unit with { NormalizedTerms = unit.SpecificSkills?.Version == SpecificSkillRules.Version ? unit.SpecificSkills.SearchTerms : [] };
-        return new(unit with { SyntheticTest = SyntheticTestAccess.IsTest(source), SourceRefs = refs.ToArray() }, snapshots.Distinct().ToArray());
+        unit=unit with{SyntheticTest=SyntheticTestAccess.IsTest(source),SourceRefs=refs.ToArray()};
+        if(unit.SkillProjectionHeadId is not null||unit.SkillBindings is not null)
+        {
+            try{var resolved=await new SkillDictionaryService(repository,new(repository),new(repository,TimeProvider.System),TimeProvider.System).ResolveSkillProjectionUnderFenceAsync(actor,unit,ct);if(resolved is null)return null;unit=resolved;}
+            catch(DomainException e)when(e.Status is 403 or 404 or 409){return null;}
+        }
+        return new(unit,snapshots.Distinct().ToArray());
     }
     public async Task<(JsonObject Span, JsonObject Document)?> EvidenceAsync(ActorAccess actor, EvidenceReference reference, CancellationToken ct)
     {

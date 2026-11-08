@@ -2200,5 +2200,133 @@
       },
       "dispatches": {}
     }
+  },
+  {
+    "schema": "DemoWorkflow",
+    "value": {
+      "kind": "demoWorkflow",
+      "id": "workflow-state",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-11-08T02:42:39.939677+00:00",
+      "updatedAt": "2026-11-08T02:42:39.939677+00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "personId": "fixture-curator-person",
+      "workflowId": "wf-687c51fa396052e917980b0843ddbb7f000dbae9f198f9a8",
+      "sourceTenantId": "demo",
+      "ownerEpoch": "01c48339bba84d05ab4af0f7cdf8e5b4",
+      "state": "ready",
+      "etag": "\"etag-1\""
+    },
+    "name": "DemoWorkflow"
+  },
+  {
+    "schema": "DocumentFragment",
+    "value": {
+      "kind": "documentFragment",
+      "id": "fragment-technical-list-a",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": 1,
+      "createdAt": "2026-11-08T02:42:39.941397+00:00",
+      "updatedAt": "2026-11-08T02:42:39.941397+00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "documentId": "doc-technical-list-a",
+      "description": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+      "skillHistoryOnly": true,
+      "workbookSectionKind": "context",
+      "accessVersion": 1,
+      "processingMode": "saved_response",
+      "evidenceRefs": [
+        {
+          "id": "ev-technical-list-a",
+          "documentVersionId": "ver-technical-list-a",
+          "sourceVersion": 1
+        }
+      ],
+      "specificSkills": {
+        "version": "specific-skills-v2",
+        "state": "extracted",
+        "items": [
+          {
+            "raw": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+            "normalizationCandidate": "TypeScript",
+            "evidenceId": "ev-technical-list-a",
+            "quote": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+            "basis": "knowledge",
+            "analysis": null
+          },
+          {
+            "raw": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+            "normalizationCandidate": "SQLite",
+            "evidenceId": "ev-technical-list-a",
+            "quote": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+            "basis": "knowledge",
+            "analysis": null
+          },
+          {
+            "raw": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+            "normalizationCandidate": "Git",
+            "evidenceId": "ev-technical-list-a",
+            "quote": "アプリ開発担当 ／ TypeScript、SQLite、Git",
+            "basis": "knowledge",
+            "analysis": null
+          }
+        ],
+        "searchTerms": [],
+        "contentTerms": []
+      },
+      "etag": "\"etag-1\""
+    },
+    "name": "DocumentFragment"
+  },
+  {
+    "schema": "SkillProjectionHead",
+    "value": {
+      "kind": "skillProjectionHead",
+      "id": "skill-projection-head-9979e9f2f63d18741ab0e61325e2df2cff165349a246d896",
+      "tenantId": "demo-tenant",
+      "ownerId": "fixture-curator",
+      "scopeIds": [
+        "demo"
+      ],
+      "schemaVersion": "1.0",
+      "sourceVersion": 1,
+      "activeVersion": null,
+      "createdAt": "2026-11-08T02:42:39.962438+00:00",
+      "updatedAt": "2026-11-08T02:42:39.962446+00:00",
+      "createdBy": {
+        "type": "principal",
+        "id": "fixture-curator"
+      },
+      "correctedBy": null,
+      "fragmentId": "fragment-technical-list-b-distinct",
+      "sourceFingerprint": "87d104bf6990736788d4ad7ceb2a87e64b8e6a641db453af825d0c5b3fbff5d5",
+      "projectionIds": [
+        "skill-unit-a31cbc4af6c67cfe49bb995e3b034a4b1604239fb5bddb18a614313eddf9da7c"
+      ],
+      "dictionaryVersion": 1,
+      "etag": "\"etag-1\""
+    },
+    "name": "SkillProjectionHead"
   }
 ]

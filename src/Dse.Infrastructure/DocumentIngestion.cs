@@ -5,7 +5,7 @@ using Dse.Domain;
 
 namespace Dse.Infrastructure;
 
-public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence fence, IdempotencyExecutor idempotency,
+public sealed partial class DocumentUploads(IPrimaryRepository repository, AccessFence fence, IdempotencyExecutor idempotency,
     IIngestionBlobs blobs, OfficeExtractor extractor, IngestionOptions options, JobNotifications notifications, TimeProvider clock, Microsoft.Extensions.Configuration.IConfiguration? configuration = null)
 {
     public async Task<MutationResponse> UploadAsync(ActorAccess actor, string title, string type, string name, string mime, byte[] bytes, string key, CancellationToken ct)
@@ -63,6 +63,7 @@ public sealed class DocumentUploads(IPrimaryRepository repository, AccessFence f
                 SyntheticTestAccess.Mark(version,person);
                 doc["currentVersionId"] = version.Text("id");
                 var job = Jobs.Create(doc, "ingestion", now);
+                doc["ingestionJobId"]=job.Text("id");
                 version["documentId"] = documentId; version["blobKey"] = blobKey; version["sha256"] = hash; version["mediaType"] = mime;
                 version["bytes"] = bytes.Length; version["status"] = "queued"; version["jobId"] = job.Text("id"); version["processorVersion"] = IngestionOptions.ProcessorVersion;
                 person["documentHeads"] ??= new JsonObject();

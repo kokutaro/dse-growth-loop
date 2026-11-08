@@ -1,0 +1,29 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e:dictionary
+> playwright test --config playwright.skill-dictionary.config.ts
+
+[WebServer] (node:44097) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 16 tests using 1 worker
+
+(node:44098) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/durable-workflow.spec.ts:6:63 › 遅い断片応答を現在の資料へ混ぜない（document） (587ms)
+  ✓   2 tests/durable-workflow.spec.ts:6:63 › 遅い断片応答を現在の資料へ混ぜない（return） (429ms)
+  ✓   3 tests/durable-workflow.spec.ts:6:63 › 遅い断片応答を現在の資料へ混ぜない（version） (392ms)
+  ✓   4 tests/durable-workflow.spec.ts:6:63 › 遅い断片応答を現在の資料へ混ぜない（failure） (391ms)
+  ✓   5 tests/durable-workflow.spec.ts:29:1 › 以前の架空原文の承認を通常の永続検索・画面・撤回につなぐ (1.1s)
+  ✓   6 tests/durable-workflow.spec.ts:59:1 › 同じ架空原本を通常画面で取り込み、抽出を候補へ収集し訂正版を処理できる (7.6s)
+  ✓   7 tests/skill-demo-session.spec.ts:3:1 › 共有環境用の操作デモで以前の資料を承認し、共有辞書や他者へ影響せず通常画面から検索できる (957ms)
+  ✓   8 tests/skill-dictionary.spec.ts:6:1 › 技術列で保留された4件の正規化案を未承認として表示し、保留や引用を変更しない (475ms)
+  ✓   9 tests/skill-dictionary.spec.ts:22:1 › 仮データの収集から人の承認、統合、固定版プレビューまで業務・goldを変更しない (2.4s)
+  ✓  10 tests/skill-dictionary.spec.ts:68:1 › 既存権限のない利用者と閲覧範囲外は候補・根拠・辞書の承認を読めない (7ms)
+  ✓  11 tests/skill-dictionary.spec.ts:73:1 › 既存カタログ画面から製品API・実行ガード・監査を通り意味候補を提示し、人の承認と分離する (994ms)
+  ✓  12 tests/skill-dictionary.spec.ts:97:1 › 入力枠を超える比較は省略も送信もせず要確認を表示し、再送しても課金しない (361ms)
+  ✓  13 tests/skill-dictionary.spec.ts:108:1 › Choiceの該当なし・複合技能の保留を人の承認と分け、過去noulは新方式へ流用しない (1.2s)
+  ✓  14 tests/skill-dictionary.spec.ts:125:1 › 古い候補と収集保留を現在の原文から再確認し、二重再収集・途中の原文変更・権限撤回を安全に扱う (1.0s)
+  ✓  15 tests/skill-dictionary.spec.ts:148:1 › 個別化した技術の知識を承認すると資料を越えて同じGit IDへ対応し、本人経験へ昇格しない (2.6s)
+  ✓  16 tests/skill-dictionary.spec.ts:269:1 › 役割表現を保留理由付きで表示し、再収集しても経験候補や承認へ昇格しない (365ms)
+
+  16 passed (24.8s)

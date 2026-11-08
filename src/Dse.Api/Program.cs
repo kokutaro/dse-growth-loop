@@ -96,7 +96,7 @@ app.Use(async (context, next) =>
 });
 app.Use(async (context, next) =>
 {
-    var limit = (context.Request.Path == "/api/v1/documents" || context.Request.Path.StartsWithSegments("/api/v1/admin/test-people") && context.Request.Path.Value!.EndsWith("/documents",StringComparison.Ordinal)) && HttpMethods.IsPost(context.Request.Method) ? uploadLimits.OriginalBytes + 65536 : 32 * 1024;
+    var limit = (context.Request.Path == "/api/v1/documents" || context.Request.Path.StartsWithSegments("/api/v1/documents") && context.Request.Path.Value!.EndsWith("/versions",StringComparison.Ordinal) || context.Request.Path.StartsWithSegments("/api/v1/admin/test-people") && context.Request.Path.Value!.EndsWith("/documents",StringComparison.Ordinal)) && HttpMethods.IsPost(context.Request.Method) ? uploadLimits.OriginalBytes + 65536 : 32 * 1024;
     var feature = context.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>();
     if (feature is { IsReadOnly: false }) feature.MaxRequestBodySize = limit;
     if (context.Request.ContentLength > limit) { await ApiProblem.Result(context, 413).ExecuteAsync(context); return; }
@@ -137,7 +137,7 @@ app.Use(async (context, next) =>
             context.GetEndpoint()?.Metadata.GetMetadata<LegacyWorkspaceEndpoint>() is not null);
         var template=(context.GetEndpoint() as Microsoft.AspNetCore.Routing.RouteEndpoint)?.RoutePattern.RawText??"api";
         using var fenceOperation=FenceOwnerTrace.BeginApi(context.Request.Method+" "+template,actor);
-        await next();return;
+        await DemoWorkflowEndpoints.SelectAsync(context,next);return;
     }
     await next();
 });
@@ -156,6 +156,7 @@ records.MapIdentityDisclosure();
 records.MapOrganization();
 records.MapSkillDictionary();
 records.MapSkillDemo();
+records.MapDemoWorkflows();
 records.MapGet("/operation-measurements", (HttpContext context, Dse.Api.OperationMeasurementBuffer measurements) =>
 {
     if (!RecordEndpoints.Actor(context).HasRole("operator")) throw new DomainException(403, "FORBIDDEN");

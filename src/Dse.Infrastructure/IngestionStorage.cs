@@ -40,7 +40,10 @@ public sealed class AzureIngestionBlobs : IIngestionBlobs
     public async Task DeleteAsync(string container, string key, string etag, CancellationToken ct) =>
         await Blob(container, key).DeleteIfExistsAsync(conditions: new BlobRequestConditions { IfMatch = new ETag(etag) }, cancellationToken: ct);
 }
-public sealed record QueueNotice(string TenantId, string JobId, int Version, string? SessionId = null);
+public sealed record QueueNotice(string TenantId, string JobId, int Version, string? SessionId = null)
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] public string? WorkflowId{get;init;}
+}
 public sealed record QueueDelivery(string Id, string Receipt, string Body);
 public interface IIngestionQueue
 {

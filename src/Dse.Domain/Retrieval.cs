@@ -7,6 +7,7 @@ public sealed record CategoryKey(string Axis, string CategoryId);
 public sealed record CategoryProbability(string Axis, string CategoryId, double Probability);
 public sealed record ExperienceSignal(string SignalId, double? YesProbability, string EvidenceState);
 public sealed record SourceRef(string Id, string DocumentTitle, string Location, string Text);
+public sealed record ApprovedSkillBinding(string CandidateId,string ConceptId,string Eligibility);
 public sealed record SearchUnit(string Id, string EntityId, string EntityType, string TenantId, string UnitId,
     string Title, string Summary, string[] ScopeIds, string Status, bool Available, string TaxonomyVersion,
     CategoryProbability[] Classifications, ExperienceSignal[] ExperienceSignals, string[] NormalizedTerms,
@@ -15,6 +16,10 @@ public sealed record SearchUnit(string Id, string EntityId, string EntityType, s
     public string Kind => "searchUnit";
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool SyntheticTest { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string[]? SkillIds { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ApprovedSkillBinding[]? SkillBindings { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? SkillDictionaryVersion { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? SkillProjectionHeadId { get; init; }
+    [JsonIgnore] public int? SkillViewVersion { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public SpecificSkills? SpecificSkills { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ProcessingMode { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? SourceVersion { get; init; }
@@ -29,6 +34,8 @@ public sealed record SearchRequest(CategoryKey[] Categories, string[] SignalIds,
     double ProbabilityThreshold = 0.2, double NoulThreshold = 0.5, int Limit = 20)
 {
     public string[] SpecificSkills { get; init; } = [];
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string[]? SkillIds { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? SkillDictionaryVersion { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool SyntheticOnly { get; init; }
     public void Validate()
     {
@@ -36,7 +43,8 @@ public sealed record SearchRequest(CategoryKey[] Categories, string[] SignalIds,
             Categories.Length > 10 || SignalIds.Length > 10 || Terms.Length > 20 ||
             Categories.Any(x => x is null || Invalid(x.Axis) || Invalid(x.CategoryId)) ||
             SignalIds.Any(Invalid) || Terms.Any(Invalid) ||
-            Categories.Length + SignalIds.Length + Terms.Length + SpecificSkills.Length == 0 ||
+            SkillIds is {Length:>20}||SkillIds?.Any(id=>!RecordJson.IsId(id))==true||SkillIds is {Length:>0}&&SkillDictionaryVersion is null||SkillDictionaryVersion<0||
+            Categories.Length + SignalIds.Length + Terms.Length + SpecificSkills.Length + (SkillIds?.Length??0) == 0 ||
             !double.IsFinite(ProbabilityThreshold) || ProbabilityThreshold is < 0 or > 1 ||
             !double.IsFinite(NoulThreshold) || NoulThreshold is < 0 or > 1 || Limit is < 1 or > 100)
             throw new ArgumentException("検索条件・閾値・候補上限を確認してください。");
@@ -78,8 +86,9 @@ public static class Retriever
                 Noul = u.ExperienceSignals.Any(s => request.SignalIds.Contains(s.SignalId)
                     && s.EvidenceState == "supported" && s.YesProbability >= request.NoulThreshold),
                 Skills = u.SpecificSkills?.Version == SpecificSkillRules.Version && u.SpecificSkills.State == "extracted" ? skills.Count(q => u.SpecificSkills.TermsFor(u.EntityType).Any(t => SkillTextMatch.Matches(t, q))) : 0,
+                ApprovedSkills = u.SkillDictionaryVersion==request.SkillDictionaryVersion ? (request.SkillIds??[]).Count(id=>(u.SkillIds??[]).Contains(id)&&u.SkillBindings?.Any(b=>b.ConceptId==id&&b.Eligibility is "eligible" or "content_only"&&(u.EntityType!="person"||b.Eligibility=="eligible"))==true) : 0,
                 Terms = u.NormalizedTerms.Count(terms.Contains)
-            }).Where(h => h.Categories.Length > 0 || h.Noul || h.Terms > 0 || h.Skills > 0).ToArray();
+            }).Where(h => h.Categories.Length > 0 || h.Noul || h.Terms > 0 || h.Skills > 0 || h.ApprovedSkills>0).ToArray();
         var candidates = hits.GroupBy(h => (h.Unit.EntityType, h.Unit.EntityId)).Select(g =>
         {
             var units = g.Select(h => h.Unit).OrderBy(u => u.UnitId, StringComparer.Ordinal).ToArray();
@@ -89,6 +98,7 @@ public static class Retriever
             if (g.Any(h => h.Noul)) routes.Add("noul");
             if (g.Any(h => h.Terms > 0)) routes.Add("terms");
             if (g.Any(h => h.Skills > 0)) routes.Add("specificSkills");
+            if (g.Any(h => h.ApprovedSkills > 0)) routes.Add("skillDictionary");
             return new Candidate(g.Key.EntityId, g.Key.EntityType, units[0].Title, [.. routes], units,
                 categories.Select(c => (c.Axis, c.CategoryId)).Distinct().Count(),
                 categories.Select(c => c.Probability).DefaultIfEmpty(0).Max(), g.Max(h => h.Terms)) { SpecificSkillMatches = g.Max(h => h.Skills) };

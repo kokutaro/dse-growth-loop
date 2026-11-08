@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test('resolve, rate, draft, edit, confirm, approve, search and withdraw a dummy case', async ({ page, request }) => {
+  // The initial challenge/context reads hold the tenant fence through serialization.
+  // Do not race a scripted create against those reads or retry an unknown mutation.
+  const initialContext=page.waitForResponse(response=>response.url().endsWith('/api/v1/conversation-context')&&response.ok());
   await page.goto('/validation.html');
+  await (await initialContext).finished();
   const panel = page.getByRole('region', { name: '課題と相談チャット' });
   const title = `知識化 ${Date.now()}`;
   await panel.getByLabel('課題名', { exact: true }).fill(title);

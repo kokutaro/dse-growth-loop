@@ -5,7 +5,8 @@ using Dse.Domain;
 namespace Dse.Infrastructure;
 
 // Curation writes remain human-only. Optional proposals use the existing guarded AI
-// provider; neither path updates gold, publishes experience, queues or search projections.
+// provider. Approved IDs and immutable projections commit atomically; neither path
+// updates gold, publishes personal experience or queues another inference.
 public sealed partial class SkillDictionaryService(IPrimaryRepository repository, AccessFence fence, IdempotencyExecutor idempotency, TimeProvider clock, Func<IDecisionProvider>? decisionFactory=null)
 {
     public const string HeadId="skill-dictionary-head";
@@ -35,12 +36,33 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             ["concepts"]=Node(snapshot.Concepts.Where(c=>c.ScopeIds.Intersect(actor.ScopeIds).Any()).ToArray()),["contract"]=SkillDictionaryRules.Version};
     }
     private sealed record Source(StoredRecord Fragment,SpecificSkills Skills,string Fingerprint,Dictionary<string,string> Evidence,bool Superseded);
+    public async Task<JsonObject> DocumentFragmentsUnderFenceAsync(ActorAccess actor,string documentId,CancellationToken ct)
+    {
+        actor=await Operator(actor,ct);if(!RecordJson.IsId(documentId))throw new ArgumentException("Invalid document ID");
+        var p=RecordPartition.Catalog(actor.TenantId);var document=await repository.ReadAsync(p,documentId,ct);
+        if(document?.Value.Text("kind")!="document"||!AccessPolicy.CanUse(actor,document.Value))throw new DomainException(404,"NOT_FOUND");
+        var items=new JsonArray();
+        foreach(var kind in new[]{"documentFragment","experience"})
+        {
+            var page=await repository.QueryAsync(p,kind,"documentId",documentId,100,null,ct);
+            if(page.ContinuationToken is not null)throw new DomainException(422,"SKILL_COLLECTION_LIMIT");
+            foreach(var row in page.Items)
+                try
+                {
+                    var source=await ReadSource(actor,row.Value.Text("id"),ct);
+                    if(source.Superseded||kind=="experience"&&source.Skills.SearchTerms.Length==0)continue;
+                    items.Add(new JsonObject{["id"]=row.Value.Text("id"),["description"]=row.Value["description"]?.DeepClone(),["sourceFingerprint"]=source.Fingerprint,["inputState"]=source.Skills.State,["contentOnly"]=kind=="documentFragment",["historyOnly"]=row.Value["skillHistoryOnly"]?.DeepClone()??JsonValue.Create(false)});
+                }
+                catch(DomainException e)when(e.Status==404){}
+        }
+        return new(){["items"]=items};
+    }
     private async Task<Source> ReadSource(ActorAccess actor,string id,CancellationToken ct)
     {
         if(!RecordJson.IsId(id))throw new ArgumentException("Invalid fragment ID");
         var fragment=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),id,ct)??throw new DomainException(404,"NOT_FOUND");
         var value=fragment.Value;
-        if(value.Text("kind") is not ("experience" or "knowledge" or "departmentActivity"))throw new DomainException(404,"NOT_FOUND");
+        if(value.Text("kind") is not ("experience" or "knowledge" or "documentFragment" or "departmentActivity"))throw new DomainException(404,"NOT_FOUND");
         AccessPolicy.RequireRead(actor,value);
         try { await SyntheticTestAccess.RequireLinkedAsync(repository,actor,value,ct); }
         catch(DomainException e) when(e.Status is 403 or 404 or 409) { throw new DomainException(404,"NOT_FOUND"); }
@@ -67,6 +89,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         var row=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),id,ct);
         if(row?.Value.Text("kind")!="skillCandidate"||!AccessPolicy.InScope(actor,row.Value))throw new DomainException(404,"NOT_FOUND");
         var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
+        if(source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()==true)throw new DomainException(409,"SKILL_HISTORY_READ_ONLY");
         if(source.Superseded||source.Fingerprint!=row.Value.Text("sourceFingerprint"))throw new DomainException(409,"SKILL_SOURCE_CHANGED");
         if(row.Value.Text("candidateType")=="collection")throw new DomainException(409,"SKILL_COLLECTION_HELD");
         return row;
@@ -97,6 +120,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                     sources[fragmentId]=source;
                 }
                 if(source is null)continue;
+                if(source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()==true&&row.Value.Text("candidateType")!="collection")continue;
                 var changed=source.Superseded||source.Fingerprint!=row.Value.Text("sourceFingerprint");
                 // Never serialize an old quote/label, proposal or review reason after a
                 // source change. Current access to the fragment is not access to old text.
@@ -116,7 +140,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
     }
     public Task<MutationResponse> CollectAsync(ActorAccess actor,string key,SkillCandidateCollect input,CancellationToken ct)=>fence.RunAsync(actor.TenantId,async token=>
     {
-        actor=await Operator(actor,token);var source=await ReadSource(actor,input.FragmentId,token);if(source.Superseded)throw new DomainException(409,"SKILL_GENERATION_SUPERSEDED");var p=RecordPartition.Catalog(actor.TenantId);
+        actor=await Operator(actor,token);var source=await ReadSource(actor,input.FragmentId,token);if(source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()==true)throw new DomainException(409,"SKILL_HISTORY_READ_ONLY");if(source.Superseded)throw new DomainException(409,"SKILL_GENERATION_SUPERSEDED");var p=RecordPartition.Catalog(actor.TenantId);
         if(input.ExpectedFingerprint is not null&&input.ExpectedFingerprint!=source.Fingerprint)throw new DomainException(409,"SKILL_SOURCE_CHANGED");
         return await idempotency.ExecuteAsync(p,actor,"POST","skill-candidates/collect",key,null,Node(new{input.FragmentId,source.Fingerprint}),async()=>
         {
@@ -156,7 +180,8 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             }
             if(writes.Count>90)throw new DomainException(422,"SKILL_COLLECTION_LIMIT"); // Never truncate candidates or break normal extraction.
             var state=source.Skills.State=="unknown"?"undetermined":source.Skills.State=="not_evaluated"?"not_evaluated":bindings.Count==0?(source.Skills.RejectedItems?.Length>0?"held":"none"):"assessed";
-            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["dictionaryVersion"]=snapshot.Version,["inputState"]=source.Skills.State,["state"]=state,["bindings"]=bindings,["created"]=writes.Count(w=>w.Value.Text("candidateType")!="collection"),["collectionId"]=collectionId,["quarantined"]=source.Skills.RejectedItems?.Length??0},null,null));
+            var projection=await PrepareSkillProjection(actor,source,snapshot,writes.Select(w=>w.Value),token);var created=writes.Count(w=>w.Value.Text("candidateType")!="collection");writes.AddRange(projection.Primary);
+            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["dictionaryVersion"]=snapshot.Version,["inputState"]=source.Skills.State,["state"]=state,["bindings"]=bindings,["created"]=created,["collectionId"]=collectionId,["quarantined"]=source.Skills.RejectedItems?.Length??0},null,null)){ProjectionWrites=projection.Projections};
         },token);
     },ct);
     // Read current evidence under the same tenant fence as serialization. Deleted,
@@ -187,7 +212,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
             ["inputState"]=source.Skills.State,["acceptedCount"]=source.Superseded?0:source.Skills.Items?.Length??0,["rejected"]=rejected,
             ["currentText"]=source.Superseded?"":source.Fragment.Value.Text(source.Fragment.Value.Text("kind")=="knowledge"?"summary":"description"),
             ["evidence"]=new JsonArray((source.Superseded?new Dictionary<string,string>():source.Evidence).Select(e=>(JsonNode)new JsonObject{["id"]=e.Key,["text"]=e.Value}).ToArray()),
-            ["requiresRecollection"]=true,["personalExperienceApproved"]=false};
+            ["requiresRecollection"]=source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()!=true,["historyOnly"]=source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()==true,["personalExperienceApproved"]=false};
     }
     public Task<MutationResponse> ReviewAsync(ActorAccess actor,string id,string key,string etag,SkillDictionaryReview input,CancellationToken ct)=>fence.RunAsync(actor.TenantId,async token=>
     {
@@ -224,7 +249,8 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                 var next=head?.Value.Copy()??RecordJson.New("skillDictionaryHead",HeadId,actor.TenantId,actor.PrincipalId,["system"],clock.GetUtcNow());
                 next["version"]=after.Version;next["updatedAt"]=clock.GetUtcNow();writes.Add(RecordWrite.Create(version));writes.Add(new(next,head?.ETag));
             }
-            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["candidateId"]=id,["state"]=value["state"]!.DeepClone(),["dictionaryVersion"]=after.Version,["conceptId"]=value["conceptId"]?.DeepClone(),["reviewId"]=reviewId},null,null));
+            var source=await ReadSource(actor,value.Text("fragmentId"),token);var projection=await PrepareSkillProjection(actor,source,after,[value],token);writes.AddRange(projection.Primary);
+            return new MutationPlan(writes.ToArray(),null,new(200,new JsonObject{["candidateId"]=id,["state"]=value["state"]!.DeepClone(),["dictionaryVersion"]=after.Version,["conceptId"]=value["conceptId"]?.DeepClone(),["reviewId"]=reviewId},null,null)){ProjectionWrites=projection.Projections};
         },token);
     },ct);
     public async Task<JsonObject> PreviewUnderFenceAsync(ActorAccess actor,SkillDictionaryPreview input,CancellationToken ct)

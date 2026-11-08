@@ -4,13 +4,18 @@ using Dse.Tests;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Text.Json.Serialization;
 
 // Loopback-only test harness. No Azure, credentials, external AI, production auth or
 // authority configuration is used. Its actors exist only in this memory store.
 var browserJson=new JsonSerializerOptions(JsonSerializerDefaults.Web);
 var builder=WebApplication.CreateBuilder(args);builder.WebHost.UseUrls("http://127.0.0.1:5182");
+builder.Configuration["Data:Mode"]="Demo";builder.Configuration["Ai:Mode"]="Mock";builder.Configuration["AiUsage:Stopped"]="false";builder.Configuration["AiUsage:MaxInputTokens"]="16000";builder.Configuration["AiUsage:MaxOutputTokens"]="8000";
+builder.Services.AddCatalog(builder.Configuration,true).AddIngestion(builder.Configuration);builder.Services.AddSingleton<IAiTransport>(MockAiTransport.Instance);builder.Services.AddHostedService<IngestionBackgroundService>();
+builder.Services.AddRateLimiter(o=>o.AddFixedWindowLimiter("upload",options=>{options.PermitLimit=100;options.Window=TimeSpan.FromMinutes(1);}));
 var fixture=await SkillDictionaryFixture.Create();
+builder.Services.AddSingleton<IRecordStore>(fixture.Store);
 builder.Services.AddSingleton<IPrimaryRepository>(fixture.Repo);builder.Services.AddSingleton(fixture.Fence);
 await fixture.Source("semantic-proposal","回帰試験の実施確認","私は回帰試験の実施確認を行った。");
 await fixture.Source("semantic-failure","応答不正の試験","私は応答不正の試験を実施した。");
@@ -61,11 +66,12 @@ builder.Services.ConfigureHttpJsonOptions(o=>o.SerializerOptions.UnmappedMemberH
 var app=builder.Build();
 app.Use(async(c,next)=>{
  c.Items[typeof(ActorAccess)]=c.Request.Headers["X-Test-Actor"].ToString() switch{"member"=>SkillDictionaryFixture.Member,"other"=>SkillDictionaryFixture.OtherScope,_=>SkillDictionaryFixture.Curator};
- try{await next();}catch(DomainException e){c.Response.StatusCode=e.Status;await c.Response.WriteAsJsonAsync(new{code=e.Code});}
+ try{await DemoWorkflowEndpoints.SelectAsync(c,next);}catch(DomainException e){c.Response.StatusCode=e.Status;await c.Response.WriteAsJsonAsync(new{code=e.Code});}
  catch(ArgumentException){c.Response.StatusCode=400;await c.Response.WriteAsJsonAsync(new{code="INVALID_INPUT"});}
 });
 app.Lifetime.ApplicationStopped.Register(ai.Dispose);
 app.UseStaticFiles();
+app.UseRateLimiter();
 app.MapGet("/api/test/skill-documents",(int version,string conceptId,string eligibility,HttpContext c,SkillDocumentDemo demo,CancellationToken ct)=>
     new FencedResult(fixture.Fence,"demo",async token=>{
         c.Response.Headers.CacheControl="no-store";
@@ -86,4 +92,8 @@ app.MapGet("/health/live",()=>Results.Ok("test-only"));
 app.MapGet("/api/config",()=>Results.Ok(new{mode="Demo",tenantId="demo",clientId="",scope="",dictionaryFixture=true}));
 app.MapGroup("/api/v1").MapSkillDictionary();
 app.MapGroup("/api/v1").MapSkillDemo();
+app.MapGroup("/api/v1").MapDemoWorkflows();
+app.MapGroup("/api/v1").MapDocuments(false);app.MapGroup("/api/v1").MapRecords(false);
+app.MapPost("/api/search",(SearchRequest request,HttpContext context,ICatalog catalog)=>new CatalogResult(catalog,request,RecordEndpoints.Actor(context)));
+app.MapGroup("/api/v2").MapNaturalSearch();
 app.Run();

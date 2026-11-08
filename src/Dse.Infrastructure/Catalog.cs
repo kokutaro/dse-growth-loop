@@ -46,7 +46,7 @@ public sealed class ValidatedCatalog(IProjectionRepository projections, SourceGu
         request.Validate();
         if (!actor.HasRole("member") || request.SyntheticOnly && !actor.HasRole("operator")) throw new DomainException(403, "FORBIDDEN");
         using var budget = new SearchBudget();
-        var units = await projections.FindAsync(request, actor.Search, ct);
+        var units = (await projections.FindAsync(request, actor.Search, ct)).Select(u=>u with{SkillViewVersion=request.SkillDictionaryVersion}).ToArray();
         await fence.RunAsync(actor.TenantId, async token =>
         {
             var result = Retriever.Search(await guard.FilterUnderFenceAsync(actor, units, token), request, actor.Search);
@@ -81,6 +81,9 @@ public static class CosmosCatalog
             routes.Add("EXISTS(SELECT VALUE s FROM s IN u.experienceSignals WHERE ARRAY_CONTAINS(@signals, s.signalId) AND IS_NUMBER(s.yesProbability) AND s.yesProbability >= @noul AND s.evidenceState = 'supported')");
         if (request.Terms.Length > 0)
             routes.Add("EXISTS(SELECT VALUE t FROM t IN u.normalizedTerms WHERE ARRAY_CONTAINS(@terms, t))");
+        // A bounded superset also finds immutable pre-merge projections. SourceGuard
+        // resolves their current/historical approved bindings before exact matching.
+        if(request.SkillIds is {Length:>0})routes.Add("IS_DEFINED(u.skillProjectionHeadId)");
         // SQL is a bounded superset. SourceGuard and the identifier-boundary matcher
         // recheck evidence/ACL and remove false positives before returning anything.
         var skillQueries = request.SpecificSkills.Concat(request.Terms).Select(SpecificSkillRules.Normalize).Distinct().ToArray();
@@ -88,7 +91,7 @@ public static class CosmosCatalog
         {
             var clauses = skillQueries.Select((q,i) => SkillTextMatch.AllowsPartial(q) ? $"CONTAINS(t, @skillQuery{i})" : $"t = @skillQuery{i}").ToArray();
             var predicate = string.Join(" OR ", clauses);
-            routes.Add("(u.specificSkills.version = @specificSkillVersion AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE " + predicate + ") OR (u.entityType = 'knowledge' AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE " + predicate + "))))");
+            routes.Add("(u.specificSkills.version = @specificSkillVersion AND u.specificSkills.state = 'extracted' AND (EXISTS(SELECT VALUE t FROM t IN u.specificSkills.searchTerms WHERE " + predicate + ") OR (u.entityType IN ('knowledge', 'document') AND EXISTS(SELECT VALUE t FROM t IN u.specificSkills.contentTerms WHERE " + predicate + "))))");
             for(var i=0;i<skillQueries.Length;i++) parameters.Add(($"@skillQuery{i}",skillQueries[i]));
         }
         var query = new QueryDefinition("SELECT * FROM u WHERE u.kind = 'searchUnit' AND u.tenantId = @tenant AND u.status = 'active' AND u.available = true AND u.taxonomyVersion = @taxonomy AND EXISTS(SELECT VALUE s FROM s IN u.scopeIds WHERE ARRAY_CONTAINS(@scopes, s)) AND " + (request.SyntheticOnly ? "u.syntheticTest = true" : "(NOT IS_DEFINED(u.syntheticTest) OR u.syntheticTest = false)") + " AND (" + string.Join(" OR ", routes) + ")")
@@ -139,6 +142,23 @@ public static class InfrastructureRegistration
             services.AddSingleton<IProjectionRepository, CosmosProjectionRepository>();
         }
         else throw new InvalidOperationException("Data__Mode は Demo または Azure を指定してください。");
+        services.AddCatalogServices(configuration);
+        if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
+        {
+            if (!int.TryParse(configuration["Telemetry:SamplingPercentage"] ?? "10", out var percentage) || percentage is < 1 or > 100)
+                throw new InvalidOperationException("Telemetry__SamplingPercentage は1〜100で指定してください。");
+            services.AddOpenTelemetry().UseAzureMonitor(options =>
+            {
+                options.SamplingRatio = percentage / 100f;
+                options.TracesPerSecond = null;
+            });
+        }
+        return services;
+    }
+    // The application graph is common; an isolated workflow supplies only storage,
+    // projection and queue adapters. Do not reinitialize backends or telemetry.
+    internal static IServiceCollection AddCatalogServices(this IServiceCollection services,IConfiguration configuration)
+    {
         services.AddSingleton<IPrimaryRepository, PrimaryRepository>();
         services.AddSingleton<SourceGuard>();
         services.AddSingleton(sp=>new AccessFence(sp.GetRequiredService<IPrimaryRepository>(),sp.GetRequiredService<TimeProvider>(),sp.GetService<ILogger<AccessFence>>()));
@@ -149,6 +169,7 @@ public static class InfrastructureRegistration
         services.AddSingleton<OrganizationService>();
         services.AddSingleton(sp=>new SkillDictionaryService(sp.GetRequiredService<IPrimaryRepository>(),sp.GetRequiredService<AccessFence>(),sp.GetRequiredService<IdempotencyExecutor>(),sp.GetRequiredService<TimeProvider>(),()=>sp.GetRequiredService<IDecisionProvider>()));
         services.AddSingleton<SkillDemoSessions>();
+        services.AddSingleton<DemoWorkflows>();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IdempotencyExecutor>();
         services.AddSingleton<ProfileService>();
@@ -163,16 +184,6 @@ public static class InfrastructureRegistration
             () => sp.GetRequiredService<IDecisionProvider>(), () => sp.GetRequiredService<IReranker>(),
             configuration, sp.GetRequiredService<TimeProvider>()));
         services.AddAi(configuration);
-        if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
-        {
-            if (!int.TryParse(configuration["Telemetry:SamplingPercentage"] ?? "10", out var percentage) || percentage is < 1 or > 100)
-                throw new InvalidOperationException("Telemetry__SamplingPercentage は1〜100で指定してください。");
-            services.AddOpenTelemetry().UseAzureMonitor(options =>
-            {
-                options.SamplingRatio = percentage / 100f;
-                options.TracesPerSecond = null;
-            });
-        }
         return services;
     }
 }
