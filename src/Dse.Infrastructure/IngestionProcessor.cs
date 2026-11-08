@@ -299,7 +299,9 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
     {
         using var cleanup=new CancellationTokenSource(TimeSpan.FromSeconds(10));
         using var linked=CancellationTokenSource.CreateLinkedTokenSource(ct,cleanup.Token);
-        try {await fence.RunAsync(tenant,async token=>{await new AiResultReceipts(repository,clock).ForgetCompletedAsync(tenant,jobId,token);return true;},linked.Token);}
+        // The job is already terminal. CAS-only payload erasure cannot authorize a new send;
+        // cleanup failure must not poison the tenant's business/revocation fence.
+        try {await new AiResultReceipts(repository,clock).ForgetCompletedAsync(tenant,jobId,linked.Token);}
         catch(Exception error) when(error is not OperationCanceledException||!ct.IsCancellationRequested)
         {logger.LogWarning("Completed job response cleanup deferred {JobId}",jobId);}
     }

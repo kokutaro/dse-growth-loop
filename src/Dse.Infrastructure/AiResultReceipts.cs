@@ -39,7 +39,7 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
         return job;
     }
 
-    internal async Task<Handle> BeginAsync(AiContext context,ActorAccess actor,string fingerprint,string inputHash,string runId,CancellationToken ct)
+    internal async Task<Handle> BeginAsync(AiContext context,ActorAccess actor,string fingerprint,string runId,CancellationToken ct)
     {
         if(context.PipelineStage is not {Length:>0 and <=128})throw Review();
         var root=await RootJobAsync(context,actor,ct);var p=RecordPartition.Catalog(actor.TenantId);
@@ -67,7 +67,7 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
             // older audit already records a send but cannot recover its validated response.
             var old=await repository.QueryAsync(p,"aiRun","jobId",root.Value.Text("id"),100,null,ct);
             if(old.ContinuationToken is not null||old.Items.Any(r=>r.Value["trace"] is JsonObject trace&&
-                trace.Text("inputHash")==inputHash&&trace.Number("attemptCount")>0&&trace.Text("durableResultVersion")==""))throw Review();
+                trace.Number("attemptCount")>0&&trace.Text("durableResultVersion")==""))throw Review();
         }
         var value=RecordJson.New(Kind,id,actor.TenantId,actor.PrincipalId,["system"],clock.GetUtcNow());
         value["jobId"]=root.Value.Text("id");value["stage"]=context.PipelineStage;value["fingerprint"]=fingerprint;
@@ -91,14 +91,14 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
         catch(Exception error){if(error is not (StoreConflictException or DomainException{Status:<500}))AccessFence.MarkUncertainResult();throw;}
     }
     internal Task NotDispatchedAsync(Handle handle,CancellationToken ct)=>RedactAsync(handle.Row,"not_dispatched",ct);
-    private async Task RedactAsync(StoredRecord row,string state,CancellationToken ct)
+    private async Task RedactAsync(StoredRecord row,string state,CancellationToken ct,bool requireFenceOnUnknown=true)
     {
         var value=row.Value.Copy();value.Remove("result");value.Remove("resultHash");value["state"]=state;value["updatedAt"]=clock.GetUtcNow();
         var p=RecordPartition.Catalog(value.Text("tenantId"));var body=await repository.ReadAsync(p,value.Text("id")+"-body",ct);
         List<RecordWrite> writes=[RecordWrite.Replace(value,row.ETag)];
         if(body is not null){body.Value.Remove("aiResult");body.Value["ttl"]=1;writes.Add(RecordWrite.Replace(body.Value,body.ETag));}
         try {await repository.CommitAsync(p,writes,ct);}
-        catch(Exception error){if(error is not (StoreConflictException or DomainException{Status:<500}))AccessFence.MarkUncertainResult();throw;}
+        catch(Exception error){if(requireFenceOnUnknown&&error is not (StoreConflictException or DomainException{Status:<500}))AccessFence.MarkUncertainResult();throw;}
     }
 
     internal async Task ForgetCompletedAsync(string tenant,string jobId,CancellationToken ct)
@@ -110,7 +110,7 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
         {
             var id=chain.Text("id");if(seen.Count>=20||!seen.Add(id))throw Review();
             var receipts=await repository.QueryAsync(p,Kind,"jobId",id,100,null,ct);
-            foreach(var receipt in receipts.Items.Where(r=>r.Value.Text("state")=="succeeded"))await RedactAsync(receipt,"completed",ct);
+            foreach(var receipt in receipts.Items.Where(r=>r.Value.Text("state")=="succeeded"))await RedactAsync(receipt,"completed",ct,requireFenceOnUnknown:false);
             if(chain.Text("supersedesJobId") is not {Length:>0} parent)break;
             var prior=await repository.ReadAsync(p,parent,ct)??throw Review();
             if(prior.Value.Text("kind")!="job"||prior.Value.Text("ownerId")!=job.Value.Text("ownerId")||

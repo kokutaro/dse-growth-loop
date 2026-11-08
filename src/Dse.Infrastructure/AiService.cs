@@ -279,7 +279,7 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                         ["version"]="pipeline-result-v1",["inputHash"]=inputHash,["model"]=AiCodecs.Node(model),["mode"]=config["Ai:Mode"],
                         ["actor"]=AiCodecs.Node(actor with{Roles=actor.Roles.Order().ToArray(),ScopeIds=actor.ScopeIds.Order().ToArray()}),
                         ["inputLimit"]=limits.InputTokens,["outputLimit"]=limits.OutputTokens,["wireHash"]=Hash(AiCodecs.SerializeRequest(body)) }));
-                    durable=await receipts.BeginAsync(context,actor,binding,inputHash,runId,deadline.Token);
+                    durable=await receipts.BeginAsync(context,actor,binding,runId,deadline.Token);
                     trace["durableResultVersion"]="pipeline-result-v1";
                 }
                 if(durable?.Result is not null)
