@@ -27,6 +27,7 @@ public sealed class DemoWorkflowTests
             var manager=first.GetRequiredService<DemoWorkflows>();var context=await manager.StartAsync(SkillDictionaryFixture.Curator,default);id=context.Id;
             var dictionary=context.Services.GetRequiredService<SkillDictionaryService>();var page=await dictionary.ListUnderFenceAsync(context.Actor,null,default);
             Assert.Equal(8,page["items"]!.AsArray().Count);
+            Assert.Equal(409,(await Assert.ThrowsAsync<DomainException>(()=>dictionary.CollectAsync(context.Actor,"history-must-stay-readonly",new("fragment-technical-list-a"),default))).Status);
             var candidate=page["items"]!.AsArray().First(n=>n!["item"]?["raw"]?.GetValue<string>()=="Git")!.AsObject();candidateId=candidate.Text("id");
             await dictionary.ReviewAsync(context.Actor,candidateId,Guid.NewGuid().ToString("N"),candidate.Text("etag"),new("new","架空原文と知識を確認",0,SkillDictionaryService.EmptyETag,Name:"Git",Definition:"Gitの知識",Boundary:"本人経験を認定しない"),default);
             Assert.Same(first.GetRequiredService<AiLedger>(),context.Services.GetRequiredService<AiLedger>());
