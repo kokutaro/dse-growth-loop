@@ -33,6 +33,7 @@ public sealed class WorkflowRecordStore(IRecordStore shared,ActorAccess owner,st
     public async Task<StoredRecord?> ReadAsync(RecordPartition partition,string id,CancellationToken ct)
     {
         var target=Physical(partition);
+        if(partition.Container=="catalog"&&id=="system-access-fence")return await shared.ReadAsync(partition,id,ct);
         if(partition.Container=="catalog"&&Authority(id))
         {
             if(id!=AuthorityProvider.ControlId&&id!=AuthorityProvider.PersonId(owner.PersonId))return null;
@@ -53,6 +54,11 @@ public sealed class WorkflowRecordStore(IRecordStore shared,ActorAccess owner,st
     public Task CommitAsync(RecordPartition partition,IReadOnlyList<RecordWrite> writes,CancellationToken ct)
     {
         var target=Physical(partition);BatchRules.Validate(partition,writes);
+        if(writes.Any(w=>w.Value.Text("id")=="system-access-fence"))
+        {
+            if(partition.Container!="catalog"||writes.Count!=1||writes[0].Value.Text("kind")!="accessFence")throw new DomainException(409,"WORKFLOW_MIXED_SYSTEM_BATCH");
+            return shared.CommitAsync(partition,writes,ct);
+        }
         if(writes.Any(w=>Authority(w.Value.Text("id"))||w.Value.Text("kind") is "personAuthority" or "authorityControl" or "department"))throw new DomainException(409,"WORKFLOW_AUTHORITY_READ_ONLY");
         var mapped=writes.Select(w=>{
             var value=w.Value.Copy();value["tenantId"]=workflowId;
