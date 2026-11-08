@@ -1,4 +1,5 @@
 using Dse.Domain;
+using System.Text.Json;
 using Dse.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -7,6 +8,21 @@ namespace Dse.Tests;
 
 public sealed class SkillProjectionWorkflowTests
 {
+    [Fact]
+    public async Task Approving_a_document_skill_does_not_publish_its_private_text_to_another_member()
+    {
+        var f=await SkillDictionaryFixture.Create();var p=RecordPartition.Catalog("demo");var source=(await f.Repo.ReadAsync(p,"fragment-knowledge",default))!;
+        source.Value["kind"]="documentFragment";source.Value["documentId"]="doc-knowledge";source.Value["activeVersion"]=1;source.Value["accessVersion"]=1;
+        await f.Repo.CommitAsync(p,[RecordWrite.Replace(source.Value,source.ETag)],default);
+        var evidence=(await f.Repo.ReadAsync(p,"ev-knowledge",default))!;evidence.Value["location"]=new System.Text.Json.Nodes.JsonObject{["label"]="架空原文"};await f.Repo.CommitAsync(p,[RecordWrite.Replace(evidence.Value,evidence.ETag)],default);
+        var dictionary=new SkillDictionaryService(f.Repo,f.Fence,new(f.Repo,TimeProvider.System,f.Store),TimeProvider.System);
+        await dictionary.CollectAsync(SkillDictionaryFixture.Curator,Guid.NewGuid().ToString("N"),new("fragment-knowledge"),default);
+        var c=(await dictionary.ListUnderFenceAsync(SkillDictionaryFixture.Curator,null,default))["items"]!.AsArray().Single()!.AsObject();
+        await dictionary.ReviewAsync(SkillDictionaryFixture.Curator,c.Text("id"),Guid.NewGuid().ToString("N"),c.Text("etag"),new("new","架空原文の知識を確認",0,SkillDictionaryService.EmptyETag,Name:"性能計測",Definition:"記載知識",Boundary:"公開や人物経験の承認ではない"),default);
+        var units=(await f.Store.QueryAsync(p,"searchUnit",null,null,100,null,default)).Items.Select(r=>r.Value.Deserialize<Dse.Domain.SearchUnit>(Dse.Infrastructure.ProjectionRules.Json)!).ToArray();
+        Assert.Single(await new SourceGuard(f.Repo).FilterAsync(SkillDictionaryFixture.Curator,units,default));
+        Assert.Empty(await new SourceGuard(f.Repo).FilterAsync(SkillDictionaryFixture.Member,units,default));
+    }
     [Fact]
     public async Task Human_approval_persists_a_versioned_document_projection_used_by_the_normal_catalog()
     {
