@@ -33,7 +33,7 @@ public sealed class DemoWorkflows(IServiceProvider root,IRecordStore shared,ICon
             .AddCatalogServices(configuration).AddIngestion(configuration)
             .AddSingleton<IRecordStore>(store).AddSingleton<IProjectionRepository>(new MemoryProjectionRepository(store))
             .AddSingleton(root.GetRequiredService<AiLedger>()).AddSingleton<IAiTransport>(root.GetRequiredService<IAiTransport>())
-            .AddSingleton<IIngestionBlobs>(root.GetRequiredService<IIngestionBlobs>())
+            .AddSingleton<IIngestionBlobs>(new WorkflowIngestionBlobs(root.GetRequiredService<IIngestionBlobs>(),id))
             .AddSingleton<IIngestionQueue>(new WorkflowIngestionQueue(root.GetRequiredService<IIngestionQueue>(),id))
             .AddSingleton(this).AddSingleton(clock).BuildServiceProvider();
         var entry=(store,services);contexts.Add(id,entry);return entry;
@@ -47,7 +47,7 @@ public sealed class DemoWorkflows(IServiceProvider root,IRecordStore shared,ICon
             if(state is null)
             {
                 var value=RecordJson.New("demoWorkflow",StateId,actor.TenantId,actor.PrincipalId,actor.ScopeIds,clock.GetUtcNow());
-                value["personId"]=actor.PersonId;value["workflowId"]=id;value["ownerEpoch"]=actor.AccessEpoch;value["state"]="initializing";
+                value["personId"]=actor.PersonId;value["workflowId"]=id;value["sourceTenantId"]=actor.TenantId;value["ownerEpoch"]=actor.AccessEpoch;value["state"]="initializing";
                 try{await entry.Store.CommitAsync(p,[RecordWrite.Create(value)],ct);}catch(StoreConflictException){}
             }
             state=await entry.Store.ReadAsync(p,StateId,ct)??throw new DomainException(503,"WORKFLOW_UNAVAILABLE");
@@ -75,7 +75,27 @@ public sealed class DemoWorkflows(IServiceProvider root,IRecordStore shared,ICon
         }
         finally{gate.Release();}
     }
+    internal async Task<DemoWorkflowContext> FromNoticeAsync(QueueNotice notice,CancellationToken ct)
+    {
+        var id=notice.WorkflowId;
+        if(id is null||id.Length!=51||!id.StartsWith("wf-",StringComparison.Ordinal)||id[3..].Any(c=>!char.IsAsciiHexDigit(c)))throw new DomainException(404,"NOT_FOUND");
+        var state=await shared.ReadAsync(RecordPartition.Catalog(id),StateId,ct);
+        if(state?.Value.Text("kind")!="demoWorkflow"||state.Value.Text("state")!="ready"||state.Value.Text("sourceTenantId")!=notice.TenantId)throw new DomainException(404,"NOT_FOUND");
+        var actor=await new AuthorityProvider(new PrimaryRepository(shared),configuration).PersonAsync(notice.TenantId,state.Value.Text("personId"),ct);
+        if(actor is null||actor.PrincipalId!=state.Value.Text("ownerId")||actor.AccessEpoch!=state.Value.Text("ownerEpoch"))throw new DomainException(404,"NOT_FOUND");
+        return await GetAsync(actor,id,ct);
+    }
     public void Dispose(){foreach(var context in contexts.Values)context.Services.Dispose();gate.Dispose();}
+}
+
+public sealed class WorkflowIngestionBlobs(IIngestionBlobs blobs,string workflowId):IIngestionBlobs
+{
+    private string Key(string logical)=>workflowId+"/"+logical;
+    public Task PutAsync(string container,string key,byte[] bytes,CancellationToken ct)=>blobs.PutAsync(container,Key(key),bytes,ct);
+    public Task<byte[]> GetAsync(string container,string key,CancellationToken ct)=>blobs.GetAsync(container,Key(key),ct);
+    public Task DeleteAsync(string container,string key,string etag,CancellationToken ct)=>blobs.DeleteAsync(container,Key(key),etag,ct);
+    public async IAsyncEnumerable<BlobEntry> ListAsync(string container,string prefix,[System.Runtime.CompilerServices.EnumeratorCancellation]CancellationToken ct)
+    {await foreach(var entry in blobs.ListAsync(container,Key(prefix),ct))yield return entry with{Key=entry.Key[(workflowId.Length+1)..]};}
 }
 
 public sealed class WorkflowIngestionQueue(IIngestionQueue queue,string workflowId):IIngestionQueue

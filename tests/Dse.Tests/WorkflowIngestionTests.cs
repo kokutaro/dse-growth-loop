@@ -18,7 +18,8 @@ public sealed class WorkflowIngestionTests
         var id=accepted.Body!["documentId"]!.GetValue<string>();Assert.Equal(context.Id,Assert.Single(queue.Notices).WorkflowId);
         var processor=root.GetRequiredService<IngestionProcessor>();for(var i=0;i<8&&queue.Pending>0;i++)await processor.RunOnceAsync(default);
         var store=context.Services.GetRequiredService<IRecordStore>();var document=(await store.ReadAsync(RecordPartition.Catalog("demo"),id,default))!.Value;
-        Assert.Equal("complete",document.Text("aiState"));Assert.Equal("Mock",document.Text("processingMode"));Assert.NotEqual("",document.Text("profileResultId"));
+        var jobs=await store.QueryAsync(RecordPartition.Catalog("demo"),"job",null,null,100,null,default);
+        Assert.True(document.Text("aiState")=="complete",string.Join('\n',jobs.Items.Select(j=>j.Value.ToJsonString())));Assert.Equal("fixture",document.Text("processingMode"));Assert.NotEqual("",document.Text("profileResultId"));
         Assert.Null(await f.Repo.ReadAsync(RecordPartition.Catalog("demo"),id,default));
         Assert.All(queue.Notices,n=>Assert.Equal(context.Id,n.WorkflowId));Assert.True(queue.Deleted>=2);
     }

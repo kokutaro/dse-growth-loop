@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Dse.Infrastructure;
 
 public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestionBlobs blobs, IIngestionQueue queue,
-    OfficeExtractor extractor, IngestionOptions options, AccessFence fence, TimeProvider clock, ILogger<IngestionProcessor> logger, ProfilePipeline? profiles = null, JobNotifications? notifications = null, ChatAssistanceService? assistance = null)
+    OfficeExtractor extractor, IngestionOptions options, AccessFence fence, TimeProvider clock, ILogger<IngestionProcessor> logger, ProfilePipeline? profiles = null, JobNotifications? notifications = null, ChatAssistanceService? assistance = null,DemoWorkflows? workflows=null)
 {
     private static readonly TimeSpan Visibility = TimeSpan.FromSeconds(60);
     public async Task<bool> RunOnceAsync(CancellationToken ct)
@@ -28,6 +28,19 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
             logger.LogWarning("Discarding invalid ingestion notification {MessageId}", delivery.Id);
             await queue.DeleteAsync(delivery, ct); return true;
         }
+        if(notice.WorkflowId is not null)
+        {
+            if(workflows is null){await queue.RenewAsync(delivery,TimeSpan.FromSeconds(30),ct);return true;}
+            DemoWorkflowContext context;
+            try{context=await workflows.FromNoticeAsync(notice,ct);}
+            catch(DomainException e)when(e.Status is 403 or 404)
+            {logger.LogWarning("Discarding workflow notification without current authority {MessageId}",delivery.Id);await queue.DeleteAsync(delivery,ct);return true;}
+            return await Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<IngestionProcessor>(context.Services).ProcessDeliveryAsync(delivery,notice with{WorkflowId=null},ct);
+        }
+        return await ProcessDeliveryAsync(delivery,notice,ct);
+    }
+    internal async Task<bool> ProcessDeliveryAsync(QueueDelivery delivery,QueueNotice notice,CancellationToken ct)
+    {
         if (notice.SessionId is not null)
         {
             var chatJob = await repository.ReadAsync(RecordPartition.Conversation(notice.TenantId, notice.SessionId), notice.JobId, ct);
