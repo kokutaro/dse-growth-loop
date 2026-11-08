@@ -291,4 +291,31 @@ public partial class AiTests
         var error=await Assert.ThrowsAsync<DomainException>(()=>change=="input"?restarted.DecideAsync(context,"Changed billing request",Questions(),[],default):Decide(restarted,context));
         Assert.Equal("AI_RESULT_REVIEW_REQUIRED",error.Code);Assert.Equal(1,handler.Calls);
     }
+
+    [Fact]
+    public async Task Durable_legacy_paid_audit_without_result_receipt_holds_after_rollout()
+    {
+        var store=new MemoryRecordStore();var context=await DurableContext(store);
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var old=Service(Config(),store,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(old,context with{PipelineStage=null})).Status);
+        using var upgraded=Service(Config(),store,handler);
+        Assert.Equal("AI_RESULT_REVIEW_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>Decide(upgraded,context))).Code);
+        Assert.Equal(1,handler.Calls);
+    }
+
+    [Theory]
+    [InlineData(false)][InlineData(true)]
+    public async Task Durable_completed_job_payload_cleanup_failure_does_not_block_unrelated_work(bool unknown)
+    {
+        var memory=new MemoryRecordStore();var context=await DurableContext(memory);
+        var handler=new Handler((_,_)=>Task.FromResult(Response(Fixture("choice"))));
+        using(var ai=Service(Config(),memory,handler))Assert.Equal(AiStatus.Succeeded,(await Decide(ai,context)).Status);
+        var p=RecordPartition.Catalog("demo");var job=(await memory.ReadAsync(p,context.JobId,default))!;
+        job.Value["status"]="ready";await memory.CommitAsync(p,[RecordWrite.Replace(job.Value,job.ETag)],default);
+        var fault=new ResultWriteFault(memory,"completed",unknown);var repo=new PrimaryRepository(fault);var queue=new WorkflowIngestionTests.Queue();
+        var worker=new IngestionProcessor(repo,new WorkflowIngestionTests.Blobs(),queue,new OfficeExtractor(new()),new(),new(repo),TimeProvider.System,NullLogger<IngestionProcessor>.Instance);
+        await queue.SendAsync(new("demo",context.JobId,1),default);Assert.True(await worker.RunOnceAsync(default));
+        Assert.True(fault.Fired);Assert.Null((await memory.ReadAsync(p,"system-access-fence",default))!.Value["holder"]);
+        await queue.SendAsync(new("demo",context.JobId,1),default);Assert.True(await worker.RunOnceAsync(default));Assert.Equal(1,handler.Calls);
+    }
 }
