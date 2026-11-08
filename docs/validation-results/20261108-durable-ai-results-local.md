@@ -16,14 +16,15 @@
 
 | 対象 | ローカル結果 |
 |---|---|
-| 全.NET | **1,301件成功**。既存1,270＋今回31件 |
-| Durable名の選択試験 | **44件成功**（既存13＋今回31） |
+| 全.NET | **1,305件成功**。既存1,270＋今回35件 |
+| Durable名の選択試験 | **48件成功**（既存13＋今回35） |
+| 通常プロフィール画面 | 既存の隔離headless runnerで本人訂正docx/xlsx **2件成功** |
 | 公開契約 | **43件成功** |
 | 配備・認証等スクリプト | **331件成功** |
 | Bicep | 既存コンパイラーでmain.bicep build成功。Azureへのapply/what-ifではない |
-| Coverage | 全体行90.33%、全体分岐77.34%。receipt開始処理の行96.77% |
+| Coverage | 全体行90.34%、全体分岐77.36% |
 
-証跡は作業領域`evidence/durable-ai-results/`の`final-dotnet.log`、`legacy-cleanup-green.log`、`contracts.log`、`scripts.log`、`bicep-build.log`、`coverage/`。RED/GREENのテスト・実装チェックポイントを同じfeatureブランチに保存した。契約・スクリプトは既存Python3.13の検証環境を再利用した。
+証跡は作業領域`evidence/durable-ai-results/`の`accepted-dotnet.log`、`projection-green.log`、`projection-browser.log`、`accepted-contracts.log`、`scripts.log`、`bicep-build.log`、`final-coverage/`。RED/GREENのテスト・実装チェックポイントを同じfeatureブランチに保存した。契約・スクリプトは既存Python3.13の検証環境を再利用した。
 
 ## 故障注入と認可境界
 
@@ -32,6 +33,8 @@
 並行2サービスはprovider送信1回に集約。元資料の撤回・版変更、Job範囲・集約・辞書版・プロンプト・モデル構成・主体epochの変更、異なる版の再試行系譜を拒否した。同じ集約/版の明示再試行は保存結果を再利用した。
 
 pending保存・成功保存の前失敗と保存後の応答消失を注入し、既存fenceで不明な操作を止めた。停止したローカルfixtureのfence回復後もpendingを再送しない。成功本文まで保存された場合だけ再利用し、本文のない成功は復元しない。完了後の本文消去失敗は業務fenceを閉じない。
+
+独立レビューで旧版の中間再試行Jobの監査漏れを検出し、系譜全体の確認へ修正した。100行を超える現行監査のページングも検証した。CIの通常プロフィール画面で本人訂正の投影まで拒否するガード不足を検出し、未公開の本人headを計算することと撤回済みの再利用を分けた。2件の再現unitと元のdocx/xlsx画面の両方が成功している。
 
 24h超はメモリcacheが残っていても保留し、本文を消して送信済み記録を保持した。Cosmosの物理TTLをローカルstoreでエミュレートしたとは主張しない。TTL未設定、全体期限削除の設定、本文索引除外なし、除外を上書きする包含を拒否するSDKメタデータ試験も成功。
 
