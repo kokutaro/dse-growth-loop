@@ -129,7 +129,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
   }
   async function withdraw(){
     if(!accepted||!changeReason.trim())return;const version=generation.current;setBusy(true);setError('');
-    try{await request(`/api/v1/documents/${accepted.documentId}/withdraw`,{method:'POST',headers:{'Content-Type':'application/json','If-Match':documentEtag.current,'Idempotency-Key':withdrawKey.current},body:JSON.stringify({reason:changeReason})});if(!current(version))return;setEvidence([]);setFragments([]);await refresh();await listDocuments();}
+    try{await request(`/api/v1/documents/${accepted.documentId}/withdraw`,{method:'POST',headers:{'Content-Type':'application/json','If-Match':documentEtag.current,'Idempotency-Key':withdrawKey.current},body:JSON.stringify({reason:changeReason})});if(!current(version))return;fragmentRead.current++;setEvidence([]);setFragments([]);await refresh();await listDocuments();}
     catch(e){if(current(version)){setEvidence([]);setFragments([]);setError(String(e));}}finally{if(current(version))setBusy(false);}
   }
   useEffect(() => {

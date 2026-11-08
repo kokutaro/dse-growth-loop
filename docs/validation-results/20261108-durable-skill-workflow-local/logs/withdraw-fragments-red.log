@@ -1,0 +1,43 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e:dictionary
+> playwright test --config playwright.skill-dictionary.config.ts --grep 遅い断片応答.*withdraw
+
+[WebServer] (node:46351) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:46362) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/durable-workflow.spec.ts:6:74 › 遅い断片応答を現在の資料へ混ぜない（withdraw） (5.6s)
+
+
+  1) tests/durable-workflow.spec.ts:6:74 › 遅い断片応答を現在の資料へ混ぜない（withdraw） ─────────────────────────────
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByText('遅れた旧資料の断片')
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" getByText('遅れた旧資料の断片') with timeout 5000ms
+      - waiting for getByText('遅れた旧資料の断片')
+        14 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      27 |  const response=page.waitForResponse(r=>r.url().endsWith('/doc-delayed-a/skill-fragments'));release();await response;
+      28 |  await page.screenshot({path:folder+'/late-fragments-'+change+'.png'});
+    > 29 |  await expect(page.getByText('遅れた旧資料の断片',{exact:false})).toHaveCount(0);
+         |                                                          ^
+      30 |  await expect(page.getByRole('link',{name:'この断片の保存済み抽出を確認する',exact:true})).toHaveCount(0);
+      31 |  await expect(page.getByText('STALE_FRAGMENT_ERROR',{exact:false})).toHaveCount(0);
+      32 |  releaseDocument();
+        at /Users/nyanpass/Documents/Codex/2026-11-06/task/dse-growth-loop/web/tests/durable-workflow.spec.ts:29:58
+
+    Error Context: test-results/durable-workflow-遅い断片応答を現在の資料へ混ぜない（withdraw）/error-context.md
+
+  1 failed
+    tests/durable-workflow.spec.ts:6:74 › 遅い断片応答を現在の資料へ混ぜない（withdraw） ──────────────────────────────

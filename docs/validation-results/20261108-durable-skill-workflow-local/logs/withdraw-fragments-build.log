@@ -1,0 +1,31 @@
+
+> dse-growth-loop-web@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.0 building client environment for production...
+transforming...
+✓ 221 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/redirect.html                            0.30 kB │ gzip:   0.22 kB
+dist/skill-demo.html                          0.54 kB │ gzip:   0.37 kB
+dist/test-profiles.html                       0.62 kB │ gzip:   0.38 kB
+dist/index.html                               0.72 kB │ gzip:   0.36 kB
+dist/skill-dictionary.html                    0.80 kB │ gzip:   0.43 kB
+dist/validation.html                          0.82 kB │ gzip:   0.38 kB
+dist/assets/skillDictionary-GZ5VuYlM.css      0.44 kB │ gzip:   0.25 kB
+dist/assets/style-BBdWc4Ki.css                5.30 kB │ gzip:   1.80 kB
+dist/assets/main-BY0BLI0S.css                15.80 kB │ gzip:   3.97 kB
+dist/assets/skill-demo-context-MKt4w5yt.js    0.41 kB │ gzip:   0.27 kB
+dist/assets/workflow-context-WMfjNpu_.js      0.84 kB │ gzip:   0.43 kB
+dist/assets/redirect-CTxiculb.js              1.13 kB │ gzip:   0.69 kB
+dist/assets/skillDemo-CxQkhayp.js             2.43 kB │ gzip:   1.48 kB
+dist/assets/testProfiles-BnW4Fry-.js         13.47 kB │ gzip:   5.19 kB
+dist/assets/skillDictionary-Y1Dzh0eD.js      28.18 kB │ gzip:   9.87 kB
+dist/assets/knowledge-DNJoL-D9.js            40.17 kB │ gzip:  13.00 kB
+dist/assets/main-7aWrY4aP.js                 45.04 kB │ gzip:  13.47 kB
+dist/assets/Configuration-B2OnzfBb.js        63.14 kB │ gzip:  21.54 kB
+dist/assets/validation-wtpITUcj.js           89.80 kB │ gzip:  25.01 kB
+dist/assets/jsx-runtime-C6lxdBZ1.js         409.95 kB │ gzip: 114.10 kB
+
+✓ built in 84ms
