@@ -45,10 +45,12 @@ class SpecificSkillContracts(unittest.TestCase):
         value['items'][0]['participation'] = 'expert'
         self.assertFalse(validator.is_valid(value))
 
-    def test_legacy_skill_ids_are_deprecated_but_optional(self):
+    def test_legacy_skill_ids_require_separate_current_approved_bindings(self):
         schema = json.loads((Path(__file__).resolve().parents[2] / 'docs/specs/contracts.schema.json').read_text())
         unit = schema['$defs']['SearchUnit']
-        self.assertTrue(unit['properties']['skillIds']['deprecated'])
+        conditional=next(rule for rule in unit['allOf'] if 'if' in rule)
+        self.assertTrue(conditional['else']['properties']['skillIds']['deprecated'])
+        self.assertEqual({'skillProjectionHeadId','skillBindings','skillDictionaryVersion','skillIds'},set(conditional['then']['required']))
         self.assertNotIn('specificSkills', unit['required'])
 
     def test_quarantine_is_explicit_and_distinct_from_an_empty_result(self):

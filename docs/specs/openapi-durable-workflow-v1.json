@@ -1,0 +1,30 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "DSE Growth Loop 永続デモと文書ライフサイクル", "version": "1.0.0", "description": "既存認証・認可を使い、通常のAPI/Worker/検索を隔離した架空データ保存先で動かす。デモIDは権限を付与しない。"},
+  "paths": {
+    "/api/v1/demo-workflows/start": {
+      "post": {"operationId": "startDurableDemoWorkflow", "security": [{"bearerAuth": []}], "x-required-roles": ["member", "operator"], "x-external-ai-calls": 0, "description": "現在の所有者・権限世代に結び付けた領域を開始・再開する。以前の架空原文と抽出を再利用し、共有辞書は変更しない。", "responses": {"200": {"description": "永続領域ID", "content": {"application/json": {"schema": {"type": "object", "properties": {"id": {"type": "string", "pattern": "^wf-[a-f0-9]{48}$"}, "persistence": {"const": "durable"}, "externalAiCalls": {"const": 0}}, "required": ["id", "persistence", "externalAiCalls"], "additionalProperties": false}}}}, "403": {"description": "現在のmember/operator権限がない"}}}
+    },
+    "/api/v1/documents": {
+      "get": {"operationId": "listOwnedDocuments", "security": [{"bearerAuth": []}], "parameters": [{"$ref": "#/components/parameters/Workflow"}, {"name": "pageSize", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100}}, {"name": "continuationToken", "in": "query", "schema": {"type": "string"}}], "responses": {"200": {"description": "現在閲覧できる所有資料。評価履歴の原本は一覧に混ぜない。"}}}
+    },
+    "/api/v1/documents/{id}/skill-fragments": {
+      "get": {"operationId": "listCurrentDocumentSkillFragments", "security": [{"bearerAuth": []}], "x-required-roles": ["operator"], "parameters": [{"$ref": "#/components/parameters/Id"}, {"$ref": "#/components/parameters/Workflow"}], "description": "現在の原文根拠を検証した資料断片・経験候補だけ。収集は既存skill-candidates/collect、承認は既存review APIを使う。AI呼出しなし。", "responses": {"200": {"description": "保存済み抽出の収集対象"}, "404": {"description": "原文が撤回済み、または閲覧不可"}}}
+    },
+    "/api/v1/documents/{id}/versions": {
+      "post": {"operationId": "correctOwnedDocument", "security": [{"bearerAuth": []}], "x-required-roles": ["member"], "x-current-owner-required": true, "parameters": [{"$ref": "#/components/parameters/Id"}, {"$ref": "#/components/parameters/Workflow"}, {"$ref": "#/components/parameters/IfMatch"}, {"$ref": "#/components/parameters/IdempotencyKey"}], "requestBody": {"required": true, "content": {"multipart/form-data": {"schema": {"type": "object", "properties": {"file": {"type": "string", "format": "binary"}, "reason": {"type": "string", "minLength": 1, "maxLength": 500}}, "required": ["file", "reason"], "additionalProperties": false}}}}, "description": "Office検証と原本保存後、同じ文書の新しい版・通常取込ジョブ・監査を冪等に保存する。旧版は直ちに検索対象外。Queue→常用Workerで処理する。設定されたAIを使うため、実送信は既存予算・実行台帳に従う。", "responses": {"202": {"description": "通常取込の受付"}, "412": {"description": "ETagが古い"}, "409": {"description": "撤回済み、または専用ライフサイクルの資料"}}}
+    },
+    "/api/v1/documents/{id}/withdraw": {
+      "post": {"operationId": "withdrawOwnedDocument", "security": [{"bearerAuth": []}], "x-required-roles": ["member"], "x-current-owner-required": true, "x-external-ai-calls": 0, "parameters": [{"$ref": "#/components/parameters/Id"}, {"$ref": "#/components/parameters/Workflow"}, {"$ref": "#/components/parameters/IfMatch"}, {"$ref": "#/components/parameters/IdempotencyKey"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "properties": {"reason": {"type": "string", "minLength": 1, "maxLength": 500}}, "required": ["reason"], "additionalProperties": false}}}}, "description": "原文の利用を失効させ、現在の未完了ジョブを取り消し、監査を残す。過去の版・候補・辞書履歴は削除しない。", "responses": {"200": {"description": "撤回結果と監査ID"}, "412": {"description": "ETagが古い"}}}
+    }
+  },
+  "components": {
+    "securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}},
+    "parameters": {
+      "Workflow": {"name": "X-Dse-Workflow", "in": "header", "required": false, "schema": {"type": "string", "pattern": "^wf-[a-f0-9]{48}$"}, "description": "現在の本人・operator権限・scope・権限世代に完全一致する既存領域だけを選択。無効な値は共有領域へフォールバックしない。通常documents/people/jobs/skill/search APIでも同じヘッダーを使う。組織・IAM・全体運用・旧メモリデモには利用不可。"},
+      "Id": {"name": "id", "in": "path", "required": true, "schema": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"}},
+      "IfMatch": {"name": "If-Match", "in": "header", "required": true, "schema": {"type": "string"}},
+      "IdempotencyKey": {"name": "Idempotency-Key", "in": "header", "required": true, "schema": {"type": "string", "minLength": 8, "maxLength": 128}}
+    }
+  }
+}
