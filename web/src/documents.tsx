@@ -16,6 +16,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
   const [fragments,setFragments]=useState<{id:string;description:string;contentOnly:boolean;historyOnly:boolean}[]>([]);
   const documentEtag=useRef(''),revisionKey=useRef(crypto.randomUUID()),withdrawKey=useRef(crypto.randomUUID());
   const activeDocument=useRef<Accepted|undefined>(undefined),documentView=useRef('');
+  const fragmentRead=useRef(0);
   const documentKey=(value:Accepted|undefined)=>value?`${value.documentId}:${value.version}:${value.jobId}`:'';
   const [accepted, setAccepted] = useState<Accepted>();
   const [job, setJob] = useState<Job>();
@@ -93,7 +94,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
       setJob(jobState);
       const docResponse=await request(`/api/v1/documents/${value.documentId}`);const doc=await docResponse.json();if(!selected())return;documentEtag.current=docResponse.headers.get('ETag')??'';
       setWarnings(doc.warnings ?? []);
-      const view=`${doc.id}:${doc.sourceVersion}:${doc.activeVersion}:${doc.accessVersion}`;if(documentView.current!==view){documentView.current=view;setFragments([]);}
+      const view=`${doc.id}:${doc.sourceVersion}:${doc.activeVersion}:${doc.accessVersion}`;if(documentView.current!==view){documentView.current=view;fragmentRead.current++;setFragments([]);}
       setDocumentState(doc.status);if(doc.status==='withdrawn'){setEvidence([]);setPipeline(undefined);setJob({status:'cancelled',lastErrorCode:null,resultId:null});return;}
       if (doc.enrichmentJobId) { const next = await (await request(`/api/v1/documents/${value.documentId}/pipeline`)).json(); if (!selected()) return; setPipeline(next); }
       if (jobState.status === "ready" && doc.activeVersion!==null) {
@@ -109,7 +110,14 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
     } catch (e) { if (selected()) { setEvidence([]); setError(String(e)); } }
   }
   async function chooseDocument(doc:SavedDocument){
-    if(!uploadStorageKey.current)return;const value={documentId:doc.id,jobId:doc.ingestionJobId??'',version:doc.sourceVersion};activeDocument.current=value;setAccepted(value);setPipeline(undefined);setFragments([]);setEvidence([]);setChangeReason('');setRevisionFile(undefined);revisionKey.current=crypto.randomUUID();withdrawKey.current=crypto.randomUUID();sessionStorage.setItem(uploadStorageKey.current,JSON.stringify(value));await refresh(value);
+    if(!uploadStorageKey.current)return;const value={documentId:doc.id,jobId:doc.ingestionJobId??'',version:doc.sourceVersion};fragmentRead.current++;activeDocument.current=value;setAccepted(value);setPipeline(undefined);setFragments([]);setEvidence([]);setChangeReason('');setRevisionFile(undefined);revisionKey.current=crypto.randomUUID();withdrawKey.current=crypto.randomUUID();sessionStorage.setItem(uploadStorageKey.current,JSON.stringify(value));await refresh(value);
+  }
+  async function readFragments(){
+    if(!accepted)return;
+    const version=generation.current,selected=documentKey(accepted),view=documentView.current,read=++fragmentRead.current;
+    const valid=()=>current(version)&&fragmentRead.current===read&&documentKey(activeDocument.current)===selected&&documentView.current===view;
+    try{const page=await(await request(`/api/v1/documents/${accepted.documentId}/skill-fragments`)).json();if(valid())setFragments(page.items);}
+    catch(e){if(valid())setError(String(e));}
   }
   async function revise(event:React.SubmitEvent){
     event.preventDefault();if(!accepted||!revisionFile||!context||!uploadStorageKey.current)return;const version=generation.current,storageKey=uploadStorageKey.current;setBusy(true);setError('');
@@ -196,7 +204,7 @@ export function Documents({ config, person }: { config: AppConfig; person?: stri
       {job && ["failed", "needs_review", "queued", "budget_stopped"].includes(job.status) && <button disabled={busy} onClick={retry}>再実行・再通知</button>}
       {warnings.map(w => <p key={w}>{warningLabels[w] ?? w}</p>)}
       {documentState==='withdrawn'?<p role="status">この資料は撤回済みです。以前の原文は検索・候補確認に使いません。</p>:<section aria-label="資料の訂正と撤回"><h3>資料の訂正・撤回</h3><p>訂正すると旧版を検索から外し、新版を通常の取込処理へ送ります。過去の版と承認履歴は残します。</p><form onSubmit={e=>void revise(e)}><label>訂正・撤回の理由<input value={changeReason} maxLength={500} required onChange={e=>{setChangeReason(e.target.value);revisionKey.current=crypto.randomUUID();withdrawKey.current=crypto.randomUUID();}}/></label><label>訂正版の原本<input type="file" accept=".docx,.xlsx" onChange={e=>{setRevisionFile(e.target.files?.[0]);revisionKey.current=crypto.randomUUID();}}/></label><button disabled={busy||!revisionFile||!changeReason.trim()}>訂正版を取り込む</button><button type="button" disabled={busy||!changeReason.trim()} onClick={()=>void withdraw()}>この資料を撤回する</button></form>
-      {context?.canReviewSkills&&<><button disabled={busy} onClick={async()=>{try{const page=await(await request(`/api/v1/documents/${accepted.documentId}/skill-fragments`)).json();setFragments(page.items);}catch(e){setError(String(e));}}}>技能候補の元になる断片を確認</button>{fragments.length>0?<ul>{fragments.map(f=><li key={f.id}><p>{f.description} ／ {f.contentOnly?'知識内容のみ':'経験候補・本人未確認'}</p>{!f.historyOnly&&<a href={workflowHref('/skill-dictionary.html?fragment='+encodeURIComponent(f.id))}>この断片の保存済み抽出を確認する</a>}</li>)}</ul>:<p>技能候補の確認では、現在の原文と保存済み抽出だけを読みます。</p>}</>}
+      {context?.canReviewSkills&&<><button disabled={busy} onClick={()=>void readFragments()}>技能候補の元になる断片を確認</button>{fragments.length>0?<ul>{fragments.map(f=><li key={f.id}><p>{f.description} ／ {f.contentOnly?'知識内容のみ':'経験候補・本人未確認'}</p>{!f.historyOnly&&<a href={workflowHref('/skill-dictionary.html?fragment='+encodeURIComponent(f.id))}>この断片の保存済み抽出を確認する</a>}</li>)}</ul>:<p>技能候補の確認では、現在の原文と保存済み抽出だけを読みます。</p>}</>}
       </section>}
       {evidence.length > 0 && <h3>出典プレビュー</h3>}{evidence.map(span => <article key={span.id}><h4>{span.location.label}</h4><p className="evidence-text">{span.text}</p></article>)}
     </div>}

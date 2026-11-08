@@ -1,0 +1,78 @@
+
+> dse-growth-loop-web@0.1.0 test:e2e:dictionary
+> playwright test --config playwright.skill-dictionary.config.ts --grep 遅い断片応答
+
+[WebServer] (node:42059) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:42060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/durable-workflow.spec.ts:6:54 › 遅い断片応答を現在の資料へ混ぜない（document） (5.5s)
+(node:42107) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/durable-workflow.spec.ts:6:54 › 遅い断片応答を現在の資料へ混ぜない（version） (5.4s)
+(node:42363) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 tests/durable-workflow.spec.ts:6:54 › 遅い断片応答を現在の資料へ混ぜない（failure） (388ms)
+
+
+  1) tests/durable-workflow.spec.ts:6:54 › 遅い断片応答を現在の資料へ混ぜない（document） ─────────────────────────────
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByText('遅れた旧資料の断片')
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" getByText('遅れた旧資料の断片') with timeout 5000ms
+      - waiting for getByText('遅れた旧資料の断片')
+        14 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      21 |  else await page.getByRole('button',{name:'doc-delayed-b（第1版）',exact:true}).click();
+      22 |  const response=page.waitForResponse(r=>r.url().endsWith('/doc-delayed-a/skill-fragments'));release();await response;
+    > 23 |  await expect(page.getByText('遅れた旧資料の断片',{exact:false})).toHaveCount(0);
+         |                                                          ^
+      24 |  await expect(page.getByRole('link',{name:'この断片の保存済み抽出を確認する',exact:true})).toHaveCount(0);
+      25 |  await expect(page.getByText('STALE_FRAGMENT_ERROR',{exact:false})).toHaveCount(0);
+      26 | });
+        at /Users/nyanpass/Documents/Codex/2026-11-06/task/dse-growth-loop/web/tests/durable-workflow.spec.ts:23:58
+
+    Error Context: test-results/durable-workflow-遅い断片応答を現在の資料へ混ぜない（document）/error-context.md
+
+  2) tests/durable-workflow.spec.ts:6:54 › 遅い断片応答を現在の資料へ混ぜない（version） ──────────────────────────────
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByText('遅れた旧資料の断片')
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" getByText('遅れた旧資料の断片') with timeout 5000ms
+      - waiting for getByText('遅れた旧資料の断片')
+        14 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      21 |  else await page.getByRole('button',{name:'doc-delayed-b（第1版）',exact:true}).click();
+      22 |  const response=page.waitForResponse(r=>r.url().endsWith('/doc-delayed-a/skill-fragments'));release();await response;
+    > 23 |  await expect(page.getByText('遅れた旧資料の断片',{exact:false})).toHaveCount(0);
+         |                                                          ^
+      24 |  await expect(page.getByRole('link',{name:'この断片の保存済み抽出を確認する',exact:true})).toHaveCount(0);
+      25 |  await expect(page.getByText('STALE_FRAGMENT_ERROR',{exact:false})).toHaveCount(0);
+      26 | });
+        at /Users/nyanpass/Documents/Codex/2026-11-06/task/dse-growth-loop/web/tests/durable-workflow.spec.ts:23:58
+
+    Error Context: test-results/durable-workflow-遅い断片応答を現在の資料へ混ぜない（version）/error-context.md
+
+  2 failed
+    tests/durable-workflow.spec.ts:6:54 › 遅い断片応答を現在の資料へ混ぜない（document） ──────────────────────────────
+    tests/durable-workflow.spec.ts:6:54 › 遅い断片応答を現在の資料へ混ぜない（version） ───────────────────────────────
+  1 passed (15.5s)
