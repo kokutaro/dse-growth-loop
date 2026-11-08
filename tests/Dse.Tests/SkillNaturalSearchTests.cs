@@ -1,5 +1,6 @@
 using Dse.Domain;
 using Dse.Infrastructure;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -8,6 +9,35 @@ namespace Dse.Tests;
 
 public sealed class SkillNaturalSearchTests
 {
+    [Fact]
+    public async Task Guarded_AiService_codec_budget_and_cache_are_used_without_any_external_transport()
+    {
+        var config=SkillSemanticTestRuntime.Config();config["Data:LocalPath"]="/tmp/dse-workflow-wire-fixture";config["AiUsage:MaxOutputTokens"]="3000";config["Jev:OutputLimit"]="3000";
+        config["KeyVault:Uri"]="https://dummy.vault.azure.net/";config["Jev:SecretName"]="dummy-key";config["Jev:SecretVersion"]=new string('a',32);
+        foreach(var pair in new Dictionary<string,string>{{"Endpoint","https://dummy.openai.azure.com/"},{"Deployment","dummy"},{"ModelId","dummy-2026-09-28"},{"ModelVersion","2026-09-28"},{"Region","test"},{"Sku","GlobalStandard"},{"InputUsdPerMillion","1"},{"OutputUsdPerMillion","1"},{"OutputLimit","3000"}})config["Foundry:"+pair.Key]=pair.Value;
+        var f=await SkillDictionaryFixture.Create();var wire=new Wire();using var root=DemoWorkflowTests.Root(f.Store,suppliedConfiguration:config,transport:wire);
+        var context=await root.GetRequiredService<DemoWorkflows>().StartAsync(SkillDictionaryFixture.Curator,default);var dictionary=context.Services.GetRequiredService<SkillDictionaryService>();
+        wire.Selected=await Approve(dictionary,context.Actor,"Git");await Approve(dictionary,context.Actor,"Git",wire.Selected);
+        var service=context.Services.GetRequiredService<NaturalSearchService>();NaturalSearchResponse? response=null;
+        for(var i=0;i<2;i++)await service.SearchAndConsumeAsync(new("バージョン管理の知識が記載された資料を探す"),context.Actor,(r,_)=>{response=r;return Task.CompletedTask;},default);
+        Assert.Equal(2,response!.Primary.Candidates.Length);Assert.Equal("succeeded",response.RerankingStatus);Assert.Equal(2,wire.Calls);
+        var runs=await context.Services.GetRequiredService<IPrimaryRepository>().QueryAsync(RecordPartition.Catalog("demo"),"aiRun",null,null,100,null,default);
+        Assert.Equal(4,runs.Items.Length);Assert.Equal(2,runs.Items.Count(r=>r.Value["trace"]?["cachedFromRunId"] is not null));
+    }
+    private sealed class Wire:IAiTransport
+    {
+        public string Selected="";public int Calls;
+        public async Task<AiWireResponse> SendAsync(AiModel model,JsonObject body,int maximum,CancellationToken ct)
+        {
+            Calls++;var result=await MockAiTransport.Instance.SendAsync(model,body,maximum,ct);
+            if(model.Provider=="Jev")foreach(var pair in body["questions"]!.AsObject().Where(p=>p.Value?["type"]?.GetValue<string>()=="choice"))
+            {
+                var selected=pair.Key=="domain"?"software":Selected;var probabilities=new JsonObject();foreach(var option in pair.Value!["criteria"]!.AsObject())probabilities[option.Key]=option.Key==selected?1d:0d;
+                result.Body["answers"]![pair.Key]=new JsonObject{["type"]="choice",["choice"]=selected,["probabilities"]=probabilities,["confidence"]=1d};
+            }
+            return result;
+        }
+    }
     private sealed class Ai(string selected):IDecisionProvider,IReranker
     {
         public int Converted,Ranked;public ChoiceQuestion[] Questions=[];public Func<Task>? BeforeReturn;

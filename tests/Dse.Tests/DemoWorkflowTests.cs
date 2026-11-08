@@ -8,11 +8,11 @@ namespace Dse.Tests;
 
 public sealed class DemoWorkflowTests
 {
-    internal static ServiceProvider Root(IRecordStore store,IIngestionQueue? queue=null,IIngestionBlobs? blobs=null)
+    internal static ServiceProvider Root(IRecordStore store,IIngestionQueue? queue=null,IIngestionBlobs? blobs=null,IConfiguration? suppliedConfiguration=null,IAiTransport? transport=null)
     {
-        var configuration=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock",["AiUsage:Stopped"]="false",["AiUsage:MaxInputTokens"]="16000",["AiUsage:MaxOutputTokens"]="8000"}).Build();
+        var configuration=suppliedConfiguration??new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["Data:Mode"]="Demo",["Ai:Mode"]="Mock",["AiUsage:Stopped"]="false",["AiUsage:MaxInputTokens"]="16000",["AiUsage:MaxOutputTokens"]="8000"}).Build();
         var services=new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging().AddCatalog(configuration,true).AddIngestion(configuration)
-            .AddSingleton<IRecordStore>(store).AddSingleton<IAiTransport>(MockAiTransport.Instance);
+            .AddSingleton<IRecordStore>(store).AddSingleton<IAiTransport>(transport??MockAiTransport.Instance);
         if(queue is not null)services.AddSingleton(queue);
         if(blobs is not null)services.AddSingleton(blobs);
         return services.BuildServiceProvider();
