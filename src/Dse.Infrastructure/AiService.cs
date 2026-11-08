@@ -177,6 +177,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
             ["snapshots"] = AiCodecs.Node(snapshots.Distinct().ToArray()), ["operation"] = operation, ["prompt"] = context.PromptVersion,
             ["taxonomy"] = context.TaxonomyVersion, ["dataVersion"] = context.DataVersion, ["membershipVersion"] = context.ChatMembershipVersion, ["lastSequence"] = context.ChatLastSequence };
         if(choices.Length>0)hashMaterial["choiceProbabilityVersion"]=ChoiceProbabilityRules.Version;
+        if(context.PipelineStage is not null)
+            hashMaterial["dictionaryVersion"]=(await preparationRepository.ReadAsync(RecordPartition.Catalog(actor.TenantId),SkillDictionaryService.HeadId,ct))?.Value.Number("version")??0;
         var inputHash = Hash(RecordJson.Canonical(hashMaterial));
         return new(actor,testDocuments,snapshots,candidateEvidence,candidates,evidence,evidenceIds,input,workbookWireMap,searchRerank,cuts,hashMaterial,inputHash,clock.GetElapsedTime(preparationStarted).TotalMilliseconds);
     }
@@ -220,6 +222,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         var inferenceNotDispatched=true;var providerRejected=false;
         T? result = default;
         var cacheHit = false;
+        var receipts=new AiResultReceipts(repository,clock);
+        AiResultReceipts.Handle? durable=null;
         var status = AiStatus.NotEvaluated;
         string? pendingCacheKey = null;
         using var providerDeadline=new CancellationTokenSource(TimeSpan.FromSeconds(limits.TimeoutSeconds),clock);
@@ -269,7 +273,22 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                     if (outputBound > limits.OutputTokens) throw new AiException(AiFailure.OutputLimit);
                 }
                 var key = Hash(inputHash + RecordJson.Canonical(AiCodecs.Node(model)) + actor.TenantId + ":" + actor.PrincipalId + ":" + context.SessionId);
-                if (cache.TryGetValue<Cached>(key, out var cached) && cached is not null)
+                if(context.PipelineStage is not null)
+                {
+                    var binding=Hash(RecordJson.Canonical(new JsonObject {
+                        ["version"]=AiResultReceipts.Version,["inputHash"]=inputHash,["model"]=AiCodecs.Node(model),["mode"]=config["Ai:Mode"],
+                        ["actor"]=AiCodecs.Node(actor with{Roles=actor.Roles.Order().ToArray(),ScopeIds=actor.ScopeIds.Order().ToArray()}),
+                        ["inputLimit"]=limits.InputTokens,["outputLimit"]=limits.OutputTokens,["wireHash"]=Hash(AiCodecs.SerializeRequest(body)) }));
+                    durable=await receipts.BeginAsync(context,actor,binding,runId,deadline.Token);
+                    trace["durableResultVersion"]=AiResultReceipts.Version;
+                }
+                if(durable?.Result is not null)
+                {
+                    result=durable.Result.Deserialize<T>(AiCodecs.Json)??throw new DomainException(422,"AI_RESULT_REVIEW_REQUIRED");
+                    trace["cachedFromRunId"]=durable.OriginRunId;trace["cacheKind"]="durable";cacheHit=true;
+                    pendingCacheKey=key;
+                }
+                else if (cache.TryGetValue<Cached>(key, out var cached) && cached is not null)
                 {
                     result = JsonSerializer.Deserialize<T>(cached.Value, AiCodecs.Json)!;
                     trace["cachedFromRunId"] = cached.RunId; cacheHit = true;
@@ -377,6 +396,8 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                 trace["choiceProbabilityValidation"]=AiCodecs.Node(validDecisions.Choices.ToDictionary(p=>p.Key,p=>ChoiceProbabilityRules.Validate(p.Value.Probabilities.Values)));
             using(var validationStage=PipelineDiagnostics.Measure("post_response_sources",operation,runId))
                 await guard.RequireSnapshotsAsync(actor,snapshots.Distinct(),deadline.Token);
+            if(durable is {Result:null})
+                await receipts.CompleteAsync(durable,result,trace.Text("cachedFromRunId") is {Length:>0} origin?origin:runId,deadline.Token);
             if (pendingCacheKey is not null)
                 cache.Set(pendingCacheKey, new Cached(JsonSerializer.SerializeToUtf8Bytes(result, AiCodecs.Json), runId), new MemoryCacheEntryOptions { Size = 1, AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
         }
@@ -389,6 +410,11 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
         { failure = AiFailure.Configuration; }
         if (failure is not null)
         {
+            if(durable is {Result:null}&&(attempts==0||inferenceNotDispatched))
+            {
+                using var cleanup=new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await receipts.NotDispatchedAsync(durable,cleanup.Token);
+            }
             executionStage.Failed();
             result = default;
             cacheHit = false;

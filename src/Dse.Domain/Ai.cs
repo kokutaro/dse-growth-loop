@@ -13,6 +13,8 @@ public sealed record AiResult<T>(AiStatus Status, T? Value, string RunId, AiFail
 public sealed record AiContext(ActorAccess Actor, string JobId, string PromptVersion, string TaxonomyVersion,
     int DataVersion, EvidenceReference[] Evidence, SearchUnit[] Candidates, string? SessionId = null)
 {
+    // Stable identity within a persisted ingestion job; request fingerprints are checked separately.
+    public string? PipelineStage { get; init; }
     public string? WorkbookSectionKind { get; init; }
     public int? ChatMembershipVersion { get; init; }
     public int? ChatLastSequence { get; init; }

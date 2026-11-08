@@ -106,7 +106,7 @@ public static class BatchRules
             var kind = value.Text("kind");
             if (!RecordJson.IsId(value.Text("id")) || !ids.Add(value.Text("id")) || value.Text("tenantId") != partition.TenantId ||
                 value.Text("schemaVersion") != "1.0" ||
-                (!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "audit" or "accessFence" or "sharedCommit" or "aiUsageDay" or "aiUsageWeek" or "aiUsageGate" or "aiReservation" or "aiExecution")))
+                (!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "audit" or "accessFence" or "sharedCommit" or "aiUsageDay" or "aiUsageWeek" or "aiUsageGate" or "aiReservation" or "aiExecution" or "aiResultReceipt" or "aiResultPayload")))
                 throw new ArgumentException("Invalid record");
             var actual = kind is "idempotency" or "audit" or "sharedCommit"
                 ? (value.Text("sessionId") == "" ? RecordPartition.Catalog(partition.TenantId) : RecordPartition.Conversation(partition.TenantId, value.Text("sessionId")))

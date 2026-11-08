@@ -118,12 +118,14 @@ resource catalog 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@
   properties: {
     resource: {
       id: 'catalog'
+      // Only payload records opt into TTL; non-expiring replay tombstones survive.
+      defaultTtl: -1
       partitionKey: { paths: ['/tenantId'], kind: 'Hash', version: 2 }
       indexingPolicy: {
         indexingMode: 'consistent'
         automatic: true
         includedPaths: [{ path: '/*' }]
-        excludedPaths: [{ path: '/summary/?' }, { path: '/sourceRefs/*' }, { path: '/"_etag"/?' }]
+        excludedPaths: [{ path: '/summary/?' }, { path: '/sourceRefs/*' }, { path: '/aiResult/*' }, { path: '/"_etag"/?' }]
       }
     }
   }

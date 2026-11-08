@@ -41,7 +41,7 @@ public sealed class PrimaryRepository(IRecordStore store) : IPrimaryRepository
     public async Task<RecordPage> QueryAsync(RecordPartition partition,string kind,string? field,string? parent,int size,string? token,CancellationToken ct)
     {
         using var measurement=PipelineDiagnostics.Repository("query");
-        try { if(!RecordJson.ContractKinds.ContainsKey(kind)||kind=="searchUnit")throw new ArgumentException("Invalid primary kind");return await store.QueryAsync(partition,kind,field,parent,size,token,ct); }
+        try { if((!RecordJson.ContractKinds.ContainsKey(kind)&&kind!="aiResultReceipt")||kind=="searchUnit")throw new ArgumentException("Invalid primary kind");return await store.QueryAsync(partition,kind,field,parent,size,token,ct); }
         catch { measurement.Fail();throw; }
     }
 }
@@ -110,8 +110,19 @@ internal static class QueryRules
         var allowedField = field is null or "personId" or "documentId" or "documentVersionId" or "entityId" or "jobId" ||
             (kind == "searchUnit" && field == "entityType") || (kind == "skillCandidate" && field == "fragmentId") || (kind == "person" && field == "managedByPersonId") ||
             (kind is "aiReservation" or "aiExecution" && field == "runId");
-        if ((!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "aiReservation" or "aiExecution")) || !allowedField || size is < 1 or > 100)
+        if ((!RecordJson.ContractKinds.ContainsKey(kind) && kind is not ("idempotency" or "aiReservation" or "aiExecution" or "aiResultReceipt")) || !allowedField || size is < 1 or > 100)
             throw new ArgumentException("Invalid query");
+    }
+}
+
+internal static class AiResultStoragePolicy
+{
+    internal static void Require(ContainerProperties properties)
+    {
+        if(properties.DefaultTimeToLive!=-1||!properties.IndexingPolicy.ExcludedPaths.Any(path=>path.Path=="/aiResult/*")||
+            properties.IndexingPolicy.IncludedPaths.Any(path=>path.Path!="/*")||
+            properties.IndexingPolicy.CompositeIndexes.Count>0||properties.IndexingPolicy.SpatialIndexes.Count>0)
+            throw new DomainException(422,"AI_RESULT_STORAGE_POLICY_REQUIRED");
     }
 }
 
@@ -136,6 +147,8 @@ public sealed class CosmosRecordStore(CosmosClient client, IConfiguration config
             response.EnsureSuccessStatusCode();
             var value = (await JsonNode.ParseAsync(response.Content, cancellationToken: ct))!.AsObject();
             if (value.Text("tenantId") != partition.TenantId) return null;
+            if(value.Text("kind") is "aiResultReceipt" or "aiResultPayload")
+                AiResultStoragePolicy.Require((await Container(partition).ReadContainerAsync(cancellationToken:ct)).Resource);
             measurement.Classify(OperationMeasurementKinds.Record(value.Text("kind")));
             return new(RecordJson.FromStorage(value, response.Headers.ETag), response.Headers.ETag);
         }
@@ -148,6 +161,8 @@ public sealed class CosmosRecordStore(CosmosClient client, IConfiguration config
         try
         {
             BatchRules.Validate(partition, writes);
+            if(writes.Any(write=>write.Value.Text("kind") is "aiResultReceipt" or "aiResultPayload"))
+                AiResultStoragePolicy.Require((await Container(partition).ReadContainerAsync(cancellationToken:ct)).Resource);
             var batch = Container(partition).CreateTransactionalBatch(new PartitionKey(partition.Key));
             List<Stream> streams = [];
             try
