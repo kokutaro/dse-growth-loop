@@ -170,3 +170,24 @@ for(const pending of ['shown','terms','natural','skills','conditions'] as const)
  expect(searches+conditions).toBe(requestsBeforeWithdrawal);expect(collections).toBe(0);
  await page.screenshot({path:folder+'/withdraw-immediate-'+pending+'.png',fullPage:true});
 });
+
+test('訂正POST成功後に受付JSONが壊れても旧検索と原文を復活させず一覧から回復する',async({page,request})=>{
+ const workflow=(await(await request.post('/api/v1/demo-workflows/start')).json()).id;let corrected=false,searches=0,corrections=0;
+ await page.route('**/api/v1/documents**',async route=>{
+  const path=new URL(route.request().url()).pathname;
+  if(path.endsWith('/versions')){corrected=true;corrections++;await route.fulfill({status:202,contentType:'application/json',body:'{'});return;}
+  if(path==='/api/v1/documents'){await route.fulfill({json:{items:[{id:'doc-accepted',title:'架空の訂正受付',sourceVersion:corrected?2:1,status:'ready'}],continuationToken:null}});return;}
+  if(path.endsWith('/evidence')){await route.fulfill({json:{items:[{id:'ev-old',location:{label:'旧位置'},text:'訂正前の原文'}],continuationToken:null}});return;}
+  await route.fulfill({headers:{ETag:'one'},json:{id:'doc-accepted',sourceVersion:corrected?2:1,activeVersion:corrected?2:1,accessVersion:1,status:'ready',warnings:[]}});
+ });
+ await page.route('**/api/search',async route=>{searches++;await route.fulfill({json:{candidates:[{entityId:'doc-accepted',entityType:'document',title:'訂正前の検索結果',routes:[],units:[{summary:'訂正前の原文',sourceRefs:[],confirmationState:'ai_unconfirmed'}]}],matchedUnits:1,beforeLimit:1,rerankingStatus:'not_performed'}});});
+ await page.goto('/validation.html?workflow='+workflow);await page.getByRole('button',{name:'資料一覧を更新',exact:true}).click();await page.getByRole('button',{name:'架空の訂正受付（第1版）',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'出典プレビュー',exact:true})).toBeVisible();await page.getByRole('button',{name:'相談候補を探す',exact:true}).click();await expect(page.getByRole('heading',{name:'訂正前の検索結果',exact:true})).toBeVisible();
+ await page.getByLabel('訂正・撤回の理由').fill('架空の受理後応答故障');await page.getByLabel('訂正版の原本',{exact:true}).setInputFiles({name:'fictional.docx',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',buffer:Buffer.from('intercepted fictional bytes')});
+ await page.getByRole('button',{name:'訂正版を取り込む',exact:true}).click();
+ await expect(page.getByText('処理段階：資料が訂正されました。検索結果を再取得してください。',{exact:true})).toBeVisible();
+ await expect(page.locator('article.candidate')).toHaveCount(0);await expect(page.getByRole('heading',{name:'出典プレビュー',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('alert')).toContainText('訂正は受理されました');
+ await page.getByRole('button',{name:'資料一覧を更新',exact:true}).click();await expect(page.getByRole('button',{name:'架空の訂正受付（第2版）',exact:true})).toBeVisible();
+ expect(corrections).toBe(1);expect(searches).toBe(1);
+});
