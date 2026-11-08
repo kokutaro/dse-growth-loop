@@ -7,6 +7,26 @@ namespace Dse.Tests;
 public sealed class WorkflowRecordStoreTests
 {
     [Fact]
+    public async Task Binding_reads_are_reused_only_inside_the_exact_authority_lease_and_are_fresh_after_it()
+    {
+        var f=await SkillDictionaryFixture.Create();var actor=await new AuthorityProvider(f.Repo).RequireAsync(SkillDictionaryFixture.Curator,default);var counted=new AuthorityCounter(f.Store);
+        var store=new WorkflowRecordStore(counted,actor,"wf-one");var p=RecordPartition.Catalog("demo");var row=RecordJson.New("document","private-document","demo",actor.PrincipalId,actor.ScopeIds,DateTimeOffset.UtcNow);
+        await store.CommitAsync(p,[RecordWrite.Create(row)],default);counted.Reads=0;
+        await new AccessFence(new PrimaryRepository(store)).RunAsync("demo",async token=>{
+            await store.ReadAsync(p,row.Text("id"),token);await store.ReadAsync(p,row.Text("id"),token);Assert.Equal(2,counted.Reads);return true;
+        },default);
+        await store.ReadAsync(p,row.Text("id"),default);await store.ReadAsync(p,row.Text("id"),default);Assert.Equal(6,counted.Reads);
+        var authority=(await f.Repo.ReadAsync(p,AuthorityProvider.PersonId(actor.PersonId),default))!;authority.Value["enabled"]=false;await f.Store.CommitAsync(p,[RecordWrite.Replace(authority.Value,authority.ETag)],default);
+        Assert.Equal(403,(await Assert.ThrowsAsync<DomainException>(()=>store.ReadAsync(p,row.Text("id"),default))).Status);
+    }
+    private sealed class AuthorityCounter(IRecordStore inner):IRecordStore
+    {
+        public int Reads;
+        public Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct){if(id==AuthorityProvider.ControlId||id.StartsWith("authority-",StringComparison.Ordinal))Reads++;return inner.ReadAsync(p,id,ct);}
+        public Task<RecordPage> QueryAsync(RecordPartition p,string kind,string? field,string? parent,int size,string? cursor,CancellationToken ct)=>inner.QueryAsync(p,kind,field,parent,size,cursor,ct);
+        public Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite> writes,CancellationToken ct)=>inner.CommitAsync(p,writes,ct);
+    }
+    [Fact]
     public async Task Cached_workflow_services_cannot_read_or_write_after_operator_or_binding_loss_and_can_release_the_fence()
     {
         var f=await SkillDictionaryFixture.Create();var actor=await new AuthorityProvider(f.Repo).RequireAsync(SkillDictionaryFixture.Curator,default);
