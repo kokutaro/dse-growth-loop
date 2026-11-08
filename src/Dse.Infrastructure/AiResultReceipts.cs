@@ -27,7 +27,14 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
             job.Value.Text("status")!="processing"||job.Value.Text("ownerId")!=context.Actor.PrincipalId)throw Review();
         AccessPolicy.RequireRead(actor,job.Value);
         var aggregate=await repository.ReadAsync(p,job.Value.Text("aggregateId"),ct);
-        if(aggregate is null||aggregate.Value.Number("sourceVersion")!=job.Value.Number("aggregateVersion")||!AccessPolicy.CanUse(actor,aggregate.Value))throw Review();
+        if(aggregate is null||aggregate.Value.Number("sourceVersion")!=job.Value.Number("aggregateVersion"))throw Review();
+        // A profile correction deliberately clears activeVersion until its new projection
+        // commits. Building that owned head is not permission to publish/use it in search.
+        var usable=job.Value.Text("jobType")=="projection"
+            ? aggregate.Value.Text("kind")=="person"&&aggregate.Value.Text("id")==actor.PersonId&&AccessPolicy.CanRead(actor,aggregate.Value)&&
+                aggregate.Value.Text("publicationState")!="withdrawn"&&aggregate.Value.Number("accessVersion")>=1
+            : aggregate.Value.Text("kind")=="document"&&AccessPolicy.CanUse(actor,aggregate.Value);
+        if(!usable)throw Review();
         var first=job.Value;HashSet<string> seen=[context.JobId];
         while(job.Value.Text("supersedesJobId") is {Length:>0} prior)
         {
