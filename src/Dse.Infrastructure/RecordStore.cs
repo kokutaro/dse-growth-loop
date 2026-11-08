@@ -24,6 +24,7 @@ public sealed record RecordPage(StoredRecord[] Items, string? ContinuationToken)
 public interface IPrimaryRepository : IRecordStore;
 public sealed class PrimaryRepository(IRecordStore store) : IPrimaryRepository
 {
+    internal bool Backs(IRecordStore candidate)=>ReferenceEquals(store,candidate);
     public async Task<StoredRecord?> ReadAsync(RecordPartition partition, string id, CancellationToken ct)
     {
         using var measurement=PipelineDiagnostics.Repository("read");

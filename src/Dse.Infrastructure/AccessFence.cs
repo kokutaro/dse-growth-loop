@@ -19,6 +19,8 @@ public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admi
         private readonly TaskCompletionSource drained = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private bool open = true;
         private int users;
+        public bool IsOpen{get{lock(sync)return open;}}
+        public System.Collections.Concurrent.ConcurrentDictionary<IRecordStore,Lazy<Task>> WorkflowBindings{get;}=new(ReferenceEqualityComparer.Instance);
         public bool Faulted { get; private set; }
         public void MarkFaulted(){lock(sync)Faulted=true;}
         public bool Enter() { lock (sync) { if (!open) return false; users++; return true; } }
@@ -26,6 +28,14 @@ public sealed class AccessFence(IPrimaryRepository repository,TimeProvider? admi
         public Task CloseAsync() { lock (sync) { open = false; return users == 0 ? Task.CompletedTask : drained.Task; } }
     }
     private static readonly AsyncLocal<Lease?> Current = new();
+    // The exact store owns the real authority mutex for this lease. A check may
+    // be reused only until it closes, never across an AI wait or another request.
+    internal static Task ValidateWorkflowBindingAsync(IRecordStore store,Func<Task> validate)
+    {
+        var lease=Current.Value;
+        if(lease is null||!lease.IsOpen||lease.Repository is not PrimaryRepository repository||!repository.Backs(store))return validate();
+        return lease.WorkflowBindings.GetOrAdd(store,_=>new Lazy<Task>(validate,LazyThreadSafetyMode.ExecutionAndPublication)).Value;
+    }
     internal static void MarkUncertainResult()=>Current.Value?.MarkFaulted();
     private sealed class ReadOnlyPreparationCancelled(OperationCanceledException inner) : OperationCanceledException("Read-only preparation cancelled",inner,inner.CancellationToken);
     /// <summary>同じ認可・fence内の読取り専用応答を実行し、副作用と未終了I/Oがない取消だけを解放します。</summary>

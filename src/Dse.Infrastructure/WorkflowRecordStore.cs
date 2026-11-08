@@ -9,12 +9,11 @@ namespace Dse.Infrastructure;
 public sealed class WorkflowRecordStore(IRecordStore shared,ActorAccess owner,string workflowId):IRecordStore
 {
     private static string Hash(string value)=>ConversationService.Hash(value);
-    private async Task RequireBinding(CancellationToken ct)
-    {
+    private Task RequireBinding(CancellationToken ct)=>AccessFence.ValidateWorkflowBindingAsync(this,async()=>{
         var current=await new AuthorityProvider(new PrimaryRepository(shared)).PersonAsync(owner.TenantId,owner.PersonId,ct);
         if(current is null||current.PrincipalId!=owner.PrincipalId||current.AccessEpoch!=owner.AccessEpoch||!current.HasRole("member")||!current.HasRole("operator")||
             !current.Roles.ToHashSet(StringComparer.Ordinal).SetEquals(owner.Roles)||!current.ScopeIds.ToHashSet(StringComparer.Ordinal).SetEquals(owner.ScopeIds))throw new DomainException(403,"WORKFLOW_ACCESS_REVOKED");
-    }
+    });
     private string Epoch(string value)=>Hash(workflowId+":"+value);
     private string Generation(string value)=>Hash(workflowId+":"+value)[..32];
     public ActorAccess MapActor(ActorAccess actor)
