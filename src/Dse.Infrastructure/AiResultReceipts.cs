@@ -10,13 +10,15 @@ namespace Dse.Infrastructure;
 internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvider clock)
 {
     internal const string Kind="aiResultReceipt";
+    internal const string Version="pipeline-result-v1";
     internal static readonly TimeSpan ReuseWindow=TimeSpan.FromHours(24);
     private const int MaximumResultBytes=128*1024;
     internal sealed record Handle(StoredRecord Row,JsonNode? Result,string? OriginRunId);
+    private sealed record JobLineage(StoredRecord Root,string[] Ids);
     private static DomainException Review()=>new(422,"AI_RESULT_REVIEW_REQUIRED");
     private static string Hash(string value)=>ConversationService.Hash(value);
 
-    private async Task<StoredRecord> RootJobAsync(AiContext context,ActorAccess actor,CancellationToken ct)
+    private async Task<JobLineage> RootJobAsync(AiContext context,ActorAccess actor,CancellationToken ct)
     {
         var p=RecordPartition.Catalog(context.Actor.TenantId);
         var job=await repository.ReadAsync(p,context.JobId,ct)??throw Review();
@@ -36,13 +38,13 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
                 job.Value.Text("ownerId")!=first.Text("ownerId"))throw Review();
             AccessPolicy.RequireRead(actor,job.Value);
         }
-        return job;
+        return new(job,seen.ToArray());
     }
 
     internal async Task<Handle> BeginAsync(AiContext context,ActorAccess actor,string fingerprint,string runId,CancellationToken ct)
     {
         if(context.PipelineStage is not {Length:>0 and <=128})throw Review();
-        var root=await RootJobAsync(context,actor,ct);var p=RecordPartition.Catalog(actor.TenantId);
+        var lineage=await RootJobAsync(context,actor,ct);var root=lineage.Root;var p=RecordPartition.Catalog(actor.TenantId);
         var id="ai-result-"+Hash(root.Value.Text("id")+":"+context.PipelineStage);
         var saved=await repository.ReadAsync(p,id,ct);
         if(saved is not null)
@@ -65,9 +67,17 @@ internal sealed class AiResultReceipts(IPrimaryRepository repository, TimeProvid
         {
             // Legacy attempts have no response receipt. Never silently replay a stage whose
             // older audit already records a send but cannot recover its validated response.
-            var old=await repository.QueryAsync(p,"aiRun","jobId",root.Value.Text("id"),100,null,ct);
-            if(old.ContinuationToken is not null||old.Items.Any(r=>r.Value["trace"] is JsonObject trace&&
-                trace.Number("attemptCount")>0&&trace.Text("durableResultVersion")==""))throw Review();
+            foreach(var jobId in lineage.Ids)
+            {
+                string? cursor=null;var pages=0;
+                do
+                {
+                    if(pages++>=20)throw Review();
+                    var old=await repository.QueryAsync(p,"aiRun","jobId",jobId,100,cursor,ct);
+                    if(old.Items.Any(r=>r.Value["trace"] is JsonObject trace&&trace.Number("attemptCount")>0&&trace.Text("durableResultVersion")!=Version))throw Review();
+                    cursor=old.ContinuationToken;
+                }while(cursor is not null);
+            }
         }
         var value=RecordJson.New(Kind,id,actor.TenantId,actor.PrincipalId,["system"],clock.GetUtcNow());
         value["jobId"]=root.Value.Text("id");value["stage"]=context.PipelineStage;value["fingerprint"]=fingerprint;

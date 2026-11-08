@@ -276,11 +276,11 @@ public sealed class AiService(IConfiguration config, IPrimaryRepository reposito
                 if(context.PipelineStage is not null)
                 {
                     var binding=Hash(RecordJson.Canonical(new JsonObject {
-                        ["version"]="pipeline-result-v1",["inputHash"]=inputHash,["model"]=AiCodecs.Node(model),["mode"]=config["Ai:Mode"],
+                        ["version"]=AiResultReceipts.Version,["inputHash"]=inputHash,["model"]=AiCodecs.Node(model),["mode"]=config["Ai:Mode"],
                         ["actor"]=AiCodecs.Node(actor with{Roles=actor.Roles.Order().ToArray(),ScopeIds=actor.ScopeIds.Order().ToArray()}),
                         ["inputLimit"]=limits.InputTokens,["outputLimit"]=limits.OutputTokens,["wireHash"]=Hash(AiCodecs.SerializeRequest(body)) }));
                     durable=await receipts.BeginAsync(context,actor,binding,runId,deadline.Token);
-                    trace["durableResultVersion"]="pipeline-result-v1";
+                    trace["durableResultVersion"]=AiResultReceipts.Version;
                 }
                 if(durable?.Result is not null)
                 {
