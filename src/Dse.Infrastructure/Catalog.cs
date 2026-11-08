@@ -139,6 +139,23 @@ public static class InfrastructureRegistration
             services.AddSingleton<IProjectionRepository, CosmosProjectionRepository>();
         }
         else throw new InvalidOperationException("Data__Mode は Demo または Azure を指定してください。");
+        services.AddCatalogServices(configuration);
+        if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
+        {
+            if (!int.TryParse(configuration["Telemetry:SamplingPercentage"] ?? "10", out var percentage) || percentage is < 1 or > 100)
+                throw new InvalidOperationException("Telemetry__SamplingPercentage は1〜100で指定してください。");
+            services.AddOpenTelemetry().UseAzureMonitor(options =>
+            {
+                options.SamplingRatio = percentage / 100f;
+                options.TracesPerSecond = null;
+            });
+        }
+        return services;
+    }
+    // The application graph is common; an isolated workflow supplies only storage,
+    // projection and queue adapters. Do not reinitialize backends or telemetry.
+    internal static IServiceCollection AddCatalogServices(this IServiceCollection services,IConfiguration configuration)
+    {
         services.AddSingleton<IPrimaryRepository, PrimaryRepository>();
         services.AddSingleton<SourceGuard>();
         services.AddSingleton(sp=>new AccessFence(sp.GetRequiredService<IPrimaryRepository>(),sp.GetRequiredService<TimeProvider>(),sp.GetService<ILogger<AccessFence>>()));
@@ -149,6 +166,7 @@ public static class InfrastructureRegistration
         services.AddSingleton<OrganizationService>();
         services.AddSingleton(sp=>new SkillDictionaryService(sp.GetRequiredService<IPrimaryRepository>(),sp.GetRequiredService<AccessFence>(),sp.GetRequiredService<IdempotencyExecutor>(),sp.GetRequiredService<TimeProvider>(),()=>sp.GetRequiredService<IDecisionProvider>()));
         services.AddSingleton<SkillDemoSessions>();
+        services.AddSingleton<DemoWorkflows>();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IdempotencyExecutor>();
         services.AddSingleton<ProfileService>();
@@ -163,16 +181,6 @@ public static class InfrastructureRegistration
             () => sp.GetRequiredService<IDecisionProvider>(), () => sp.GetRequiredService<IReranker>(),
             configuration, sp.GetRequiredService<TimeProvider>()));
         services.AddAi(configuration);
-        if (!string.IsNullOrEmpty(configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
-        {
-            if (!int.TryParse(configuration["Telemetry:SamplingPercentage"] ?? "10", out var percentage) || percentage is < 1 or > 100)
-                throw new InvalidOperationException("Telemetry__SamplingPercentage は1〜100で指定してください。");
-            services.AddOpenTelemetry().UseAzureMonitor(options =>
-            {
-                options.SamplingRatio = percentage / 100f;
-                options.TracesPerSecond = null;
-            });
-        }
         return services;
     }
 }

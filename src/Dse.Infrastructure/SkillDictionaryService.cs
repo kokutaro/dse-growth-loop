@@ -67,6 +67,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
         var row=await repository.ReadAsync(RecordPartition.Catalog(actor.TenantId),id,ct);
         if(row?.Value.Text("kind")!="skillCandidate"||!AccessPolicy.InScope(actor,row.Value))throw new DomainException(404,"NOT_FOUND");
         var source=await ReadSource(actor,row.Value.Text("fragmentId"),ct);
+        if(source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()==true)throw new DomainException(409,"SKILL_HISTORY_READ_ONLY");
         if(source.Superseded||source.Fingerprint!=row.Value.Text("sourceFingerprint"))throw new DomainException(409,"SKILL_SOURCE_CHANGED");
         if(row.Value.Text("candidateType")=="collection")throw new DomainException(409,"SKILL_COLLECTION_HELD");
         return row;
@@ -97,6 +98,7 @@ public sealed partial class SkillDictionaryService(IPrimaryRepository repository
                     sources[fragmentId]=source;
                 }
                 if(source is null)continue;
+                if(source.Fragment.Value["skillHistoryOnly"]?.GetValue<bool>()==true&&row.Value.Text("candidateType")!="collection")continue;
                 var changed=source.Superseded||source.Fingerprint!=row.Value.Text("sourceFingerprint");
                 // Never serialize an old quote/label, proposal or review reason after a
                 // source change. Current access to the fragment is not access to old text.
