@@ -135,4 +135,15 @@ public sealed class WorkerTrialCheckpointTests
         Assert.NotNull((await scoped.ReadAsync(p,f.Job.Text("id"),default))!.Value["workerTrialClaims"]);
         Assert.Null((await f.Store.ReadAsync(p,f.Job.Text("id"),default))!.Value["workerTrialClaims"]);
     }
+    [Fact]
+    public async Task Explicit_retry_job_cannot_rearm_the_same_trial()
+    {
+        var f=await Setup();await Assert.ThrowsAsync<DependencyRetryException>(()=>Probe(f).AfterBuildAsync(f.Job,default));
+        var p=RecordPartition.Catalog("demo");var doc=(await f.Store.ReadAsync(p,Document,default))!;
+        var retry=Jobs.Create(doc.Value,"enrichment",f.Clock.GetUtcNow(),"job-worker-trial-retry");
+        retry["supersedesJobId"]=f.Job.Text("id");retry["status"]="processing";retry["leaseOwner"]="worker-two";retry["leaseUntil"]=f.Clock.GetUtcNow().AddMinutes(1);
+        doc.Value["enrichmentJobId"]=retry.Text("id");await f.Store.CommitAsync(p,[RecordWrite.Create(retry),RecordWrite.Replace(doc.Value,doc.ETag)],default);
+        await Probe(f).AfterBuildAsync(retry,default);
+        Assert.Null((await f.Store.ReadAsync(p,retry.Text("id"),default))!.Value["workerTrialClaims"]);
+    }
 }
