@@ -10,4 +10,5 @@
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.6.0" />
   </ItemGroup>
   <PropertyGroup><AzureCosmosDisableNewtonsoftJsonCheck>true</AzureCosmosDisableNewtonsoftJsonCheck></PropertyGroup>
+  <ItemGroup><EmbeddedResource Include="Fixtures/worker-trial-source.docx" LogicalName="Dse.WorkerTrialSource" /></ItemGroup>
 </Project>
