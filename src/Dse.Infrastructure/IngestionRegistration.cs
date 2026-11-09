@@ -32,7 +32,7 @@ public static class IngestionRegistration
         services.AddSingleton<ChatAssistanceService>();
         services.AddSingleton<DocumentUploads>(); services.AddSingleton<JobNotifications>();
         services.AddSingleton<ReextractionGenerations>();
-        services.AddSingleton<IngestionRetry>(); services.AddSingleton<IngestionProcessor>();
+        services.AddSingleton<IngestionRetry>(); services.AddSingleton<WorkerTrialCheckpoints>();services.AddSingleton<IngestionProcessor>();
         return services;
     }
 }

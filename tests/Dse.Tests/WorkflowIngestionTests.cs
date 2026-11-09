@@ -13,6 +13,12 @@ public sealed class WorkflowIngestionTests
     {
         var f=await SkillDictionaryFixture.Create();var queue=new Queue();var blobs=new Blobs();using var root=DemoWorkflowTests.Root(f.Store,queue,blobs);
         var manager=root.GetRequiredService<DemoWorkflows>();var context=await manager.StartAsync(SkillDictionaryFixture.Curator,default);
+        // A report needs known affiliation; provide the existing authority snapshot
+        // in this fixture instead of relying on an invalid empty department ID.
+        var department=await new AuthorityProvider(f.Repo).DepartmentSnapshotAsync("demo",SkillDictionaryFixture.Curator.PersonId,DateTimeOffset.UtcNow,default);
+        var scopedStore=context.Services.GetRequiredService<IRecordStore>();var partition=RecordPartition.Catalog("demo");
+        var owner=(await scopedStore.ReadAsync(partition,context.Actor.PersonId,default))!;
+        owner.Value["departmentId"]=department!.Text("departmentId");await scopedStore.CommitAsync(partition,[RecordWrite.Replace(owner.Value,owner.ETag)],default);
         var bytes=OfficeFixtures.Package(body:"<w:p><w:r><w:t>アプリ開発担当 ／ TypeScript、SQLite、Git</w:t></w:r></w:p>");
         var accepted=await context.Services.GetRequiredService<DocumentUploads>().UploadAsync(context.Actor,"架空技術資料","report","fictional.docx",OfficeExtractor.WordMime,bytes,Guid.NewGuid().ToString("N"),default);
         var id=accepted.Body!["documentId"]!.GetValue<string>();Assert.Equal(context.Id,Assert.Single(queue.Notices).WorkflowId);

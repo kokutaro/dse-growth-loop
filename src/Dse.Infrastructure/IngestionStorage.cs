@@ -1,4 +1,5 @@
 using Azure;
+using Azure.Core;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -20,7 +21,8 @@ public interface IIngestionBlobs
 public sealed class AzureIngestionBlobs : IIngestionBlobs
 {
     private readonly BlobServiceClient client;
-    public AzureIngestionBlobs(IConfiguration config) => client = new(new Uri(config["Storage:BlobEndpoint"] ?? throw new InvalidOperationException("Storage:BlobEndpoint required")), new DefaultAzureCredential(), new BlobClientOptions { Retry = { MaxRetries = 2 } });
+    public AzureIngestionBlobs(IConfiguration config):this(config,new DefaultAzureCredential()){}
+    internal AzureIngestionBlobs(IConfiguration config,TokenCredential credential) => client = new(new Uri(config["Storage:BlobEndpoint"] ?? throw new InvalidOperationException("Storage:BlobEndpoint required")), credential, new BlobClientOptions { Retry = { MaxRetries = 2 } });
     private BlobClient Blob(string container, string key) => client.GetBlobContainerClient(container).GetBlobClient(key);
     public async Task PutAsync(string container, string key, byte[] data, CancellationToken ct)
     {
@@ -56,12 +58,13 @@ public sealed class AzureIngestionQueue : IIngestionQueue
 {
     private readonly QueueClient queue;
     private readonly QueueClient poison;
-    public AzureIngestionQueue(IConfiguration config)
+    public AzureIngestionQueue(IConfiguration config):this(config,new DefaultAzureCredential()){}
+    internal AzureIngestionQueue(IConfiguration config,TokenCredential credential)
     {
         var endpoint = config["Storage:QueueEndpoint"] ?? throw new InvalidOperationException("Storage:QueueEndpoint required");
         var options = new QueueClientOptions { MessageEncoding = QueueMessageEncoding.Base64, Retry = { MaxRetries = 2 } };
-        queue = new(new Uri(new Uri(endpoint), "ingestion"), new DefaultAzureCredential(), options);
-        poison = new(new Uri(new Uri(endpoint), "ingestion-poison"), new DefaultAzureCredential(), options);
+        queue = new(new Uri(new Uri(endpoint), "ingestion"), credential, options);
+        poison = new(new Uri(new Uri(endpoint), "ingestion-poison"), credential, options);
     }
     public async Task SendAsync(QueueNotice notice, CancellationToken ct, bool poison = false) =>
         await (poison ? this.poison : queue).SendMessageAsync(JsonSerializer.Serialize(notice), timeToLive: TimeSpan.FromSeconds(-1), cancellationToken: ct);

@@ -58,7 +58,9 @@ public sealed partial class DocumentUploads(IPrimaryRepository repository, Acces
                 var importKey = OfficeExtractor.Hash(Encoding.UTF8.GetBytes(type + "\n" + title));
                 doc["importKey"] = importKey;
                 doc["title"] = title; doc["documentType"] = type; doc["status"] = "queued"; doc["accessVersion"] = 1;
-                doc["personId"] = person.Text("id"); SyntheticTestAccess.Mark(doc,person); doc["departmentId"] = person.Text("departmentId"); doc["extractionState"] = "pending"; doc["aiState"] = "not_started";
+                doc["personId"] = person.Text("id"); SyntheticTestAccess.Mark(doc,person);
+                if(RecordJson.IsId(person.Text("departmentId")))doc["departmentId"]=person.Text("departmentId");
+                doc["extractionState"] = "pending"; doc["aiState"] = "not_started";
                 var version = RecordJson.New("documentVersion", documentId + "-v1", actor.TenantId, actor.PrincipalId, doc.Strings("scopeIds"), now);
                 SyntheticTestAccess.Mark(version,person);
                 doc["currentVersionId"] = version.Text("id");

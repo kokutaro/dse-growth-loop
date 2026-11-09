@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Dse.Infrastructure;
 
 public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestionBlobs blobs, IIngestionQueue queue,
-    OfficeExtractor extractor, IngestionOptions options, AccessFence fence, TimeProvider clock, ILogger<IngestionProcessor> logger, ProfilePipeline? profiles = null, JobNotifications? notifications = null, ChatAssistanceService? assistance = null,DemoWorkflows? workflows=null)
+    OfficeExtractor extractor, IngestionOptions options, AccessFence fence, TimeProvider clock, ILogger<IngestionProcessor> logger, ProfilePipeline? profiles = null, JobNotifications? notifications = null, ChatAssistanceService? assistance = null,DemoWorkflows? workflows=null,WorkerTrialCheckpoints? trialCheckpoints=null)
 {
     private static readonly TimeSpan Visibility = TimeSpan.FromSeconds(60);
     public async Task<bool> RunOnceAsync(CancellationToken ct)
@@ -121,6 +121,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
             {
                 if (profiles is null) throw new DomainException(422, "PIPELINE_UNAVAILABLE");
                 var plan=await PipelineDiagnostics.DuringAsync("profile_build",()=>profiles.BuildAsync(job.Value,processing.Token));
+                if(trialCheckpoints is not null)await trialCheckpoints.AfterBuildAsync(job.Value,processing.Token);
                 using var publishStage=PipelineDiagnostics.Measure("profile_publish");
                 await gate.WaitAsync(processing.Token);
                 try
@@ -134,6 +135,7 @@ public sealed class IngestionProcessor(IPrimaryRepository repository, IIngestion
                 }
                 catch(Exception error){publishStage.Failed(error);throw;}
                 finally { gate.Release(); }
+                if(trialCheckpoints is not null)await trialCheckpoints.AfterCommitAsync(job.Value,processing.Token);
                 await ForgetCompletedResultsAsync(notice.TenantId,notice.JobId,ct);
                 await queue.DeleteAsync(delivery, ct);
                 return true;

@@ -17,6 +17,28 @@ def read(name):
 
 
 class ContractsTests(unittest.TestCase):
+    def test_departmentless_upload_keeps_optional_department_absent(self):
+        document = json.loads((ROOT / 'tests/Dse.Tests/TestResults/report-unknown-contract.json').read_text())
+        self.assertNotIn('departmentId', document)
+        self.validator('Document').validate(document)
+
+    def test_generated_worker_trial_metadata_is_read_only_contract_data(self):
+        rows = json.loads((ROOT / 'tests/Dse.Tests/TestResults/worker-trial-contracts.json').read_text())
+        self.assertTrue(any('workerTrial' in r['value'] for r in rows))
+        self.assertTrue(any('workerTrialClaims' in r['value'] for r in rows))
+        self.assertTrue(any(r['schema'] == 'Job' and 'workerTrialClaims' not in r['value'] for r in rows))
+        for row in rows:
+            with self.subTest(schema=row['schema'], state=row['value'].get('status')):
+                self.validator(row['schema']).validate(row['value'])
+        self.assertTrue(self.schema['$defs']['Document']['properties']['workerTrial']['readOnly'])
+        self.assertTrue(self.schema['$defs']['Job']['properties']['workerTrialClaims']['readOnly'])
+        document = copy.deepcopy(next(r['value'] for r in rows if r['schema'] == 'Document'))
+        document['workerTrial']['expiresAt'] = 'invalid'
+        self.assertFalse(self.validator('Document').is_valid(document))
+        job = copy.deepcopy(next(r['value'] for r in rows if 'workerTrialClaims' in r['value']))
+        job['workerTrialClaims']['arbitraryCheckpoint'] = {'trialId': 'trial-worker-x', 'claimedAt': '2026-11-09T00:00:00Z'}
+        self.assertFalse(self.validator('Job').is_valid(job))
+
     def test_same_generation_retry_contract_fixture(self):
         rows = json.loads((ROOT / 'tests/Dse.Tests/TestResults/retry-contract.json').read_text())
         for row in rows:

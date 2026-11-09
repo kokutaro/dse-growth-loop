@@ -55,7 +55,10 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             var id = Id("activity-", actor.PrincipalId + ":" + document!.Value.Text("title"));
             departmentRecord = await Read(id);
             entity = departmentRecord?.Value.Copy() ?? RecordJson.New("departmentActivity", id, tenant, actor.PrincipalId, document.Value.Strings("scopeIds"), clock.GetUtcNow());
-            entity["departmentId"] = person.Value.Text("departmentId"); entity["title"] = document.Value.Text("title"); entity["accessVersion"] = entity.Number("accessVersion") + 1;
+            var departmentId=document.Value.Text("departmentId");
+            if(departmentId=="")departmentId=person.Value.Text("departmentId");
+            if(!RecordJson.IsId(departmentId))throw new DomainException(422,"REPORT_DEPARTMENT_UNKNOWN");
+            entity["departmentId"] = departmentId; entity["title"] = document.Value.Text("title"); entity["accessVersion"] = entity.Number("accessVersion") + 1;
         }
         else entity = person.Value.Copy();
         var fragments = new List<JsonObject>();
