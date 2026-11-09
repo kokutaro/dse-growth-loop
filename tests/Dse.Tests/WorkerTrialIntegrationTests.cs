@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using System.Text.Json;
 using Dse.Domain;
 using Dse.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,8 @@ public partial class AiTests
         span["location"]=new JsonObject{["label"]="paragraph 1"};
         var job=Jobs.Create(doc,"enrichment",now,"job-worker-trial-integration");doc["enrichmentJobId"]=job.Text("id");
         await h.Store.CommitAsync(p,[RecordWrite.Create(doc),RecordWrite.Create(version),RecordWrite.Create(span),RecordWrite.Create(job)],default);
+        var contractRows=new List<object>{new{schema="Document",value=doc.Copy()},new{schema="Job",value=job.Copy()}};
+        var originalPerson=(await h.Store.ReadAsync(p,IdentityResolver.Demo.PersonId,default))!;
         await h.Queue.SendAsync(new("demo",job.Text("id"),1),default);
         var config=Config();config["AiUsage:AccountingMode"]="Disabled";config["AiUsage:MaxInputTokens"]="10240";config["AiUsage:MaxOutputTokens"]="4096";config["Jev:OutputLimit"]="4096";config["Foundry:OutputLimit"]="4096";
         var probeConfig=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{
@@ -44,6 +47,7 @@ public partial class AiTests
         }
         using(var ai=Ai(h.Store))await Worker(h.Store,ai).RunOnceAsync(default);
         var waiting=(await h.Store.ReadAsync(p,job.Text("id"),default))!;
+        contractRows.Add(new{schema="Job",value=waiting.Value.Copy()});
         Assert.Equal("queued",waiting.Value.Text("status"));Assert.Equal(1,waiting.Value.Number("attempt"));
         Assert.NotNull(waiting.Value["workerTrialClaims"]?["built"]);Assert.Equal(now.AddSeconds(360),waiting.Value["availableAt"]!.GetValue<DateTimeOffset>());
         var activity="activity-"+ConversationService.Hash(IdentityResolver.Demo.PrincipalId+":"+doc.Text("title"));
@@ -54,6 +58,7 @@ public partial class AiTests
         {
             Assert.True(await Worker(reopened,ai).RunOnceAsync(default)); // ready means Owned refuses rollback; the delivery is retained.
             var ready=(await reopened.ReadAsync(p,job.Text("id"),default))!;
+            contractRows.Add(new{schema="Job",value=ready.Value.Copy()});
             Assert.Equal("ready",ready.Value.Text("status"));Assert.Equal(2,ready.Value.Number("attempt"));Assert.NotNull(ready.Value["workerTrialClaims"]?["committed"]);
             Assert.Equal(calls,transport.Operations.Count);
             var snapshot=(await reopened.QueryAsync(p,"searchUnit",null,null,100,null,default)).Items.Select(r=>r.Value.ToJsonString()).Order().ToArray();Assert.NotEmpty(snapshot);
@@ -62,6 +67,10 @@ public partial class AiTests
             Assert.Equal(snapshot,(await reopened.QueryAsync(p,"searchUnit",null,null,100,null,default)).Items.Select(r=>r.Value.ToJsonString()).Order().ToArray());Assert.Equal(calls,transport.Operations.Count);
             var receipts=await reopened.QueryAsync(p,"aiResultReceipt","jobId",job.Text("id"),100,null,default);
             Assert.All(receipts.Items,r=>Assert.Equal("completed",r.Value.Text("state")));
+            Assert.Equal(originalPerson.ETag,(await reopened.ReadAsync(p,IdentityResolver.Demo.PersonId,default))!.ETag);
+            contractRows.Add(new{schema="Document",value=(await reopened.ReadAsync(p,document,default))!.Value.Copy()});
         }
+        var output=Path.Combine(Root,"tests/Dse.Tests/TestResults");Directory.CreateDirectory(output);
+        await File.WriteAllTextAsync(Path.Combine(output,"worker-trial-contracts.json"),JsonSerializer.Serialize(contractRows));
     }
 }

@@ -267,6 +267,8 @@ public sealed class DocumentUploadApiTests
     [InlineData("ownerId")]
     [InlineData("scopeIds")]
     [InlineData("personId")]
+    [InlineData("workerTrial")]
+    [InlineData("workerTrialClaims")]
     public async Task Authorization_metadata_cannot_be_supplied(string field)
     {
         using var factory = Factory(); using var client = factory.CreateClient();
