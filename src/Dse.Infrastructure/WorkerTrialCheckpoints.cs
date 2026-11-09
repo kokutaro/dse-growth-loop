@@ -43,8 +43,8 @@ public sealed class WorkerTrialCheckpoints(IPrimaryRepository repository,IConfig
             if(current is null||current.Value.Text("status")!=status||current.Value.Text("ownerId")!=claimedJob.Text("ownerId")||
                 current.Value.Text("aggregateId")!=target||current.Value.Number("aggregateVersion")!=1||
                 current.Value.Text("jobType")!="enrichment"||
-                status=="processing"&&(current.Value.Text("leaseOwner")!=claimedJob.Text("leaseOwner")||
-                    current.Value["leaseUntil"]?.Deserialize<DateTimeOffset>()<=clock.GetUtcNow()))return false;
+                status=="processing"&&(claimedJob.Text("leaseOwner")==""||current.Value.Text("leaseOwner")!=claimedJob.Text("leaseOwner")||
+                    !Timestamp(current.Value["leaseUntil"],out var until)||until<=clock.GetUtcNow()))return false;
             if(current.Value["workerTrialClaims"]?[checkpoint] is not null)return false;
             var document=await repository.ReadAsync(p,target,token);
             if(document is null||document.Value.Text("kind")!="document"||document.Value.Text("documentType")!="report"||
