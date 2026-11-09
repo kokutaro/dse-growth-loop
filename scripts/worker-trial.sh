@@ -52,6 +52,14 @@ if(mode is "prepare" or "plan")
     if(OfficeExtractor.Hash(bytes)!=WorkerTrialCheckpoints.FixtureSha256||extraction.Spans.Length!=1||extraction.Spans[0].Text!="通信処理の開発担当 ／ Go、Linux、Git")throw new InvalidOperationException("Fictional fixture mismatch");
     var person=(await repo.ReadAsync(p,personId,ct))!;AccessPolicy.RequireSelf(context.Actor,person.Value);
     if(person.Value.Text("publicationState")=="withdrawn"||!AccessPolicy.CanUse(context.Actor,person.Value))throw new DomainException(409,"SOURCE_REVOKED");
+    var departmentSnapshot=await services.GetRequiredService<AccessFence>().RunReadOnlyAsync(tenant,async(reads,token)=>
+    {
+        var authority=new AuthorityProvider(reads,config);var current=await authority.RequireAsync(actor,token);
+        var owner=(await reads.ReadAsync(p,personId,token))??throw new DomainException(404,"NOT_FOUND");AccessPolicy.RequireSelf(current,owner.Value);
+        if(owner.Value.Text("publicationState")=="withdrawn"||SyntheticTestAccess.IsTest(owner.Value))throw new DomainException(409,"SOURCE_REVOKED");
+        return await authority.DepartmentSnapshotAsync(tenant,personId,DateTimeOffset.UtcNow,token)??throw new DomainException(409,"TRIAL_DEPARTMENT_UNKNOWN");
+    },ct);
+    var departmentId=departmentSnapshot.Text("departmentId");if(!RecordJson.IsId(departmentId))throw new DomainException(409,"TRIAL_DEPARTMENT_UNKNOWN");
     var title="架空故障試験 "+id;
     var activity="activity-"+ConversationService.Hash(actor.PrincipalId+":"+title);
     if(await repo.ReadAsync(p,activity,ct) is not null)throw new DomainException(409,"TRIAL_ACTIVITY_EXISTS");
@@ -60,11 +68,11 @@ if(mode is "prepare" or "plan")
     var held=await root.ReadAsync(p,"system-access-fence",ct);if(held?.Value.Text("holder") is {Length:>0})throw new DomainException(503,"ACCESS_BUSY");
     if(mode=="plan")
     {
-        Console.WriteLine(new JsonObject{["readOnly"]=true,["documentId"]=id,["activityId"]=activity,["sourceSha256"]=WorkerTrialCheckpoints.FixtureSha256,["sourceSpans"]=1,["operatorAndPersonCurrent"]=true,["workflowJobsActive"]=false,["fenceHeld"]=false}.ToJsonString());return;
+        Console.WriteLine(new JsonObject{["readOnly"]=true,["documentId"]=id,["activityId"]=activity,["sourceSha256"]=WorkerTrialCheckpoints.FixtureSha256,["sourceSpans"]=1,["operatorAndPersonCurrent"]=true,["departmentSnapshot"]=departmentSnapshot.DeepClone(),["workflowJobsActive"]=false,["fenceHeld"]=false}.ToJsonString());return;
     }
     using(var once=new FileStream(Path.Combine(evidence,"prepare-once.lock"),FileMode.CreateNew,FileAccess.Write))await JsonSerializer.SerializeAsync(once,new{trial,workflow,id,at=DateTimeOffset.UtcNow},cancellationToken:ct);
     var now=DateTimeOffset.UtcNow;var value=RecordJson.New("document",id,tenant,actor.PrincipalId,person.Value.Strings("scopeIds"),now);
-    value["title"]=title;value["documentType"]="report";value["personId"]=personId;value["departmentId"]=person.Value.Text("departmentId");
+    value["title"]=title;value["documentType"]="report";value["personId"]=personId;value["departmentId"]=departmentId;
     value["accessVersion"]=1;value["extractionState"]="pending";value["aiState"]="not_started";value["currentVersionId"]=id+"-v1";
     value["workerTrial"]=new JsonObject{["id"]=trial,["armedAt"]=now,["expiresAt"]=now.AddMinutes(50)};
     var version=RecordJson.New("documentVersion",id+"-v1",tenant,actor.PrincipalId,value.Strings("scopeIds"),now);

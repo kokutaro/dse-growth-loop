@@ -35,6 +35,10 @@ bash scripts/worker-trial.sh plan <公開設定JSON> <証跡ディレクトリ>
 
 設定JSONにはData:Mode、Cosmos:Endpoint/Database、Storage:BlobEndpoint/QueueEndpoint、Auth:TenantId/Bindings/Grantsと、Diagnostics:WorkerTrialの明示した対象を指定する。資格情報を入れず、Azureの既存ログインを使う。
 
+架空workflowのpersonに部署がない場合も、既存personを修正しない。CLIは元tenantの現行actor・同じ本人・有効なDepartmentSnapshotAsyncを認可fence内で読み、新資料作成時点の確認済み部署IDだけを新規documentへ固定する。WFで変換されたepochをrootへ流用せず、部署directoryの閲覧権限をWFへ追加しない。所属が確認できなければAI前に止める。
+
+共通report pipelineは保存済みdocument.departmentIdを優先し、ない場合だけpersonへfallbackする。両方が不明/無効ならREPORT_DEPARTMENT_UNKNOWNで構造化前に保留する。通常uploadで不明な部署IDを空文字のまま保存せず、任意項目を省略する。部署IDを新しいscopeや閲覧権限として使わない。これにより移籍後も保存済みreportの所属を保ち、今回の既存124記録を変更せず試験する。
+
 ## 実施と元設定への復帰
 
 レビュー・CI済みのコードを既存配備ワークフローで共有反映する。Workerの次の試験専用envが元から存在しないことを確認して記録し、一時的に設定する。他のenv・identity・network・scaleは変更しない。
