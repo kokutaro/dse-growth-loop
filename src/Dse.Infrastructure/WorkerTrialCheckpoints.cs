@@ -34,7 +34,7 @@ public sealed class WorkerTrialCheckpoints(IPrimaryRepository repository,IConfig
             workflowId!=config["Diagnostics:WorkerTrial:WorkflowId"]||!RecordJson.IsId(trial)||!trial.StartsWith("trial-worker-",StringComparison.Ordinal)||
             !RecordJson.IsId(target)||!target.StartsWith("doc-worker-trial-",StringComparison.Ordinal)||
             config["Diagnostics:WorkerTrial:SourceSha256"]!=FixtureSha256||
-            claimedJob.Text("kind")!="job"||claimedJob.Text("jobType")!="enrichment"||
+            claimedJob.Text("kind")!="job"||claimedJob.Text("jobType")!="enrichment"||claimedJob.Text("supersedesJobId")!=""||
             claimedJob.Text("aggregateId")!=target||claimedJob.Number("aggregateVersion")!=1)return Task.FromResult(false);
         var tenant=claimedJob.Text("tenantId");
         return new AccessFence(repository).RunAsync(tenant,async token=>
@@ -42,7 +42,7 @@ public sealed class WorkerTrialCheckpoints(IPrimaryRepository repository,IConfig
             var p=RecordPartition.Catalog(tenant);var current=await repository.ReadAsync(p,claimedJob.Text("id"),token);
             if(current is null||current.Value.Text("status")!=status||current.Value.Text("ownerId")!=claimedJob.Text("ownerId")||
                 current.Value.Text("aggregateId")!=target||current.Value.Number("aggregateVersion")!=1||
-                current.Value.Text("jobType")!="enrichment"||
+                current.Value.Text("jobType")!="enrichment"||current.Value.Text("supersedesJobId")!=""||
                 status=="processing"&&(claimedJob.Text("leaseOwner")==""||current.Value.Text("leaseOwner")!=claimedJob.Text("leaseOwner")||
                     !Timestamp(current.Value["leaseUntil"],out var until)||until<=clock.GetUtcNow()))return false;
             if(current.Value["workerTrialClaims"]?[checkpoint] is not null)return false;

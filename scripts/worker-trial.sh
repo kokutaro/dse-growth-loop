@@ -33,7 +33,8 @@ if(config["Data:Mode"]!="Azure"||!RecordJson.IsId(trial)||!trial.StartsWith("tri
     !RecordJson.IsId(id)||!id.StartsWith("doc-worker-trial-",StringComparison.Ordinal)||workflow.Length!=51||
     config["Diagnostics:WorkerTrial:SourceSha256"]!=WorkerTrialCheckpoints.FixtureSha256||!RecordJson.IsId(personId))throw new ArgumentException("Explicit bounded trial target required");
 using var deadline=new CancellationTokenSource(TimeSpan.FromMinutes(3));var ct=deadline.Token;
-using var services=new ServiceCollection().AddSingleton<IConfiguration>(config).AddLogging().AddCatalog(config,false).AddIngestion(config).BuildServiceProvider();
+using var services=new ServiceCollection().AddSingleton<IConfiguration>(config).AddLogging().AddCatalog(config,false).AddIngestion(config)
+    .AddSingleton<IAiTransport>(new NoInferenceTransport()).BuildServiceProvider();
 var root=services.GetRequiredService<IPrimaryRepository>();
 var actor=await services.GetRequiredService<AuthorityProvider>().PersonAsync(tenant,personId,ct)??throw new DomainException(403,"FORBIDDEN");
 if(!actor.HasRole("operator")||!actor.HasRole("member"))throw new DomainException(403,"FORBIDDEN");
@@ -76,7 +77,17 @@ if(doc is null){Console.WriteLine(new JsonObject{["documentExists"]=false}.ToJso
 var jobName=doc.Value.Text("enrichmentJobId");var job=jobName==""?null:await repo.ReadAsync(p,jobName,ct);
 if(mode=="duplicate")
 {
-    if(job is null||job.Value.Text("aggregateId")!=id||job.Value.Number("aggregateVersion")!=1||job.Value.Text("jobType")!="enrichment")throw new DomainException(409,"TRIAL_NOT_READY");
+    var version=await repo.ReadAsync(p,doc.Value.Text("currentVersionId"),ct);
+    var plan=doc.Value["workerTrial"] as JsonObject;
+    if(job is null||job.Value.Text("aggregateId")!=id||job.Value.Number("aggregateVersion")!=1||job.Value.Text("jobType")!="enrichment"||
+        job.Value.Text("supersedesJobId")!=""||job.Value.Text("status") is not ("queued" or "ready")||
+        doc.Value.Text("ownerId")!=context.Actor.PrincipalId||job.Value.Text("ownerId")!=context.Actor.PrincipalId||
+        doc.Value.Text("documentType")!="report"||doc.Value.Number("sourceVersion")!=1||doc.Value.Number("activeVersion")!=1||!AccessPolicy.CanUse(context.Actor,doc.Value)||
+        plan?.Text("id")!=trial||plan["armedAt"]!.Deserialize<DateTimeOffset>()>DateTimeOffset.UtcNow||plan["expiresAt"]!.Deserialize<DateTimeOffset>()<=DateTimeOffset.UtcNow||
+        plan["expiresAt"]!.Deserialize<DateTimeOffset>()-plan["armedAt"]!.Deserialize<DateTimeOffset>()>TimeSpan.FromHours(1)||
+        version?.Value.Text("sha256")!=WorkerTrialCheckpoints.FixtureSha256||version.Value.Text("mediaType")!=OfficeExtractor.WordMime||
+        version.Value.Text("documentId")!=id||version.Value.Number("sourceVersion")!=1||version.Value.Text("ownerId")!=context.Actor.PrincipalId||
+        job.Value["workerTrialClaims"]?["built"]?["trialId"]?.GetValue<string>()!=trial)throw new DomainException(409,"TRIAL_NOT_READY");
     var held=await root.ReadAsync(p,"system-access-fence",ct);if(held?.Value.Text("holder") is {Length:>0})throw new DomainException(503,"ACCESS_BUSY");
     using(var once=new FileStream(Path.Combine(evidence,"duplicates-once.lock"),FileMode.CreateNew,FileAccess.Write))await JsonSerializer.SerializeAsync(once,new{jobId=jobName,at=DateTimeOffset.UtcNow},cancellationToken:ct);
     var queue=context.Services.GetRequiredService<IIngestionQueue>();for(var i=0;i<2;i++)await queue.SendAsync(new(tenant,jobName,1),ct);
@@ -90,5 +101,10 @@ using(var file=new FileStream(Path.Combine(evidence,"inspect-"+DateTimeOffset.Ut
 Console.WriteLine(new JsonObject{["at"]=report["at"]!.DeepClone(),["jobId"]=jobName,["status"]=job?.Value.Text("status"),["attempt"]=job?.Value.Number("attempt"),["lastError"]=job?.Value.Text("lastErrorCode"),
     ["availableAt"]=job?.Value["availableAt"]?.DeepClone(),["claims"]=job?.Value["workerTrialClaims"]?.DeepClone(),["providerAttempts"]=runs.Items.Sum(r=>(r.Value["trace"] as JsonObject)?.Number("attemptCount")??0),
     ["durableReuses"]=runs.Items.Count(r=>(r.Value["trace"] as JsonObject)?.Text("cacheKind")=="durable")}.ToJsonString());
+sealed class NoInferenceTransport:IAiTransport
+{
+    public Task<AiWireResponse> SendAsync(AiModel model,JsonObject body,int maxResponseBytes,CancellationToken ct)=>
+        throw new InvalidOperationException("Operator tooling never dispatches inference");
+}
 CS
-} | dotnet run - -- "$trial_mode" "$trial_config" "$trial_evidence"
+} | AZURE_TOKEN_CREDENTIALS=AzureCliCredential dotnet run - -- "$trial_mode" "$trial_config" "$trial_evidence"

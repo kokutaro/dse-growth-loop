@@ -15,7 +15,7 @@
 
 ## 制限
 
-WorkerTrialCheckpointsは既定無効。Data=Azure、明示した試験ID・workflow・新規document ID・既知架空WordのSHA256、現在のenrichment Job・集約版1、現在の所有者/operator権限とscope、lease、原文の現行性を全て照合する。rootには適用しない。public APIから任意の故障を要求できる経路を設けない。
+WorkerTrialCheckpointsは既定無効。Data=Azure、明示した試験ID・workflow・新規document ID・既知架空WordのSHA256、現在の最初のenrichment Job・集約版1、現在の所有者/operator権限とscope、lease、原文の現行性を全て照合する。supersedesJobIdを持つ明示再試行Jobは対象にせず、同じ資料から故障を再armingしない。rootには適用しない。public APIから任意の故障を要求できる経路を設けない。
 
 documentのworkerTrialにarmedAt/expiryを内部CLIだけで付ける。期限は最大1時間、新規資料だけ。一度限りのclaimをJobへCAS保存し、その保存が不明なら故障を盲目的に再注入しない。claimの存在だけを故障発火の証拠にせず、queuedと360秒待機、またはreadyとQueue再配達を併せて記録する。
 
@@ -24,7 +24,7 @@ documentのworkerTrialにarmedAt/expiryを内部CLIだけで付ける。期限�
 1. main・API/Workerの実revision、全catalog/conversationsの進行中Job・pending実行・fence、Queue概数を読み取る。古い未通知の会話Jobを勝手にreconcile/取消しない。無関係な処理があれば試験を開始しない。
 2. 既存の架空workflow全記録のID/ETag/版、原文SHA、辞書版と承認履歴を退避する。値を取得する構成項目は公開endpointと既存架空利用者のID/roles/scopesの明示許可リストだけ。Auth/Cosmos/Storageの全値や接続文字列・鍵をexportしない。
 3. 有料推論の新しい対象・最大呼出し数・設定単価見積を確認する。旧試験の未使用枠を流用しない。AccountingMode=Disabledを金額上限の強制と扱わない。CI・API/Worker・Cosmos/Blob/Queue・ACR・ログ・通信等の運用費は別で、実請求は未確定。
-4. 既存権限を持つ独立したMacのCLIを読取モードで確認する。APIへ依存せず、推論を必ずMock/Stoppedに上書きする。新しいIAMは追加しない。
+4. 既存権限を持つ独立したMacのCLIを読取モードで確認する。APIへ依存せず、推論を必ずMock/Stoppedに上書きする。ローカルの1プロセスだけAZURE_TOKEN_CREDENTIALS=AzureCliCredentialで既存ログインを明示選択し、MacにないManaged Identityの探索待ちを避ける。共有Workerの認証設定やIAMは変更しない。
 
 ```bash
 bash scripts/worker-trial.sh inspect <公開設定JSON> <証跡ディレクトリ>
