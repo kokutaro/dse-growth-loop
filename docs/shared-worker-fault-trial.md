@@ -49,15 +49,21 @@ Diagnostics__WorkerTrial__Id=trial-worker-<一意なID>
 Diagnostics__WorkerTrial__WorkflowId=<既存架空workflow>
 Diagnostics__WorkerTrial__DocumentId=doc-worker-trial-<一意なID>
 Diagnostics__WorkerTrial__SourceSha256=a651bb75f9d2a75a4f9a1595a925798d72114c815cc9cf9c1776861f8efa7f4e
+Diagnostics__WorkerTrial__PersonId=<既存架空operator本人>
 ```
 
-`plan`は原本・現在の人物/権限/scope・生成予定ID・workflow Job・fenceを読取だけで検証する。Workerの実envと対象を照合してからoperator JSONのEnabledを明示的にtrueにし、`prepare`へ進む。`prepare`は固定されたrepositoryの架空fixtureをOffice検証し、現在の人物・権限・scope・既存workflowを確認する。新規reportのtitleと生成予定activity IDの不存在を確認し、既存DocumentAcceptance、Blob、通知機能へ渡す。既存person.documentHeadsに影響するimportKeyは付けない。通常ブラウザupload成功とは区別する。prepare-once.lockが作成された後は結果不明でも再送せずinspectする。
+`plan`は原本・現在の人物/権限/scope・生成予定ID・workflow Job・fenceを検証する。業務データは変更しないが、現行権限の照合には短い認可fenceの取得・解放を行う。Workerの実envと対象を照合してから`prepare`へ進む。`prepare`は組み込んだ固定の架空Word fixtureをOffice検証し、現在の人物・権限・scope・既存workflowを確認する。新規reportのtitleと生成予定activity IDの不存在を確認し、既存DocumentAcceptance、Blob、通知機能へ渡す。既存person.documentHeadsに影響するimportKeyは付けない。通常ブラウザupload成功とは区別する。
+
+Macの既存主体にBlob/Queueのデータ操作権限がない場合も、鍵・SASや追加IAMで回避しない。変更操作は既存Workerコンテナ内の限定CLIのみで実行し、その既存Managed Identityを使う。ローカルscriptからのprepare/duplicateは拒否する。以下は`az containerapp exec`で対象の既存Workerへ接続して実行する固定コマンドであり、任意の外部原本は入力できない。CLI自身は常にMock/Stoppedに上書きし、推論を送信しない。受け付けたJobの実AI処理は通常の常用Workerが行う。
 
 ```bash
-bash scripts/worker-trial.sh prepare <公開設定JSON> <証跡ディレクトリ>
-bash scripts/worker-trial.sh inspect <公開設定JSON> <証跡ディレクトリ>
-bash scripts/worker-trial.sh duplicate <公開設定JSON> <証跡ディレクトリ>
+dotnet Dse.Worker.dll --worker-trial-plan
+dotnet Dse.Worker.dll --worker-trial-prepare
+dotnet Dse.Worker.dll --worker-trial-inspect
+dotnet Dse.Worker.dll --worker-trial-duplicate
 ```
+
+prepare/duplicateはそれぞれworkflow・trial・document・操作に束縛した非期限の永続claimをCAS保存してから外部操作に進む。podの/tmpにある補助onceファイルが再起動で失われても、同じ操作を再dispatchしない。claim後に失敗した場合は0件・一部送信・全件送信のいずれもあり得るため、結果を照合し、claim削除や新しい試験IDによる盲目的な再送をしない。これは送信と保存を原子的にする保証ではない。
 
 duplicateは対象enrichment Jobの通知を2件だけ送る。queued/availableAt・成功receipt・新しい投影がまだないこと、root fence解放・AI実行枠完了を照合してから`az containerapp revision restart`で対象常用Worker revisionを1回再起動する。結果不明なら管理面を先に読み、盲目的に再実行しない。6分超の再開時刻、再送/再利用、Job attempt、投影のID/版/件数、承認・監査・台帳を記録する。
 

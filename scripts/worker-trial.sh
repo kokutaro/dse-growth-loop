@@ -2,7 +2,7 @@
 set -euo pipefail
 if [[ ${1:-} == --help ]]; then
   echo 'worker-trial.sh inspect|plan|prepare|duplicate CONFIG_JSON EVIDENCE_DIR'
-  echo 'Uses existing Azure identity. prepare accepts only the repository fictional Word fixture; never infers or changes IAM.'
+  echo 'Uses existing Azure identity for inspect/plan only. Mutations require the bounded CLI inside the existing Worker; never infers or changes IAM.'
   exit 0
 fi
 [[ $# == 3 && ( $1 == inspect || $1 == plan || $1 == prepare || $1 == duplicate ) ]]

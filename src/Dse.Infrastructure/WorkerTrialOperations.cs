@@ -33,6 +33,15 @@ public static class WorkerTrialOperations
         var evidence=evidenceDirectory??Path.Combine(Path.GetTempPath(),"dse-worker-trial",trial);Directory.CreateDirectory(evidence);
         using var services=new ServiceCollection().AddSingleton<IConfiguration>(config).AddLogging().AddCatalog(config,false).AddIngestion(config)
             .AddSingleton<IAiTransport>(new NoInferenceTransport()).BuildServiceProvider();
+        return await ExecuteWithServicesAsync(mode,config,services,evidence,ct);
+    }
+    // Internal seam for real common-service tests with in-memory adapters. Public
+    // execution always validates the Azure target and remote mutation boundary first.
+    internal static async Task<JsonObject> ExecuteWithServicesAsync(string mode,IConfiguration config,IServiceProvider services,string evidence,CancellationToken ct)
+    {
+        var trial=config["Diagnostics:WorkerTrial:Id"]!;var workflow=config["Diagnostics:WorkerTrial:WorkflowId"]!;
+        var id=config["Diagnostics:WorkerTrial:DocumentId"]!;var personId=config["Diagnostics:WorkerTrial:PersonId"]!;
+        var tenant=config["Auth:TenantId"]!;
         var root=services.GetRequiredService<IPrimaryRepository>();
         var actor=await services.GetRequiredService<AuthorityProvider>().PersonAsync(tenant,personId,ct)??throw new DomainException(403,"FORBIDDEN");
         if(!actor.HasRole("operator")||!actor.HasRole("member"))throw new DomainException(403,"FORBIDDEN");
@@ -66,6 +75,7 @@ public static class WorkerTrialOperations
             {
                 return new JsonObject{["readOnly"]=true,["documentId"]=id,["activityId"]=activity,["sourceSha256"]=WorkerTrialCheckpoints.FixtureSha256,["sourceSpans"]=1,["operatorAndPersonCurrent"]=true,["departmentSnapshot"]=departmentSnapshot.DeepClone(),["workflowJobsActive"]=false,["fenceHeld"]=false};
             }
+            await ClaimOperationAsync(repo,context.Actor,workflow,trial,id,"prepare",ct);
             using(var once=new FileStream(Path.Combine(evidence,"prepare-once.lock"),FileMode.CreateNew,FileAccess.Write))await JsonSerializer.SerializeAsync(once,new{trial,workflow,id,at=DateTimeOffset.UtcNow},cancellationToken:ct);
             var now=DateTimeOffset.UtcNow;var value=RecordJson.New("document",id,tenant,actor.PrincipalId,person.Value.Strings("scopeIds"),now);
             value["title"]=title;value["documentType"]="report";value["personId"]=personId;value["departmentId"]=departmentId;
@@ -98,6 +108,7 @@ public static class WorkerTrialOperations
                 version.Value.Text("documentId")!=id||version.Value.Number("sourceVersion")!=1||version.Value.Text("ownerId")!=context.Actor.PrincipalId||
                 job.Value["workerTrialClaims"]?["built"]?["trialId"]?.GetValue<string>()!=trial)throw new DomainException(409,"TRIAL_NOT_READY");
             var held=await root.ReadAsync(p,"system-access-fence",ct);if(held?.Value.Text("holder") is {Length:>0})throw new DomainException(503,"ACCESS_BUSY");
+            await ClaimOperationAsync(repo,context.Actor,workflow,trial,id,"duplicate",ct);
             using(var once=new FileStream(Path.Combine(evidence,"duplicates-once.lock"),FileMode.CreateNew,FileAccess.Write))await JsonSerializer.SerializeAsync(once,new{jobId=jobName,at=DateTimeOffset.UtcNow},cancellationToken:ct);
             var queue=context.Services.GetRequiredService<IIngestionQueue>();for(var i=0;i<2;i++)await queue.SendAsync(new(tenant,jobName,1),ct);
             return new JsonObject{["jobId"]=jobName,["duplicatesSent"]=2};
@@ -112,6 +123,20 @@ public static class WorkerTrialOperations
             ["durableReuses"]=runs.Items.Count(r=>(r.Value["trace"] as JsonObject)?.Text("cacheKind")=="durable")};
 
     }
+    private static Task<bool> ClaimOperationAsync(IPrimaryRepository repository,ActorAccess actor,string workflow,string trial,string document,string operation,CancellationToken ct)=>
+        new AccessFence(repository).RunAsync(actor.TenantId,async token=>
+        {
+            actor=await new AuthorityProvider(repository).RequireAsync(actor,token);
+            if(!actor.HasRole("operator"))throw new DomainException(403,"FORBIDDEN");
+            var p=RecordPartition.Catalog(actor.TenantId);
+            var id="worker-trial-operation-"+ConversationService.Hash(workflow+":"+trial+":"+document+":"+operation);
+            if(await repository.ReadAsync(p,id,token) is not null)throw new DomainException(409,"TRIAL_OPERATION_CLAIMED_INSPECT_INSTEAD");
+            var claim=RecordJson.New("idempotency",id,actor.TenantId,actor.PrincipalId,["system"],DateTimeOffset.UtcNow);
+            claim["state"]="claimed";claim["operation"]=operation;claim["trialId"]=trial;claim["documentId"]=document;
+            // No TTL and no timed re-arming. An unknown Blob/Queue outcome is
+            // inspected, never made dispatchable by a restarted pod's empty /tmp.
+            await repository.CommitAsync(p,[RecordWrite.Create(claim)],token);return true;
+        },ct);
     sealed class NoInferenceTransport:IAiTransport
     {
         public Task<AiWireResponse> SendAsync(AiModel model,JsonObject body,int maxResponseBytes,CancellationToken ct)=>
