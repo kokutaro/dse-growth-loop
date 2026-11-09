@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 if [[ ${1:-} == --help ]]; then
-  echo 'worker-trial.sh inspect|prepare|duplicate CONFIG_JSON EVIDENCE_DIR'
+  echo 'worker-trial.sh inspect|plan|prepare|duplicate CONFIG_JSON EVIDENCE_DIR'
   echo 'Uses existing Azure identity. prepare accepts only the repository fictional Word fixture; never infers or changes IAM.'
   exit 0
 fi
-[[ $# == 3 && ( $1 == inspect || $1 == prepare || $1 == duplicate ) ]]
+[[ $# == 3 && ( $1 == inspect || $1 == plan || $1 == prepare || $1 == duplicate ) ]]
 trial_mode=$1
 trial_config=$(cd "$(dirname "$2")" && pwd)/$(basename "$2")
 trial_evidence=$(cd "$3" && pwd)
@@ -32,6 +32,7 @@ var tenant=config["Auth:TenantId"]??"";
 if(config["Data:Mode"]!="Azure"||!RecordJson.IsId(trial)||!trial.StartsWith("trial-worker-",StringComparison.Ordinal)||
     !RecordJson.IsId(id)||!id.StartsWith("doc-worker-trial-",StringComparison.Ordinal)||workflow.Length!=51||
     config["Diagnostics:WorkerTrial:SourceSha256"]!=WorkerTrialCheckpoints.FixtureSha256||!RecordJson.IsId(personId))throw new ArgumentException("Explicit bounded trial target required");
+if(mode=="prepare"&&config["Diagnostics:WorkerTrial:Enabled"]!="true")throw new ArgumentException("Verify the deployed trial settings, then explicitly enable the operator plan before preparation");
 using var deadline=new CancellationTokenSource(TimeSpan.FromMinutes(3));var ct=deadline.Token;
 using var services=new ServiceCollection().AddSingleton<IConfiguration>(config).AddLogging().AddCatalog(config,false).AddIngestion(config)
     .AddSingleton<IAiTransport>(new NoInferenceTransport()).BuildServiceProvider();
@@ -41,7 +42,7 @@ if(!actor.HasRole("operator")||!actor.HasRole("member"))throw new DomainExceptio
 var context=await services.GetRequiredService<DemoWorkflows>().GetAsync(actor,workflow,ct);
 var repo=context.Services.GetRequiredService<IPrimaryRepository>();var store=context.Services.GetRequiredService<IRecordStore>();var p=RecordPartition.Catalog(tenant);
 var doc=await repo.ReadAsync(p,id,ct);
-if(mode=="prepare")
+if(mode is "prepare" or "plan")
 {
     if(doc is not null)throw new DomainException(409,"TRIAL_ALREADY_EXISTS_INSPECT_INSTEAD");
     var source=Path.Combine(Directory.GetCurrentDirectory(),"tests/Dse.Tests/Fixtures/worker-trial-source.docx");
@@ -57,6 +58,10 @@ if(mode=="prepare")
     string? cursor=null;
     do{var page=await repo.QueryAsync(p,"job",null,null,100,cursor,ct);if(page.Items.Any(r=>r.Value.Text("status") is "queued" or "processing"))throw new DomainException(409,"OTHER_WORKFLOW_JOB_ACTIVE");cursor=page.ContinuationToken;}while(cursor is not null);
     var held=await root.ReadAsync(p,"system-access-fence",ct);if(held?.Value.Text("holder") is {Length:>0})throw new DomainException(503,"ACCESS_BUSY");
+    if(mode=="plan")
+    {
+        Console.WriteLine(new JsonObject{["readOnly"]=true,["documentId"]=id,["activityId"]=activity,["sourceSha256"]=WorkerTrialCheckpoints.FixtureSha256,["sourceSpans"]=1,["operatorAndPersonCurrent"]=true,["workflowJobsActive"]=false,["fenceHeld"]=false}.ToJsonString());return;
+    }
     using(var once=new FileStream(Path.Combine(evidence,"prepare-once.lock"),FileMode.CreateNew,FileAccess.Write))await JsonSerializer.SerializeAsync(once,new{trial,workflow,id,at=DateTimeOffset.UtcNow},cancellationToken:ct);
     var now=DateTimeOffset.UtcNow;var value=RecordJson.New("document",id,tenant,actor.PrincipalId,person.Value.Strings("scopeIds"),now);
     value["title"]=title;value["documentType"]="report";value["personId"]=personId;value["departmentId"]=person.Value.Text("departmentId");

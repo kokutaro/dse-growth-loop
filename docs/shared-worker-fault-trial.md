@@ -19,6 +19,8 @@ WorkerTrialCheckpointsは既定無効。Data=Azure、明示した試験ID・work
 
 documentのworkerTrialにarmedAt/expiryを内部CLIだけで付ける。期限は最大1時間、新規資料だけ。一度限りのclaimをJobへCAS保存し、その保存が不明なら故障を盲目的に再注入しない。claimの存在だけを故障発火の証拠にせず、queuedと360秒待機、またはreadyとQueue再配達を併せて記録する。
 
+workerTrial/workerTrialClaimsは契約上もサーバー生成の読取専用メタデータとする。スキーマのreadOnly注釈だけに依存せず、通常uploadはこれらのform入力を拒否する。型にないcheckpointや不正な日時も契約検証で拒否する。
+
 ## 準備
 
 1. main・API/Workerの実revision、全catalog/conversationsの進行中Job・pending実行・fence、Queue概数を読み取る。古い未通知の会話Jobを勝手にreconcile/取消しない。無関係な処理があれば試験を開始しない。
@@ -28,6 +30,7 @@ documentのworkerTrialにarmedAt/expiryを内部CLIだけで付ける。期限�
 
 ```bash
 bash scripts/worker-trial.sh inspect <公開設定JSON> <証跡ディレクトリ>
+bash scripts/worker-trial.sh plan <公開設定JSON> <証跡ディレクトリ>
 ```
 
 設定JSONにはData:Mode、Cosmos:Endpoint/Database、Storage:BlobEndpoint/QueueEndpoint、Auth:TenantId/Bindings/Grantsと、Diagnostics:WorkerTrialの明示した対象を指定する。資格情報を入れず、Azureの既存ログインを使う。
@@ -44,7 +47,7 @@ Diagnostics__WorkerTrial__DocumentId=doc-worker-trial-<一意なID>
 Diagnostics__WorkerTrial__SourceSha256=a651bb75f9d2a75a4f9a1595a925798d72114c815cc9cf9c1776861f8efa7f4e
 ```
 
-`prepare`は固定されたrepositoryの架空fixtureをOffice検証し、現在の人物・権限・scope・既存workflowを確認する。新規reportのtitleと生成予定activity IDの不存在を確認し、既存DocumentAcceptance、Blob、通知機能へ渡す。既存person.documentHeadsに影響するimportKeyは付けない。通常ブラウザupload成功とは区別する。prepare-once.lockが作成された後は結果不明でも再送せずinspectする。
+`plan`は原本・現在の人物/権限/scope・生成予定ID・workflow Job・fenceを読取だけで検証する。Workerの実envと対象を照合してからoperator JSONのEnabledを明示的にtrueにし、`prepare`へ進む。`prepare`は固定されたrepositoryの架空fixtureをOffice検証し、現在の人物・権限・scope・既存workflowを確認する。新規reportのtitleと生成予定activity IDの不存在を確認し、既存DocumentAcceptance、Blob、通知機能へ渡す。既存person.documentHeadsに影響するimportKeyは付けない。通常ブラウザupload成功とは区別する。prepare-once.lockが作成された後は結果不明でも再送せずinspectする。
 
 ```bash
 bash scripts/worker-trial.sh prepare <公開設定JSON> <証跡ディレクトリ>

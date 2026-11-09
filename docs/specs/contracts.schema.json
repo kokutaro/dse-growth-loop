@@ -844,6 +844,32 @@
         },
         "historicalEvaluation": {
           "type": "boolean"
+        },
+        "workerTrial": {
+          "type": "object",
+          "readOnly": true,
+          "description": "保守CLIが固定架空資料へ生成する試験plan。利用者入力からの設定は不可。",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^trial-worker-[A-Za-z0-9._:-]+$",
+              "maxLength": 128
+            },
+            "armedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "id",
+            "armedAt",
+            "expiresAt"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -2343,6 +2369,53 @@
         },
         "processingDiagnostics": {
           "$ref": "#/$defs/PipelineDiagnostics"
+        },
+        "workerTrialClaims": {
+          "type": "object",
+          "readOnly": true,
+          "description": "Job限定の保守checkpoint claim。発火の確認にはJob状態とQueue観測を併用する。",
+          "minProperties": 1,
+          "properties": {
+            "built": {
+              "type": "object",
+              "properties": {
+                "trialId": {
+                  "type": "string",
+                  "pattern": "^trial-worker-[A-Za-z0-9._:-]+$",
+                  "maxLength": 128
+                },
+                "claimedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "trialId",
+                "claimedAt"
+              ],
+              "additionalProperties": false
+            },
+            "committed": {
+              "type": "object",
+              "properties": {
+                "trialId": {
+                  "type": "string",
+                  "pattern": "^trial-worker-[A-Za-z0-9._:-]+$",
+                  "maxLength": 128
+                },
+                "claimedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "trialId",
+                "claimedAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
         }
       },
       "required": [
