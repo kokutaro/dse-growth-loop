@@ -160,6 +160,20 @@ public sealed class IngestionHarness : IDisposable
 }
 public sealed class IngestionFlowTests
 {
+    [Fact]
+    public async Task Upload_omits_unknown_department_instead_of_saving_an_invalid_empty_id()
+    {
+        using var h=new IngestionHarness();var p=RecordPartition.Catalog("demo");
+        var person=(await h.Repo.ReadAsync(p,IdentityResolver.Demo.PersonId,default))!;person.Value["departmentId"]="";
+        await h.Store.CommitAsync(p,[RecordWrite.Replace(person.Value,person.ETag)],default);
+        var accepted=await h.Uploads.UploadAsync(IdentityResolver.Demo,"架空の部署不明週報","report","fictional.docx",OfficeExtractor.WordMime,OfficeFixtures.Package(),"unknown-department-key",default);
+        var document=(await h.Repo.ReadAsync(p,accepted.Body!["documentId"]!.GetValue<string>(),default))!.Value;
+        Assert.False(document.ContainsKey("departmentId"));
+        var root=new DirectoryInfo(AppContext.BaseDirectory);while(root is not null&&!File.Exists(Path.Combine(root.FullName,"DseGrowthLoop.slnx")))root=root.Parent;
+        var output=Path.Combine(root!.FullName,"tests/Dse.Tests/TestResults");Directory.CreateDirectory(output);
+        await File.WriteAllTextAsync(Path.Combine(output,"report-unknown-contract.json"),document.ToJsonString());
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -269,6 +283,7 @@ public sealed class DocumentUploadApiTests
     [InlineData("personId")]
     [InlineData("workerTrial")]
     [InlineData("workerTrialClaims")]
+    [InlineData("departmentId")]
     public async Task Authorization_metadata_cannot_be_supplied(string field)
     {
         using var factory = Factory(); using var client = factory.CreateClient();

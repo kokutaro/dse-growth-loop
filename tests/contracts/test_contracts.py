@@ -17,6 +17,11 @@ def read(name):
 
 
 class ContractsTests(unittest.TestCase):
+    def test_departmentless_upload_keeps_optional_department_absent(self):
+        document = json.loads((ROOT / 'tests/Dse.Tests/TestResults/report-unknown-contract.json').read_text())
+        self.assertNotIn('departmentId', document)
+        self.validator('Document').validate(document)
+
     def test_generated_worker_trial_metadata_is_read_only_contract_data(self):
         rows = json.loads((ROOT / 'tests/Dse.Tests/TestResults/worker-trial-contracts.json').read_text())
         self.assertTrue(any('workerTrial' in r['value'] for r in rows))

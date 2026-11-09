@@ -8,6 +8,31 @@ namespace Dse.Tests;
 
 public sealed class ProfilePipelineTests
 {
+    [Theory]
+    [InlineData(false)][InlineData(true)]
+    public async Task Report_preserves_saved_department_and_holds_unknown_department_before_ai(bool unknown)
+    {
+        using var h=new IngestionHarness();var accepted=await h.Uploads.UploadAsync(IdentityResolver.Demo,"架空の部署週報","report","fictional.docx",OfficeExtractor.WordMime,OfficeFixtures.Package(),"report-department-key",default);
+        await h.Processor.RunOnceAsync(default);var p=RecordPartition.Catalog("demo");
+        var document=(await h.Repo.ReadAsync(p,accepted.Body!["documentId"]!.GetValue<string>(),default))!;
+        var savedDepartment=document.Value.Text("departmentId");Assert.NotEmpty(savedDepartment);
+        var person=(await h.Repo.ReadAsync(p,IdentityResolver.Demo.PersonId,default))!;
+        person.Value["departmentId"]=unknown?"":"department-after-transfer";
+        var writes=new List<RecordWrite>{RecordWrite.Replace(person.Value,person.ETag)};
+        if(unknown){document.Value["departmentId"]="";writes.Add(RecordWrite.Replace(document.Value,document.ETag));}
+        await h.Store.CommitAsync(p,writes,default);var ai=new PipelineAi();var pipeline=Create(h,ai);var job=await Enrichment(h,accepted);
+        if(unknown)
+        {
+            Assert.Equal("REPORT_DEPARTMENT_UNKNOWN",(await Assert.ThrowsAsync<DomainException>(()=>pipeline.BuildAsync(job,default))).Code);
+            Assert.Equal(0,ai.Calls);
+        }
+        else
+        {
+            var plan=await pipeline.BuildAsync(job,default);
+            Assert.Equal(savedDepartment,Assert.Single(plan.Writes,w=>w.Value.Text("kind")=="departmentActivity").Value.Text("departmentId"));
+        }
+    }
+
     [Fact]
     public void Dates_are_computed_and_overlapping_periods_are_counted_once()
     {
