@@ -29,7 +29,8 @@ public partial class AiTests
         span["location"]=new JsonObject{["label"]="paragraph 1"};
         var job=Jobs.Create(doc,"enrichment",now,"job-worker-trial-integration");doc["enrichmentJobId"]=job.Text("id");
         await h.Store.CommitAsync(p,[RecordWrite.Create(doc),RecordWrite.Create(version),RecordWrite.Create(span),RecordWrite.Create(job)],default);
-        var contractRows=new List<object>{new{schema="Document",value=doc.Copy()},new{schema="Job",value=job.Copy()}};
+        var contractRows=new List<object>{new{schema="Document",value=(await h.Store.ReadAsync(p,document,default))!.Value.Copy()},
+            new{schema="Job",value=(await h.Store.ReadAsync(p,job.Text("id"),default))!.Value.Copy()}};
         var originalPerson=(await h.Store.ReadAsync(p,IdentityResolver.Demo.PersonId,default))!;
         await h.Queue.SendAsync(new("demo",job.Text("id"),1),default);
         var config=Config();config["AiUsage:AccountingMode"]="Disabled";config["AiUsage:MaxInputTokens"]="10240";config["AiUsage:MaxOutputTokens"]="4096";config["Jev:OutputLimit"]="4096";config["Foundry:OutputLimit"]="4096";
