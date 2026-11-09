@@ -26,8 +26,25 @@ public sealed class WorkerTrialOperationsTests
     [InlineData("prepare")][InlineData("duplicate")]
     public async Task Mutations_are_not_available_from_the_local_read_only_tool(string mode)
     {
-        Assert.Equal("TRIAL_REMOTE_WORKER_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>
+        Assert.Equal("TRIAL_REMOTE_APP_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>
             WorkerTrialOperations.RunAsync(mode,new ConfigurationBuilder().Build(),null,default))).Code);
+    }
+    [Theory]
+    [InlineData("prepare","dse-worker",true)][InlineData("duplicate","dse-api",true)]
+    [InlineData("prepare","dse-api",false)][InlineData("duplicate","dse-worker",false)]
+    public void Maintenance_respects_existing_upload_and_worker_identity_responsibilities(string operation,string app,bool linux)
+    {
+        Assert.Equal("TRIAL_REMOTE_APP_REQUIRED",Assert.Throws<DomainException>(()=>WorkerTrialOperations.RequireMutationHost(operation,app,linux)).Code);
+    }
+    [Theory]
+    [InlineData("prepare","dse-api")][InlineData("duplicate","dse-worker")]
+    public void Maintenance_accepts_only_its_existing_service_host(string operation,string app)=>WorkerTrialOperations.RequireMutationHost(operation,app,true);
+    [Fact]
+    public void Dependency_failure_report_includes_status_without_secret_exception_message()
+    {
+        var report=WorkerTrialOperations.FailureReport(new Azure.RequestFailedException(403,"secret must not be printed"));
+        Assert.Equal(403,report["dependencyStatus"]!.GetValue<int>());
+        Assert.DoesNotContain("secret",report.ToJsonString());
     }
     [Theory]
     [InlineData(null)][InlineData("")][InlineData("not-an-identity")]
