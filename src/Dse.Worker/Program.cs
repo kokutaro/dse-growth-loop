@@ -9,7 +9,7 @@ if(args.Length==1&&command is "--worker-trial-plan" or "--worker-trial-inspect" 
     try{Console.WriteLine((await WorkerTrialOperations.RunAsync(command["--worker-trial-".Length..],trial.Configuration,null,deadline.Token)).ToJsonString());}
     catch(Exception error)
     {
-        Console.WriteLine(new System.Text.Json.Nodes.JsonObject{["status"]="failed",["errorCode"]=error is DomainException d?d.Code:"WORKER_TRIAL_FAILED",["exceptionClass"]=error.GetType().Name}.ToJsonString());
+        Console.WriteLine(WorkerTrialOperations.FailureReport(error).ToJsonString());
         Environment.ExitCode=1;
     }
     return;

@@ -26,8 +26,46 @@ public sealed class WorkerTrialOperationsTests
     [InlineData("prepare")][InlineData("duplicate")]
     public async Task Mutations_are_not_available_from_the_local_read_only_tool(string mode)
     {
-        Assert.Equal("TRIAL_REMOTE_WORKER_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>
+        Assert.Equal("TRIAL_REMOTE_APP_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>
             WorkerTrialOperations.RunAsync(mode,new ConfigurationBuilder().Build(),null,default))).Code);
+    }
+    [Theory]
+    [InlineData("prepare","dse-worker",true)][InlineData("duplicate","dse-api",true)]
+    [InlineData("prepare","dse-api",false)][InlineData("duplicate","dse-worker",false)]
+    public void Maintenance_respects_existing_upload_and_worker_identity_responsibilities(string operation,string app,bool linux)
+    {
+        Assert.Equal("TRIAL_REMOTE_APP_REQUIRED",Assert.Throws<DomainException>(()=>WorkerTrialOperations.RequireMutationHost(operation,app,linux)).Code);
+    }
+    [Theory]
+    [InlineData("prepare","dse-api")][InlineData("duplicate","dse-worker")]
+    public void Maintenance_accepts_only_its_existing_service_host(string operation,string app)=>WorkerTrialOperations.RequireMutationHost(operation,app,true);
+    [Fact]
+    public void Dependency_failure_report_includes_status_without_secret_exception_message()
+    {
+        var report=WorkerTrialOperations.FailureReport(new Azure.RequestFailedException(403,"secret must not be printed"));
+        Assert.Equal(403,report["dependencyStatus"]!.GetValue<int>());
+        Assert.DoesNotContain("secret",report.ToJsonString());
+    }
+    [Theory]
+    [InlineData(404)][InlineData(403)]
+    public async Task Original_probe_only_treats_not_found_as_proven_absence(int status)
+    {
+        var blobs=new ProbeBlobs(status,null);
+        if(status==404)Assert.False(await WorkerTrialOperations.ProbeOriginalAsync(blobs,"demo","doc-worker-trial-absent",default));
+        else Assert.Equal(status,(await Assert.ThrowsAsync<Azure.RequestFailedException>(()=>WorkerTrialOperations.ProbeOriginalAsync(blobs,"demo","doc-worker-trial-absent",default))).Status);
+    }
+    [Fact]
+    public async Task Original_probe_verifies_the_fixed_fictional_source_without_returning_its_body()=>
+        Assert.True(await WorkerTrialOperations.ProbeOriginalAsync(new ProbeBlobs(null,WorkerTrialOperations.FixtureBytes()),"demo","doc-worker-trial-source",default));
+    [Fact]
+    public async Task Original_probe_holds_a_different_source()=>Assert.Equal("TRIAL_SOURCE_MISMATCH",(await Assert.ThrowsAsync<DomainException>(()=>
+        WorkerTrialOperations.ProbeOriginalAsync(new ProbeBlobs(null,[1,2,3]),"demo","doc-worker-trial-source",default))).Code);
+    private sealed class ProbeBlobs(int? status,byte[]? bytes):IIngestionBlobs
+    {
+        public Task<byte[]> GetAsync(string container,string key,CancellationToken ct)=>status is int code?Task.FromException<byte[]>(new Azure.RequestFailedException(code,"diagnostic")):Task.FromResult(bytes!);
+        public Task PutAsync(string container,string key,byte[] data,CancellationToken ct)=>throw new InvalidOperationException("Read only");
+        public IAsyncEnumerable<BlobEntry> ListAsync(string container,string prefix,CancellationToken ct)=>throw new InvalidOperationException("Read only");
+        public Task DeleteAsync(string container,string key,string etag,CancellationToken ct)=>throw new InvalidOperationException("Read only");
     }
     [Theory]
     [InlineData(null)][InlineData("")][InlineData("not-an-identity")]

@@ -12,6 +12,23 @@ namespace Dse.Infrastructure;
 
 public static class WorkerTrialOperations
 {
+    internal static void RequireMutationHost(string mode,string? app,bool linux)
+    {
+        var required=mode=="prepare"?"dse-api":mode=="duplicate"?"dse-worker":null;
+        if(required is not null&&(!linux||app!=required))throw new DomainException(403,"TRIAL_REMOTE_APP_REQUIRED");
+    }
+    public static JsonObject FailureReport(Exception error)=>new(){["status"]="failed",["errorCode"]=error is DomainException d?d.Code:"WORKER_TRIAL_FAILED",
+        ["exceptionClass"]=error.GetType().Name,["dependencyStatus"]=error is Azure.RequestFailedException azure?azure.Status:null};
+    internal static async Task<bool> ProbeOriginalAsync(IIngestionBlobs blobs,string tenant,string id,CancellationToken ct)
+    {
+        try
+        {
+            var bytes=await blobs.GetAsync("originals",tenant+"/worker-trials/"+id+".docx",ct);
+            if(OfficeExtractor.Hash(bytes)!=WorkerTrialCheckpoints.FixtureSha256)throw new DomainException(409,"TRIAL_SOURCE_MISMATCH");
+            return true;
+        }
+        catch(Azure.RequestFailedException missing)when(missing.Status==404){return false;}
+    }
     internal static ManagedIdentityCredential MutationCredential(IConfiguration config)
     {
         if(!Guid.TryParse(config["AZURE_CLIENT_ID"],out var clientId)||clientId==Guid.Empty)throw new ArgumentException("Existing worker managed identity required");
@@ -25,7 +42,7 @@ public static class WorkerTrialOperations
     public static async Task<JsonObject> RunAsync(string mode,IConfiguration originalConfig,string? evidenceDirectory,CancellationToken ct)
     {
         if(mode is not ("inspect" or "plan" or "prepare" or "duplicate"))throw new ArgumentException("Unknown trial operation");
-        if(mode is "prepare" or "duplicate" && (!OperatingSystem.IsLinux()||Environment.GetEnvironmentVariable("CONTAINER_APP_NAME")!="dse-worker"))throw new DomainException(403,"TRIAL_REMOTE_WORKER_REQUIRED");
+        RequireMutationHost(mode,Environment.GetEnvironmentVariable("CONTAINER_APP_NAME"),OperatingSystem.IsLinux());
 
         var config=new ConfigurationBuilder().AddConfiguration(originalConfig).AddInMemoryCollection(new Dictionary<string,string?>{
             ["Ai:Mode"]="Mock",["AiUsage:Stopped"]="true",["AiUsage:LiveOptIn"]="false"}).Build();
@@ -116,7 +133,15 @@ public static class WorkerTrialOperations
             if(!await context.Services.GetRequiredService<JobNotifications>().TrySendAsync(tenant,jobId,ct))throw new InvalidOperationException("Accepted; notification pending. Inspect before any retry.");
             return new JsonObject{["trial"]=trial,["workflow"]=workflow,["documentId"]=id,["jobId"]=jobId,["inferenceCallsByThisTool"]=0};
         }
-        if(doc is null){return new JsonObject{["documentExists"]=false,["operations"]=operations};}
+        if(doc is null)
+        {
+            bool? originalStored=null;
+            if(mode=="inspect"&&config["Diagnostics:WorkerTrial:InspectOriginal"]=="true"&&operations["prepare"] is not null)
+            {
+                originalStored=await ProbeOriginalAsync(context.Services.GetRequiredService<IIngestionBlobs>(),tenant,id,ct);
+            }
+            return new JsonObject{["documentExists"]=false,["operations"]=operations,["originalStored"]=originalStored};
+        }
         var jobName=doc.Value.Text("enrichmentJobId");var job=jobName==""?null:await repo.ReadAsync(p,jobName,ct);
         if(mode=="duplicate")
         {
