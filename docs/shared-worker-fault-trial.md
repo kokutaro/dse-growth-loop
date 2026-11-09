@@ -54,18 +54,21 @@ Diagnostics__WorkerTrial__PersonId=<既存架空operator本人>
 
 `plan`は原本・現在の人物/権限/scope・生成予定ID・workflow Job・fenceを検証する。業務データは変更しないが、現行権限の照合には短い認可fenceの取得・解放を行う。Workerの実envと対象を照合してから`prepare`へ進む。`prepare`は組み込んだ固定の架空Word fixtureをOffice検証し、現在の人物・権限・scope・既存workflowを確認する。新規reportのtitleと生成予定activity IDの不存在を確認し、既存DocumentAcceptance、Blob、通知機能へ渡す。既存person.documentHeadsに影響するimportKeyは付けない。通常ブラウザupload成功とは区別する。
 
-Macの既存主体にBlob/Queueのデータ操作権限がない場合も、鍵・SASや追加IAMで回避しない。変更操作は既存Workerコンテナ内の限定CLIのみで実行し、その既存Managed Identityを使う。ローカルscriptからのprepare/duplicateは拒否する。以下は`az containerapp exec`で対象の既存Workerへ接続して実行する固定コマンドであり、任意の外部原本は入力できない。CLI自身は常にMock/Stoppedに上書きし、推論を送信しない。受け付けたJobの実AI処理は通常の常用Workerが行う。
+Macの既存主体にBlob/Queueのデータ操作権限がない場合も、鍵・SASや追加IAMで回避しない。既存の権限分離に従い、prepareは原本書込担当のAPI、duplicateはQueue担当のWorkerの限定CLIで実行する。それぞれの既存Managed Identityを使い、ローカルscriptからのprepare/duplicateは拒否する。任意の外部原本は入力できない。CLI自身は常にMock/Stoppedに上書きし、推論を送信しない。受け付けたJobの実AI処理は通常の常用Workerが行う。
 
-Linux/CONTAINER_APP_NAMEの照合は実行場所の補助チェックであり、権限境界ではない。変更操作のCosmos/Blob/Queue adapterはAZURE_CLIENT_IDの既存UAMIを明示したManagedIdentityCredentialへ固定し、CLI/環境資格情報にfallbackしない。通常API/Workerの認証選択は変更しない。
+Linux/CONTAINER_APP_NAMEの照合は実行場所の補助チェックであり、権限境界ではない。変更操作のCosmos/Blob/Queue adapterはAZURE_CLIENT_IDの既存UAMIを明示したManagedIdentityCredentialへ固定し、CLI/環境資格情報にfallbackしない。通常API/Workerの認証選択は変更しない。APIでのCLI実行には上記6個のDiagnostics設定だけを子プロセスのenvで渡し、HTTPサービス自体の設定は変更しない。APIの既存replicaが0の場合は通常のhealth要求で起動し、min/maxは変更しない。
 
 ```bash
 dotnet Dse.Worker.dll --worker-trial-plan
-dotnet Dse.Worker.dll --worker-trial-prepare
 dotnet Dse.Worker.dll --worker-trial-inspect
 dotnet Dse.Worker.dll --worker-trial-duplicate
+# 原本の受付だけは既存APIコンテナ内で実行する（子プロセスenvで明示対象を指定）。
+dotnet Dse.Api.dll --worker-trial-prepare
 ```
 
 prepare/duplicateはそれぞれworkflow・trial・document・操作に束縛した非期限の永続claimをCAS保存してから外部操作に進む。podの/tmpにある補助onceファイルが再起動で失われても、同じ操作を再dispatchしない。claim後に失敗した場合は0件・一部送信・全件送信のいずれもあり得るため、結果を照合し、claim削除や新しい試験IDによる盲目的な再送をしない。これは送信と保存を原子的にする保証ではない。
+
+原本保存での拒否が判明した場合もclaimを残す。Job・受付receipt・AI実行が存在しないことを読み取り照合する。原本の有無は読取権限のあるWorkerのinspectだけに、子プロセスenvでDiagnostics__WorkerTrial__InspectOriginal=trueを明示して確認できる。固定キー・既知SHAだけを検査し、本文は出力しない。通常inspectはBlob権限を要求しない。原本未保存を404で確認し、受付前であることが確定した場合に限り、失敗記録を保持した別対象の計画として再開する。不明結果を新IDで回避しない。
 
 duplicateは対象enrichment Jobの通知を2件だけ送る。queued/availableAt・成功receipt・新しい投影がまだないこと、root fence解放・AI実行枠完了を照合してから`az containerapp revision restart`で対象常用Worker revisionを1回再起動する。結果不明なら管理面を先に読み、盲目的に再実行しない。6分超の再開時刻、再送/再利用、Job attempt、投影のID/版/件数、承認・監査・台帳を記録する。
 

@@ -7,6 +7,14 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Diagnostics;
 
+if(args.Length==1&&args[0] is "--worker-trial-plan" or "--worker-trial-inspect" or "--worker-trial-prepare")
+{
+    var maintenance=WebApplication.CreateBuilder([]);
+    using var deadline=new CancellationTokenSource(TimeSpan.FromMinutes(3));
+    try{Console.WriteLine((await WorkerTrialOperations.RunAsync(args[0]["--worker-trial-".Length..],maintenance.Configuration,null,deadline.Token)).ToJsonString());}
+    catch(Exception error){Console.WriteLine(WorkerTrialOperations.FailureReport(error).ToJsonString());Environment.ExitCode=1;}
+    return;
+}
 var builder = WebApplication.CreateBuilder(args);
 // This is a declaration of the mandatory policy installed below, not a deployment opt-in.
 builder.Configuration["Workspace:LegacyApisRestricted"] = "true";
