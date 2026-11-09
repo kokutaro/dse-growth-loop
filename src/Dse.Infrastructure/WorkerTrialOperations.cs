@@ -1,5 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Azure.Identity;
+using Microsoft.Azure.Cosmos;
 using Dse.Domain;
 using Dse.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +12,11 @@ namespace Dse.Infrastructure;
 
 public static class WorkerTrialOperations
 {
+    internal static ManagedIdentityCredential MutationCredential(IConfiguration config)
+    {
+        if(!Guid.TryParse(config["AZURE_CLIENT_ID"],out var clientId)||clientId==Guid.Empty)throw new ArgumentException("Existing worker managed identity required");
+        return new ManagedIdentityCredential(ManagedIdentityId.FromUserAssignedClientId(clientId.ToString()));
+    }
     public static byte[] FixtureBytes()
     {
         using var stream=typeof(WorkerTrialOperations).Assembly.GetManifestResourceStream("Dse.WorkerTrialSource")??throw new InvalidOperationException("Trial source unavailable");
@@ -31,8 +38,19 @@ public static class WorkerTrialOperations
         if(mode=="prepare"&&config["Diagnostics:WorkerTrial:Enabled"]!="true")throw new ArgumentException("Verify the deployed trial settings, then explicitly enable the operator plan before preparation");
 
         var evidence=evidenceDirectory??Path.Combine(Path.GetTempPath(),"dse-worker-trial",trial);Directory.CreateDirectory(evidence);
-        using var services=new ServiceCollection().AddSingleton<IConfiguration>(config).AddLogging().AddCatalog(config,false).AddIngestion(config)
-            .AddSingleton<IAiTransport>(new NoInferenceTransport()).BuildServiceProvider();
+        var registrations=new ServiceCollection().AddSingleton<IConfiguration>(config).AddLogging().AddCatalog(config,false).AddIngestion(config)
+            .AddSingleton<IAiTransport>(new NoInferenceTransport());
+        if(mode is "prepare" or "duplicate")
+        {
+            // Host-name checks are auxiliary. Data-plane authorization uses only
+            // the existing UAMI, with no CLI/environment credential fallback.
+            var credential=MutationCredential(config);
+            registrations.AddSingleton(_=>new CosmosClient(config["Cosmos:Endpoint"],credential,new CosmosClientOptions{
+                UseSystemTextJsonSerializerWithOptions=new(JsonSerializerDefaults.Web),ConnectionMode=ConnectionMode.Gateway}));
+            registrations.AddSingleton<IIngestionBlobs>(_=>new AzureIngestionBlobs(config,credential));
+            registrations.AddSingleton<IIngestionQueue>(_=>new AzureIngestionQueue(config,credential));
+        }
+        using var services=registrations.BuildServiceProvider();
         return await ExecuteWithServicesAsync(mode,config,services,evidence,ct);
     }
     // Internal seam for real common-service tests with in-memory adapters. Public
@@ -48,6 +66,12 @@ public static class WorkerTrialOperations
         var context=await services.GetRequiredService<DemoWorkflows>().GetAsync(actor,workflow,ct);
         var repo=context.Services.GetRequiredService<IPrimaryRepository>();var store=context.Services.GetRequiredService<IRecordStore>();var p=RecordPartition.Catalog(tenant);
         var doc=await repo.ReadAsync(p,id,ct);
+        var operations=new JsonObject();
+        if(mode=="inspect")foreach(var operation in new[]{"prepare","duplicate"})
+        {
+            var claim=await repo.ReadAsync(p,OperationId(workflow,trial,id,operation),ct);
+            operations[operation]=claim is null?null:new JsonObject{["state"]=claim.Value.Text("state"),["claimedAt"]=claim.Value["createdAt"]?.DeepClone(),["etag"]=claim.ETag};
+        }
         if(mode is "prepare" or "plan")
         {
             if(doc is not null)throw new DomainException(409,"TRIAL_ALREADY_EXISTS_INSPECT_INSTEAD");
@@ -92,7 +116,7 @@ public static class WorkerTrialOperations
             if(!await context.Services.GetRequiredService<JobNotifications>().TrySendAsync(tenant,jobId,ct))throw new InvalidOperationException("Accepted; notification pending. Inspect before any retry.");
             return new JsonObject{["trial"]=trial,["workflow"]=workflow,["documentId"]=id,["jobId"]=jobId,["inferenceCallsByThisTool"]=0};
         }
-        if(doc is null){return new JsonObject{["documentExists"]=false};}
+        if(doc is null){return new JsonObject{["documentExists"]=false,["operations"]=operations};}
         var jobName=doc.Value.Text("enrichmentJobId");var job=jobName==""?null:await repo.ReadAsync(p,jobName,ct);
         if(mode=="duplicate")
         {
@@ -118,7 +142,7 @@ public static class WorkerTrialOperations
         var report=new JsonObject{["at"]=DateTimeOffset.UtcNow,["workflow"]=workflow,["documentId"]=id,["documentEtag"]=doc.ETag,["aiState"]=doc.Value["aiState"]?.DeepClone(),["job"]=job?.Value.Copy(),
             ["runs"]=new JsonArray(runs.Items.Select(r=>(JsonNode?)r.Value.Copy()).ToArray()),["receiptStates"]=new JsonArray(receipts.Items.Select(r=>(JsonNode?)new JsonObject{["id"]=r.Value.Text("id"),["state"]=r.Value.Text("state"),["expiresAt"]=r.Value["expiresAt"]?.DeepClone()}).ToArray())};
         using(var file=new FileStream(Path.Combine(evidence,"inspect-"+DateTimeOffset.UtcNow.ToString("yyyyMMddTHHmmssfffffffZ")+".json"),FileMode.CreateNew,FileAccess.Write))await JsonSerializer.SerializeAsync(file,report,cancellationToken:ct);
-        return new JsonObject{["at"]=report["at"]!.DeepClone(),["jobId"]=jobName,["status"]=job?.Value.Text("status"),["attempt"]=job?.Value.Number("attempt"),["lastError"]=job?.Value.Text("lastErrorCode"),
+        return new JsonObject{["at"]=report["at"]!.DeepClone(),["operations"]=operations,["jobId"]=jobName,["status"]=job?.Value.Text("status"),["attempt"]=job?.Value.Number("attempt"),["lastError"]=job?.Value.Text("lastErrorCode"),
             ["availableAt"]=job?.Value["availableAt"]?.DeepClone(),["claims"]=job?.Value["workerTrialClaims"]?.DeepClone(),["providerAttempts"]=runs.Items.Sum(r=>(r.Value["trace"] as JsonObject)?.Number("attemptCount")??0),
             ["durableReuses"]=runs.Items.Count(r=>(r.Value["trace"] as JsonObject)?.Text("cacheKind")=="durable")};
 
@@ -129,7 +153,7 @@ public static class WorkerTrialOperations
             actor=await new AuthorityProvider(repository).RequireAsync(actor,token);
             if(!actor.HasRole("operator"))throw new DomainException(403,"FORBIDDEN");
             var p=RecordPartition.Catalog(actor.TenantId);
-            var id="worker-trial-operation-"+ConversationService.Hash(workflow+":"+trial+":"+document+":"+operation);
+            var id=OperationId(workflow,trial,document,operation);
             if(await repository.ReadAsync(p,id,token) is not null)throw new DomainException(409,"TRIAL_OPERATION_CLAIMED_INSPECT_INSTEAD");
             var claim=RecordJson.New("idempotency",id,actor.TenantId,actor.PrincipalId,["system"],DateTimeOffset.UtcNow);
             claim["state"]="claimed";claim["operation"]=operation;claim["trialId"]=trial;claim["documentId"]=document;
@@ -137,6 +161,8 @@ public static class WorkerTrialOperations
             // inspected, never made dispatchable by a restarted pod's empty /tmp.
             await repository.CommitAsync(p,[RecordWrite.Create(claim)],token);return true;
         },ct);
+    private static string OperationId(string workflow,string trial,string document,string operation)=>
+        "worker-trial-operation-"+ConversationService.Hash(workflow+":"+trial+":"+document+":"+operation);
     sealed class NoInferenceTransport:IAiTransport
     {
         public Task<AiWireResponse> SendAsync(AiModel model,JsonObject body,int maxResponseBytes,CancellationToken ct)=>

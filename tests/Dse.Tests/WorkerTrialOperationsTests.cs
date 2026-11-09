@@ -70,6 +70,9 @@ public sealed class WorkerTrialOperationsTests
             Directory.Delete(directory,true);Directory.CreateDirectory(directory); // restarted pod has no local once files.
             Assert.Equal("TRIAL_OPERATION_CLAIMED_INSPECT_INSTEAD",(await Assert.ThrowsAsync<DomainException>(()=>WorkerTrialOperations.ExecuteWithServicesAsync("duplicate",config,root,directory,default))).Code);
             Assert.Equal(notifications+2,queue.Notices.Count);
+            var inspected=await WorkerTrialOperations.ExecuteWithServicesAsync("inspect",config,root,directory,default);
+            Assert.Equal("claimed",inspected["operations"]!["prepare"]!["state"]!.GetValue<string>());
+            Assert.Equal("claimed",inspected["operations"]!["duplicate"]!["state"]!.GetValue<string>());
         }
         finally{Directory.Delete(directory,true);}
     }

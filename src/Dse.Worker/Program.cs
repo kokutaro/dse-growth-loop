@@ -6,7 +6,12 @@ if(args.Length==1&&command is "--worker-trial-plan" or "--worker-trial-inspect" 
 {
     var trial=Host.CreateApplicationBuilder([]);
     using var deadline=new CancellationTokenSource(TimeSpan.FromMinutes(3));
-    Console.WriteLine((await WorkerTrialOperations.RunAsync(command["--worker-trial-".Length..],trial.Configuration,null,deadline.Token)).ToJsonString());
+    try{Console.WriteLine((await WorkerTrialOperations.RunAsync(command["--worker-trial-".Length..],trial.Configuration,null,deadline.Token)).ToJsonString());}
+    catch(Exception error)
+    {
+        Console.WriteLine(new System.Text.Json.Nodes.JsonObject{["status"]="failed",["errorCode"]=error is DomainException d?d.Code:"WORKER_TRIAL_FAILED",["exceptionClass"]=error.GetType().Name}.ToJsonString());
+        Environment.ExitCode=1;
+    }
     return;
 }
 if (args.Length == 1 && command == "--ai-search-preflight")

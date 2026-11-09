@@ -56,6 +56,8 @@ Diagnostics__WorkerTrial__PersonId=<既存架空operator本人>
 
 Macの既存主体にBlob/Queueのデータ操作権限がない場合も、鍵・SASや追加IAMで回避しない。変更操作は既存Workerコンテナ内の限定CLIのみで実行し、その既存Managed Identityを使う。ローカルscriptからのprepare/duplicateは拒否する。以下は`az containerapp exec`で対象の既存Workerへ接続して実行する固定コマンドであり、任意の外部原本は入力できない。CLI自身は常にMock/Stoppedに上書きし、推論を送信しない。受け付けたJobの実AI処理は通常の常用Workerが行う。
 
+Linux/CONTAINER_APP_NAMEの照合は実行場所の補助チェックであり、権限境界ではない。変更操作のCosmos/Blob/Queue adapterはAZURE_CLIENT_IDの既存UAMIを明示したManagedIdentityCredentialへ固定し、CLI/環境資格情報にfallbackしない。通常API/Workerの認証選択は変更しない。
+
 ```bash
 dotnet Dse.Worker.dll --worker-trial-plan
 dotnet Dse.Worker.dll --worker-trial-prepare
