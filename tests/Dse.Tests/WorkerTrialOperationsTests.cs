@@ -29,6 +29,13 @@ public sealed class WorkerTrialOperationsTests
         Assert.Equal("TRIAL_REMOTE_WORKER_REQUIRED",(await Assert.ThrowsAsync<DomainException>(()=>
             WorkerTrialOperations.RunAsync(mode,new ConfigurationBuilder().Build(),null,default))).Code);
     }
+    [Theory]
+    [InlineData(null)][InlineData("")][InlineData("not-an-identity")]
+    public void Mutations_require_explicit_existing_managed_identity_without_credential_fallback(string? clientId)
+    {
+        var config=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{["AZURE_CLIENT_ID"]=clientId}).Build();
+        Assert.Throws<ArgumentException>(()=>WorkerTrialOperations.MutationCredential(config));
+    }
     [Fact]
     public async Task Scoped_preparation_uses_common_worker_and_durable_operation_claim_survives_local_file_loss()
     {
