@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Dse.Domain;
 using Dse.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Dse.Tests;
@@ -56,7 +57,7 @@ public sealed class WorkerTrialCheckpointTests
     }
     [Theory]
     [InlineData("disabled")][InlineData("root")][InlineData("workflow")][InlineData("document")][InlineData("expired")]
-    [InlineData("long_expiry")][InlineData("bad_expiry")][InlineData("version")][InlineData("source")][InlineData("job")][InlineData("authority")]
+    [InlineData("long_expiry")][InlineData("bad_expiry")][InlineData("version")][InlineData("source")][InlineData("job")][InlineData("authority")][InlineData("lease")]
     public async Task Unarmed_or_changed_target_never_claims_or_injects(string change)
     {
         var f=await Setup();var p=RecordPartition.Catalog("demo");var doc=(await f.Store.ReadAsync(p,Document,default))!;
@@ -72,6 +73,8 @@ public sealed class WorkerTrialCheckpointTests
             case "bad_expiry":doc.Value["workerTrial"]!["expiresAt"]="invalid";break;
             case "version":doc.Value["sourceVersion"]=2;break;
             case "job":doc.Value["enrichmentJobId"]="job-other";break;
+            case "lease":
+                var job=(await f.Store.ReadAsync(p,f.Job.Text("id"),default))!;job.Value["leaseUntil"]=null;await f.Store.CommitAsync(p,[RecordWrite.Replace(job.Value,job.ETag)],default);break;
             case "source":
                 var version=(await f.Store.ReadAsync(p,"ver-worker-trial",default))!;version.Value["sha256"]="other";await f.Store.CommitAsync(p,[RecordWrite.Replace(version.Value,version.ETag)],default);break;
             case "authority":
@@ -88,5 +91,48 @@ public sealed class WorkerTrialCheckpointTests
         async Task<bool> Run(){try{await Probe(f).AfterBuildAsync(f.Job,default);return false;}catch(DependencyRetryException){return true;}catch(DomainException e)when(e.Code=="ACCESS_BUSY"){return false;}}
         var results=await Task.WhenAll(Run(),Run());Assert.Single(results,x=>x);
         await Probe(f).AfterBuildAsync(f.Job,default);
+    }
+    sealed class ClaimFault(IPrimaryRepository inner,bool afterCommit):IPrimaryRepository
+    {
+        bool fired;
+        public Task<StoredRecord?> ReadAsync(RecordPartition p,string id,CancellationToken ct)=>inner.ReadAsync(p,id,ct);
+        public Task<RecordPage> QueryAsync(RecordPartition p,string k,string? f,string? parent,int size,string? cursor,CancellationToken ct)=>inner.QueryAsync(p,k,f,parent,size,cursor,ct);
+        public async Task CommitAsync(RecordPartition p,IReadOnlyList<RecordWrite> writes,CancellationToken ct)
+        {
+            var fail=!fired&&writes.Any(w=>w.Value["workerTrialClaims"] is not null);
+            if(fail){fired=true;if(!afterCommit)throw new IOException("trial claim save failed");}
+            await inner.CommitAsync(p,writes,ct);
+            if(fail)throw new IOException("trial claim save outcome unknown");
+        }
+    }
+    [Theory]
+    [InlineData(false)][InlineData(true)]
+    public async Task Unknown_claim_write_retains_fence_and_never_blindly_injects_or_reclaims(bool afterCommit)
+    {
+        var f=await Setup();var repo=new PrimaryRepository(f.Store);
+        await Assert.ThrowsAsync<IOException>(()=>Probe(f,new ClaimFault(repo,afterCommit)).AfterBuildAsync(f.Job,default));
+        var p=RecordPartition.Catalog("demo");var fence=(await f.Store.ReadAsync(p,"system-access-fence",default))!;
+        Assert.NotEqual("",fence.Value.Text("holder"));
+        Assert.Equal("ACCESS_BUSY",(await Assert.ThrowsAsync<DomainException>(()=>Probe(f).AfterBuildAsync(f.Job,default))).Code);
+        var saved=(await f.Store.ReadAsync(p,f.Job.Text("id"),default))!;
+        Assert.Equal(afterCommit,saved.Value["workerTrialClaims"]?["built"] is not null);
+        Assert.Equal("processing",saved.Value.Text("status"));
+    }
+    [Fact]
+    public async Task Child_DI_uses_bound_workflow_while_root_stays_noop_and_never_writes_root_job()
+    {
+        var f=await Setup();f.Config["Data:Mode"]="Demo";f.Config["Ai:Mode"]="Mock";
+        using var root=DemoWorkflowTests.Root(f.Store,suppliedConfiguration:f.Config);
+        var actor=(await new AuthorityProvider(new PrimaryRepository(f.Store)).PersonAsync("demo",IdentityResolver.Demo.PersonId,default))!;
+        var context=await root.GetRequiredService<DemoWorkflows>().StartAsync(actor,default);
+        var p=RecordPartition.Catalog("demo");var scoped=context.Services.GetRequiredService<IRecordStore>();
+        var doc=(await f.Store.ReadAsync(p,Document,default))!.Value;
+        var version=(await f.Store.ReadAsync(p,"ver-worker-trial",default))!.Value;
+        await scoped.CommitAsync(p,[RecordWrite.Create(doc),RecordWrite.Create(version),RecordWrite.Create(f.Job)],default);
+        f.Config["Diagnostics:WorkerTrial:WorkflowId"]=context.Id;f.Config["Data:Mode"]="Azure";
+        await root.GetRequiredService<WorkerTrialCheckpoints>().AfterBuildAsync(f.Job,default);
+        await Assert.ThrowsAsync<DependencyRetryException>(()=>context.Services.GetRequiredService<WorkerTrialCheckpoints>().AfterBuildAsync(f.Job,default));
+        Assert.NotNull((await scoped.ReadAsync(p,f.Job.Text("id"),default))!.Value["workerTrialClaims"]);
+        Assert.Null((await f.Store.ReadAsync(p,f.Job.Text("id"),default))!.Value["workerTrialClaims"]);
     }
 }
