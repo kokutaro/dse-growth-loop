@@ -35,6 +35,7 @@ public sealed class DemoWorkflows(IServiceProvider root,IRecordStore shared,ICon
             .AddSingleton(root.GetRequiredService<AiLedger>()).AddSingleton<IAiTransport>(root.GetRequiredService<IAiTransport>())
             .AddSingleton<IIngestionBlobs>(new WorkflowIngestionBlobs(root.GetRequiredService<IIngestionBlobs>(),id))
             .AddSingleton<IIngestionQueue>(new WorkflowIngestionQueue(root.GetRequiredService<IIngestionQueue>(),id))
+            .AddSingleton(new WorkerTrialCheckpoints(new PrimaryRepository(store),configuration,clock,id))
             .AddSingleton(this).AddSingleton(clock).BuildServiceProvider();
         var entry=(store,services);contexts.Add(id,entry);return entry;
     }

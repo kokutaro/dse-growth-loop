@@ -56,11 +56,11 @@ public sealed class WorkerTrialCheckpointTests
     }
     [Theory]
     [InlineData("disabled")][InlineData("root")][InlineData("workflow")][InlineData("document")][InlineData("expired")]
-    [InlineData("long_expiry")][InlineData("version")][InlineData("source")][InlineData("job")][InlineData("authority")]
+    [InlineData("long_expiry")][InlineData("bad_expiry")][InlineData("version")][InlineData("source")][InlineData("job")][InlineData("authority")]
     public async Task Unarmed_or_changed_target_never_claims_or_injects(string change)
     {
         var f=await Setup();var p=RecordPartition.Catalog("demo");var doc=(await f.Store.ReadAsync(p,Document,default))!;
-        var workflow=Workflow;
+        string? workflow=Workflow;
         switch(change)
         {
             case "disabled":f.Config["Diagnostics:WorkerTrial:Enabled"]="false";break;
@@ -69,6 +69,7 @@ public sealed class WorkerTrialCheckpointTests
             case "document":f.Config["Diagnostics:WorkerTrial:DocumentId"]="doc-other";break;
             case "expired":doc.Value["workerTrial"]!["expiresAt"]=f.Clock.GetUtcNow().AddSeconds(-1);break;
             case "long_expiry":doc.Value["workerTrial"]!["expiresAt"]=f.Clock.GetUtcNow().AddDays(1);break;
+            case "bad_expiry":doc.Value["workerTrial"]!["expiresAt"]="invalid";break;
             case "version":doc.Value["sourceVersion"]=2;break;
             case "job":doc.Value["enrichmentJobId"]="job-other";break;
             case "source":
