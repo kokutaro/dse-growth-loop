@@ -15,3 +15,9 @@ Issue #16。架空資料の本人確認後、同じ資料へ作業経験の段�
 2026-11-15の隔離したAzure受入では、2つの実JWTから通常画面で架空Wordの本人確認と同一資料の版更新を行い、Azure Queue→Worker→人物投影で両資料の旧本文の確認状態と新しい根拠が引き継がれた。新しい経験文は未確認の別項目、元の技術名一覧は知識のまま維持した。上流AIはMockであり、実AIの抽出品質の検証ではない。専用の試験認証・データ・同意だけを新設し、共有サービスと既存のデータ・認証・同意は変更していない。
 
 同じ受入の二者相談・評価・要約の双方同意・公開は3件成功したが、同系列の実AI事業分析と判断は未実施。この修正によって業務全工程の実AI受入が完了したとは扱わない。
+
+## 共有反映前のCI依存更新
+
+共有反映用PRの必須CIは、既存Aspire 13.5.4の脆弱性検査NU1903/NU1904で依存復元に失敗した。[Dashboardの修正版](https://github.com/advisories/GHSA-4g86-54fm-h9h8)・[Hostingの修正版](https://github.com/advisories/GHSA-f7vh-h5g3-7jrh)に揃え、開発用AppHost SDKを13.6.5へ更新する。新SDKが要求する既存MessagePackの明示pinも2.5.307へ揃え、macOS ARM64/Linux x64のlockを再生成した。脆弱性検査や警告の抑制は加えていない。
+
+推移依存の変更はAppHostのlock内に限る。API/WorkerのDockerfileはAppHostをCOPY・復元・publishせず、両者の依存lock・認証・AI・データ接続設定は変更しない。既存AppHostコードで両OSの復元・Releaseビルドを確認し、元のCI失敗記録も保持する。
