@@ -130,6 +130,51 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
             var groups = spans.OrderBy(x => x.Value.Text("id"), StringComparer.Ordinal)
                 .GroupBy(s => workbook ? groupByEvidence[s.Value.Text("id")] : WordFragmentKey(s)).ToArray();
             if (groups.Length > MaxFragments) throw new DomainException(422, "PROFILE_FRAGMENT_LIMIT");
+            async Task RebindUnchangedEvidence(JsonObject previous, JsonObject value, string text, EvidenceReference[] current)
+            {
+                // Historical reads prove lineage only; they never authorize old evidence for search/AI.
+                // Every current reference still passes SourceGuard below, and all reads join commit CAS.
+                if (JsonNode.DeepEquals(previous["evidenceRefs"], Node(current))) return;
+                bool SameAccess(JsonObject row) => row.Text("tenantId") == tenant && row.Text("ownerId") == actor.PrincipalId &&
+                    row.Strings("scopeIds").ToHashSet(StringComparer.Ordinal).SetEquals(document.Value.Strings("scopeIds")) && AccessPolicy.CanRead(actor, row);
+                if (generation || previous.Text("documentId") != document.Value.Text("id") || previous.Text("personId") != personId ||
+                    !SameAccess(previous) || document.Value.Text("personId") != personId || document.Value.Text("ownerId") != actor.PrincipalId)
+                    throw new DomainException(409, "SOURCE_REVOKED");
+                var oldReferences = previous["evidenceRefs"]?.Deserialize<EvidenceReference[]>(Json);
+                if (oldReferences is not { Length: > 0 } || oldReferences.Length > 50000 || oldReferences.Distinct().Count() != oldReferences.Length ||
+                    oldReferences.Select(r => r.DocumentVersionId).Distinct().Count() != 1 || oldReferences.Select(r => r.SourceVersion).Distinct().Count() != 1)
+                    throw new DomainException(409, "SOURCE_REVOKED");
+                foreach (var reference in current)
+                {
+                    var span = (await Read(reference.Id))?.Value;
+                    var source = (await Read(reference.DocumentVersionId))?.Value;
+                    if (span is null || source is null || !SameAccess(span) || !SameAccess(source)) throw new DomainException(409, "SOURCE_REVOKED");
+                }
+                List<string> oldText = [];
+                foreach (var oldReference in oldReferences)
+                {
+                    var oldSpan = (await Read(oldReference.Id))?.Value;
+                    var oldVersion = (await Read(oldReference.DocumentVersionId))?.Value;
+                    if (oldSpan is null || oldVersion is null || oldSpan.Text("kind") != "evidenceSpan" || oldVersion.Text("kind") != "documentVersion" ||
+                        !SameAccess(oldSpan) || !SameAccess(oldVersion) || oldSpan.Text("validationState") != "validated" || oldVersion.Text("status") != "ready" ||
+                        oldSpan.Text("documentId") != document.Value.Text("id") || oldVersion.Text("documentId") != document.Value.Text("id") ||
+                        oldSpan.Text("documentVersionId") != oldReference.DocumentVersionId || oldSpan.Number("sourceVersion") != oldReference.SourceVersion ||
+                        oldVersion.Number("sourceVersion") != oldReference.SourceVersion || oldReference.SourceVersion < 1 ||
+                        oldReference.SourceVersion >= document.Value.Number("activeVersion"))
+                        throw new DomainException(409, "SOURCE_REVOKED");
+                    oldText.Add(oldSpan.Text("text"));
+                }
+                if (string.Join(workbook ? "\n" : " ", oldText) != text) throw new DomainException(409, "SOURCE_REVOKED");
+                value["evidenceRefs"] = Node(current);
+                var auditId = Id("audit-evidence-", job.Text("id") + ":" + previous.Text("id") + ":" + version.Value.Text("id"));
+                await Read(auditId);
+                var audit = RecordJson.New("audit", auditId, tenant, actor.PrincipalId, document.Value.Strings("scopeIds"), clock.GetUtcNow());
+                audit["action"] = "confirmed_evidence_rebound"; audit["aggregateId"] = previous.Text("id");
+                audit["documentId"] = document.Value.Text("id"); audit["previousVersion"] = previous.Number("sourceVersion");
+                audit["confirmationState"] = previous.Text("confirmationState");
+                audit["beforeEvidenceRefs"] = Node(oldReferences); audit["afterEvidenceRefs"] = Node(current);
+                SyntheticTestAccess.Mark(audit, person.Value); Write(audit);
+            }
             foreach (var group in groups)
             {
                 foreach (var row in group)
@@ -170,6 +215,7 @@ public sealed class ProfilePipeline(IPrimaryRepository repository, IRecordStore 
                         value["pendingAiVersion"] = document.Value.Number("sourceVersion");
                         value["pendingExtraction"] = new JsonObject { ["description"] = text, ["period"] = Node(period), ["evidenceRefs"] = Node(fragmentRefs) };
                     }
+                    else await RebindUnchangedEvidence(existing, value, text, fragmentRefs);
                 }
                 else
                 {
