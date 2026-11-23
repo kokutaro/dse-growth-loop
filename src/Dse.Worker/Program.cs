@@ -1,7 +1,35 @@
 using Dse.Infrastructure;
 using Dse.Domain;
+using Microsoft.Extensions.Configuration;
 
 var command = args.Length == 0 ? "--consume" : args[0];
+if (args.Length == 1 && command == "--export-business-validation")
+{
+    // Environment-only preflight: do not create a Host, file watcher, service or credential.
+    var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+    var development = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") == "Development";
+    try
+    {
+        var options = BusinessAnalysisValidationExport.Validate(configuration, development);
+        // Deliberately do not register AddCatalog/AddIngestion: no credentials, bootstrap or remote fallback.
+        var store = new LocalRecordStore(new LocalIngestionFiles(configuration["Data:LocalPath"]!));
+        var repository = new PrimaryRepository(store);
+        var authority = new AuthorityProvider(repository, configuration);
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        var actor = await authority.PersonAsync("demo", options.PersonId, deadline.Token) ?? throw new DomainException(403, "FORBIDDEN");
+        var analysis = new BusinessAnalysisService(repository, store, new AccessFence(repository),
+            new BusinessAnalysisDrafter(configuration), configuration, TimeProvider.System);
+        await new BusinessAnalysisValidationExport(analysis, authority).ExportAsync(configuration, development, actor, deadline.Token);
+        Console.WriteLine("Synthetic validation report saved.");
+    }
+    catch (Exception error)
+    {
+        // Never emit paths, report bodies, endpoint/configuration or exception messages to shared logs.
+        Console.Error.WriteLine(error is DomainException domain ? domain.Code : "VALIDATION_EXPORT_FAILED");
+        Environment.ExitCode = 1;
+    }
+    return;
+}
 if(args.Length==1&&command is "--worker-trial-plan" or "--worker-trial-inspect" or "--worker-trial-prepare" or "--worker-trial-duplicate")
 {
     var trial=Host.CreateApplicationBuilder([]);

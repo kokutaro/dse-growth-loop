@@ -111,3 +111,25 @@ fake輸送とLocalRecordStoreのテストは、Liveモード設定・共有台�
 識別子検査は許可公開正本に既にあるparticipant/owner/承認者/scope/部署/根拠参照と必要なsession/challenge link、呼出者のIDに限定し、既知literal・email/GUID/内部ID prefix形状を入力/titleと生成本文で拒否する。検査のためにpersonやprivate profile、原チャット、非同意者の資料を追加照会しない。既知でない人名・職務記述による間接特定などの意味的匿名化は保証しない。実社員の匿名ワークスペースを開ける前に、これを別の品質・プライバシー受入条件として検証する。
 
 2026-10-11 の統合再検証で .NET 全531件が成功し、このうち BusinessAnalysisTests は52件すべて成功した。ローカルの独立ダミー保存先で管理CLIのinspect/apply/同じ要求の再送を確認し、同じreceipt、派生情報の消去、slot=ready、払い戻しJPY=0を確認した。これは外部停止の実証ではなく、remoteStopProved=false・Azure操作0・有料AI呼出し0として記録する。
+
+## 合成データ検証サマリーの独立ファイル出力
+
+`Dse.Worker --export-business-validation` は、既に完了したローカル合成データ分析の**数値検証サマリーだけ**を専用ファイルへ保存する。新しい分析・AI送信・公開・人の判断・業務記録の作成は行わない。通常の `--analyze-business` は変更しない。R5固有の入力・ID・接続先・運用スクリプトは製品に含めない。
+
+既定は無効。このコマンドの設定は環境変数だけを読む。Host・設定ファイルwatcher・サービスを生成する前に検査し、次の全条件が必要で、共有環境のProduction/Azure/Live構成では拒否する。共有配備時にこれらの設定を追加・変更しない。
+
+- `DOTNET_ENVIRONMENT=Development`、`Data__Mode=Demo`、`Ai__Mode=Mock`。
+- `AiUsage__Stopped=true`、`AiUsage__LiveOptIn=false`。
+- `ValidationExport__Enabled=true`、`ValidationExport__Synthetic=true`。
+- `Data__LocalPath` は既存の合成データ用ローカル正本の絶対パス。`records.json` が必要で、自動初期化・seed・Azureへのfallbackをしない。
+- `ValidationExport__PersonId` は既存の同じ実行所有者、`ValidationExport__RunId` は既存の完了済みfixture分析。現在の正本に `member`・`analyst`・`operator` と対象scopeが必要。設定や入力のroleだけでは付与しない。このコマンドは主体・権限を新設しない。
+- `ValidationExport__Directory` は事前に用意した非公開の絶対パスのディレクトリ（Unix 0700）。正本ディレクトリ内、アプリ配布ディレクトリ内、symlink、存在しない/他者に読めるディレクトリは拒否。Windowsは非対応として拒否する。
+- `ValidationExport__FileName` は既存でない単一の `名前.json`。絶対パスや相対移動は不可。
+
+通常の `BusinessAnalysisService.ConsumeAsync` 内で、所有者・scope・現行公開版・双方の公開/分析同意・authorityを再照合する。同じフェンス内でoperatorも再確認し、完了/fixture/未確定推論なしを検証する。失効・撤回・フェンス保持中は出力しない。フェンスの取得・解放以外のアプリ正本・承認・AI台帳は変更しない。
+
+出力schema `synthetic-business-validation-v1` は、合成データ/完了フラグと各groupの独立課題数、部署数、申告時間、根拠数・引用数のみ。本文・仮説文・入力・source/run/group/tenant/person ID・認証情報・任意の監査payloadをコピーしない。ログへは固定の成功文言または安全なエラーコードだけを出し、ファイル内容・パスは出さない。共有ログやBlobへアップロードする経路はない。
+
+ファイルはCreateNew/0600で保存し、flush・再読を行う。専用ディレクトリ内のrun所有者単位の `.validation-<hash>.claim` もCreateNewで先に保存し、別名での重複試行も拒否する。コマンドはモデルを呼ばないため推論の重複送信は発生しない。既存ファイルやclaimは削除・上書きせず、書込み失敗・結果不明を自動再送しない。出力開始後の未知のI/O障害では通常の非期限フェンスが残り得る。保存物と停止状態を照合し、必要なら既存の正規フェンス復旧手順を使う。自動解除やclaim削除でやり直さない。
+
+これは数値・引用整合のファイル検証であり、実モデル品質の再検証や通常UIへの新結果登録ではない。ローカルの合成データへの本人/模擬同意を、別環境の同意へ持ち込める機能でもない。
